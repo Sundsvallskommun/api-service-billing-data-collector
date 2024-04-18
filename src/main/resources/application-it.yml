@@ -1,6 +1,0 @@
-#========================================
-# Test profile settings (IT tests)
-#========================================
-logging:
-  level:
-    root: DEBUG
