@@ -1,6 +1,0 @@
-#========================================
-# Test profile settings (junit tests)
-#========================================
-logging:
-  level:
-    root: DEBUG

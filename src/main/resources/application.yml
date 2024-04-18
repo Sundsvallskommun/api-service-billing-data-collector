@@ -1,13 +1,8 @@
-#========================================
-# General settings
-#========================================
-logging:
-  level:
-    root: INFO
 openapi:
   name: ${spring.application.name}
-  title: ${spring.application.name}
+  title: BillingDataCollector
   version: '@project.version@'
+
 spring:
   application:
-    name: template
+    name: api-billing-data-collector
