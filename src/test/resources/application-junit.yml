@@ -18,3 +18,13 @@ integration:
     connect-timeout: 56
     read-timeout: 78
 
+  # BillingPreprocessor integration
+  billing-preprocessor:
+    base-url: http://bpp.nosuchhost.com
+    oauth2:
+      token-url: http://token.nosuchhost.com
+      client-id: someClientId
+      client-secret: someClientSecret
+      authorization-grant-type: client_credentials
+    connect-timeout: 98
+    read-timeout: 76
