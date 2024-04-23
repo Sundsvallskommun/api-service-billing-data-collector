@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="ISO-8859-1" standalone="no"?>
+<FlowInstances>
+    <FlowInstance>
+        <flowInstanceID>123456</flowInstanceID>
+        <added>2023-05-31 10:03</added>
+        <firstSubmitted>2023-05-31 10:03</firstSubmitted>
+        <fullyPopulated>true</fullyPopulated>
+        <stepID>4452</stepID>
+        <lastStatusChange>2023-05-31 10:03</lastStatusChange>
+        <profileID>1</profileID>
+        <remote>false</remote>
+        <addedInMilliseconds>1685520223000</addedInMilliseconds>
+        <firstSubmittedInMilliseconds>1685520223000</firstSubmittedInMilliseconds>
+        <lastStatusChangeInMilliseconds>1685520223000</lastStatusChangeInMilliseconds>
+        <poster>
+            <user>
+                <userID>9999</userID>
+                <username>KAKA</username>
+                <firstname>Kalle</firstname>
+                <lastname>Karlssonberg</lastname>
+                <email>kalle.karlssonberg@sundsvall.se</email>
+                <admin>false</admin>
+                <enabled>true</enabled>
+                <lastLogin>2023-05-31 07:20</lastLogin>
+                <lastLoginInMilliseconds>1685510435000</lastLoginInMilliseconds>
+                <added>2015-04-20 14:17</added>
+                <isMutable>true</isMutable>
+                <hasFormProvider>true</hasFormProvider>
+            </user>
+        </poster>
+    </FlowInstance>
+    <FlowInstance>
+        <flowInstanceID>234567</flowInstanceID>
+        <added>2023-05-31 09:48</added>
+        <firstSubmitted>2023-05-31 09:48</firstSubmitted>
+        <fullyPopulated>true</fullyPopulated>
+        <stepID>4452</stepID>
+        <lastStatusChange>2023-05-31 09:48</lastStatusChange>
+        <profileID>1</profileID>
+        <remote>false</remote>
+        <addedInMilliseconds>1685519324000</addedInMilliseconds>
+        <firstSubmittedInMilliseconds>1685519324000</firstSubmittedInMilliseconds>
+        <lastStatusChangeInMilliseconds>1685519324000</lastStatusChangeInMilliseconds>
+        <poster>
+            <user>
+                <userID>11111</userID>
+                <username>NILI</username>
+                <firstname>Nisse</firstname>
+                <lastname>Nilssonkvist</lastname>
+                <email>nisse.nilssonkvist@sundsvall.se</email>
+                <admin>false</admin>
+                <enabled>true</enabled>
+                <lastLogin>2023-05-31 07:20</lastLogin>
+                <lastLoginInMilliseconds>1685510435000</lastLoginInMilliseconds>
+                <added>2015-04-20 14:17</added>
+                <isMutable>true</isMutable>
+                <hasFormProvider>true</hasFormProvider>
+            </user>
+        </poster>
+    </FlowInstance>
+    <FlowInstance>
+        <flowInstanceID>345678</flowInstanceID>
+        <added>2023-05-31 09:45</added>
+        <firstSubmitted>2023-05-31 09:45</firstSubmitted>
+        <fullyPopulated>true</fullyPopulated>
+        <stepID>4452</stepID>
+        <lastStatusChange>2023-05-31 09:45</lastStatusChange>
+        <profileID>1</profileID>
+        <remote>false</remote>
+        <addedInMilliseconds>1685519135000</addedInMilliseconds>
+        <firstSubmittedInMilliseconds>1685519135000</firstSubmittedInMilliseconds>
+        <lastStatusChangeInMilliseconds>1685519135000</lastStatusChangeInMilliseconds>
+        <poster>
+            <user>
+                <userID>22222</userID>
+                <username>LAHE</username>
+                <firstname>Lasse</firstname>
+                <lastname>Heikkinenfors</lastname>
+                <email>lasse.heikkinenfors@sundsvall.se</email>
+                <admin>false</admin>
+                <enabled>true</enabled>
+                <lastLogin>2023-05-31 07:59</lastLogin>
+                <lastLoginInMilliseconds>1685512778000</lastLoginInMilliseconds>
+                <added>2015-04-20 14:16</added>
+                <isMutable>true</isMutable>
+                <hasFormProvider>true</hasFormProvider>
+            </user>
+        </poster>
+    </FlowInstance>
+</FlowInstances>
+
