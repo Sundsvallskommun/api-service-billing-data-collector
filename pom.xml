@@ -13,6 +13,8 @@
 	<name>api-service-billing-data-collector</name>
 
 	<properties>
+		<xsoup.version>0.3.7</xsoup.version>
+
 		<!-- Pipeline properties -->
 		<docker.image.name>ms-billing-data-collector</docker.image.name>
 		<published.container.port.test>8456</published.container.port.test>
@@ -33,11 +35,43 @@
 			<artifactId>dept44-starter-feign</artifactId>
 		</dependency>
 
+		<!-- Other -->
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-devtools</artifactId>
 			<scope>runtime</scope>
 			<optional>true</optional>
 		</dependency>
+		<dependency>
+			<groupId>us.codecraft</groupId>
+			<artifactId>xsoup</artifactId>
+			<version>${xsoup.version}</version>
+		</dependency>
 	</dependencies>
+
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-resources-plugin</artifactId>
+				<configuration>
+					<nonFilteredFileExtensions>
+						<nonFilteredFileExtension>xml</nonFilteredFileExtension>
+					</nonFilteredFileExtensions>
+				</configuration>
+			</plugin>
+
+			<plugin>
+				<groupId>org.jacoco</groupId>
+				<artifactId>jacoco-maven-plugin</artifactId>
+				<configuration>
+					<excludes>
+						<exclude>**/se/sundsvall/billingdatacollector/Application*</exclude>
+						<exclude>**/se/sundsvall/billingdatacollector/**/XPathUtil*</exclude>
+						<exclude>**/generated/se/sundsvall/**/*</exclude>
+					</excludes>
+				</configuration>
+			</plugin>
+		</plugins>
+	</build>
 </project>

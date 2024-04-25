@@ -1,3 +1,8 @@
-logging:
-  level:
-    root: DEBUG
+# OpenE integration
+integration:
+  open-e:
+    base-url: http://open-e.nosuchhost.com
+    username: user
+    password: p4ssw0rd
+    connect-timeout: 12
+    read-timeout: 34
