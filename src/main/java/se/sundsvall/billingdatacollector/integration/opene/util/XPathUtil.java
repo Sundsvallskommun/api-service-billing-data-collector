@@ -23,10 +23,10 @@ public final class XPathUtil {
 
     private XPathUtil() { }
 
-    public static <T> T extractValue(final byte[] xml, final Class<T> targetClass) throws Exception {
+    public static <T> T extractValue(final byte[] xml, final Class<T> targetClass) {
         // Check if objects of the given target class can be instantiated
         if (isAbstract(targetClass.getModifiers()) || isInterface(targetClass.getModifiers())) {
-            throw new IllegalArgumentException("%s must be a concrete class or a record".formatted(targetClass.getName()));
+            throw new XPathException("%s must be a concrete class or a record".formatted(targetClass.getName()));
         }
 
         // Get the fields on the target class
@@ -51,32 +51,36 @@ public final class XPathUtil {
             parameters[i] = new Parameter(field, type, value);
         }
 
-        if (targetClass.isRecord()) {
-            var parameterTypes = new Class[parameters.length];
-            var parameterValues = new Object[parameters.length];
-            for (var i = 0; i < parameters.length; i++) {
-                parameterTypes[i] = parameters[i].type;
-                parameterValues[i] = parameters[i].value;
+        try {
+            if (targetClass.isRecord()) {
+                var parameterTypes = new Class[parameters.length];
+                var parameterValues = new Object[parameters.length];
+                for (var i = 0; i < parameters.length; i++) {
+                    parameterTypes[i] = parameters[i].type;
+                    parameterValues[i] = parameters[i].value;
+                }
+
+                    var constructor = targetClass.getDeclaredConstructor(parameterTypes);
+                    constructor.setAccessible(true);
+                    return constructor.newInstance(parameterValues);
+            } else {
+                var constructor = targetClass.getDeclaredConstructor();
+                constructor.setAccessible(true);
+                var result = constructor.newInstance();
+
+                for (var parameter : parameters) {
+                    parameter.field.setAccessible(true);
+                    parameter.field.set(result, parameter.value);
+                }
+
+                return result;
             }
-
-            var constructor = targetClass.getDeclaredConstructor(parameterTypes);
-            constructor.setAccessible(true);
-            return constructor.newInstance(parameterValues);
-        } else {
-            var constructor = targetClass.getDeclaredConstructor();
-            constructor.setAccessible(true);
-            var result = constructor.newInstance();
-
-            for (var parameter : parameters) {
-                parameter.field.setAccessible(true);
-                parameter.field.set(result, parameter.value);
-            }
-
-            return result;
+        } catch (Exception e) {
+            throw new XPathException("Unable to extract value", e);
         }
     }
 
-    public static <T> T getValue(final byte[] xml, final String path, final Class<T> type) throws Exception {
+    public static <T> T getValue(final byte[] xml, final String path, final Class<T> type) {
         Object value;
 
         if (type.equals(String.class)) {
