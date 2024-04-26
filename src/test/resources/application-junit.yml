@@ -28,3 +28,29 @@ integration:
       authorization-grant-type: client_credentials
     connect-timeout: 98
     read-timeout: 76
+
+  # Messaging integration
+  messaging:
+    base-url: http://messaging.nosuchhost.com
+    oauth2:
+      token-url: http://token.nosuchhost.com
+      client-id: someClientId
+      client-secret: someClientSecret
+      authorization-grant-type: client_credentials
+    connect-timeout: 54
+    read-timeout: 32
+    email:
+      sender:
+        name: someName
+        email-address: someEmailAddress
+      subject: someSubject
+      recipients:
+        - recipientA
+        - recipientB
+    slack:
+      token: someToken
+      channels:
+        - channelA
+        - channelB
+        - channelC
+
