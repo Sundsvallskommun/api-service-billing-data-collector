@@ -37,6 +37,10 @@
 			<groupId>se.sundsvall.dept44</groupId>
 			<artifactId>dept44-starter-feign</artifactId>
 		</dependency>
+		<dependency>
+			<groupId>se.sundsvall.dept44</groupId>
+			<artifactId>dept44-common-validators</artifactId>
+		</dependency>
 
 		<!-- Other -->
 		<dependency>
@@ -108,7 +112,7 @@
 							<goal>generate</goal>
 						</goals>
 						<configuration>
-							<inputSpec>${project.basedir}/src/main/resources/integrations/party-api-1.0.yml</inputSpec>
+							<inputSpec>${project.basedir}/src/main/resources/integrations/party-api.yml</inputSpec>
 							<configOptions>
 								<modelPackage>generated.se.sundsvall.party</modelPackage>
 							</configOptions>
@@ -123,6 +127,18 @@
 							<inputSpec>src/main/resources/integrations/billing-preprocessor-api.yml</inputSpec>
 							<configOptions>
 								<modelPackage>generated.se.sundsvall.billingpreprocessor</modelPackage>
+							</configOptions>
+						</configuration>
+					</execution>
+					<execution>
+						<id>messaging-api</id>
+						<goals>
+							<goal>generate</goal>
+						</goals>
+						<configuration>
+							<inputSpec>src/main/resources/integrations/messaging-api.yml</inputSpec>
+							<configOptions>
+								<modelPackage>generated.se.sundsvall.messaging</modelPackage>
 							</configOptions>
 						</configuration>
 					</execution>
