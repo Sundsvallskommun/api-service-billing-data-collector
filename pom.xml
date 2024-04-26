@@ -108,12 +108,42 @@
 							<goal>generate</goal>
 						</goals>
 						<configuration>
-							<inputSpec>
-								${project.basedir}/src/main/resources/integrations/party-api-1.0.yml
-							</inputSpec>
+							<inputSpec>${project.basedir}/src/main/resources/integrations/party-api-1.0.yml</inputSpec>
 							<configOptions>
 								<modelPackage>generated.se.sundsvall.party</modelPackage>
 							</configOptions>
+						</configuration>
+					</execution>
+					<execution>
+						<id>billing-preprocessor-api</id>
+						<goals>
+							<goal>generate</goal>
+						</goals>
+						<configuration>
+							<inputSpec>src/main/resources/integrations/billing-preprocessor-api.yml</inputSpec>
+							<configOptions>
+								<modelPackage>generated.se.sundsvall.billingpreprocessor</modelPackage>
+							</configOptions>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>build-helper-maven-plugin</artifactId>
+				<version>${build-helper-maven-plugin.version}</version>
+				<executions>
+					<execution>
+						<id>add-generated-source</id>
+						<phase>generate-sources</phase>
+						<goals>
+							<goal>add-source</goal>
+						</goals>
+						<configuration>
+							<sources>
+								<source>${generated-sources-path}/models</source>
+							</sources>
 						</configuration>
 					</execution>
 				</executions>
