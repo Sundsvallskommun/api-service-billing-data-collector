@@ -141,5 +141,5 @@ public final class XPathUtil {
         return Xsoup.compile(expression).evaluate(element).getElements();
     }
 
-    private record Parameter(Field field, Class<?> type, Object value) { }
+    record Parameter(Field field, Class<?> type, Object value) { }
 }

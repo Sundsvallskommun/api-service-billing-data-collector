@@ -74,7 +74,6 @@
 				<configuration>
 					<excludes>
 						<exclude>**/se/sundsvall/billingdatacollector/Application*</exclude>
-						<exclude>**/se/sundsvall/billingdatacollector/**/XPathUtil*</exclude>
 						<exclude>**/generated/**/*</exclude>
 					</excludes>
 				</configuration>
