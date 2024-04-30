@@ -60,17 +60,19 @@ public final class XPathUtil {
                     parameterValues[i] = parameters[i].value;
                 }
 
-                    var constructor = targetClass.getDeclaredConstructor(parameterTypes);
-                    constructor.setAccessible(true);
-                    return constructor.newInstance(parameterValues);
+                var constructor = targetClass.getDeclaredConstructor(parameterTypes);
+                constructor.setAccessible(true);
+                return constructor.newInstance(parameterValues);
             } else {
                 var constructor = targetClass.getDeclaredConstructor();
                 constructor.setAccessible(true);
                 var result = constructor.newInstance();
 
                 for (var parameter : parameters) {
-                    parameter.field.setAccessible(true);
-                    parameter.field.set(result, parameter.value);
+                    if (parameter != null) {
+                        parameter.field.setAccessible(true);
+                        parameter.field.set(result, parameter.value);
+                    }
                 }
 
                 return result;
@@ -141,5 +143,5 @@ public final class XPathUtil {
         return Xsoup.compile(expression).evaluate(element).getElements();
     }
 
-    private record Parameter(Field field, Class<?> type, Object value) { }
+    record Parameter(Field field, Class<?> type, Object value) { }
 }

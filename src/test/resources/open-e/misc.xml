@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<menu>
+    <dish>
+        <name>Waffles</name>
+        <description>Two waffles with whipped cream and strawberry jam</description>
+        <price>55</price>
+        <calories>650</calories>
+        <vegetarian>true</vegetarian>
+    </dish>
+    <dish>
+        <name>Cheeseburger</name>
+        <price>119.95</price>
+        <description>A 90 gram burger with bread, lettuce, dressing and cheese</description>
+        <calories>900</calories>
+        <vegetarian>false</vegetarian>
+    </dish>
+</menu>
