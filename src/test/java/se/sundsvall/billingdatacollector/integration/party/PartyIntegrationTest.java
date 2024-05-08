@@ -21,7 +21,7 @@ import org.springframework.web.server.ResponseStatusException;
 import generated.se.sundsvall.party.PartyType;
 
 @ExtendWith(MockitoExtension.class)
-class PartyIntegrationTests {
+class PartyIntegrationTest {
 
     @Mock
     private PartyClient mockPartyClient;

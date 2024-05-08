@@ -1,8 +1,6 @@
 package se.sundsvall.billingdatacollector.integration.opene.mapper.kundfakturaformular;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
-import static org.zalando.problem.Status.INTERNAL_SERVER_ERROR;
 import static se.sundsvall.billingdatacollector.integration.opene.mapper.BillingRecordConstants.SUNDSVALLS_MUNICIPALIY;
 import static se.sundsvall.billingdatacollector.integration.opene.mapper.BillingRecordConstants.SUNSVALLS_MUNICIPALITY_ORGANIZATION_NUMBER;
 
@@ -12,14 +10,15 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 
 import org.junit.jupiter.api.Test;
-import org.zalando.problem.ThrowableProblem;
+
+import se.sundsvall.billingdatacollector.integration.opene.mapper.MapperHelper;
 
 import generated.se.sundsvall.billingpreprocessor.Status;
 import generated.se.sundsvall.billingpreprocessor.Type;
 
-class KundfakturaformularMapperTests {
+class KundfakturaformularMapperTest {
 
-	private final KundfakturaformularMapper mapper = new KundfakturaformularMapper();
+	private final KundfakturaformularMapper mapper = new KundfakturaformularMapper(new MapperHelper());
 
 	@Test
 	void getSupportedFamilyId() {
@@ -98,52 +97,6 @@ class KundfakturaformularMapperTests {
 		assertThat(accountInformation.getActivity()).isEqualTo("4165");
 		assertThat(accountInformation.getArticle()).isEqualTo("3452000 - GULLGÅRDEN");
 		assertThat(accountInformation.getCounterpart()).isEqualTo("86000000");
-	}
-
-	@Test
-	void convertStringToFlot_shouldThrowException_whenNotParseableToFloat() {
-		var unparseable = "not a float";
-
-		assertThatExceptionOfType(ThrowableProblem.class)
-			.isThrownBy(() -> mapper.convertStringToFloat(unparseable))
-			.satisfies(throwableProblem -> {
-				assertThat(throwableProblem.getStatus()).isEqualTo(INTERNAL_SERVER_ERROR);
-				assertThat(throwableProblem.getTitle()).isEqualTo("Couldn't convert 'not a float' to float");
-			});
-	}
-
-	@Test
-	void testGetLeadingDigits_shouldThrowException_whenNoDigitsFound() {
-		var noDigits = "no leading digits";
-
-		assertThatExceptionOfType(ThrowableProblem.class)
-			.isThrownBy(() -> mapper.getLeadingDigits(noDigits))
-			.satisfies(throwableProblem -> {
-				assertThat(throwableProblem.getStatus()).isEqualTo(INTERNAL_SERVER_ERROR);
-				assertThat(throwableProblem.getTitle()).isEqualTo("Couldn't extract leading digits from 'no leading digits'");
-			});
-	}
-
-	@Test
-	void testGetTrailingDigits_shouldThrowException_whenNoDigitsFound() {
-		var noDigits = "no trailing digits";
-
-		assertThatExceptionOfType(ThrowableProblem.class)
-			.isThrownBy(() -> mapper.getTrailingDigitsFromString(noDigits))
-			.satisfies(throwableProblem -> {
-				assertThat(throwableProblem.getStatus()).isEqualTo(INTERNAL_SERVER_ERROR);
-				assertThat(throwableProblem.getTitle()).isEqualTo("Couldn't extract trailing digits from 'no trailing digits'");
-			});
-	}
-
-	@Test
-	void testGetInternalMotpartNumbers_shouldThrowException_whenCustomerIdIsNull() {
-		assertThatExceptionOfType(ThrowableProblem.class)
-			.isThrownBy(() -> mapper.getInternalMotpartNumbers(null))
-			.satisfies(throwableProblem -> {
-				assertThat(throwableProblem.getStatus()).isEqualTo(INTERNAL_SERVER_ERROR);
-				assertThat(throwableProblem.getTitle()).isEqualTo("Couldn't extract motpart numbers from 'null'");
-			});
 	}
 
 	//Not using resourceloader because it's not compatible with ISO-8859-1.

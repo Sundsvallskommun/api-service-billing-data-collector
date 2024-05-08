@@ -16,7 +16,7 @@ import generated.se.sundsvall.billingpreprocessor.Recipient;
 import generated.se.sundsvall.billingpreprocessor.Status;
 import generated.se.sundsvall.billingpreprocessor.Type;
 
-public class TestDataFactory {
+public final class TestDataFactory {
 
 	public static BillingRecordWrapper createKundfakturaBillingRecordWrapper(boolean internal) {
 		var wrapper = BillingRecordWrapper.builder()

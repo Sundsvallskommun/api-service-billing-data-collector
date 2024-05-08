@@ -1,4 +1,4 @@
-package se.sundsvall.billingdatacollector.service.mapper;
+package se.sundsvall.billingdatacollector.service.decorator;
 
 import static org.zalando.problem.Status.INTERNAL_SERVER_ERROR;
 import static se.sundsvall.billingdatacollector.integration.opene.mapper.BillingRecordConstants.KUNDFAKTURA_FORMULAR_FAMILY_ID;

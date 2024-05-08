@@ -18,7 +18,7 @@ import se.sundsvall.dept44.configuration.feign.FeignMultiCustomizer;
 import se.sundsvall.dept44.configuration.feign.decoder.ProblemErrorDecoder;
 
 @ExtendWith(MockitoExtension.class)
-class OpenEIntegrationConfigurationTests {
+class OpenEIntegrationConfigurationTest {
 
     @Spy
     private FeignMultiCustomizer feignMultiCustomizerSpy;

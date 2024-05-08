@@ -1,6 +1,6 @@
 package se.sundsvall.billingdatacollector.integration.opene.mapper;
 
-public class BillingRecordConstants {
+public final class BillingRecordConstants {
 
 	private BillingRecordConstants() {
 		throw new IllegalStateException("Utility class");

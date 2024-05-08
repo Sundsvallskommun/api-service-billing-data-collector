@@ -1,4 +1,4 @@
-package se.sundsvall.billingdatacollector.service.mapper;
+package se.sundsvall.billingdatacollector.service.decorator;
 
 import se.sundsvall.billingdatacollector.model.BillingRecordWrapper;
 

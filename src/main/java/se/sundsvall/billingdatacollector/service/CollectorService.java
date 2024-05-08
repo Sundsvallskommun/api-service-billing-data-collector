@@ -2,6 +2,7 @@ package se.sundsvall.billingdatacollector.service;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -9,7 +10,7 @@ import org.springframework.stereotype.Service;
 
 import se.sundsvall.billingdatacollector.integration.billingpreprocessor.BillingPreprocessorIntegration;
 import se.sundsvall.billingdatacollector.integration.opene.OpenEIntegration;
-import se.sundsvall.billingdatacollector.service.mapper.BillingRecordDecorator;
+import se.sundsvall.billingdatacollector.service.decorator.BillingRecordDecorator;
 
 @Service
 public class CollectorService {
@@ -30,11 +31,11 @@ public class CollectorService {
 		//Fetch data from OpenE
 		var recordWrapper = openEIntegration.getBillingRecord(flowInstanceId);
 
-		//Decorate with correct decorator
-		decorators.get(recordWrapper.getFamilyId()).decorate(recordWrapper);
+		//Decorate if we have a decorator for the familyId
+		Optional.ofNullable(decorators.get(recordWrapper.getFamilyId()))
+			.ifPresent(decorator -> decorator.decorate(recordWrapper));
 
 		//Send to BillingPreProcessor
 		preprocessorIntegration.createBillingRecord(recordWrapper.getBillingRecord());
 	}
-
 }

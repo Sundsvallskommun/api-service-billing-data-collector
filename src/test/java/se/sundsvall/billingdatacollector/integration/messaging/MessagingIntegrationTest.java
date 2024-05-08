@@ -21,7 +21,7 @@ import generated.se.sundsvall.messaging.MessageResult;
 import generated.se.sundsvall.messaging.SlackRequest;
 
 @ExtendWith(MockitoExtension.class)
-class MessagingIntegrationTests {
+class MessagingIntegrationTest {
 
     @Mock
     private MessagingIntegrationProperties mockProperties;

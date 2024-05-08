@@ -4,10 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import org.junit.jupiter.api.Test;
 
-import se.sundsvall.billingdatacollector.support.annotation.UnitTest;
-
-@UnitTest
-class InternFakturaTests {
+class InternFakturaTest {
 
 	@Test
 	void constructorAndAccessors() {

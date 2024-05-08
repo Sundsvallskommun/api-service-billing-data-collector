@@ -23,7 +23,7 @@ import se.sundsvall.dept44.test.annotation.resource.Load;
 import se.sundsvall.dept44.test.extension.ResourceLoaderExtension;
 
 @ExtendWith({MockitoExtension.class, ResourceLoaderExtension.class})
-class OpenEIntegrationTests {
+class OpenEIntegrationTest {
 
 	@Mock
 	private OpenEClient mockOpenEClient;

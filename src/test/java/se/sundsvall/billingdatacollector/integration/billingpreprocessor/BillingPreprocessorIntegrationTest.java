@@ -11,7 +11,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import generated.se.sundsvall.billingpreprocessor.BillingRecord;
 
 @ExtendWith(MockitoExtension.class)
-class BillingPreprocessorIntegrationTests {
+class BillingPreprocessorIntegrationTest {
 
     @Mock
     private BillingPreprocessorClient mockPartyClient;

@@ -1,9 +1,10 @@
-package se.sundsvall.billingdatacollector.service.mapper;
+package se.sundsvall.billingdatacollector.service.decorator;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 import static org.zalando.problem.Status.INTERNAL_SERVER_ERROR;
@@ -56,7 +57,7 @@ class KundfakturaformularDecoratorTest {
 
 		//Assert
 		assertThat(wrapper.getBillingRecord().getRecipient().getPartyId()).isNull();
-		verifyNoMoreInteractions(mockPartyIntegration);
+		verifyNoInteractions(mockPartyIntegration);
 	}
 
 	@Test

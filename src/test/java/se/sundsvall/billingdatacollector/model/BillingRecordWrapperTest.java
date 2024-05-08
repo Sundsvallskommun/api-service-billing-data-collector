@@ -42,4 +42,9 @@ class BillingRecordWrapperTest {
 		assertThat(wrapper.getLegalId()).isEqualTo(legalId);
 		assertThat(wrapper.getFamilyId()).isEqualTo(familyId);
 	}
+
+	@Test
+	void testNoDirtOnCreatedBean() {
+		assertThat(BillingRecordWrapper.builder().build()).isNotNull().hasAllNullFieldsOrProperties();
+	}
 }
