@@ -11,7 +11,7 @@ import se.sundsvall.billingdatacollector.support.annotation.UnitTest;
 
 @UnitTest
 @SpringBootTest(classes = Application.class)
-class BillingPreprocessorIntegrationPropertiesTests {
+class BillingPreprocessorIntegrationPropertiesTest {
 
     @Autowired
     private BillingPreprocessorIntegrationProperties properties;

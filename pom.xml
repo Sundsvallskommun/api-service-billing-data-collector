@@ -54,6 +54,11 @@
 			<artifactId>xsoup</artifactId>
 			<version>${xsoup.version}</version>
 		</dependency>
+		<dependency>
+			<groupId>org.projectlombok</groupId>
+			<artifactId>lombok</artifactId>
+			<scope>provided</scope>
+		</dependency>
 	</dependencies>
 
 	<build>
@@ -74,6 +79,7 @@
 				<configuration>
 					<excludes>
 						<exclude>**/se/sundsvall/billingdatacollector/Application*</exclude>
+						<exclude>**/se/sundsvall/billingdatacollector/**/BillingRecordConstants*</exclude> <!-- They are tested though -->
 						<exclude>**/generated/**/*</exclude>
 					</excludes>
 				</configuration>
@@ -102,6 +108,7 @@
 						<interfaceOnly>true</interfaceOnly>
 						<useJakartaEe>true</useJakartaEe>
 						<useSpringBoot3>true</useSpringBoot3>
+						<additionalModelTypeAnnotations>@lombok.Builder(setterPrefix = "with") @lombok.NoArgsConstructor @lombok.AllArgsConstructor</additionalModelTypeAnnotations>
 					</configOptions>
 				</configuration>
 				<executions>

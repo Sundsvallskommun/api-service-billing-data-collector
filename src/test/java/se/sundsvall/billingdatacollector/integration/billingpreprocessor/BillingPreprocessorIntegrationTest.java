@@ -8,10 +8,10 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import se.sundsvall.billingdatacollector.model.dto.BillingRecordDto;
+import generated.se.sundsvall.billingpreprocessor.BillingRecord;
 
 @ExtendWith(MockitoExtension.class)
-class BillingPreprocessorIntegrationTests {
+class BillingPreprocessorIntegrationTest {
 
     @Mock
     private BillingPreprocessorClient mockPartyClient;
@@ -21,10 +21,10 @@ class BillingPreprocessorIntegrationTests {
 
     @Test
     void createBillingRecord() {
-        var billingRecordDto = new BillingRecordDto();
+        var billingRecord = new BillingRecord();
 
         assertThatExceptionOfType(UnsupportedOperationException.class)
-            .isThrownBy(() -> bppIntegration.createBillingRecord(billingRecordDto))
+            .isThrownBy(() -> bppIntegration.createBillingRecord(billingRecord))
             .withMessage("NOT IMPLEMENTED YET");
     }
 }

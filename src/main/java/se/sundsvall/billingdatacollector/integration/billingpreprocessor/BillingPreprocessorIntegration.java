@@ -2,7 +2,7 @@ package se.sundsvall.billingdatacollector.integration.billingpreprocessor;
 
 import org.springframework.stereotype.Component;
 
-import se.sundsvall.billingdatacollector.model.dto.BillingRecordDto;
+import generated.se.sundsvall.billingpreprocessor.BillingRecord;
 
 @Component
 public class BillingPreprocessorIntegration {
@@ -13,7 +13,7 @@ public class BillingPreprocessorIntegration {
         this.client = client;
     }
 
-    public void createBillingRecord(final BillingRecordDto billingRecordDto) {
+    public void createBillingRecord(final BillingRecord billingRecord) {
         // ...c'mon...do stuff...
         throw new UnsupportedOperationException("NOT IMPLEMENTED YET");
     }

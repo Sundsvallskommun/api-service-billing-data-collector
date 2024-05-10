@@ -11,7 +11,7 @@ import se.sundsvall.billingdatacollector.support.annotation.UnitTest;
 
 @UnitTest
 @SpringBootTest(classes = Application.class)
-class MessagingIntegrationPropertiesTests {
+class MessagingIntegrationPropertiesTest {
 
     @Autowired
     private MessagingIntegrationProperties properties;

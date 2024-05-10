@@ -14,43 +14,48 @@ import org.springframework.stereotype.Component;
 import org.zalando.problem.Problem;
 import org.zalando.problem.Status;
 
-import se.sundsvall.billingdatacollector.model.dto.BillingRecordDto;
+import se.sundsvall.billingdatacollector.model.BillingRecordWrapper;
 
 @Component
 public class OpenEIntegration {
 
-    private static final Logger LOG = LoggerFactory.getLogger(OpenEIntegration.class);
+	private static final Logger LOG = LoggerFactory.getLogger(OpenEIntegration.class);
 
-    private final OpenEClient client;
-    private final Map<String, OpenEMapper> mappers;
+	private final OpenEClient client;
+	private final Map<String, OpenEMapper> mappers;
 
-    OpenEIntegration(final OpenEClient client, final List<OpenEMapper> mappers) {
-        this.client = client;
-        this.mappers = mappers.stream().collect(toMap(OpenEMapper::getSupportedFamilyId, Function.identity()));
-    }
+	OpenEIntegration(final OpenEClient client, final List<OpenEMapper> mappers) {
+		this.client = client;
+		this.mappers = mappers.stream().collect(toMap(OpenEMapper::getSupportedFamilyId, Function.identity()));
+	}
 
-    public List<String> getErrandIds(final String familyId, final String fromDate, final String toDate) {
-        // Get the XML from OpenE...
-        var xml = client.getErrands(familyId, fromDate, toDate);
-        // Extract the errand id:s
-        var result = evaluateXPath(xml, "/FlowInstances/FlowInstance/flowInstanceID");
+	public List<String> getErrandIds(final String familyId, final String fromDate, final String toDate) {
+		// Get the XML from OpenE...
+		var xml = client.getErrands(familyId, fromDate, toDate);
+		// Extract the errand id:s
+		var result = evaluateXPath(xml, "/FlowInstances/FlowInstance/flowInstanceID");
 
-        return result.eachText().stream()
-            .map(String::trim)
-            .toList();
-    }
+		return result.eachText().stream()
+			.map(String::trim)
+			.toList();
+	}
 
-    public BillingRecordDto getBillingRecord(final String flowInstanceId) {
-        // Get the XML from OpenE...
-        var xml = client.getErrand(flowInstanceId);
+	public BillingRecordWrapper getBillingRecord(final String flowInstanceId) {
+		// Get the XML from OpenE...
+		var xml = client.getErrand(flowInstanceId);
 
-        // Extract the familyId
-        var familyId = getString(xml, "/FlowInstance/Header/Flow/FamilyID");
-        // Bail out if there is no mapper to handle the given familyId
-        if (!mappers.containsKey(familyId)) {
-            throw Problem.valueOf(Status.INTERNAL_SERVER_ERROR, "No mapper for familyId " + familyId);
-        }
+		// Extract the familyId
+		var familyId = getString(xml, "/FlowInstance/Header/Flow/FamilyID");
+		// Bail out if there is no mapper to handle the given familyId
+		if (!mappers.containsKey(familyId)) {
+			throw Problem.valueOf(Status.INTERNAL_SERVER_ERROR, "No mapper for familyId " + familyId);
+		}
 
-        return mappers.get(familyId).mapToBillingRecord(xml);
-    }
+		var billingRecordWrapper = mappers.get(familyId).mapToBillingRecord(xml);
+		//Set the familyId to make it possible to apply decorator
+		billingRecordWrapper.setFamilyId(familyId);
+
+		return billingRecordWrapper;
+	}
+
 }

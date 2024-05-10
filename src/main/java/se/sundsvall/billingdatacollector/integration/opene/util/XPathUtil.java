@@ -8,6 +8,7 @@ import static org.jsoup.Jsoup.parse;
 import static org.jsoup.parser.Parser.xmlParser;
 
 import java.lang.reflect.Field;
+import java.nio.charset.StandardCharsets;
 import java.util.Optional;
 
 import org.jsoup.nodes.Document;
@@ -130,7 +131,7 @@ public final class XPathUtil {
     }
 
     public static Document parseXmlDocument(final byte[] xml) {
-        return parse(new String(xml), xmlParser());
+        return parse(new String(xml, StandardCharsets.ISO_8859_1), xmlParser());
     }
 
     public static Elements evaluateXPath(final byte[] xml, final String expression) {

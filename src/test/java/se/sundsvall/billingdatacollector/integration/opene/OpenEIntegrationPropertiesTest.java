@@ -11,7 +11,7 @@ import se.sundsvall.billingdatacollector.support.annotation.UnitTest;
 
 @UnitTest
 @SpringBootTest(classes = Application.class)
-class OpenEIntegrationPropertiesTests {
+class OpenEIntegrationPropertiesTest {
 
     @Autowired
     private OpenEIntegrationProperties properties;
