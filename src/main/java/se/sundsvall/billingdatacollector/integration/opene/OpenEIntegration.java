@@ -4,8 +4,10 @@ import static java.util.stream.Collectors.toMap;
 import static se.sundsvall.billingdatacollector.integration.opene.util.XPathUtil.evaluateXPath;
 import static se.sundsvall.billingdatacollector.integration.opene.util.XPathUtil.getString;
 
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.function.Function;
 
 import org.springframework.stereotype.Component;
@@ -25,9 +27,8 @@ public class OpenEIntegration {
 		this.mappers = mappers.stream().collect(toMap(OpenEMapper::getSupportedFamilyId, Function.identity()));
 	}
 
-	public List<String> getSupportedFamilyIds() {
-		return mappers.keySet().stream()
-			.toList();
+	public Set<String> getSupportedFamilyIds() {
+		return new HashSet<>(mappers.keySet());
 	}
 
 	public List<String> getFlowInstanceIds(final String familyId, final String fromDate, final String toDate) {

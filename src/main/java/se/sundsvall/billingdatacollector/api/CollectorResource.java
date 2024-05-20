@@ -4,6 +4,10 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 import static org.springframework.http.MediaType.APPLICATION_PROBLEM_JSON_VALUE;
 
 import java.time.LocalDate;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Optional;
+import java.util.Set;
 
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
@@ -21,6 +25,7 @@ import se.sundsvall.billingdatacollector.service.CollectorService;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -85,11 +90,15 @@ class CollectorResource {
 		@Parameter(example = "2024-01-01") final LocalDate startDate,
 
 		@RequestParam(name = "endDate") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
-		@Parameter(example = "2024-02-01") final LocalDate endDate) {
+		@Parameter(example = "2024-02-01") final LocalDate endDate,
+
+		@RequestParam(name = "familyIds", required = false)
+		@Parameter(example = "[\"123\", \"456\"]", description = "FamilyIds to trigger billing for. If not provided, billing will be triggered for all supported familyIds")
+		final Set<String> familyIds) {
 
 		validateStartDateIsBeforeOrEqualToEndDate(startDate, endDate);
 
-		collectorService.triggerBetweenDates(startDate, endDate);
+		collectorService.triggerBetweenDates(startDate, endDate, familyIds);
 
 		return ResponseEntity.accepted().build();
 	}

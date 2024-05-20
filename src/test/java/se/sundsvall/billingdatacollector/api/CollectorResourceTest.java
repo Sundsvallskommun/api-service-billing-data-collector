@@ -1,6 +1,10 @@
 package se.sundsvall.billingdatacollector.api;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.anySet;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.ArgumentMatchers.isNull;
+import static org.mockito.ArgumentMatchers.nullable;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
@@ -9,6 +13,10 @@ import static org.springframework.http.MediaType.APPLICATION_PROBLEM_JSON;
 import static org.zalando.problem.Status.BAD_REQUEST;
 
 import java.time.LocalDate;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -32,8 +40,9 @@ class CollectorResourceTest {
 	@MockBean
 	private CollectorService mockService;
 
-	private static final LocalDate startDate = LocalDate.of(2023, 4, 25);
-	private static final LocalDate endDate = LocalDate.of(2024, 4, 25);
+	private static final LocalDate START_DATE = LocalDate.of(2023, 4, 25);
+	private static final LocalDate END_DATE = LocalDate.of(2024, 4, 25);
+	private static final Set<String> FAMILY_IDS = new HashSet<>(Arrays.asList("456", "789"));
 
 	@Test
 	void testTriggerBilling() {
@@ -56,39 +65,58 @@ class CollectorResourceTest {
 	@Test
 	void testTriggerBillingBetweenTwoValidDates() {
 		//Arrange
-		doNothing().when(mockService).triggerBetweenDates(Mockito.any(LocalDate.class), Mockito.any(LocalDate.class));
+		doNothing().when(mockService).triggerBetweenDates(Mockito.any(LocalDate.class), Mockito.any(LocalDate.class), isNull());
 
 		//Act
 		webTestClient.post()
 			.uri(uriBuilder -> uriBuilder.path("/trigger")
-				.queryParam("startDate", startDate)
-				.queryParam("endDate", endDate)
+				.queryParam("startDate", START_DATE)
+				.queryParam("endDate", END_DATE)
 				.build())
 			.exchange()
 			.expectStatus().isAccepted();
 
 		//Assert
-		verify(mockService).triggerBetweenDates(startDate, endDate);
+		verify(mockService).triggerBetweenDates(START_DATE, END_DATE, null);
 		verifyNoMoreInteractions(mockService);
 	}
 
 	@Test
 	void testTriggerBillingBetweenTwoEqualDates() {
 		//Arrange
-		doNothing().when(mockService).triggerBetweenDates(Mockito.any(LocalDate.class), Mockito.any(LocalDate.class));
-
+		doNothing().when(mockService).triggerBetweenDates(Mockito.any(LocalDate.class), Mockito.any(LocalDate.class), isNull());
 
 		//Act
 		webTestClient.post()
 			.uri(uriBuilder -> uriBuilder.path("/trigger")
-				.queryParam("startDate", startDate)
-				.queryParam("endDate", startDate)
+				.queryParam("startDate", START_DATE)
+				.queryParam("endDate", START_DATE)
 				.build())
 			.exchange()
 			.expectStatus().isAccepted();
 
 		//Assert
-		verify(mockService).triggerBetweenDates(startDate, startDate);
+		verify(mockService).triggerBetweenDates(START_DATE, START_DATE, null);
+		verifyNoMoreInteractions(mockService);
+	}
+
+	@Test
+	void testTriggerBillingWithDatesAndFamilyIds() {
+		//Arrange
+		doNothing().when(mockService).triggerBetweenDates(Mockito.any(LocalDate.class), Mockito.any(LocalDate.class), anySet());
+
+		//Act
+		webTestClient.post()
+			.uri(uriBuilder -> uriBuilder.path("/trigger")
+				.queryParam("startDate", START_DATE)
+				.queryParam("endDate", END_DATE)
+				.queryParam("familyIds", List.of(FAMILY_IDS.toArray()))
+				.build())
+			.exchange()
+			.expectStatus().isAccepted();
+
+		//Assert
+		verify(mockService).triggerBetweenDates(START_DATE, END_DATE, FAMILY_IDS);
 		verifyNoMoreInteractions(mockService);
 	}
 
@@ -97,8 +125,8 @@ class CollectorResourceTest {
 		//Arrange & Act
 		var responseBody = webTestClient.post()
 			.uri(uriBuilder -> uriBuilder.path("/trigger")
-				.queryParam("startDate", endDate)
-				.queryParam("endDate", startDate)
+				.queryParam("startDate", END_DATE)	// End date as start date and vice versa
+				.queryParam("endDate", START_DATE)
 				.build())
 			.exchange()
 			.expectStatus().isBadRequest()
@@ -122,7 +150,7 @@ class CollectorResourceTest {
 		//Arrange & Act
 		var responseBody = webTestClient.post()
 			.uri(uriBuilder -> uriBuilder.path("/trigger")
-				.queryParam("startDate", startDate)
+				.queryParam("startDate", START_DATE)
 				.queryParam("endDate", "2024-13-01")
 				.build())
 			.exchange()
