@@ -4,10 +4,10 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 
+import java.time.LocalDate;
 import java.util.List;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -45,7 +45,7 @@ class CollectorServiceTest {
 	}
 
 	@Test
-	void testSendBillingData() {
+	void testTrigger() {
 		//Arrange
 		var billingRecordWrapper = TestDataFactory.createKundfakturaBillingRecordWrapper(true);
 		when(mockOpenEIntegration.getBillingRecord(FAMILY_ID)).thenReturn(billingRecordWrapper);
@@ -53,9 +53,33 @@ class CollectorServiceTest {
 		doNothing().when(mockBillingPreprocessorIntegration).createBillingRecord(any());
 
 		//Act
-		collectorService.sendBillingData("123");
+		collectorService.trigger(FAMILY_ID);
 
 		//Assert
+		verify(mockOpenEIntegration).getBillingRecord(FAMILY_ID);
+		verify(mockDecorator).decorate(billingRecordWrapper);
+		verify(mockBillingPreprocessorIntegration).createBillingRecord(billingRecordWrapper.getBillingRecord());
+		verifyNoMoreInteractions(mockOpenEIntegration, mockDecorator, mockBillingPreprocessorIntegration);
+	}
+
+	@Test
+	void testTriggerBillingBetweenDates() {
+		//Arrange
+		var startDate = LocalDate.now();
+		var endDate = startDate.plusDays(1);
+		var billingRecordWrapper = TestDataFactory.createKundfakturaBillingRecordWrapper(true);
+		when(mockOpenEIntegration.getSupportedFamilyIds()).thenReturn(List.of(FAMILY_ID));
+		when(mockOpenEIntegration.getFlowInstanceIds(FAMILY_ID, startDate.toString(), endDate.toString())).thenReturn(List.of(FAMILY_ID));
+		when(mockOpenEIntegration.getBillingRecord(FAMILY_ID)).thenReturn(billingRecordWrapper);
+		doNothing().when(mockDecorator).decorate(any(BillingRecordWrapper.class));
+		doNothing().when(mockBillingPreprocessorIntegration).createBillingRecord(any());
+
+		//Act
+		collectorService.triggerBetweenDates(startDate, endDate);
+
+		//Assert
+		verify(mockOpenEIntegration).getSupportedFamilyIds();
+		verify(mockOpenEIntegration).getFlowInstanceIds(FAMILY_ID, startDate.toString(), endDate.toString());
 		verify(mockOpenEIntegration).getBillingRecord(FAMILY_ID);
 		verify(mockDecorator).decorate(billingRecordWrapper);
 		verify(mockBillingPreprocessorIntegration).createBillingRecord(billingRecordWrapper.getBillingRecord());
@@ -71,13 +95,12 @@ class CollectorServiceTest {
 		doNothing().when(mockBillingPreprocessorIntegration).createBillingRecord(any());
 
 		//Act
-		collectorService.sendBillingData("123");
+		collectorService.trigger(FAMILY_ID);
 
 		//Assert
 		verify(mockOpenEIntegration).getBillingRecord(FAMILY_ID);
 		verify(mockDecorator, times(0)).decorate(billingRecordWrapper);
 		verify(mockBillingPreprocessorIntegration).createBillingRecord(billingRecordWrapper.getBillingRecord());
 		verifyNoMoreInteractions(mockOpenEIntegration, mockDecorator, mockBillingPreprocessorIntegration);
-
 	}
 }

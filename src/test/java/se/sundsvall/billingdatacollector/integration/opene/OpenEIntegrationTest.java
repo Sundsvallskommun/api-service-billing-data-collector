@@ -41,10 +41,10 @@ class OpenEIntegrationTest {
 	}
 
 	@Test
-	void getErrandIds(@Load("/open-e/flow-instances.xml") final String xml) {
+	void getFlowInstanceIds(@Load("/open-e/flow-instances.xml") final String xml) {
 		when(mockOpenEClient.getErrands("123", "2024-04-25", "2024-04-25")).thenReturn(xml.getBytes(UTF_8));
 
-		var result = openEIntegration.getErrandIds("123", "2024-04-25", "2024-04-25");
+		var result = openEIntegration.getFlowInstanceIds("123", "2024-04-25", "2024-04-25");
 		assertThat(result).isNotNull().containsExactlyInAnyOrder("123456", "234567", "345678");
 
 		verify(mockOpenEClient).getErrands("123", "2024-04-25", "2024-04-25");
@@ -55,7 +55,7 @@ class OpenEIntegrationTest {
 	@Test
 	void getErrand(@Load("/open-e/flow-instance.internal.xml") final String xml) {
 		when(mockOpenEClient.getErrand("123456")).thenReturn(xml.getBytes(UTF_8));
-		when(mockMapper.mapToBillingRecord(any())).thenReturn(BillingRecordWrapper.builder().build());
+		when(mockMapper.mapToBillingRecordWrapper(any())).thenReturn(BillingRecordWrapper.builder().build());
 
 		var result = openEIntegration.getBillingRecord("123456");
 		assertThat(result).isNotNull();
@@ -63,7 +63,7 @@ class OpenEIntegrationTest {
 
 		verify(mockOpenEClient).getErrand("123456");
 		verify(mockMapper).getSupportedFamilyId();
-		verify(mockMapper).mapToBillingRecord(any());
+		verify(mockMapper).mapToBillingRecordWrapper(any());
 		verifyNoMoreInteractions(mockOpenEClient, mockMapper);
 	}
 

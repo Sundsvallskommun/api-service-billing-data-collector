@@ -8,8 +8,6 @@ import static se.sundsvall.billingdatacollector.integration.opene.util.XPathUtil
 
 import java.util.List;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 import se.sundsvall.billingdatacollector.integration.opene.OpenEMapper;
@@ -28,8 +26,6 @@ import generated.se.sundsvall.billingpreprocessor.Type;
 @Component
 class KundfakturaformularMapper implements OpenEMapper {
 
-	private static final Logger LOG = LoggerFactory.getLogger(KundfakturaformularMapper.class);
-
 	private static final String CATEGORY = "KUNDFAKTURA";
 
 	private final MapperHelper mapperHelper;
@@ -44,7 +40,7 @@ class KundfakturaformularMapper implements OpenEMapper {
 	}
 
 	@Override
-	public BillingRecordWrapper mapToBillingRecord(final byte[] xml) {
+	public BillingRecordWrapper mapToBillingRecordWrapper(final byte[] xml) {
 		if (getString(xml, "/FlowInstance/Values/BarakningarExtern1") == null) {
 			return mapToInternalBillingRecord(xml);
 		} else {
