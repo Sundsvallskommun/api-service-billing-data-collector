@@ -25,7 +25,6 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotEmpty;
 
 @RestController
@@ -44,11 +43,11 @@ import jakarta.validation.constraints.NotEmpty;
 	responseCode = "502",
 	description = "Bad Gateway",
 	content = @Content(schema = @Schema(implementation = Problem.class)))
-public class CollectorResource {
+class CollectorResource {
 
 	private final CollectorService collectorService;
 
-	public CollectorResource(CollectorService collectorService) {
+	CollectorResource(CollectorService collectorService) {
 		this.collectorService = collectorService;
 	}
 
@@ -72,7 +71,7 @@ public class CollectorResource {
 	}
 
 	@Operation(
-		summary = "Trigger billing for all flowInstancesId:s between two specific dates",
+		summary = "Trigger billing for all flowInstanceId:s between two specific dates",
 		responses = {
 			@ApiResponse(
 				responseCode = "202",
@@ -83,12 +82,12 @@ public class CollectorResource {
 	@PostMapping(path = "/trigger", produces = { APPLICATION_JSON_VALUE, APPLICATION_PROBLEM_JSON_VALUE })
 	ResponseEntity<Void> triggerBilling(
 		@RequestParam(name = "startDate") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
-		@Valid @Parameter(example = "2024-01-01") final LocalDate startDate,
+		@Parameter(example = "2024-01-01") final LocalDate startDate,
 
 		@RequestParam(name = "endDate") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
-		@Valid @Parameter(example = "2024-02-01") final LocalDate endDate) {
+		@Parameter(example = "2024-02-01") final LocalDate endDate) {
 
-		validateDateRange(startDate, endDate);
+		validateStartDateIsBeforeOrEqualToEndDate(startDate, endDate);
 
 		collectorService.triggerBetweenDates(startDate, endDate);
 
@@ -96,7 +95,7 @@ public class CollectorResource {
 	}
 
 	//Validate that the end date is after, or equal to, the start date
-	private void validateDateRange(LocalDate startDate, LocalDate endDate) {
+	private void validateStartDateIsBeforeOrEqualToEndDate(LocalDate startDate, LocalDate endDate) {
 		if(startDate.isAfter(endDate)) {
 			throw Problem.builder()
 				.withStatus(Status.BAD_REQUEST)

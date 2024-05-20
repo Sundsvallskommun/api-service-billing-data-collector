@@ -55,7 +55,7 @@ class OpenEIntegrationTest {
 	@Test
 	void getErrand(@Load("/open-e/flow-instance.internal.xml") final String xml) {
 		when(mockOpenEClient.getErrand("123456")).thenReturn(xml.getBytes(UTF_8));
-		when(mockMapper.mapToBillingRecordWrapper(any())).thenReturn(BillingRecordWrapper.builder().build());
+		when(mockMapper.mapToBillingRecordWrapper(any(byte[].class))).thenReturn(BillingRecordWrapper.builder().build());
 
 		var result = openEIntegration.getBillingRecord("123456");
 		assertThat(result).isNotNull();
@@ -63,7 +63,7 @@ class OpenEIntegrationTest {
 
 		verify(mockOpenEClient).getErrand("123456");
 		verify(mockMapper).getSupportedFamilyId();
-		verify(mockMapper).mapToBillingRecordWrapper(any());
+		verify(mockMapper).mapToBillingRecordWrapper(any(byte[].class));
 		verifyNoMoreInteractions(mockOpenEClient, mockMapper);
 	}
 
