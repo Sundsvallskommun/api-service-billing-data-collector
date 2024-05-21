@@ -6,5 +6,5 @@ public interface OpenEMapper {
 
     String getSupportedFamilyId();
 
-    BillingRecordWrapper mapToBillingRecord(byte[] xml);
+    BillingRecordWrapper mapToBillingRecordWrapper(byte[] xml);
 }

@@ -28,7 +28,7 @@ class KundfakturaformularMapperTest {
 	@Test
 	void mapToInternalBillingRecord() {
 		var stringBytes = readOpenEFile("flow-instance.internal.xml");
-		var billingRecord = mapper.mapToBillingRecord(stringBytes).getBillingRecord();
+		var billingRecord = mapper.mapToBillingRecordWrapper(stringBytes).getBillingRecord();
 
 		assertThat(billingRecord).isNotNull();
 		assertThat(billingRecord.getCategory()).isEqualTo("KUNDFAKTURA");
@@ -63,7 +63,7 @@ class KundfakturaformularMapperTest {
 	@Test
 	void mapToExternalBillingRecord() {
 		var stringBytes = readOpenEFile("flow-instance.external.xml");
-		var billingRecord = mapper.mapToBillingRecord(stringBytes).getBillingRecord();
+		var billingRecord = mapper.mapToBillingRecordWrapper(stringBytes).getBillingRecord();
 		assertThat(billingRecord.getCategory()).isEqualTo("KUNDFAKTURA");
 		assertThat(billingRecord.getStatus()).isEqualTo(Status.APPROVED);
 		assertThat(billingRecord.getType()).isEqualTo(Type.EXTERNAL);
