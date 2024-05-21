@@ -1,14 +1,14 @@
 package se.sundsvall.billingdatacollector.integration.billingpreprocessor;
 
-import jakarta.validation.Valid;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
-
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.bind.DefaultValue;
 import org.springframework.validation.annotation.Validated;
 
 import se.sundsvall.billingdatacollector.integration.Oauth2;
+
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 
 @Validated
 @ConfigurationProperties(prefix = "integration.billing-preprocessor")
