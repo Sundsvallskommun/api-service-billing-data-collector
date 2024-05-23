@@ -7,14 +7,14 @@ import generated.se.sundsvall.billingpreprocessor.BillingRecord;
 @Component
 public class BillingPreprocessorIntegration {
 
-    private final BillingPreprocessorClient client;
+	private final BillingPreprocessorClient client;
 
-    BillingPreprocessorIntegration(final BillingPreprocessorClient client) {
-        this.client = client;
-    }
+	BillingPreprocessorIntegration(final BillingPreprocessorClient client) {
+		this.client = client;
+	}
 
-    public void createBillingRecord(final BillingRecord billingRecord) {
-        // ...c'mon...do stuff...
-        throw new UnsupportedOperationException("NOT IMPLEMENTED YET");
-    }
+	public void createBillingRecord(final BillingRecord billingRecord) {
+		//TODO Better error handling when fallout-handling is implemented
+		client.createBillingRecord(billingRecord);
+	}
 }

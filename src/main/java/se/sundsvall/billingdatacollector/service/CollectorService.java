@@ -45,6 +45,7 @@ public class CollectorService {
 		LOG.info("Triggering billing for flowInstanceId: {}", flowInstanceId);
 
 		var billingRecordWrapper = openEIntegration.getBillingRecord(flowInstanceId);
+
 		decorate(billingRecordWrapper);
 		preprocessorIntegration.createBillingRecord(billingRecordWrapper.getBillingRecord());
 	}
@@ -60,6 +61,8 @@ public class CollectorService {
 
 		LOG.info("Triggering billing for familyIds: {}", supportedFamilyIds);
 
+		// For each supported familyId, get all flowInstanceIds and trigger billing for them
+		// TODO Implement error handling
 		supportedFamilyIds
 			.forEach(supportedFamilyId -> {
 					LOG.info("Getting flowInstanceIds for familyId: {}", supportedFamilyId);

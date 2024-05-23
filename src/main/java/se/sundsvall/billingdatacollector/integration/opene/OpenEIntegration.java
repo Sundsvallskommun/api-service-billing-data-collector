@@ -7,9 +7,11 @@ import static se.sundsvall.billingdatacollector.integration.opene.util.XPathUtil
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.function.Function;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
 import org.zalando.problem.Problem;
 import org.zalando.problem.Status;
@@ -49,10 +51,11 @@ public class OpenEIntegration {
 		// Extract the familyId
 		var familyId = getString(xml, "/FlowInstance/Header/Flow/FamilyID");
 
-		// Bail out if there is no mapper to handle the given familyId
-		if (!mappers.containsKey(familyId)) {
-			throw Problem.valueOf(Status.INTERNAL_SERVER_ERROR, "No mapper for familyId " + familyId);
-		}
+		// Bail out if there is no mapper to handle the given familyId or no familyId is found
+		Optional.ofNullable(familyId)
+			.filter(StringUtils::isNotBlank)
+			.filter(mappers::containsKey)
+			.orElseThrow(() -> Problem.valueOf(Status.INTERNAL_SERVER_ERROR, "No mapper for familyId " + familyId));
 
 		var billingRecordWrapper = mappers.get(familyId).mapToBillingRecordWrapper(xml);
 		//Set the familyId to make it possible to apply decorator

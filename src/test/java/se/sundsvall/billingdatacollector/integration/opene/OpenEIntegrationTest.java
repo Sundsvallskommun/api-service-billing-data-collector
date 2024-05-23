@@ -83,4 +83,20 @@ class OpenEIntegrationTest {
 		verify(mockMapper).getSupportedFamilyId();
 		verifyNoMoreInteractions(mockOpenEClient, mockMapper);
 	}
+
+	@Test
+	void getErrandWhenNoFamilyIdExists(@Load("/open-e/flow-instance-404.xml") final String xml) {
+		when(mockOpenEClient.getErrand("123456")).thenReturn(xml.getBytes(UTF_8));
+
+		assertThatExceptionOfType(ThrowableProblem.class)
+			.isThrownBy(() -> openEIntegration.getBillingRecord("123456"))
+			.satisfies(throwableProblem -> {
+				assertThat(throwableProblem.getStatus()).isEqualTo(Status.INTERNAL_SERVER_ERROR);
+				assertThat(throwableProblem.getTitle()).isEqualTo(Status.INTERNAL_SERVER_ERROR.getReasonPhrase());
+				assertThat(throwableProblem.getDetail()).startsWith("No mapper for familyId null");
+			});
+
+		verify(mockOpenEClient).getErrand("123456");
+		verifyNoMoreInteractions(mockOpenEClient, mockMapper);
+	}
 }
