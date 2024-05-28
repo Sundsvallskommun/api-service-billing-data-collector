@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="ISO-8859-1" standalone="no"?>
+<FlowInstance xmlns="http://www.oeplatform.org/version/2.0/schemas/flowinstance" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.oeplatform.org/version/2.0/schemas/flowinstance schema-1925.xsd">
+    <Header>
+        <Flow>
+            <FamilyID>123</FamilyID>
+            <Version>28</Version>
+            <FlowID>1925</FlowID>
+            <Name><![CDATA[Kundfakturaformulär]]></Name>
+        </Flow>
+        <FlowInstanceID>234567</FlowInstanceID>
+        <Status>
+            <ID>14152</ID>
+            <Name><![CDATA[Inskickat]]></Name>
+        </Status>
+    </Header>
+    <Values>
+        <BarakningarExtern1>
+            <QueryID>49392</QueryID>
+            <Name><![CDATA[Beräkningar (1)]]></Name>
+            <FakturatextExtern1><![CDATA[Påskmarknad. 3 marknadsplatser]]></FakturatextExtern1>
+            <AntalExtern1><![CDATA[3]]></AntalExtern1>
+            <APrisExtern1><![CDATA[700.00]]></APrisExtern1>
+        </BarakningarExtern1>
+    </Values>
+</FlowInstance>

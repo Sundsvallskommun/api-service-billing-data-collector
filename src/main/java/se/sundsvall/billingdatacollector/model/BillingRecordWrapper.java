@@ -13,6 +13,7 @@ import lombok.NoArgsConstructor;
 public class BillingRecordWrapper {
 
 	private BillingRecord billingRecord;
-	private String legalId;
 	private String familyId;
+	private String flowInstanceId;
+	private String legalId;
 }

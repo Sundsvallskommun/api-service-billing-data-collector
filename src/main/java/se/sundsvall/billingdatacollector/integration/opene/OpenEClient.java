@@ -10,7 +10,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 @FeignClient(
 	name = CLIENT_ID,
 	url = "${integration.open-e.base-url}",
-	configuration = OpenEIntegrationConfiguration.class
+	configuration = OpenEIntegrationConfiguration.class,
+	dismiss404 = true
 )
 interface OpenEClient {
 

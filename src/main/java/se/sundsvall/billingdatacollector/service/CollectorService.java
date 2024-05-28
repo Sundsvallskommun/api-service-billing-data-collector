@@ -25,11 +25,13 @@ public class CollectorService {
 
 	private static final Logger LOG = LoggerFactory.getLogger(CollectorService.class);
 
+	private final FalloutService falloutService;
 	private final OpenEIntegration openEIntegration;
 	private final BillingPreprocessorIntegration preprocessorIntegration;
 	private final Map<String, BillingRecordDecorator> decorators;
 
-	public CollectorService(OpenEIntegration openEIntegration, BillingPreprocessorIntegration preprocessorIntegration, List<BillingRecordDecorator> decorators) {
+	public CollectorService(FalloutService falloutService, OpenEIntegration openEIntegration, BillingPreprocessorIntegration preprocessorIntegration, List<BillingRecordDecorator> decorators) {
+		this.falloutService = falloutService;
 		this.openEIntegration = openEIntegration;
 		this.preprocessorIntegration = preprocessorIntegration;
 
@@ -39,21 +41,39 @@ public class CollectorService {
 
 	/**
 	 * Trigger billing for a specific flowInstanceId.
+	 *
 	 * @param flowInstanceId The flowInstanceId to trigger billing for
 	 */
 	public void trigger(String flowInstanceId) {
 		LOG.info("Triggering billing for flowInstanceId: {}", flowInstanceId);
 
-		var billingRecordWrapper = openEIntegration.getBillingRecord(flowInstanceId);
+		var possibleWrapper = openEIntegration.getBillingRecord(flowInstanceId);
 
-		decorate(billingRecordWrapper);
-		preprocessorIntegration.createBillingRecord(billingRecordWrapper.getBillingRecord());
+		//If we have a BillingRecordWrapper, decorate it and send it to the preprocessor
+		possibleWrapper.ifPresentOrElse(
+			wrapper -> {
+				decorate(wrapper);
+				createBillingRecord(wrapper, flowInstanceId);
+			},
+			() -> LOG.warn("No record found for flowInstanceId: {}", flowInstanceId));
+	}
+
+	private void createBillingRecord(BillingRecordWrapper billingRecordWrapper, String flowInstanceId) {
+		try {
+			preprocessorIntegration.createBillingRecord(billingRecordWrapper.getBillingRecord());
+			LOG.info("Successfully sent record to preprocessor for flowInstanceId: {}", flowInstanceId);
+		} catch (Exception e) {
+			//Save the BillingRecordWrapper if we failed to send it to the preprocessor
+			LOG.warn("Failed to create a record for flowInstanceId: {}", flowInstanceId, e);
+			Optional.of(billingRecordWrapper)
+				.ifPresent(wrapper ->  falloutService.saveFailedBillingRecord(wrapper, e.getMessage()));
+		}
 	}
 
 	/**
 	 * Trigger billing for all supported familyIds between the provided dates.
 	 * @param startDate The start date
-	 * @param endDate The end date
+	 * @param endDate 	The end date
 	 * @param familyIds The familyIds to trigger billing for, may be null/empty
 	 */
 	public void triggerBetweenDates(LocalDate startDate, LocalDate endDate, Set<String> familyIds) {
@@ -62,14 +82,17 @@ public class CollectorService {
 		LOG.info("Triggering billing for familyIds: {}", supportedFamilyIds);
 
 		// For each supported familyId, get all flowInstanceIds and trigger billing for them
-		// TODO Implement error handling
 		supportedFamilyIds
 			.forEach(supportedFamilyId -> {
 					LOG.info("Getting flowInstanceIds for familyId: {}", supportedFamilyId);
 					openEIntegration.getFlowInstanceIds(supportedFamilyId, startDate.toString(), endDate.toString())
 						.forEach(flowInstanceId -> {
 							LOG.info("Triggering billing for familyId: {} and flowInstanceId: {}", supportedFamilyId, flowInstanceId);
-							trigger(flowInstanceId);
+							try {
+								trigger(flowInstanceId);
+							} catch (Exception e) {
+								LOG.warn("Failed to trigger billing for familyId: {} and flowInstanceId: {}", supportedFamilyId, flowInstanceId, e);
+							}
 						});
 				}
 			);

@@ -9,11 +9,9 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import generated.se.sundsvall.billingpreprocessor.BillingRecord;
-import reactor.core.publisher.Sinks;
 
 @ExtendWith(MockitoExtension.class)
 class BillingPreprocessorIntegrationTest {
@@ -21,14 +19,14 @@ class BillingPreprocessorIntegrationTest {
 	@Mock
 	private BillingPreprocessorClient mockClient;
 
-    @InjectMocks
-    private BillingPreprocessorIntegration bppIntegration;
+	@InjectMocks
+	private BillingPreprocessorIntegration bppIntegration;
 
-    @Test
-    void createBillingRecord() {
+	@Test
+	void createBillingRecord() {
 		//Arrange
 		doNothing().when(mockClient).createBillingRecord(any(BillingRecord.class));
-        var billingRecord = new BillingRecord();
+		var billingRecord = new BillingRecord();
 
 		//Act
 		bppIntegration.createBillingRecord(billingRecord);
@@ -36,5 +34,5 @@ class BillingPreprocessorIntegrationTest {
 		//Assert
 		verify(mockClient).createBillingRecord(billingRecord);
 		verifyNoMoreInteractions(mockClient);
-    }
+	}
 }

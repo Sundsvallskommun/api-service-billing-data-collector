@@ -30,17 +30,20 @@ class BillingRecordWrapperTest {
 		var billingRecord = BillingRecord.builder().build();
 		var legalId = "1234567890";
 		var familyId = "123";
+		var flowInstanceId = "4657";
 
 		var wrapper = BillingRecordWrapper.builder()
 			.withBillingRecord(billingRecord)
 			.withLegalId(legalId)
 			.withFamilyId(familyId)
+			.withFlowInstanceId(flowInstanceId)
 			.build();
 
 		assertThat(wrapper).isNotNull().hasNoNullFieldsOrProperties();
 		assertThat(wrapper.getBillingRecord()).isEqualTo(billingRecord);
 		assertThat(wrapper.getLegalId()).isEqualTo(legalId);
 		assertThat(wrapper.getFamilyId()).isEqualTo(familyId);
+		assertThat(wrapper.getFlowInstanceId()).isEqualTo(flowInstanceId);
 	}
 
 	@Test

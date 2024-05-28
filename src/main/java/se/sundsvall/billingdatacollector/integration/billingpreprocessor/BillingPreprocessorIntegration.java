@@ -14,7 +14,6 @@ public class BillingPreprocessorIntegration {
 	}
 
 	public void createBillingRecord(final BillingRecord billingRecord) {
-		//TODO Better error handling when fallout-handling is implemented
 		client.createBillingRecord(billingRecord);
 	}
 }
