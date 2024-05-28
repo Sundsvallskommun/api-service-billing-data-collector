@@ -3,7 +3,6 @@ package se.sundsvall.billingdatacollector.integration.db.converter;
 import static java.util.Optional.ofNullable;
 import static java.util.function.Predicate.not;
 
-import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import se.sundsvall.billingdatacollector.model.BillingRecordWrapper;
@@ -37,7 +36,7 @@ public class BillingRecordWrapperConverter implements AttributeConverter<Billing
 			.filter(not(String::isBlank))
 			.map(s -> {
 				try {
-					return OBJECT_MAPPER.readValue(json, new TypeReference<BillingRecordWrapper>() {});
+					return OBJECT_MAPPER.readValue(json, BillingRecordWrapper.class);
 				} catch (Exception e) {
 					throw new PersistenceException("Unable to deserialize billing data wrapper", e);
 				}

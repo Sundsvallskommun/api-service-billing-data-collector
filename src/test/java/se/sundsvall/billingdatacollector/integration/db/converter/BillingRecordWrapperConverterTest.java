@@ -6,8 +6,11 @@ import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import java.util.List;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 
 import se.sundsvall.billingdatacollector.model.BillingRecordWrapper;
+import se.sundsvall.dept44.test.annotation.resource.Load;
+import se.sundsvall.dept44.test.extension.ResourceLoaderExtension;
 
 import generated.se.sundsvall.billingpreprocessor.AccountInformation;
 import generated.se.sundsvall.billingpreprocessor.AddressDetails;
@@ -19,12 +22,13 @@ import generated.se.sundsvall.billingpreprocessor.Status;
 import generated.se.sundsvall.billingpreprocessor.Type;
 import jakarta.persistence.PersistenceException;
 
+@ExtendWith(ResourceLoaderExtension.class)
 class BillingRecordWrapperConverterTest {
 
 	private final BillingRecordWrapperConverter converter = new BillingRecordWrapperConverter();
 
 	@Test
-	void convertToDatabaseColumn() {
+	void convertToDatabaseColumn(@Load("/billingpreprocessor/billing-record.json") String recordAsJson) {
 		var wrapper = converter.convertToEntityAttribute(recordAsJson);
 		assertThat(wrapper).isNotNull();
 		assertThat(wrapper.getFamilyId()).isEqualTo("358");
@@ -56,7 +60,7 @@ class BillingRecordWrapperConverterTest {
 	}
 
 	@Test
-	void convertToEntityAttribute() {
+	void convertToEntityAttribute(@Load("/billingpreprocessor/billing-record.json") String recordAsJson) {
 		var wrapper = BillingRecordWrapper.builder()
 			.withFamilyId("358")
 			.withFlowInstanceId("12345")
@@ -118,68 +122,4 @@ class BillingRecordWrapperConverterTest {
 				assertThat(exception.getMessage()).contains("Unable to deserialize billing data wrapper");
 			});
 	}
-
-	private final String recordAsJson = """
-		{
-		 	"billingRecord": {
-		 		"id": null,
-		 		"category": "KUNDFAKTURA",
-		 		"type": "EXTERNAL",
-		 		"status": "APPROVED",
-		 		"approvedBy": null,
-		 		"approved": null,
-		 		"recipient": {
-		 			"partyId": "fb2f0290-3820-11ed-a261-0242ac120002",
-		 			"legalId": null,
-		 			"organizationName": null,
-		 			"firstName": "Christina",
-		 			"lastName": "Näslund",
-		 			"userId": null,
-		 			"addressDetails": {
-		 				"street": "MYRBODARNA 150",
-		 				"careOf": null,
-		 				"postalCode": "862 96",
-		 				"city": "NJURUNDA"
-		 			}
-		 		},
-		 		"invoice": {
-		 			"customerId": null,
-		 			"description": null,
-		 			"ourReference": null,
-		 			"customerReference": null,
-		 			"referenceId": null,
-		 			"date": null,
-		 			"dueDate": null,
-		 			"totalAmount": null,
-		 			"invoiceRows": [
-		 				{
-		 					"descriptions": [
-		 						"Julmarknad Norra Berget. 3 marknadsplatser"
-		 					],
-		 					"detailedDescriptions": null,
-		 					"totalAmount": 2100.0,
-		 					"vatCode": "00",
-		 					"costPerUnit": 700.0,
-		 					"quantity": 3,
-		 					"accountInformation": {
-		 						"costCenter": "43200000",
-		 						"subaccount": "345000",
-		 						"department": "315310",
-		 						"accuralKey": null,
-		 						"activity": "4165",
-		 						"article": "3452000 - GULLGÅRDEN",
-		 						"project": null,
-		 						"counterpart": "86000000"
-		 					}
-		 				}
-		 			]
-		 		},
-		 		"created": null,
-		 		"modified": null
-		 	},
-		 	"familyId": "358",
-		 	"flowInstanceId": "12345",
-		 	"legalId": "1234567890"
-		 }
-		""";
 }

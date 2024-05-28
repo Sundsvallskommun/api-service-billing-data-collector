@@ -1,0 +1,61 @@
+{
+	"billingRecord": {
+		"id": null,
+		"category": "KUNDFAKTURA",
+		"type": "EXTERNAL",
+		"status": "APPROVED",
+		"approvedBy": null,
+		"approved": null,
+		"recipient": {
+			"partyId": "fb2f0290-3820-11ed-a261-0242ac120002",
+			"legalId": null,
+			"organizationName": null,
+			"firstName": "Christina",
+			"lastName": "Näslund",
+			"userId": null,
+			"addressDetails": {
+				"street": "MYRBODARNA 150",
+				"careOf": null,
+				"postalCode": "862 96",
+				"city": "NJURUNDA"
+			}
+		},
+		"invoice": {
+			"customerId": null,
+			"description": null,
+			"ourReference": null,
+			"customerReference": null,
+			"referenceId": null,
+			"date": null,
+			"dueDate": null,
+			"totalAmount": null,
+			"invoiceRows": [
+				{
+					"descriptions": [
+						"Julmarknad Norra Berget. 3 marknadsplatser"
+					],
+					"detailedDescriptions": null,
+					"totalAmount": 2100.0,
+					"vatCode": "00",
+					"costPerUnit": 700.0,
+					"quantity": 3,
+					"accountInformation": {
+						"costCenter": "43200000",
+						"subaccount": "345000",
+						"department": "315310",
+						"accuralKey": null,
+						"activity": "4165",
+						"article": "3452000 - GULLGÅRDEN",
+						"project": null,
+						"counterpart": "86000000"
+					}
+				}
+			]
+		},
+		"created": null,
+		"modified": null
+	},
+	"familyId": "358",
+	"flowInstanceId": "12345",
+	"legalId": "1234567890"
+}
