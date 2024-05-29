@@ -14,6 +14,7 @@ import java.time.LocalDate;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -44,6 +45,9 @@ class CollectorServiceTest {
 	@Mock
 	private BillingRecordDecorator mockDecorator;
 
+	@Mock
+	private FalloutService mockFalloutService;
+
 	private static final String SUPPORTED_FAMILY_ID = "123";
 	private static final String SUPPORTED_FAMILY_ID_2 = "234";
 	private static final Set<String> WANTED_FAMILY_IDS = new HashSet<>(Arrays.asList("123", "234", "345"));
@@ -58,14 +62,14 @@ class CollectorServiceTest {
 	@BeforeEach
 	void setUp() {
 		when(mockDecorator.getSupportedFamilyId()).thenReturn(SUPPORTED_FAMILY_ID);
-		collectorService = new CollectorService(mockOpenEIntegration, mockBillingPreprocessorIntegration, List.of(mockDecorator));
+		collectorService = new CollectorService(mockFalloutService, mockOpenEIntegration, mockBillingPreprocessorIntegration, List.of(mockDecorator));
 	}
 
 	@Test
 	void testTrigger() {
 		//Arrange
 		var billingRecordWrapper = TestDataFactory.createKundfakturaBillingRecordWrapper(true);
-		when(mockOpenEIntegration.getBillingRecord(SUPPORTED_FAMILY_ID)).thenReturn(billingRecordWrapper);
+		when(mockOpenEIntegration.getBillingRecord(SUPPORTED_FAMILY_ID)).thenReturn(Optional.of(billingRecordWrapper));
 		doNothing().when(mockDecorator).decorate(any(BillingRecordWrapper.class));
 		doNothing().when(mockBillingPreprocessorIntegration).createBillingRecord(any());
 
@@ -86,7 +90,7 @@ class CollectorServiceTest {
 		when(mockOpenEIntegration.getSupportedFamilyIds()).thenReturn(SUPPORTED_FAMILY_IDS);
 		when(mockOpenEIntegration.getFlowInstanceIds(SUPPORTED_FAMILY_ID, START_DATE.toString(), END_DATE.toString())).thenReturn(FLOW_INSTANCE_IDS);
 		when(mockOpenEIntegration.getFlowInstanceIds(SUPPORTED_FAMILY_ID_2, START_DATE.toString(), END_DATE.toString())).thenReturn(FLOW_INSTANCE_IDS);
-		when(mockOpenEIntegration.getBillingRecord(anyString())).thenReturn(billingRecordWrapper);
+		when(mockOpenEIntegration.getBillingRecord(anyString())).thenReturn(Optional.of(billingRecordWrapper));
 		doNothing().when(mockDecorator).decorate(any(BillingRecordWrapper.class));
 		doNothing().when(mockBillingPreprocessorIntegration).createBillingRecord(any());
 
@@ -110,7 +114,7 @@ class CollectorServiceTest {
 		when(mockOpenEIntegration.getSupportedFamilyIds()).thenReturn(Sets.newHashSet(SUPPORTED_FAMILY_IDS));
 		when(mockOpenEIntegration.getFlowInstanceIds(SUPPORTED_FAMILY_ID, START_DATE.toString(), END_DATE.toString())).thenReturn(FLOW_INSTANCE_IDS);
 		when(mockOpenEIntegration.getFlowInstanceIds(SUPPORTED_FAMILY_ID_2, START_DATE.toString(), END_DATE.toString())).thenReturn(FLOW_INSTANCE_IDS);
-		when(mockOpenEIntegration.getBillingRecord(anyString())).thenReturn(billingRecordWrapper);
+		when(mockOpenEIntegration.getBillingRecord(anyString())).thenReturn(Optional.of(billingRecordWrapper));
 		doNothing().when(mockDecorator).decorate(any(BillingRecordWrapper.class));
 		doNothing().when(mockBillingPreprocessorIntegration).createBillingRecord(any());
 
@@ -132,7 +136,7 @@ class CollectorServiceTest {
 		//Arrange
 		var billingRecordWrapper = TestDataFactory.createKundfakturaBillingRecordWrapper(true);
 		billingRecordWrapper.setFamilyId("not_found");	//"Create" a familyId that has no decorator
-		when(mockOpenEIntegration.getBillingRecord(SUPPORTED_FAMILY_ID)).thenReturn(billingRecordWrapper);
+		when(mockOpenEIntegration.getBillingRecord(SUPPORTED_FAMILY_ID)).thenReturn(Optional.of(billingRecordWrapper));
 		doNothing().when(mockBillingPreprocessorIntegration).createBillingRecord(any());
 
 		//Act

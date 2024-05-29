@@ -1,0 +1,153 @@
+<!DOCTYPE html><html lang="sv">
+	<head>
+		<META http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+		<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+		<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+		<meta name="keywords" content="RIGES, Open ePlatform">
+		<meta name="description" content="Open ePlatform &auml;r en e-tj&auml;nsteplattform utvecklad av RIGES-projektet">
+		<title>Sundsvalls kommun</title>
+		<link rel="shortcut icon" href="/images/favicon-16x16.png" size="16x16">
+		<link rel="shortcut icon" href="/images/favicon-32x32.png" size="32x32">
+		<link rel="stylesheet" href="/css/global.css?v=2">
+		<link rel="stylesheet" href="/css/header.css?v=2">
+		<link rel="stylesheet" href="/css/layout.css?v=2">
+		<link rel="stylesheet" href="/css/modules.css?v=2">
+		<link rel="stylesheet" href="/css/interface.css?v=2">
+		<link rel="stylesheet" href="/css/openhierarchy.css?v=2">
+		<link rel="stylesheet" href="/css/cwn.css?v=2">
+		<script type="text/javascript" src="/js/vendor/modernizr-2.6.2.min.js"></script><script type="text/javascript" src="/static/global/jquery/jquery.js"></script><script type="text/javascript" src="/static/global/jquery/jquery-migrate.js"></script><script type="text/javascript" src="/static/global/jquery/jquery-ui.js"></script><script type="text/javascript" src="/js/init-modernizr.js"></script>
+		<link rel="stylesheet" type="text/css" href="/static/b/1/21/css/targetgroupflowbrowser.css" media="screen, print">
+		<link rel="stylesheet" type="text/css" href="/static/b/1/21/css/searchbackgroundmodule.css" media="screen, print">
+		<link rel="stylesheet" href="/css/esamverkan.css">
+		<link rel="stylesheet" href="/css/overrides.css">
+		<script src="/static/global/js/focus-trapper.js"></script><script src="/static/b/1/18/js/notificationsmodule.js?v=1"></script><script src="/static/b/1/21/js/jquery.cookie.js"></script><script src="/static/b/1/21/js/searchbackgroundmodule.js"></script><script type="text/javascript" src="/js/fastclick.js"></script><script type="text/javascript" src="/js/init.js?v=2"></script><script type="module" src="/js/init-oep.js"></script>
+	</head>
+	<body>
+		<a href="#main-content" class="skip-to-main">G&aring; direkt till inneh&aring;llet</a>
+		<h1 id="defaultH1" class="hidden">V&auml;lkommen till e-&auml;renden - Sundsvalls kommun</h1>
+		<header>
+			<div class="cwn">
+				<div class="cwn-content">
+					<div class="user">
+						<div id="logged-in-menu" class="dd logged-in">
+							<a role="button">
+								<h2 data-icon-after="u">
+									<span>Smex&nbsp;API</span>
+								</h2>
+								<div class="toggler" aria-hidden="true">
+									<i>_</i>
+								</div>
+							</a>
+							<div class="marker"></div>
+							<div id="logged-in-submenu" class="submenu">
+								<ul>
+									<li>
+										<a href="/minasidor" title="Mina &auml;renden"><span class="icon arrow" aria-hidden="true"><i></i></span><span class="text">Mina &auml;renden</span></a>
+									</li>
+									<li>
+										<a href="/mysettings" title="Mina uppgifter"><span class="icon arrow" aria-hidden="true"><i data-icon-before=">"></i></span><span class="text">Mina uppgifter</span></a>
+									</li>
+									<li>
+										<a href="/myorganizations" title="Mina f&ouml;retag"><span class="icon arrow" aria-hidden="true"><i data-icon-before=">"></i></span><span class="text">Mina f&ouml;retag</span></a>
+									</li>
+									<li>
+										<a href="/myaccount" title="Mitt konto"><span class="icon arrow" aria-hidden="true"><i data-icon-before=">"></i></span><span class="text">Mitt konto</span></a>
+									</li>
+									<li class="bordered-link">
+										<a href="/logout">Logga ut</a>
+									</li>
+								</ul>
+							</div>
+						</div>
+					</div><ul class="right" aria-expanded="false" aria-controls="notificationsMenu" aria-label="Aviseringar">
+					<li id="notificationsMenu">
+						<script>
+							var notificationHandlerUrl = '/notifications';
+						</script>
+						<div class="marker"></div>
+						<a href="#" class="submenu-trigger"><i class="xl" aria-hidden="true">n</i></a>
+						<div class="submenu notification-menu" style="display: none;"></div>
+						<div id="notifications-loading" style="display: none;">
+							<div class="heading-wrapper">
+								<h3>Aviseringar</h3>
+							</div>
+							<article>
+								<div class="inner">
+									<img style="margin-right: 5px;" src="/static/b/1/18/pics/loading.gif" alt="">H&auml;mtar aviseringar...</div>
+							</article>
+						</div>
+						<div id="notifications-loading-error" style="display: none;">
+							<div class="heading-wrapper">
+								<h3>Aviseringar</h3>
+							</div>
+							<article>
+								<div class="inner">Ett fel uppstod vid h&auml;mtning av aviseringar, v&auml;nligen f&ouml;rs&ouml;k igen senare.</div>
+							</article>
+						</div>
+						<div id="notifications-login-error" style="display: none;">
+							<div class="heading-wrapper">
+								<h3>Aviseringar</h3>
+							</div>
+							<article>
+								<div class="inner">Du har loggats ut, v&auml;nligen f&ouml;rnya sidan och logga in.</div>
+							</article>
+						</div>
+					</li>
+				</ul>
+				</div>
+			</div>
+			<div class="top container"><div class="search-wrapper flowbrowser bg-search" id="bg-search-container">
+				<script type="text/javascript">
+					lastSearchEnabled = true;
+				</script>
+				<div class="inner">
+					<h2 class="only-mobile">S&ouml;k tj&auml;nst</h2>
+					<input type="search" id="bg-search-field" name="search" class="search-field" data-searchmoduleuri="/api/v1" placeholder="T.ex. ombud, s&auml;kerhet"><span class="search-close-btn"></span><a href="#" class="btn btn-blue xl search-btn only-desktop">S&ouml;k</a><a href="#" class="btn btn-blue xl search-btn only-tablet-mobile"><span class="search-icon"></span></a>
+				</div>
+				<div class="search-result-wrapper grid-view">
+					<div class="inner">
+						<h2 class="search-results-title">S&ouml;kningen p&aring; "<span class="title"></span>"&nbsp;gav&nbsp;<span class="hits"></span>&nbsp;tr&auml;ffar</h2>
+						<div class="category-list">
+							<a class="search-close-btn" href="#">St&auml;ng&nbsp;<i>x</i></a>
+							<div class="column-1"></div>
+							<div class="column-2"></div>
+						</div>
+					</div>
+				</div>
+			</div>
+				<div class="logo-container">
+					<span class="icon icon-dragon" role="img" aria-label="e-tjanster.sundsvall.se logotyp, l&auml;nk till startsidan"><a href="https://intranat.sundsvall.se/inloggad"><img style="width: 48px height: 88px" src="/images/dragon.png"></a></span><span class="logo-divider">|</span>
+					<h1>
+						<a href="/">E-tj&auml;nster</a>
+					</h1>
+				</div>
+			</div>
+			<nav>
+				<div class="container">
+					<a class="only-mobile" href="#" id="toggle-primary" data-icon-before="L"></a><a class="only-mobile mobile-logo" href="/"><img src="/images/logo-mobile.png" alt="Logotyp"></a>
+					<ul class="primary">
+						<li class="">
+							<a href="/oversikt"><span>E-tj&auml;nster</span></a>
+						</li>
+						<li class="">
+							<a href="/minasidor"><span>Mina sidor</span></a>
+						</li>
+						<li class="">
+							<a href="/statistik"><span>Statistik</span></a>
+						</li>
+					</ul>
+				</div>
+			</nav>
+		</header>
+		<div class="main container" role="main" id="main-content">
+			<div class="top-content"></div>
+			<div class="content-wide ">
+				<div class="contentitem">
+					<h1>Sidan hittades inte</h1>
+					<p>Sidan med adressen https://somewhere.se/api/instanceapi/getinstance/404/xml hittades inte, kontrollera adressen.</p>
+					<p>Kontakta administrat&ouml;ren f&ouml;r mer information.</p>
+				</div>
+			</div>
+		</div>
+	</body>
+</html>

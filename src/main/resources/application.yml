@@ -6,3 +6,6 @@ openapi:
 spring:
   application:
     name: api-billing-data-collector
+  jpa:
+    hibernate:
+      ddl-auto: validate
