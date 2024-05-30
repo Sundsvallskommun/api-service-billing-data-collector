@@ -34,7 +34,7 @@
 					"descriptions": [
 						"Julmarknad Norra Berget. 3 marknadsplatser"
 					],
-					"detailedDescriptions": null,
+					"detailedDescriptions": [],
 					"totalAmount": 2100.0,
 					"vatCode": "00",
 					"costPerUnit": 700.0,

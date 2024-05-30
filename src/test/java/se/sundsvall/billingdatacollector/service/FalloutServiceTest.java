@@ -112,7 +112,7 @@ class FalloutServiceTest {
 		return BillingRecordWrapper.builder()
 			.withFamilyId(FAMILY_ID)
 			.withFlowInstanceId(FLOW_INSTANCE_ID)
-			.withBillingRecord(BillingRecord.builder().build())
+			.withBillingRecord(new BillingRecord())
 			.build();
 	}
 
