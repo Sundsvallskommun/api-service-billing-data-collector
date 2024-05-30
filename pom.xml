@@ -4,7 +4,7 @@
 	<parent>
 		<groupId>se.sundsvall.dept44</groupId>
 		<artifactId>dept44-service-parent</artifactId>
-		<version>5.0.0</version>
+		<version>5.0.1</version>
 		<relativePath /> <!-- lookup parent from repository -->
 	</parent>
 	<groupId>se.sundsvall</groupId>
@@ -15,10 +15,6 @@
 	<properties>
 		<xsoup.version>0.3.7</xsoup.version>
 
-		<!-- Pipeline properties -->
-		<docker.image.name>ms-billing-data-collector</docker.image.name>
-		<published.container.port.test>8456</published.container.port.test>
-		<published.container.port.production>8456</published.container.port.production>
 
 		<generated-sources-path>${project.build.directory}/generated-sources</generated-sources-path>
 		<generated-sources-java-path>src/main/java</generated-sources-java-path>
