@@ -27,7 +27,7 @@ class BillingRecordWrapperTest {
 
 	@Test
 	void testBuilderMethods() {
-		var billingRecord = BillingRecord.builder().build();
+		var billingRecord = new BillingRecord();
 		var legalId = "1234567890";
 		var familyId = "123";
 		var flowInstanceId = "4657";

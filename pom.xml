@@ -120,7 +120,6 @@
 						<interfaceOnly>true</interfaceOnly>
 						<useJakartaEe>true</useJakartaEe>
 						<useSpringBoot3>true</useSpringBoot3>
-						<additionalModelTypeAnnotations>@lombok.Builder(setterPrefix = "with") @lombok.NoArgsConstructor @lombok.AllArgsConstructor</additionalModelTypeAnnotations>
 					</configOptions>
 				</configuration>
 				<executions>
