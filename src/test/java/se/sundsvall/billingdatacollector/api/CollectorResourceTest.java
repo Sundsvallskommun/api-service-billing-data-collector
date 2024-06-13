@@ -1,12 +1,12 @@
 package se.sundsvall.billingdatacollector.api;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.ArgumentMatchers.anySet;
 import static org.mockito.ArgumentMatchers.isNull;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
+import static org.mockito.Mockito.when;
 import static org.springframework.http.MediaType.APPLICATION_PROBLEM_JSON;
 import static org.zalando.problem.Status.BAD_REQUEST;
 
@@ -63,7 +63,7 @@ class CollectorResourceTest {
 	@Test
 	void testTriggerBillingBetweenTwoValidDates() {
 		//Arrange
-		doNothing().when(mockService).triggerBetweenDates(Mockito.any(LocalDate.class), Mockito.any(LocalDate.class), isNull());
+		when(mockService.triggerBetweenDates(Mockito.any(LocalDate.class), Mockito.any(LocalDate.class), isNull())).thenReturn(List.of("123", "234"));
 
 		//Act
 		webTestClient.post()
@@ -82,7 +82,7 @@ class CollectorResourceTest {
 	@Test
 	void testTriggerBillingBetweenTwoEqualDates() {
 		//Arrange
-		doNothing().when(mockService).triggerBetweenDates(Mockito.any(LocalDate.class), Mockito.any(LocalDate.class), isNull());
+		when(mockService.triggerBetweenDates(Mockito.any(LocalDate.class), Mockito.any(LocalDate.class), isNull())).thenReturn(List.of("123", "234"));
 
 		//Act
 		webTestClient.post()
@@ -101,7 +101,7 @@ class CollectorResourceTest {
 	@Test
 	void testTriggerBillingWithDatesAndFamilyIds() {
 		//Arrange
-		doNothing().when(mockService).triggerBetweenDates(Mockito.any(LocalDate.class), Mockito.any(LocalDate.class), anySet());
+		when(mockService.triggerBetweenDates(Mockito.any(LocalDate.class), Mockito.any(LocalDate.class), isNull())).thenReturn(List.of("123", "234"));
 
 		//Act
 		webTestClient.post()

@@ -1,13 +1,16 @@
 package se.sundsvall.billingdatacollector.service;
 
 import java.nio.charset.StandardCharsets;
+import java.time.LocalDate;
 
 import se.sundsvall.billingdatacollector.integration.db.model.FalloutEntity;
+import se.sundsvall.billingdatacollector.integration.db.model.HistoryEntity;
+import se.sundsvall.billingdatacollector.integration.db.model.ScheduledJobEntity;
 import se.sundsvall.billingdatacollector.model.BillingRecordWrapper;
 
-final class FalloutEntityMapper {
+final class EntityMapper {
 
-	private FalloutEntityMapper() {
+	private EntityMapper() {
 	}
 
 	public static FalloutEntity mapToOpenEFalloutEntity(byte[] bytes, String flowInstanceId, String familyId, String message) {
@@ -28,4 +31,19 @@ final class FalloutEntityMapper {
 			.build();
 	}
 
+	public static HistoryEntity mapToHistoryEntity(BillingRecordWrapper wrapper, String location) {
+		return HistoryEntity.builder()
+			.withBillingRecordWrapper(wrapper)
+			.withFamilyId(wrapper.getFamilyId())
+			.withFlowInstanceId(wrapper.getFlowInstanceId())
+			.withLocation(location)
+			.build();
+	}
+
+	public static ScheduledJobEntity mapToScheduledJobEntity(LocalDate startDate, LocalDate endDate) {
+		return ScheduledJobEntity.builder()
+			.withFetchedStartDate(startDate)
+			.withFetchedEndDate(endDate)
+			.build();
+	}
 }

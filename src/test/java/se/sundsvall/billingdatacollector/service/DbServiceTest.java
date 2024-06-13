@@ -22,13 +22,13 @@ import se.sundsvall.billingdatacollector.model.BillingRecordWrapper;
 import generated.se.sundsvall.billingpreprocessor.BillingRecord;
 
 @ExtendWith(MockitoExtension.class)
-class FalloutServiceTest {
+class DbServiceTest {
 
 	@Mock
 	private FalloutRepository mockFalloutRepository;
 
 	@InjectMocks
-	private FalloutService falloutService;
+	private DbService dbService;
 
 	private static final String FAMILY_ID = "familyId";
 	private static final String FLOW_INSTANCE_ID = "flowInstanceId";
@@ -48,7 +48,7 @@ class FalloutServiceTest {
 		when(mockFalloutRepository.saveAndFlush(Mockito.any(FalloutEntity.class))).thenReturn(expectedEntity);
 
 		//Act
-		falloutService.saveFailedBillingRecord(wrapper, "en error message");
+		dbService.saveFailedBillingRecord(wrapper, "en error message");
 
 		//Assert
 		verify(mockFalloutRepository).existsByFamilyIdAndFlowInstanceIdAndBillingRecordWrapperIsNotNull(FAMILY_ID, FLOW_INSTANCE_ID);
@@ -66,7 +66,7 @@ class FalloutServiceTest {
 		when(mockFalloutRepository.existsByFamilyIdAndFlowInstanceIdAndBillingRecordWrapperIsNotNull(FAMILY_ID, FLOW_INSTANCE_ID)).thenReturn(true);
 
 		//Act
-		falloutService.saveFailedBillingRecord(wrapper, "an error message");
+		dbService.saveFailedBillingRecord(wrapper, "an error message");
 
 		//Assert
 		verify(mockFalloutRepository).existsByFamilyIdAndFlowInstanceIdAndBillingRecordWrapperIsNotNull(FAMILY_ID, FLOW_INSTANCE_ID);
@@ -75,14 +75,14 @@ class FalloutServiceTest {
 	}
 
 	@Test
-	void testSaveFailedOpenEInstance() {
+	void testSaveFailedFlowInstance() {
 		//Arrange
 		byte[] bytes = new byte[0];
 		when(mockFalloutRepository.existsByFamilyIdAndFlowInstanceIdAndOpenEInstanceIsNotNull(FAMILY_ID, FLOW_INSTANCE_ID)).thenReturn(false);
 		when(mockFalloutRepository.saveAndFlush(Mockito.any(FalloutEntity.class))).thenReturn(FalloutEntity.builder().build());
 
 		//Act
-		falloutService.saveFailedOpenEInstance(bytes, FLOW_INSTANCE_ID, FAMILY_ID, "an error message");
+		dbService.saveFailedFlowInstance(bytes, FLOW_INSTANCE_ID, FAMILY_ID, "an error message");
 
 		//Assert
 		verify(mockFalloutRepository).existsByFamilyIdAndFlowInstanceIdAndOpenEInstanceIsNotNull(FAMILY_ID, FLOW_INSTANCE_ID);
@@ -100,7 +100,7 @@ class FalloutServiceTest {
 		when(mockFalloutRepository.existsByFamilyIdAndFlowInstanceIdAndOpenEInstanceIsNotNull(FAMILY_ID, FLOW_INSTANCE_ID)).thenReturn(true);
 
 		//Act
-		falloutService.saveFailedOpenEInstance(bytes, FLOW_INSTANCE_ID, FAMILY_ID, "an error message");
+		dbService.saveFailedFlowInstance(bytes, FLOW_INSTANCE_ID, FAMILY_ID, "an error message");
 
 		//Assert
 		verify(mockFalloutRepository).existsByFamilyIdAndFlowInstanceIdAndOpenEInstanceIsNotNull(FAMILY_ID, FLOW_INSTANCE_ID);

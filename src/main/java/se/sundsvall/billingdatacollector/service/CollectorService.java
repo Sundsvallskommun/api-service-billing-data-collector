@@ -1,6 +1,7 @@
 package se.sundsvall.billingdatacollector.service;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -25,13 +26,13 @@ public class CollectorService {
 
 	private static final Logger LOG = LoggerFactory.getLogger(CollectorService.class);
 
-	private final FalloutService falloutService;
+	private final DbService dbService;
 	private final OpenEIntegration openEIntegration;
 	private final BillingPreprocessorIntegration preprocessorIntegration;
 	private final Map<String, BillingRecordDecorator> decorators;
 
-	public CollectorService(FalloutService falloutService, OpenEIntegration openEIntegration, BillingPreprocessorIntegration preprocessorIntegration, List<BillingRecordDecorator> decorators) {
-		this.falloutService = falloutService;
+	public CollectorService(DbService dbService, OpenEIntegration openEIntegration, BillingPreprocessorIntegration preprocessorIntegration, List<BillingRecordDecorator> decorators) {
+		this.dbService = dbService;
 		this.openEIntegration = openEIntegration;
 		this.preprocessorIntegration = preprocessorIntegration;
 
@@ -53,69 +54,85 @@ public class CollectorService {
 		possibleWrapper.ifPresentOrElse(
 			wrapper -> {
 				decorate(wrapper);
-				createBillingRecord(wrapper, flowInstanceId);
+				createBillingRecord(wrapper);
 			},
 			() -> LOG.warn("No record found for flowInstanceId: {}", flowInstanceId));
 	}
 
-	private void createBillingRecord(BillingRecordWrapper billingRecordWrapper, String flowInstanceId) {
+	private void createBillingRecord(BillingRecordWrapper billingRecordWrapper) {
 		try {
-			preprocessorIntegration.createBillingRecord(billingRecordWrapper.getBillingRecord());
-			LOG.info("Successfully sent record to preprocessor for flowInstanceId: {}", flowInstanceId);
+			var response = preprocessorIntegration.createBillingRecord(billingRecordWrapper.getBillingRecord());
+			LOG.info("Successfully sent record to preprocessor for flowInstanceId: {}", billingRecordWrapper.getFlowInstanceId());
+			dbService.saveToHistory(billingRecordWrapper, response);
 		} catch (Exception e) {
 			//Save the BillingRecordWrapper if we failed to send it to the preprocessor
-			LOG.warn("Failed to create a record for flowInstanceId: {}", flowInstanceId, e);
+			LOG.warn("Failed to create a record for flowInstanceId: {}", billingRecordWrapper.getFlowInstanceId(), e);
 			Optional.of(billingRecordWrapper)
-				.ifPresent(wrapper ->  falloutService.saveFailedBillingRecord(wrapper, e.getMessage()));
+				.ifPresent(wrapper -> dbService.saveFailedBillingRecord(wrapper, e.getMessage()));
 		}
 	}
 
 	/**
 	 * Trigger billing for all supported familyIds between the provided dates.
+	 * Will check which flowInstanceIds that have already been processed and only trigger billing for the unprocessed ones.
+	 *
 	 * @param startDate The start date
-	 * @param endDate 	The end date
+	 * @param endDate The end date
 	 * @param familyIds The familyIds to trigger billing for, may be null/empty
+	 * @return A list of flowInstanceIds that have been triggered
 	 */
-	public void triggerBetweenDates(LocalDate startDate, LocalDate endDate, Set<String> familyIds) {
-		var supportedFamilyIds = getSupportedFamilyIdsFromRequest(familyIds);
+	public List<String> triggerBetweenDates(LocalDate startDate, LocalDate endDate, Set<String> familyIds) {
+		var supportedFamilyIds = getSupportedFamilyIds(familyIds);
 
 		LOG.info("Triggering billing for familyIds: {}", supportedFamilyIds);
+
+		List<String> idsToReturn = new ArrayList<>();
 
 		// For each supported familyId, get all flowInstanceIds and trigger billing for them
 		supportedFamilyIds
 			.forEach(supportedFamilyId -> {
 					LOG.info("Getting flowInstanceIds for familyId: {}", supportedFamilyId);
-					openEIntegration.getFlowInstanceIds(supportedFamilyId, startDate.toString(), endDate.toString())
-						.forEach(flowInstanceId -> {
-							LOG.info("Triggering billing for familyId: {} and flowInstanceId: {}", supportedFamilyId, flowInstanceId);
+					var receivedFlowInstanceIds = openEIntegration.getFlowInstanceIds(supportedFamilyId, startDate.toString(), endDate.toString());
+
+					// Trigger billing for the unprocessed flowInstanceIds
+					receivedFlowInstanceIds.forEach(flowInstanceId -> {
+						//Check if it's already been processed, if so skip it
+						if(!dbService.hasAlreadyBeenProcessed(supportedFamilyId, flowInstanceId)) {
 							try {
+								idsToReturn.add(flowInstanceId);
 								trigger(flowInstanceId);
 							} catch (Exception e) {
 								LOG.warn("Failed to trigger billing for familyId: {} and flowInstanceId: {}", supportedFamilyId, flowInstanceId, e);
 							}
-						});
+						} else {
+							LOG.info("Billing for familyId: {} and flowInstanceId: {} has already been processed", supportedFamilyId, flowInstanceId);
+						}
+					});
 				}
 			);
+
+		return idsToReturn;
 	}
 
 	/**
-	 * Filter out familyIds that we do not support.
+	 * Filter out familyIds that we support.
 	 * If no familyIds are provided, return all supported familyIds.
 	 * If familyIds are provided, return the intersection of supported familyIds and provided familyIds.
 	 * If no supported familyIds are found (and familyIds are provided), throw a Problem.
-	 * @param wantedFamilyIds The familyIds that we want to check if we support
+	 *
+	 * @param wantedFamilyIds The familyIds to check
 	 * @return A Set of supported familyIds
 	 */
-	private Set<String> getSupportedFamilyIdsFromRequest(Set<String> wantedFamilyIds) {
+	private Set<String> getSupportedFamilyIds(Set<String> wantedFamilyIds) {
 		var supportedFamilyIds = openEIntegration.getSupportedFamilyIds();
-		var resultingFamilyIds = new HashSet<>(supportedFamilyIds);
+		var validFamilyIds = new HashSet<>(supportedFamilyIds);
 		LOG.info("Wanted familyIds: {}. Supported familyIds: {}", wantedFamilyIds, supportedFamilyIds);
 
 		Optional.ofNullable(wantedFamilyIds)
 			.filter(wanted -> !wanted.isEmpty())
-			.ifPresent(resultingFamilyIds::retainAll);
+			.ifPresent(validFamilyIds::retainAll);
 
-		if(resultingFamilyIds.isEmpty()) {
+		if (validFamilyIds.isEmpty()) {
 			throw Problem.builder()
 				.withTitle("No supported familyIds found")
 				.withStatus(Status.BAD_REQUEST)
@@ -123,11 +140,12 @@ public class CollectorService {
 				.build();
 		}
 
-		return resultingFamilyIds;
+		return validFamilyIds;
 	}
 
 	/**
 	 * Decorate the BillingRecordWrapper with the corresponding decorator, if any.
+	 *
 	 * @param recordWrapper The BillingRecordWrapper to decorate
 	 */
 	private void decorate(BillingRecordWrapper recordWrapper) {

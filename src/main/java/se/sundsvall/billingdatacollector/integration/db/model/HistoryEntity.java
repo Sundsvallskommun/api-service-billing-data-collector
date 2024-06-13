@@ -1,12 +1,9 @@
 package se.sundsvall.billingdatacollector.integration.db.model;
 
-import static org.hibernate.annotations.TimeZoneStorageType.NORMALIZE;
-
-import java.time.OffsetDateTime;
+import java.time.LocalDate;
 import java.util.Objects;
 
 import org.hibernate.Length;
-import org.hibernate.annotations.TimeZoneStorage;
 import org.hibernate.annotations.UuidGenerator;
 
 import se.sundsvall.billingdatacollector.integration.db.converter.BillingRecordWrapperConverter;
@@ -33,13 +30,13 @@ import lombok.Setter;
 @NoArgsConstructor
 @Entity
 @Table(
-	name = "fallout",
+	name = "history",
 	indexes = {
 		@Index(name = "idx_family_id", columnList = "family_id"),
 		@Index(name = "idx_flow_instance_id", columnList = "flow_instance_id"),
 	}
 )
-public class FalloutEntity {
+public class HistoryEntity {
 
 	@Id
 	@UuidGenerator
@@ -50,58 +47,47 @@ public class FalloutEntity {
 	@Convert(converter = BillingRecordWrapperConverter.class)
 	private BillingRecordWrapper billingRecordWrapper;
 
-	@Column(name = "opene_instance", length = Length.LONG)
-	private String openEInstance;
-
 	@Column(name = "family_id")
 	private String familyId;
 
 	@Column(name = "flow_instance_id")
 	private String flowInstanceId;
 
-	@Column(name = "error_message", length = 1024)
-	private String errorMessage;
-
 	@Column(name = "created")
-	@TimeZoneStorage(NORMALIZE)
-	private OffsetDateTime created;
+	private LocalDate created;
 
-	@Column(name = "modified")
-	@TimeZoneStorage(NORMALIZE)
-	private OffsetDateTime modified;
+	@Column(name = "location")
+	private String location;
 
 	@PreUpdate
 	@PrePersist
 	public void prePersist() {
-		if (created == null) {
-			created = OffsetDateTime.now();
+		if(created == null) {
+			created = LocalDate.now();
 		}
-		modified = OffsetDateTime.now();
 	}
 
 	@Override
 	public boolean equals(Object o) {
 		if (this == o) return true;
-		if (!(o instanceof FalloutEntity that)) return false;
-		return Objects.equals(id, that.id) && Objects.deepEquals(openEInstance, that.openEInstance) && Objects.equals(familyId, that.familyId) && Objects.equals(flowInstanceId, that.flowInstanceId) && Objects.equals(created, that.created) && Objects.equals(modified, that.modified);
+		if (!(o instanceof HistoryEntity that)) return false;
+		return Objects.equals(id, that.id) && Objects.equals(familyId, that.familyId) && Objects.equals(flowInstanceId, that.flowInstanceId) && Objects.equals(created, that.created) && Objects.equals(location, that.location);
 	}
 
 	@Override
 	public int hashCode() {
-		return Objects.hash(id, familyId, flowInstanceId, created, modified);
+		return Objects.hash(id, familyId, flowInstanceId, created, location);
 	}
 
 	@Override
 	public String toString() {
-		return "FalloutEntity{" +
+		return "HistoryEntity{" +
 			"id='" + id + '\'' +
 			", billingRecordWrapper=" + billingRecordWrapper +
-			", openEInstance=" + openEInstance +
 			", familyId='" + familyId + '\'' +
 			", flowInstanceId='" + flowInstanceId + '\'' +
-			", errorMessage='" + errorMessage + '\'' +
 			", created=" + created +
-			", modified=" + modified +
+			", location='" + location + '\'' +
 			'}';
 	}
 }

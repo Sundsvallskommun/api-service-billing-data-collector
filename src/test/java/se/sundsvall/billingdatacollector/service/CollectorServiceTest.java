@@ -22,6 +22,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.http.ResponseEntity;
 import org.zalando.problem.Status;
 import org.zalando.problem.ThrowableProblem;
 
@@ -46,7 +47,7 @@ class CollectorServiceTest {
 	private BillingRecordDecorator mockDecorator;
 
 	@Mock
-	private FalloutService mockFalloutService;
+	private DbService mockDbService;
 
 	private static final String SUPPORTED_FAMILY_ID = "123";
 	private static final String SUPPORTED_FAMILY_ID_2 = "234";
@@ -62,7 +63,7 @@ class CollectorServiceTest {
 	@BeforeEach
 	void setUp() {
 		when(mockDecorator.getSupportedFamilyId()).thenReturn(SUPPORTED_FAMILY_ID);
-		collectorService = new CollectorService(mockFalloutService, mockOpenEIntegration, mockBillingPreprocessorIntegration, List.of(mockDecorator));
+		collectorService = new CollectorService(mockDbService, mockOpenEIntegration, mockBillingPreprocessorIntegration, List.of(mockDecorator));
 	}
 
 	@Test
@@ -71,7 +72,7 @@ class CollectorServiceTest {
 		var billingRecordWrapper = TestDataFactory.createKundfakturaBillingRecordWrapper(true);
 		when(mockOpenEIntegration.getBillingRecord(SUPPORTED_FAMILY_ID)).thenReturn(Optional.of(billingRecordWrapper));
 		doNothing().when(mockDecorator).decorate(any(BillingRecordWrapper.class));
-		doNothing().when(mockBillingPreprocessorIntegration).createBillingRecord(any());
+		when(mockBillingPreprocessorIntegration.createBillingRecord(any())).thenReturn(ResponseEntity.ok().build());
 
 		//Act
 		collectorService.trigger(SUPPORTED_FAMILY_ID);
@@ -92,7 +93,7 @@ class CollectorServiceTest {
 		when(mockOpenEIntegration.getFlowInstanceIds(SUPPORTED_FAMILY_ID_2, START_DATE.toString(), END_DATE.toString())).thenReturn(FLOW_INSTANCE_IDS);
 		when(mockOpenEIntegration.getBillingRecord(anyString())).thenReturn(Optional.of(billingRecordWrapper));
 		doNothing().when(mockDecorator).decorate(any(BillingRecordWrapper.class));
-		doNothing().when(mockBillingPreprocessorIntegration).createBillingRecord(any());
+		when(mockBillingPreprocessorIntegration.createBillingRecord(any())).thenReturn(ResponseEntity.ok().build());
 
 		//Act
 		collectorService.triggerBetweenDates(START_DATE, END_DATE, Set.of());
@@ -116,7 +117,7 @@ class CollectorServiceTest {
 		when(mockOpenEIntegration.getFlowInstanceIds(SUPPORTED_FAMILY_ID_2, START_DATE.toString(), END_DATE.toString())).thenReturn(FLOW_INSTANCE_IDS);
 		when(mockOpenEIntegration.getBillingRecord(anyString())).thenReturn(Optional.of(billingRecordWrapper));
 		doNothing().when(mockDecorator).decorate(any(BillingRecordWrapper.class));
-		doNothing().when(mockBillingPreprocessorIntegration).createBillingRecord(any());
+		when(mockBillingPreprocessorIntegration.createBillingRecord(any())).thenReturn(ResponseEntity.ok().build());
 
 		//Act
 		collectorService.triggerBetweenDates(START_DATE, END_DATE, WANTED_FAMILY_IDS);
@@ -137,7 +138,7 @@ class CollectorServiceTest {
 		var billingRecordWrapper = TestDataFactory.createKundfakturaBillingRecordWrapper(true);
 		billingRecordWrapper.setFamilyId("not_found");	//"Create" a familyId that has no decorator
 		when(mockOpenEIntegration.getBillingRecord(SUPPORTED_FAMILY_ID)).thenReturn(Optional.of(billingRecordWrapper));
-		doNothing().when(mockBillingPreprocessorIntegration).createBillingRecord(any());
+		when(mockBillingPreprocessorIntegration.createBillingRecord(any())).thenReturn(ResponseEntity.ok().build());
 
 		//Act
 		collectorService.trigger(SUPPORTED_FAMILY_ID);

@@ -9,6 +9,7 @@ class ExternFakturaTest {
 	@Test
 	void constructorAndAccessors() {
 		var familyId = "358";
+		var flowInstanceId = "12345";
 		var fornamn = "fornamn";
 		var efternamn = "efternamn";
 		var adress = "adress";
@@ -27,10 +28,12 @@ class ExternFakturaTest {
 		var aktivitetskonto = "aktivitetskonto";
 		var objektkonto = "objektkonto";
 
-		var externFaktura = new ExternFaktura(familyId, fornamn, efternamn, adress, postnummer, ort,
+		var externFaktura = new ExternFaktura(familyId, flowInstanceId, fornamn, efternamn, adress, postnummer, ort,
 			personnummer, motpartNamn, fakturaText, antal, aPris, summering, momssats, ansvar, underkonto,
 			verksamhet, aktivitetskonto, objektkonto);
 
+		assertThat(externFaktura.familyId()).isEqualTo(familyId);
+		assertThat(externFaktura.flowInstanceId()).isEqualTo(flowInstanceId);
 		assertThat(externFaktura.fornamn()).isEqualTo(fornamn);
 		assertThat(externFaktura.efternamn()).isEqualTo(efternamn);
 		assertThat(externFaktura.adress()).isEqualTo(adress);
@@ -41,6 +44,7 @@ class ExternFakturaTest {
 		assertThat(externFaktura.fakturaText()).isEqualTo(fakturaText);
 		assertThat(externFaktura.antal()).isEqualTo(antal);
 		assertThat(externFaktura.aPris()).isEqualTo(aPris);
+		assertThat(externFaktura.summering()).isEqualTo(summering);
 		assertThat(externFaktura.momssats()).isEqualTo(momssats);
 		assertThat(externFaktura.ansvar()).isEqualTo(ansvar);
 		assertThat(externFaktura.underkonto()).isEqualTo(underkonto);

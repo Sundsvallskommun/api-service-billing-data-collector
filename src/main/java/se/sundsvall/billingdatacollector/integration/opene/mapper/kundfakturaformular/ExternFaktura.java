@@ -7,6 +7,9 @@ record ExternFaktura(
 	@XPath("/FlowInstance/Header/Flow/FamilyID")
 	String familyId,
 
+	@XPath("/FlowInstance/Header/FlowInstanceID")
+	String flowInstanceId,
+
 	@XPath("/FlowInstance/Values/KontaktuppgifterPrivatperson/Firstname")
 	String fornamn,
 

@@ -19,7 +19,7 @@ import org.zalando.problem.Status;
 import org.zalando.problem.ThrowableProblem;
 
 import se.sundsvall.billingdatacollector.model.BillingRecordWrapper;
-import se.sundsvall.billingdatacollector.service.FalloutService;
+import se.sundsvall.billingdatacollector.service.DbService;
 import se.sundsvall.dept44.test.annotation.resource.Load;
 import se.sundsvall.dept44.test.extension.ResourceLoaderExtension;
 
@@ -33,7 +33,7 @@ class OpenEIntegrationTest {
 	private OpenEMapper mockMapper;
 
 	@Mock
-	private FalloutService mockFalloutService;
+	private DbService mockDbService;
 
 	private OpenEIntegration openEIntegration;
 
@@ -41,7 +41,7 @@ class OpenEIntegrationTest {
 	void setUp() {
 		when(mockMapper.getSupportedFamilyId()).thenReturn("123");
 
-		openEIntegration = new OpenEIntegration(mockOpenEClient, List.of(mockMapper), mockFalloutService);
+		openEIntegration = new OpenEIntegration(mockOpenEClient, List.of(mockMapper), mockDbService);
 	}
 
 	@Test
@@ -114,7 +114,7 @@ class OpenEIntegrationTest {
 		//Assert
 		verify(mockOpenEClient).getErrand("123456");
 		//Not too important to verify how it fails, just that it fails and is saved.
-		verify(mockFalloutService).saveFailedOpenEInstance(xml.getBytes(ISO_8859_1), "123456", "123",
+		verify(mockDbService).saveFailedFlowInstance(xml.getBytes(ISO_8859_1), "123456", "123",
 			"Cannot invoke \"se.sundsvall.billingdatacollector.model.BillingRecordWrapper.setFamilyId(String)\" because \"billingRecordWrapper\" is null");
 	}
 }

@@ -1,5 +1,6 @@
 package se.sundsvall.billingdatacollector.integration.billingpreprocessor;
 
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 
 import generated.se.sundsvall.billingpreprocessor.BillingRecord;
@@ -13,7 +14,7 @@ public class BillingPreprocessorIntegration {
 		this.client = client;
 	}
 
-	public void createBillingRecord(final BillingRecord billingRecord) {
-		client.createBillingRecord(billingRecord);
+	public ResponseEntity<Void> createBillingRecord(final BillingRecord billingRecord) {
+		return client.createBillingRecord(billingRecord);
 	}
 }
