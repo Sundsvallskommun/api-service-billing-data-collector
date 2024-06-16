@@ -67,7 +67,7 @@ class CollectorServiceTest {
 	}
 
 	@Test
-	void testTrigger() {
+	void testTriggerBilling() {
 		//Arrange
 		var billingRecordWrapper = TestDataFactory.createKundfakturaBillingRecordWrapper(true);
 		when(mockOpenEIntegration.getBillingRecord(SUPPORTED_FAMILY_ID)).thenReturn(Optional.of(billingRecordWrapper));
@@ -75,7 +75,7 @@ class CollectorServiceTest {
 		when(mockBillingPreprocessorIntegration.createBillingRecord(any())).thenReturn(ResponseEntity.ok().build());
 
 		//Act
-		collectorService.trigger(SUPPORTED_FAMILY_ID);
+		collectorService.triggerBilling(SUPPORTED_FAMILY_ID);
 
 		//Assert
 		verify(mockOpenEIntegration).getBillingRecord(SUPPORTED_FAMILY_ID);
@@ -85,7 +85,7 @@ class CollectorServiceTest {
 	}
 
 	@Test
-	void testTriggerBillingBetweenDates_emptyFamilyIds_shouldTriggerAllSupportedFamilyIds() {
+	void testTriggerBillingBetweenDates_emptyFamilyIds_shouldTriggerBillingAllSupportedFamilyIds() {
 		//Arrange
 		var billingRecordWrapper = TestDataFactory.createKundfakturaBillingRecordWrapper(true);
 		when(mockOpenEIntegration.getSupportedFamilyIds()).thenReturn(SUPPORTED_FAMILY_IDS);
@@ -96,7 +96,7 @@ class CollectorServiceTest {
 		when(mockBillingPreprocessorIntegration.createBillingRecord(any())).thenReturn(ResponseEntity.ok().build());
 
 		//Act
-		collectorService.triggerBetweenDates(START_DATE, END_DATE, Set.of());
+		collectorService.triggerBillingBetweenDates(START_DATE, END_DATE, Set.of());
 
 		//Assert
 		verify(mockOpenEIntegration).getSupportedFamilyIds();
@@ -109,7 +109,7 @@ class CollectorServiceTest {
 	}
 
 	@Test
-	void testTriggerBillingBetweenDates_wantedFamilyIds_shouldOnlyTriggerSupported() {
+	void testTriggerBillingBetweenDates_wantedFamilyIds_shouldOnlyTriggerBillingSupported() {
 		//Arrange
 		var billingRecordWrapper = TestDataFactory.createKundfakturaBillingRecordWrapper(true);
 		when(mockOpenEIntegration.getSupportedFamilyIds()).thenReturn(Sets.newHashSet(SUPPORTED_FAMILY_IDS));
@@ -120,7 +120,7 @@ class CollectorServiceTest {
 		when(mockBillingPreprocessorIntegration.createBillingRecord(any())).thenReturn(ResponseEntity.ok().build());
 
 		//Act
-		collectorService.triggerBetweenDates(START_DATE, END_DATE, WANTED_FAMILY_IDS);
+		collectorService.triggerBillingBetweenDates(START_DATE, END_DATE, WANTED_FAMILY_IDS);
 
 		//Assert
 		verify(mockOpenEIntegration).getSupportedFamilyIds();
@@ -141,7 +141,7 @@ class CollectorServiceTest {
 		when(mockBillingPreprocessorIntegration.createBillingRecord(any())).thenReturn(ResponseEntity.ok().build());
 
 		//Act
-		collectorService.trigger(SUPPORTED_FAMILY_ID);
+		collectorService.triggerBilling(SUPPORTED_FAMILY_ID);
 
 		//Assert
 		verify(mockOpenEIntegration).getBillingRecord(SUPPORTED_FAMILY_ID);
@@ -151,13 +151,13 @@ class CollectorServiceTest {
 	}
 
 	@Test
-	void testTriggerBillingBetweenDates_noResponseFromOpenE_shouldNotCallDecorateOrCreateBillingRecord() {
+	void testTriggerBillingBillingBetweenDates_noResponseFromOpenE_shouldNotCallDecorateOrCreateBillingRecord() {
 		//Arrange
 		when(mockOpenEIntegration.getSupportedFamilyIds()).thenReturn(new HashSet<>(List.of(SUPPORTED_FAMILY_ID)));
 		when(mockOpenEIntegration.getFlowInstanceIds(SUPPORTED_FAMILY_ID, START_DATE.toString(), END_DATE.toString())).thenReturn(List.of());
 
 		//Act
-		collectorService.triggerBetweenDates(START_DATE, END_DATE, WANTED_FAMILY_IDS);
+		collectorService.triggerBillingBetweenDates(START_DATE, END_DATE, WANTED_FAMILY_IDS);
 
 		//Assert
 		verify(mockOpenEIntegration).getSupportedFamilyIds();
@@ -165,13 +165,13 @@ class CollectorServiceTest {
 	}
 
 	@Test
-	void testTriggerBillingBetweenDates_noSupportedFamilyIds_shouldThrowException() {
+	void testTriggerBillingBillingBetweenDates_noSupportedFamilyIds_shouldThrowException() {
 		//Arrange
 		when(mockOpenEIntegration.getSupportedFamilyIds()).thenReturn(Set.of("something_else"));
 
 		//Act & Assert
 		assertThatExceptionOfType(ThrowableProblem.class)
-			.isThrownBy(() -> collectorService.triggerBetweenDates(START_DATE, END_DATE, WANTED_FAMILY_IDS))
+			.isThrownBy(() -> collectorService.triggerBillingBetweenDates(START_DATE, END_DATE, WANTED_FAMILY_IDS))
 			.satisfies(throwableProblem -> {
 				assertThat(throwableProblem.getStatus()).isEqualTo(Status.BAD_REQUEST);
 				assertThat(throwableProblem.getDetail()).contains("Supported familyIds: [something_else]");

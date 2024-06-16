@@ -5,7 +5,7 @@ create table fallout
     error_message          varchar(1024),
     family_id              varchar(255),
     flow_instance_id       varchar(255),
-    id                     varchar(255) not null,
+    id                     varchar(36) not null,
     billing_record_wrapper text,
     opene_instance         text,
     primary key (id)
@@ -16,7 +16,7 @@ create table history
     created                date,
     family_id              varchar(255),
     flow_instance_id       varchar(255),
-    id                     varchar(255) not null,
+    id                     varchar(36) not null,
     location               varchar(255),
     billing_record_wrapper text,
     primary key (id)
@@ -27,7 +27,7 @@ create table scheduled_job_log
     fetched_end_date   date         not null,
     fetched_start_date date         not null,
     processed          datetime(6)  not null,
-    id                 varchar(255) not null,
+    id                 varchar(36) not null,
     primary key (id)
 ) engine = InnoDB;
 

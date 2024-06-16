@@ -45,7 +45,7 @@ public class CollectorService {
 	 *
 	 * @param flowInstanceId The flowInstanceId to trigger billing for
 	 */
-	public void trigger(String flowInstanceId) {
+	public void triggerBilling(String flowInstanceId) {
 		LOG.info("Triggering billing for flowInstanceId: {}", flowInstanceId);
 
 		var possibleWrapper = openEIntegration.getBillingRecord(flowInstanceId);
@@ -81,7 +81,7 @@ public class CollectorService {
 	 * @param familyIds The familyIds to trigger billing for, may be null/empty
 	 * @return A list of flowInstanceIds that have been triggered
 	 */
-	public List<String> triggerBetweenDates(LocalDate startDate, LocalDate endDate, Set<String> familyIds) {
+	public List<String> triggerBillingBetweenDates(LocalDate startDate, LocalDate endDate, Set<String> familyIds) {
 		var supportedFamilyIds = getSupportedFamilyIds(familyIds);
 
 		LOG.info("Triggering billing for familyIds: {}", supportedFamilyIds);
@@ -100,7 +100,7 @@ public class CollectorService {
 						if(!dbService.hasAlreadyBeenProcessed(supportedFamilyId, flowInstanceId)) {
 							try {
 								idsToReturn.add(flowInstanceId);
-								trigger(flowInstanceId);
+								triggerBilling(flowInstanceId);
 							} catch (Exception e) {
 								LOG.warn("Failed to trigger billing for familyId: {} and flowInstanceId: {}", supportedFamilyId, flowInstanceId, e);
 							}
@@ -125,8 +125,9 @@ public class CollectorService {
 	 */
 	private Set<String> getSupportedFamilyIds(Set<String> wantedFamilyIds) {
 		var supportedFamilyIds = openEIntegration.getSupportedFamilyIds();
-		var validFamilyIds = new HashSet<>(supportedFamilyIds);
 		LOG.info("Wanted familyIds: {}. Supported familyIds: {}", wantedFamilyIds, supportedFamilyIds);
+
+		var validFamilyIds = new HashSet<>(supportedFamilyIds);	// Creating a copy to be able to relay information about supported familyIds
 
 		Optional.ofNullable(wantedFamilyIds)
 			.filter(wanted -> !wanted.isEmpty())

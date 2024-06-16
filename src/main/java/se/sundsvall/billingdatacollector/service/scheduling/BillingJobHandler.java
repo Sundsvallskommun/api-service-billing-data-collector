@@ -17,14 +17,14 @@ import se.sundsvall.billingdatacollector.service.CollectorService;
 import se.sundsvall.billingdatacollector.service.DbService;
 
 @Component
-public class JobHandler {
+public class BillingJobHandler {
 
-	private static final Logger LOG = LoggerFactory.getLogger(JobHandler.class);
+	private static final Logger LOG = LoggerFactory.getLogger(BillingJobHandler.class);
 
 	private final CollectorService collectorService;
 	private final DbService dbService;
 
-	public JobHandler(CollectorService collectorService, DbService dbService) {
+	public BillingJobHandler(CollectorService collectorService, DbService dbService) {
 		this.collectorService = collectorService;
 		this.dbService = dbService;
 	}
@@ -32,15 +32,17 @@ public class JobHandler {
 	/**
 	 * Fetch billing data
 	 */
-	public void handleJob() {
-		var lastJob = dbService.getLatestJob();
-		var startDate = calculateStartDate(lastJob);
+	public void handleBilling() {
+		LOG.info("Starting billing job");
+		var latestJob = dbService.getLatestJob();
+		var startDate = calculateStartDate(latestJob);
 		var endDate = LocalDate.now().minusDays(1);	// Always set enddate to yesterday
 
 		dbService.saveScheduledJob(startDate, endDate);	//Save that the job has been triggered
 
-		var processed = collectorService.triggerBetweenDates(startDate, endDate, emptySet());
+		var processed = collectorService.triggerBillingBetweenDates(startDate, endDate, emptySet());
 		handleProcessed(processed);
+		LOG.info("Billing job done");
 	}
 
 	/**

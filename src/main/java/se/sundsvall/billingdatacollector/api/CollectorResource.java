@@ -67,7 +67,7 @@ class CollectorResource {
 		@Parameter(name = "flowInstanceId", description = "flowInstanceId to trigger billing for", example = "123")
 		@NotEmpty @PathVariable("flowInstanceId") final String flowInstanceId) {
 
-		collectorService.trigger(flowInstanceId);
+		collectorService.triggerBilling(flowInstanceId);
 
 		return ResponseEntity.accepted().build();
 	}
@@ -95,7 +95,7 @@ class CollectorResource {
 
 		validateStartDateIsBeforeOrEqualToEndDate(startDate, endDate);
 
-		var processedFlowInstanceIds = collectorService.triggerBetweenDates(startDate, endDate, familyIds);
+		var processedFlowInstanceIds = collectorService.triggerBillingBetweenDates(startDate, endDate, familyIds);
 
 		return ResponseEntity.accepted()
 			.body(processedFlowInstanceIds);

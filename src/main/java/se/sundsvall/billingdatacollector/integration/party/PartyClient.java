@@ -14,16 +14,16 @@ import org.springframework.web.bind.annotation.PathVariable;
 import generated.se.sundsvall.party.PartyType;
 
 @FeignClient(
-    name = CLIENT_ID,
-    configuration = PartyIntegrationConfiguration.class,
-    url = "${integration.party.base-url}"
+	name = CLIENT_ID,
+	configuration = PartyIntegrationConfiguration.class,
+	url = "${integration.party.base-url}"
 )
 interface PartyClient {
 
-    @GetMapping(
-        path = "/{type}/{legalId}/partyId",
-        produces = { TEXT_PLAIN_VALUE, APPLICATION_PROBLEM_JSON_VALUE }
-    )
+	@GetMapping(
+		path = "/{type}/{legalId}/partyId",
+		produces = { TEXT_PLAIN_VALUE, APPLICATION_PROBLEM_JSON_VALUE }
+	)
 	@Cacheable("partyId")
-    Optional<String> getPartyId(@PathVariable("type") PartyType partyType, @PathVariable("legalId") String legalId);
+	Optional<String> getPartyId(@PathVariable("type") PartyType partyType, @PathVariable("legalId") String legalId);
 }

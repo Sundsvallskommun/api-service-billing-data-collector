@@ -1,7 +1,8 @@
 package se.sundsvall.billingdatacollector.integration.db.model;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
+import java.util.Objects;
 
 import org.hibernate.annotations.UuidGenerator;
 
@@ -30,9 +31,15 @@ public class ScheduledJobEntity {
 	@UuidGenerator
 	private String id;
 
+	/**
+	 * Which start date was used when we fetched data.
+	 */
 	@Column(name = "fetched_start_date", nullable = false)
 	private LocalDate fetchedStartDate;
 
+	/**
+	 * Which end date was used when we fetched data.
+	 */
 	@Column(name = "fetched_end_date", nullable = false)
 	private LocalDate fetchedEndDate;
 
@@ -40,12 +47,34 @@ public class ScheduledJobEntity {
 	 * Date when the job was processed.
 	 */
 	@Column(name = "processed", nullable = false)
-	private LocalDateTime processed;
+	private OffsetDateTime processed;
 
 	@PrePersist
 	public void prePersist() {
 		if (processed == null) {
-			processed = LocalDateTime.now();
+			processed = OffsetDateTime.now();
 		}
+	}
+
+	@Override
+	public boolean equals(Object o) {
+		if (this == o) return true;
+		if (!(o instanceof ScheduledJobEntity that)) return false;
+		return Objects.equals(id, that.id) && Objects.equals(fetchedStartDate, that.fetchedStartDate) && Objects.equals(fetchedEndDate, that.fetchedEndDate) && Objects.equals(processed, that.processed);
+	}
+
+	@Override
+	public int hashCode() {
+		return Objects.hash(id, fetchedStartDate, fetchedEndDate, processed);
+	}
+
+	@Override
+	public String toString() {
+		return "ScheduledJobEntity{" +
+			"id='" + id + '\'' +
+			", fetchedStartDate=" + fetchedStartDate +
+			", fetchedEndDate=" + fetchedEndDate +
+			", processed=" + processed +
+			'}';
 	}
 }

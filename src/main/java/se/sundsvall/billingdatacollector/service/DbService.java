@@ -48,7 +48,7 @@ public class DbService {
 
 	public void saveFailedFlowInstance(byte[] bytes, String flowInstanceId, String familyId, String message) {
 		if (!falloutRepository.existsByFamilyIdAndFlowInstanceIdAndOpenEInstanceIsNotNull(familyId, flowInstanceId)) {
-			LOG.info("Saving fallout instance for OpenE with familyId: {} and flowInstanceId: {}", familyId, flowInstanceId);
+			LOG.info("Saving fallout billing record for OpenE with familyId: {} and flowInstanceId: {}", familyId, flowInstanceId);
 			falloutRepository.saveAndFlush(EntityMapper.mapToOpenEFalloutEntity(bytes, flowInstanceId, familyId, message));
 		} else {
 			LOG.info("Fallout instance for OpenE already exists for familyId: {} and flowInstanceId: {}", familyId, flowInstanceId);

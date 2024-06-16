@@ -15,7 +15,9 @@ spring:
     hibernate:
       ddl-auto: validate
 
-opene:
-  cron: '0 * * * * *'
-  name: open-e
-  lock-at-most-for: PT1M
+scheduler:
+  opene:
+    cron:
+      expression: '0 0 3 * * *'
+    name: opene
+    lock-at-most-for: PT5M
