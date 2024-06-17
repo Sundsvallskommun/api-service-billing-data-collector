@@ -51,7 +51,7 @@ class KundfakturaformularMapper implements OpenEMapper {
 	BillingRecordWrapper mapToInternalBillingRecord(final byte[] xml) {
 		var result = extractValue(xml, InternFaktura.class);
 
-		//Get the customerId, we will reuse this and add a "1" in front of it to create the counterpart
+		// Get the customerId, we will reuse this and add a "1" in front of it to create the counterpart
 		var customerId = mapperHelper.getLeadingDigits(result.forvaltningSomSkaBetala());
 
 		var billingRecord = new BillingRecord()
@@ -63,6 +63,7 @@ class KundfakturaformularMapper implements OpenEMapper {
 				.legalId(SUNSVALLS_MUNICIPALITY_ORGANIZATION_NUMBER))
 			.invoice(new Invoice()
 				.customerId(customerId)
+				.referenceId(result.flowInstanceId())
 				.invoiceRows(List.of(new InvoiceRow()
 					.descriptions(List.of(result.fakturaText()))
 					.quantity(result.antal())
@@ -77,6 +78,7 @@ class KundfakturaformularMapper implements OpenEMapper {
 
 		return BillingRecordWrapper.builder()
 			.withBillingRecord(billingRecord)
+			.withFlowInstanceId(result.flowInstanceId())
 			.build();
 	}
 
@@ -95,6 +97,7 @@ class KundfakturaformularMapper implements OpenEMapper {
 					.postalCode(result.postnummer())
 					.city(result.ort())))
 			.invoice(new Invoice()
+				.referenceId(result.flowInstanceId())
 				.invoiceRows(List.of(new InvoiceRow()
 					.descriptions(List.of(result.fakturaText()))
 					.quantity(result.antal())
@@ -112,6 +115,7 @@ class KundfakturaformularMapper implements OpenEMapper {
 		return BillingRecordWrapper.builder()
 			.withBillingRecord(billingRecord)
 			.withLegalId(result.personnummer())
+			.withFlowInstanceId(result.flowInstanceId())
 			.build();
 	}
 }

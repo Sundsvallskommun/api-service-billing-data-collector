@@ -12,6 +12,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 
 import java.time.OffsetDateTime;
 import java.util.Random;
+import java.util.UUID;
 
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -37,7 +38,8 @@ class FalloutEntityTest {
 
 	@Test
 	void testBuilderMethods() {
-		var id = "id";
+		var id = UUID.randomUUID().toString();
+		var requestId = UUID.randomUUID().toString();
 		var billingRecordWrapper = BillingRecordWrapper.builder().build();
 		var openEInstance = "some xml";
 		var familyId = "familyId";
@@ -48,6 +50,7 @@ class FalloutEntityTest {
 
 		var entity = FalloutEntity.builder()
 			.withId(id)
+			.withRequestId(requestId)
 			.withBillingRecordWrapper(billingRecordWrapper)
 			.withOpenEInstance(openEInstance)
 			.withFamilyId(familyId)
@@ -59,6 +62,7 @@ class FalloutEntityTest {
 
 		assertThat(entity).isNotNull().hasNoNullFieldsOrProperties();
 		assertThat(entity.getId()).isEqualTo(id);
+		assertThat(entity.getRequestId()).isEqualTo(requestId);
 		assertThat(entity.getBillingRecordWrapper()).isEqualTo(billingRecordWrapper);
 		assertThat(entity.getOpenEInstance()).isEqualTo(openEInstance);
 		assertThat(entity.getFamilyId()).isEqualTo(familyId);
@@ -66,6 +70,12 @@ class FalloutEntityTest {
 		assertThat(entity.getCreated()).isEqualTo(created);
 		assertThat(entity.getModified()).isEqualTo(modified);
 		assertThat(entity.getErrorMessage()).isEqualTo(errorMessage);
+	}
+
+	@Test
+	void testNoDirt() {
+		assertThat(FalloutEntity.builder().build()).hasAllNullFieldsOrProperties();
+		assertThat(new FalloutEntity()).hasAllNullFieldsOrProperties();
 	}
 
 	@Test
@@ -78,6 +88,7 @@ class FalloutEntityTest {
 
 		assertThat(entity.getCreated()).isBeforeOrEqualTo(OffsetDateTime.now());
 		assertThat(entity.getModified()).isBeforeOrEqualTo(OffsetDateTime.now());
+		assertThat(entity).hasAllNullFieldsOrPropertiesExcept("created", "modified");
 	}
 
 	@Test

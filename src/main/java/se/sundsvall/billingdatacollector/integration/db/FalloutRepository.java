@@ -1,5 +1,7 @@
 package se.sundsvall.billingdatacollector.integration.db;
 
+import java.util.List;
+
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import se.sundsvall.billingdatacollector.integration.db.model.FalloutEntity;
@@ -25,4 +27,8 @@ public interface FalloutRepository extends JpaRepository<FalloutEntity, String> 
 	 * @return true if an OpenE-instance fallout record already exists
 	 */
 	boolean existsByFamilyIdAndFlowInstanceIdAndOpenEInstanceIsNotNull(String familyId, String flowInstanceId);
+
+	List<FalloutEntity> findAllByFlowInstanceIdIn(List<String> flowInstanceIds);
+
+	boolean existsByFamilyIdAndFlowInstanceId(String familyId, String flowInstanceId);
 }

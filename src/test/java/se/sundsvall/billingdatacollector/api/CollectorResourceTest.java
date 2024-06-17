@@ -1,12 +1,12 @@
 package se.sundsvall.billingdatacollector.api;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.ArgumentMatchers.anySet;
 import static org.mockito.ArgumentMatchers.isNull;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
+import static org.mockito.Mockito.when;
 import static org.springframework.http.MediaType.APPLICATION_PROBLEM_JSON;
 import static org.zalando.problem.Status.BAD_REQUEST;
 
@@ -41,12 +41,13 @@ class CollectorResourceTest {
 	private static final LocalDate START_DATE = LocalDate.of(2023, 4, 25);
 	private static final LocalDate END_DATE = LocalDate.of(2024, 4, 25);
 	private static final Set<String> FAMILY_IDS = new HashSet<>(Arrays.asList("456", "789"));
+	private static final List<String> PROCESSED_FAMILY_IDS = List.of("456", "789");
 
 	@Test
 	void testTriggerBilling() {
 		//Arrange
 		var flowInstanceId = "123";
-		doNothing().when(mockService).trigger(flowInstanceId);
+		doNothing().when(mockService).triggerBilling(flowInstanceId);
 
 		//Act
 		webTestClient.post()
@@ -56,14 +57,14 @@ class CollectorResourceTest {
 			.expectStatus().isAccepted();
 
 		//Assert
-		verify(mockService).trigger(flowInstanceId);
+		verify(mockService).triggerBilling(flowInstanceId);
 		verifyNoMoreInteractions(mockService);
 	}
 
 	@Test
 	void testTriggerBillingBetweenTwoValidDates() {
 		//Arrange
-		doNothing().when(mockService).triggerBetweenDates(Mockito.any(LocalDate.class), Mockito.any(LocalDate.class), isNull());
+		when(mockService.triggerBillingBetweenDates(Mockito.any(LocalDate.class), Mockito.any(LocalDate.class), isNull())).thenReturn(PROCESSED_FAMILY_IDS);
 
 		//Act
 		webTestClient.post()
@@ -75,14 +76,14 @@ class CollectorResourceTest {
 			.expectStatus().isAccepted();
 
 		//Assert
-		verify(mockService).triggerBetweenDates(START_DATE, END_DATE, null);
+		verify(mockService).triggerBillingBetweenDates(START_DATE, END_DATE, null);
 		verifyNoMoreInteractions(mockService);
 	}
 
 	@Test
 	void testTriggerBillingBetweenTwoEqualDates() {
 		//Arrange
-		doNothing().when(mockService).triggerBetweenDates(Mockito.any(LocalDate.class), Mockito.any(LocalDate.class), isNull());
+		when(mockService.triggerBillingBetweenDates(Mockito.any(LocalDate.class), Mockito.any(LocalDate.class), isNull())).thenReturn(PROCESSED_FAMILY_IDS);
 
 		//Act
 		webTestClient.post()
@@ -94,14 +95,14 @@ class CollectorResourceTest {
 			.expectStatus().isAccepted();
 
 		//Assert
-		verify(mockService).triggerBetweenDates(START_DATE, START_DATE, null);
+		verify(mockService).triggerBillingBetweenDates(START_DATE, START_DATE, null);
 		verifyNoMoreInteractions(mockService);
 	}
 
 	@Test
 	void testTriggerBillingWithDatesAndFamilyIds() {
 		//Arrange
-		doNothing().when(mockService).triggerBetweenDates(Mockito.any(LocalDate.class), Mockito.any(LocalDate.class), anySet());
+		when(mockService.triggerBillingBetweenDates(Mockito.any(LocalDate.class), Mockito.any(LocalDate.class), isNull())).thenReturn(PROCESSED_FAMILY_IDS);
 
 		//Act
 		webTestClient.post()
@@ -114,7 +115,7 @@ class CollectorResourceTest {
 			.expectStatus().isAccepted();
 
 		//Assert
-		verify(mockService).triggerBetweenDates(START_DATE, END_DATE, FAMILY_IDS);
+		verify(mockService).triggerBillingBetweenDates(START_DATE, END_DATE, FAMILY_IDS);
 		verifyNoMoreInteractions(mockService);
 	}
 

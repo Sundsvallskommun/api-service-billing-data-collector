@@ -19,7 +19,7 @@ import org.zalando.problem.Problem;
 import org.zalando.problem.Status;
 
 import se.sundsvall.billingdatacollector.model.BillingRecordWrapper;
-import se.sundsvall.billingdatacollector.service.FalloutService;
+import se.sundsvall.billingdatacollector.service.DbService;
 
 @Component
 public class OpenEIntegration {
@@ -28,12 +28,12 @@ public class OpenEIntegration {
 
 	private final OpenEClient client;
 	private final Map<String, OpenEMapper> mappers;
-	private final FalloutService falloutService;
+	private final DbService dbService;
 
-	OpenEIntegration(final OpenEClient client, final List<OpenEMapper> mappers, FalloutService falloutService) {
+	OpenEIntegration(final OpenEClient client, final List<OpenEMapper> mappers, DbService dbService) {
 		this.client = client;
 		this.mappers = mappers.stream().collect(toMap(OpenEMapper::getSupportedFamilyId, Function.identity()));
-		this.falloutService = falloutService;
+		this.dbService = dbService;
 	}
 
 	public Set<String> getSupportedFamilyIds() {
@@ -72,11 +72,12 @@ public class OpenEIntegration {
 			billingRecordWrapper = mappers.get(familyId).mapToBillingRecordWrapper(xml);
 			//Set the familyId to make it possible to apply decorator
 			billingRecordWrapper.setFamilyId(familyId);
-			billingRecordWrapper.setFlowInstanceId(flowInstanceId);
+			//We set it here for convenience.
+			billingRecordWrapper.setFlowInstanceId(billingRecordWrapper.getFlowInstanceId());
 		} catch (Exception e) {
 			//If it fails, save it so we can investigate why.
 			LOG.warn("Failed to map XML to BillingRecordWrapper, saving to fallout table", e);
-			falloutService.saveFailedOpenEInstance(xml, flowInstanceId, familyId, e.getMessage());
+			dbService.saveFailedFlowInstance(xml, flowInstanceId, familyId, e.getMessage());
 		}
 
 		return Optional.ofNullable(billingRecordWrapper);

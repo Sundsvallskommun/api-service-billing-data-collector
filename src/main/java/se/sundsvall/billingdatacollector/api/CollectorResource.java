@@ -4,6 +4,7 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 import static org.springframework.http.MediaType.APPLICATION_PROBLEM_JSON_VALUE;
 
 import java.time.LocalDate;
+import java.util.List;
 import java.util.Set;
 
 import org.springframework.format.annotation.DateTimeFormat;
@@ -66,13 +67,13 @@ class CollectorResource {
 		@Parameter(name = "flowInstanceId", description = "flowInstanceId to trigger billing for", example = "123")
 		@NotEmpty @PathVariable("flowInstanceId") final String flowInstanceId) {
 
-		collectorService.trigger(flowInstanceId);
+		collectorService.triggerBilling(flowInstanceId);
 
 		return ResponseEntity.accepted().build();
 	}
 
 	@Operation(
-		summary = "Trigger billing for all flowInstanceId:s between two specific dates",
+		summary = "Trigger billing for all flowInstanceId:s between two specific dates. Will return a list of all triggered flowInstanceId:s",
 		responses = {
 			@ApiResponse(
 				responseCode = "202",
@@ -81,7 +82,7 @@ class CollectorResource {
 		}
 	)
 	@PostMapping(path = "/trigger", produces = { APPLICATION_JSON_VALUE, APPLICATION_PROBLEM_JSON_VALUE })
-	ResponseEntity<Void> triggerBilling(
+	ResponseEntity<List<String>> triggerBilling(
 		@RequestParam(name = "startDate") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
 		@Parameter(example = "2024-01-01") final LocalDate startDate,
 
@@ -94,9 +95,10 @@ class CollectorResource {
 
 		validateStartDateIsBeforeOrEqualToEndDate(startDate, endDate);
 
-		collectorService.triggerBetweenDates(startDate, endDate, familyIds);
+		var processedFlowInstanceIds = collectorService.triggerBillingBetweenDates(startDate, endDate, familyIds);
 
-		return ResponseEntity.accepted().build();
+		return ResponseEntity.accepted()
+			.body(processedFlowInstanceIds);
 	}
 
 	//Validate that the end date is after, or equal to, the start date

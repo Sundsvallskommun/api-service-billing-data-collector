@@ -7,6 +7,9 @@ record InternFaktura(
 	@XPath("/FlowInstance/Header/Flow/FamilyID")
 	String familyId,
 
+	@XPath("/FlowInstance/Header/FlowInstanceID")
+	String flowInstanceId,
+
 	@XPath("/FlowInstance/Values/FakturanSkickasTill/Value")
 	String fakturanSkickasTill,
 
@@ -35,4 +38,5 @@ record InternFaktura(
 	String verksamhet,
 
 	@XPath("/FlowInstance/Values/AktivitetskontoIntern1/Value")
-	String aktivitetskonto) { }
+	String aktivitetskonto
+	) { }

@@ -1,11 +1,23 @@
 openapi:
   name: ${spring.application.name}
-  title: BillingDataCollector
+  title: ${spring.application.name}
   version: '@project.version@'
-
 spring:
   application:
     name: api-billing-data-collector
+  cache:
+    cache-names: partyId
+    caffeine:
+      spec: maximumSize=100,expireAfterWrite=300s
+  flyway:
+    enabled: true
   jpa:
     hibernate:
       ddl-auto: validate
+
+scheduler:
+  opene:
+    cron:
+      expression: '0 0 3 * * *'
+    name: opene
+    lock-at-most-for: PT5M

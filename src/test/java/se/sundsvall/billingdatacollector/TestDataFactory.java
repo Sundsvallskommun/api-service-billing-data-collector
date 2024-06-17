@@ -3,8 +3,11 @@ package se.sundsvall.billingdatacollector;
 import static se.sundsvall.billingdatacollector.integration.opene.mapper.BillingRecordConstants.SUNDSVALLS_MUNICIPALIY;
 import static se.sundsvall.billingdatacollector.integration.opene.mapper.BillingRecordConstants.SUNSVALLS_MUNICIPALITY_ORGANIZATION_NUMBER;
 
+import java.time.LocalDate;
 import java.util.List;
 
+import se.sundsvall.billingdatacollector.integration.db.model.HistoryEntity;
+import se.sundsvall.billingdatacollector.integration.db.model.ScheduledJobEntity;
 import se.sundsvall.billingdatacollector.model.BillingRecordWrapper;
 
 import generated.se.sundsvall.billingpreprocessor.AccountInformation;
@@ -82,5 +85,18 @@ public final class TestDataFactory {
 						.activity("4165")
 						.article("3452000 - GULLGÅRDEN")
 						.counterpart("86000000")))));
+	}
+
+	public static HistoryEntity createHistoryEntity(String flowInstanceId) {
+		HistoryEntity historyEntity = new HistoryEntity();
+		historyEntity.setFlowInstanceId(flowInstanceId);
+		return historyEntity;
+	}
+
+	public static ScheduledJobEntity createScheduledJobEntity() {
+		ScheduledJobEntity scheduledJobEntity = new ScheduledJobEntity();
+		scheduledJobEntity.setFetchedStartDate(LocalDate.now().minusDays(4));
+		scheduledJobEntity.setFetchedEndDate(LocalDate.now().minusDays(3));
+		return scheduledJobEntity;
 	}
 }
