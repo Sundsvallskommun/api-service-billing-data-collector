@@ -14,7 +14,7 @@ import generated.se.sundsvall.billingpreprocessor.BillingRecord;
     url = "${integration.billing-preprocessor.base-url}",
     configuration = BillingPreprocessorIntegrationConfiguration.class
 )
-interface BillingPreprocessorClient {
+public interface BillingPreprocessorClient {
 
     @PostMapping("/billingrecords")
 	ResponseEntity<Void> createBillingRecord(@RequestBody BillingRecord billingRecord);

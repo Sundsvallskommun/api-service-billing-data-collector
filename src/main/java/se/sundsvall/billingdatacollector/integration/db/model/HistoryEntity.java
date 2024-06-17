@@ -15,7 +15,6 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.Index;
 import jakarta.persistence.PrePersist;
-import jakarta.persistence.PreUpdate;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -43,6 +42,9 @@ public class HistoryEntity {
 	@Column(name = "id")
 	private String id;
 
+	@Column(name = "request_id", length = 36)
+	private String requestId;
+
 	@Column(name = "billing_record_wrapper", length = Length.LONG)
 	@Convert(converter = BillingRecordWrapperConverter.class)
 	private BillingRecordWrapper billingRecordWrapper;
@@ -59,24 +61,21 @@ public class HistoryEntity {
 	@Column(name = "location")
 	private String location;
 
-	@PreUpdate
 	@PrePersist
 	public void prePersist() {
-		if(created == null) {
-			created = LocalDate.now();
-		}
+		created = LocalDate.now();
 	}
 
 	@Override
 	public boolean equals(Object o) {
 		if (this == o) return true;
 		if (!(o instanceof HistoryEntity that)) return false;
-		return Objects.equals(id, that.id) && Objects.equals(familyId, that.familyId) && Objects.equals(flowInstanceId, that.flowInstanceId) && Objects.equals(created, that.created) && Objects.equals(location, that.location);
+		return Objects.equals(id, that.id) && Objects.equals(familyId, that.familyId) && Objects.equals(flowInstanceId, that.flowInstanceId) && Objects.equals(created, that.created) && Objects.equals(location, that.location) && Objects.equals(requestId, that.requestId);
 	}
 
 	@Override
 	public int hashCode() {
-		return Objects.hash(id, familyId, flowInstanceId, created, location);
+		return Objects.hash(id, familyId, flowInstanceId, created, location, requestId);
 	}
 
 	@Override
@@ -88,6 +87,7 @@ public class HistoryEntity {
 			", flowInstanceId='" + flowInstanceId + '\'' +
 			", created=" + created +
 			", location='" + location + '\'' +
+			", requestId='" + requestId + '\'' +
 			'}';
 	}
 }

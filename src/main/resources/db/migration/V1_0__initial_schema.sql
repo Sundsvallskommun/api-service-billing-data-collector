@@ -1,24 +1,26 @@
 create table fallout
 (
+    billing_record_wrapper text,
     created                datetime(6),
-    modified               datetime(6),
     error_message          varchar(1024),
     family_id              varchar(255),
     flow_instance_id       varchar(255),
     id                     varchar(36) not null,
-    billing_record_wrapper text,
+    modified               datetime(6),
     opene_instance         text,
+    request_id             varchar(36),
     primary key (id)
 ) engine = InnoDB;
 
 create table history
 (
+    billing_record_wrapper text,
     created                date,
     family_id              varchar(255),
     flow_instance_id       varchar(255),
     id                     varchar(36) not null,
     location               varchar(255),
-    billing_record_wrapper text,
+    request_id             varchar(36),
     primary key (id)
 ) engine = InnoDB;
 

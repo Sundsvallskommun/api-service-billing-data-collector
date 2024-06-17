@@ -46,6 +46,9 @@ public class FalloutEntity {
 	@Column(name = "id")
 	private String id;
 
+	@Column(name = "request_id", length = 36)
+	private String requestId;
+
 	@Column(name = "billing_record_wrapper", length = Length.LONG)
 	@Convert(converter = BillingRecordWrapperConverter.class)
 	private BillingRecordWrapper billingRecordWrapper;
@@ -83,12 +86,12 @@ public class FalloutEntity {
 	public boolean equals(Object o) {
 		if (this == o) return true;
 		if (!(o instanceof FalloutEntity that)) return false;
-		return Objects.equals(id, that.id) && Objects.deepEquals(openEInstance, that.openEInstance) && Objects.equals(familyId, that.familyId) && Objects.equals(flowInstanceId, that.flowInstanceId) && Objects.equals(created, that.created) && Objects.equals(modified, that.modified);
+		return Objects.equals(id, that.id) && Objects.deepEquals(openEInstance, that.openEInstance) && Objects.equals(familyId, that.familyId) && Objects.equals(flowInstanceId, that.flowInstanceId) && Objects.equals(created, that.created) && Objects.equals(modified, that.modified) && Objects.equals(requestId, that.requestId);
 	}
 
 	@Override
 	public int hashCode() {
-		return Objects.hash(id, familyId, flowInstanceId, created, modified);
+		return Objects.hash(id, familyId, flowInstanceId, created, modified, requestId);
 	}
 
 	@Override
@@ -102,6 +105,7 @@ public class FalloutEntity {
 			", errorMessage='" + errorMessage + '\'' +
 			", created=" + created +
 			", modified=" + modified +
+			", requestId='" + requestId + '\'' +
 			'}';
 	}
 }

@@ -60,10 +60,17 @@ class ScheduledJobEntityTest {
 	}
 
 	@Test
+	void testNoDirt() {
+		assertThat(ScheduledJobEntity.builder().build()).hasAllNullFieldsOrProperties();
+		assertThat(new ScheduledJobEntity()).hasAllNullFieldsOrProperties();
+	}
+
+	@Test
 	void testPrePersist() {
 		ScheduledJobEntity scheduledJobEntity = new ScheduledJobEntity();
 		scheduledJobEntity.prePersist();
 		assertThat(scheduledJobEntity.getProcessed()).isCloseTo(OffsetDateTime.now(), within(1, ChronoUnit.SECONDS));
+		assertThat(scheduledJobEntity).hasAllNullFieldsOrPropertiesExcept("processed");
 	}
 
 }

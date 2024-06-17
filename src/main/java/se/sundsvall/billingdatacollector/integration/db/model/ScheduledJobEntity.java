@@ -1,9 +1,12 @@
 package se.sundsvall.billingdatacollector.integration.db.model;
 
+import static org.hibernate.annotations.TimeZoneStorageType.NORMALIZE;
+
 import java.time.LocalDate;
 import java.time.OffsetDateTime;
 import java.util.Objects;
 
+import org.hibernate.annotations.TimeZoneStorage;
 import org.hibernate.annotations.UuidGenerator;
 
 import jakarta.persistence.Column;
@@ -47,6 +50,7 @@ public class ScheduledJobEntity {
 	 * Date when the job was processed.
 	 */
 	@Column(name = "processed", nullable = false)
+	@TimeZoneStorage(NORMALIZE)
 	private OffsetDateTime processed;
 
 	@PrePersist

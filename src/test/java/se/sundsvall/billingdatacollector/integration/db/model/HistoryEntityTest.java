@@ -13,6 +13,7 @@ import static org.hamcrest.CoreMatchers.allOf;
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
 import java.util.Random;
+import java.util.UUID;
 
 import org.hamcrest.MatcherAssert;
 import org.junit.jupiter.api.BeforeAll;
@@ -40,7 +41,8 @@ class HistoryEntityTest {
 	@Test
 	void testBuilderMethods() {
 		// Set values as variables
-		final var id = "id";
+		final var id = UUID.randomUUID().toString();
+		final var requestId = UUID.randomUUID().toString();
 		final var billingRecordWrapper = new BillingRecordWrapper();
 		final var familyId = "familyId";
 		final var flowInstanceId = "flowInstanceId";
@@ -49,6 +51,7 @@ class HistoryEntityTest {
 
 		final var historyEntity = HistoryEntity.builder()
 			.withId(id)
+			.withRequestId(requestId)
 			.withBillingRecordWrapper(billingRecordWrapper)
 			.withFamilyId(familyId)
 			.withFlowInstanceId(flowInstanceId)
@@ -58,6 +61,7 @@ class HistoryEntityTest {
 
 		assertThat(historyEntity).isNotNull().hasNoNullFieldsOrProperties();
 		assertThat(historyEntity.getId()).isEqualTo(id);
+		assertThat(historyEntity.getRequestId()).isEqualTo(requestId);
 		assertThat(historyEntity.getBillingRecordWrapper()).isEqualTo(billingRecordWrapper);
 		assertThat(historyEntity.getFamilyId()).isEqualTo(familyId);
 		assertThat(historyEntity.getFlowInstanceId()).isEqualTo(flowInstanceId);
@@ -66,10 +70,17 @@ class HistoryEntityTest {
 	}
 
 	@Test
+	void testNoDirt() {
+		assertThat(HistoryEntity.builder().build()).hasAllNullFieldsOrProperties();
+		assertThat(new HistoryEntity()).hasAllNullFieldsOrProperties();
+	}
+
+	@Test
 	void testPrepersist() {
 		final var historyEntity = new HistoryEntity();
 		historyEntity.prePersist();
 		assertThat(historyEntity.getCreated()).isCloseTo(LocalDate.now(), within(0, ChronoUnit.DAYS));
+		assertThat(historyEntity).hasAllNullFieldsOrPropertiesExcept("created");
 	}
 
 }

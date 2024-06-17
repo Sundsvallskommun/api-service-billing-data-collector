@@ -16,7 +16,7 @@ import org.springframework.stereotype.Service;
 import org.zalando.problem.Problem;
 import org.zalando.problem.Status;
 
-import se.sundsvall.billingdatacollector.integration.billingpreprocessor.BillingPreprocessorIntegration;
+import se.sundsvall.billingdatacollector.integration.billingpreprocessor.BillingPreprocessorClient;
 import se.sundsvall.billingdatacollector.integration.opene.OpenEIntegration;
 import se.sundsvall.billingdatacollector.model.BillingRecordWrapper;
 import se.sundsvall.billingdatacollector.service.decorator.BillingRecordDecorator;
@@ -28,13 +28,13 @@ public class CollectorService {
 
 	private final DbService dbService;
 	private final OpenEIntegration openEIntegration;
-	private final BillingPreprocessorIntegration preprocessorIntegration;
+	private final BillingPreprocessorClient preprocessorIntegration;
 	private final Map<String, BillingRecordDecorator> decorators;
 
-	public CollectorService(DbService dbService, OpenEIntegration openEIntegration, BillingPreprocessorIntegration preprocessorIntegration, List<BillingRecordDecorator> decorators) {
+	public CollectorService(DbService dbService, OpenEIntegration openEIntegration, BillingPreprocessorClient preProcessorClient, List<BillingRecordDecorator> decorators) {
 		this.dbService = dbService;
 		this.openEIntegration = openEIntegration;
-		this.preprocessorIntegration = preprocessorIntegration;
+		this.preprocessorIntegration = preProcessorClient;
 
 		//Get all Decorators and add them to the map with their corresponding familyId.
 		this.decorators = decorators.stream().collect(Collectors.toMap(BillingRecordDecorator::getSupportedFamilyId, Function.identity()));
@@ -67,8 +67,7 @@ public class CollectorService {
 		} catch (Exception e) {
 			//Save the BillingRecordWrapper if we failed to send it to the preprocessor
 			LOG.warn("Failed to create a record for flowInstanceId: {}", billingRecordWrapper.getFlowInstanceId(), e);
-			Optional.of(billingRecordWrapper)
-				.ifPresent(wrapper -> dbService.saveFailedBillingRecord(wrapper, e.getMessage()));
+			dbService.saveFailedBillingRecord(billingRecordWrapper, e.getMessage());
 		}
 	}
 
@@ -95,23 +94,27 @@ public class CollectorService {
 					var receivedFlowInstanceIds = openEIntegration.getFlowInstanceIds(supportedFamilyId, startDate.toString(), endDate.toString());
 
 					// Trigger billing for the unprocessed flowInstanceIds
-					receivedFlowInstanceIds.forEach(flowInstanceId -> {
-						//Check if it's already been processed, if so skip it
-						if(!dbService.hasAlreadyBeenProcessed(supportedFamilyId, flowInstanceId)) {
-							try {
-								idsToReturn.add(flowInstanceId);
-								triggerBilling(flowInstanceId);
-							} catch (Exception e) {
-								LOG.warn("Failed to trigger billing for familyId: {} and flowInstanceId: {}", supportedFamilyId, flowInstanceId, e);
-							}
-						} else {
-							LOG.info("Billing for familyId: {} and flowInstanceId: {} has already been processed", supportedFamilyId, flowInstanceId);
-						}
-					});
+					receivedFlowInstanceIds.forEach(flowInstanceId ->
+						checkIfBilledAndProcess(supportedFamilyId, flowInstanceId, idsToReturn));
 				}
 			);
 
 		return idsToReturn;
+	}
+
+	private void checkIfBilledAndProcess(String supportedFamilyId, String flowInstanceId, List<String> idsToReturn) {
+		//Check if it's already been processed, if so skip it
+		if(!dbService.hasAlreadyBeenProcessed(supportedFamilyId, flowInstanceId)) {
+			try {
+				idsToReturn.add(flowInstanceId);
+				triggerBilling(flowInstanceId);
+			} catch (Exception e) {
+				LOG.warn("Failed to trigger billing for familyId: {} and flowInstanceId: {}", supportedFamilyId, flowInstanceId, e);
+			}
+		} else {
+			LOG.info("Billing for familyId: {} and flowInstanceId: {} has already been processed", supportedFamilyId, flowInstanceId);
+		}
+
 	}
 
 	/**

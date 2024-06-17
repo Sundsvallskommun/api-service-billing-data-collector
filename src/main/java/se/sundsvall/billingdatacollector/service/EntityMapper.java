@@ -7,6 +7,7 @@ import se.sundsvall.billingdatacollector.integration.db.model.FalloutEntity;
 import se.sundsvall.billingdatacollector.integration.db.model.HistoryEntity;
 import se.sundsvall.billingdatacollector.integration.db.model.ScheduledJobEntity;
 import se.sundsvall.billingdatacollector.model.BillingRecordWrapper;
+import se.sundsvall.dept44.requestid.RequestId;
 
 final class EntityMapper {
 
@@ -19,6 +20,7 @@ final class EntityMapper {
 			.withFlowInstanceId(flowInstanceId)
 			.withFamilyId(familyId)
 			.withErrorMessage(message)
+			.withRequestId(RequestId.get())
 			.build();
 	}
 
@@ -28,6 +30,7 @@ final class EntityMapper {
 			.withFamilyId(wrapper.getFamilyId())
 			.withFlowInstanceId(wrapper.getFlowInstanceId())
 			.withErrorMessage(message)
+			.withRequestId(RequestId.get())
 			.build();
 	}
 
@@ -37,6 +40,7 @@ final class EntityMapper {
 			.withFamilyId(wrapper.getFamilyId())
 			.withFlowInstanceId(wrapper.getFlowInstanceId())
 			.withLocation(location)
+			.withRequestId(RequestId.get())
 			.build();
 	}
 

@@ -11,10 +11,14 @@ import static org.mockito.Mockito.when;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Stream;
 
 import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
@@ -150,38 +154,32 @@ class DbServiceTest {
 		verifyNoMoreInteractions(mockFalloutRepository);
 	}
 
-	@Test
-	void testHasAlreadyBeenProcessed_shouldReturnTrue_whenEitherIsTrue() {
+	@ParameterizedTest
+	@MethodSource("provideParameters")
+	void testHasAlreadyBeenProcessed(boolean historyExists, boolean falloutExists, boolean expectedOutcome) {
 		//Arrange
-		when(mockHistoryRepository.existsByFamilyIdAndFlowInstanceId(FAMILY_ID, FLOW_INSTANCE_ID)).thenReturn(true);
-		when(mockFalloutRepository.existsByFamilyIdAndFlowInstanceId(FAMILY_ID, FLOW_INSTANCE_ID)).thenReturn(false);
+		when(mockHistoryRepository.existsByFamilyIdAndFlowInstanceId(FAMILY_ID, FLOW_INSTANCE_ID)).thenReturn(historyExists);
+		when(mockFalloutRepository.existsByFamilyIdAndFlowInstanceId(FAMILY_ID, FLOW_INSTANCE_ID)).thenReturn(falloutExists);
 
 		//Act
 		boolean result = dbService.hasAlreadyBeenProcessed(FAMILY_ID, FLOW_INSTANCE_ID);
 
 		//Assert
-		assertThat(result).isTrue();
+		assertThat(result).isEqualTo(expectedOutcome);
 		verify(mockHistoryRepository).existsByFamilyIdAndFlowInstanceId(FAMILY_ID, FLOW_INSTANCE_ID);
 		verify(mockFalloutRepository).existsByFamilyIdAndFlowInstanceId(FAMILY_ID, FLOW_INSTANCE_ID);
 		verifyNoMoreInteractions(mockFalloutRepository);
 		verifyNoMoreInteractions(mockHistoryRepository);
 	}
 
-	@Test
-	void testHasAlreadyBeenProcessed_shouldReturnFalse_whenNeitherIsTrue() {
-		//Arrange
-		when(mockHistoryRepository.existsByFamilyIdAndFlowInstanceId(FAMILY_ID, FLOW_INSTANCE_ID)).thenReturn(false);
-		when(mockFalloutRepository.existsByFamilyIdAndFlowInstanceId(FAMILY_ID, FLOW_INSTANCE_ID)).thenReturn(false);
-
-		//Act
-		boolean result = dbService.hasAlreadyBeenProcessed(FAMILY_ID, FLOW_INSTANCE_ID);
-
-		//Assert
-		assertThat(result).isFalse();
-		verify(mockHistoryRepository).existsByFamilyIdAndFlowInstanceId(FAMILY_ID, FLOW_INSTANCE_ID);
-		verify(mockFalloutRepository).existsByFamilyIdAndFlowInstanceId(FAMILY_ID, FLOW_INSTANCE_ID);
-		verifyNoMoreInteractions(mockFalloutRepository);
-		verifyNoMoreInteractions(mockHistoryRepository);
+	private static Stream<Arguments> provideParameters() {
+		// Arguments.of(historyExists, falloutExists, expected), i.e. only false when both are false
+		return Stream.of(
+			Arguments.of(true, false, true),
+			Arguments.of(false, true, true),
+			Arguments.of(true, true, true),
+			Arguments.of(false, false, false)
+		);
 	}
 
 	@Test

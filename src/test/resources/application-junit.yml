@@ -56,7 +56,7 @@ integration:
 scheduler:
   opene:
     cron:
-      expression: '0 * * * * *'
+      expression: '-'
     lock-at-most-for: PT30S
 spring:
   datasource:
