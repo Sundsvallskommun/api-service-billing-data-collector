@@ -24,10 +24,6 @@ record MessagingIntegrationProperties(
         @NotNull
         EmailProperties email,
 
-        @Valid
-        @NotNull
-        SlackProperties slack,
-
         @DefaultValue("5")
         int connectTimeout,
 
@@ -57,12 +53,4 @@ record MessagingIntegrationProperties(
             @NotBlank
             String emailAddress) {}
     }
-
-    record SlackProperties(
-
-        @NotBlank
-        String token,
-
-        @NotEmpty
-        List<@NotBlank String> channels) { }
 }

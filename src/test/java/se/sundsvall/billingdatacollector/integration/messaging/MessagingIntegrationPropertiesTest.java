@@ -33,11 +33,7 @@ class MessagingIntegrationPropertiesTest {
                 assertThat(sender.emailAddress()).isEqualTo("someEmailAddress");
             });
             assertThat(emailProperties.subject()).isEqualTo("someSubject");
-            assertThat(emailProperties.recipients()).containsExactlyInAnyOrder("recipientA", "recipientB");
-        });
-        assertThat(properties.slack()).isNotNull().satisfies(slackProperties -> {
-            assertThat(slackProperties.token()).isEqualTo("someToken");
-            assertThat(slackProperties.channels()).containsExactlyInAnyOrder("channelA", "channelB", "channelC");
+            assertThat(emailProperties.recipients()).containsExactlyInAnyOrder("someone@nowhere.com", "someone2@nowhere.com");
         });
     }
 }

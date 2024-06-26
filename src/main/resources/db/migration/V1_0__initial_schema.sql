@@ -8,6 +8,7 @@ create table fallout
     id                     varchar(36) not null,
     modified               datetime(6),
     opene_instance         text,
+    reported               boolean default false,
     request_id             varchar(36),
     primary key (id)
 ) engine = InnoDB;

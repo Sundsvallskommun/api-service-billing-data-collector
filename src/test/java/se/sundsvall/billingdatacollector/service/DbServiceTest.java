@@ -155,7 +155,7 @@ class DbServiceTest {
 	}
 
 	@ParameterizedTest
-	@MethodSource("provideParameters")
+	@MethodSource("processedParameters")
 	void testHasAlreadyBeenProcessed(boolean historyExists, boolean falloutExists, boolean expectedOutcome) {
 		//Arrange
 		when(mockHistoryRepository.existsByFamilyIdAndFlowInstanceId(FAMILY_ID, FLOW_INSTANCE_ID)).thenReturn(historyExists);
@@ -172,7 +172,7 @@ class DbServiceTest {
 		verifyNoMoreInteractions(mockHistoryRepository);
 	}
 
-	private static Stream<Arguments> provideParameters() {
+	private static Stream<Arguments> processedParameters() {
 		// Arguments.of(historyExists, falloutExists, expected), i.e. only false when both are false
 		return Stream.of(
 			Arguments.of(true, false, true),
@@ -254,6 +254,35 @@ class DbServiceTest {
 		// Assert
 		assertThat(result).hasSize(1);
 		verify(mockFalloutRepository).findAllByFlowInstanceIdIn(List.of("flowInstanceId"));
+		verifyNoMoreInteractions(mockFalloutRepository);
+	}
+
+	@Test
+	void testGetUnreportedFallouts() {
+		// Arrange
+		when(mockFalloutRepository.findAllByReportedIsFalse()).thenReturn(List.of(FalloutEntity.builder().build()));
+
+		// Act
+		var result = dbService.getUnreportedFallouts();
+
+		// Assert
+		assertThat(result).hasSize(1);
+		verify(mockFalloutRepository).findAllByReportedIsFalse();
+		verifyNoMoreInteractions(mockFalloutRepository);
+	}
+
+	@Test
+	void testMarkAllFalloutsAsReported() {
+		// Arrange
+		var entities = List.of(FalloutEntity.builder().build());
+		when(mockFalloutRepository.findAllByReportedIsFalse()).thenReturn(entities);
+
+		// Act
+		dbService.markAllFalloutsAsReported();
+
+		// Assert
+		verify(mockFalloutRepository).findAllByReportedIsFalse();
+		verify(mockFalloutRepository).saveAllAndFlush(entities);
 		verifyNoMoreInteractions(mockFalloutRepository);
 	}
 

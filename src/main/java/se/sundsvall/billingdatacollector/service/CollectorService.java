@@ -95,14 +95,14 @@ public class CollectorService {
 
 					// Trigger billing for the unprocessed flowInstanceIds
 					receivedFlowInstanceIds.forEach(flowInstanceId ->
-						checkIfBilledAndProcess(supportedFamilyId, flowInstanceId, idsToReturn));
+						checkIfAlreadyProcessed(supportedFamilyId, flowInstanceId, idsToReturn));
 				}
 			);
 
 		return idsToReturn;
 	}
 
-	private void checkIfBilledAndProcess(String supportedFamilyId, String flowInstanceId, List<String> idsToReturn) {
+	private void checkIfAlreadyProcessed(String supportedFamilyId, String flowInstanceId, List<String> idsToReturn) {
 		//Check if it's already been processed, if so skip it
 		if(!dbService.hasAlreadyBeenProcessed(supportedFamilyId, flowInstanceId)) {
 			try {
@@ -114,7 +114,6 @@ public class CollectorService {
 		} else {
 			LOG.info("Billing for familyId: {} and flowInstanceId: {} has already been processed", supportedFamilyId, flowInstanceId);
 		}
-
 	}
 
 	/**

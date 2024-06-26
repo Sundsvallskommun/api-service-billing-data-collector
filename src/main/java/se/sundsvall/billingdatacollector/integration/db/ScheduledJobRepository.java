@@ -10,6 +10,5 @@ import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
 
 @CircuitBreaker(name = "scheduledJobRepository")
 public interface ScheduledJobRepository extends JpaRepository<ScheduledJobEntity, String> {
-
 	Optional<ScheduledJobEntity> findFirstByOrderByFetchedEndDateDesc();
 }

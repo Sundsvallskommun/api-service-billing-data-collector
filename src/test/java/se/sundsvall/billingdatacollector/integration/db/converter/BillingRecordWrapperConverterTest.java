@@ -39,21 +39,21 @@ class BillingRecordWrapperConverterTest {
 		var invoiceRow = wrapper.getBillingRecord().getInvoice().getInvoiceRows().getFirst();
 
 		assertThat(invoiceRow.getAccountInformation().getActivity()).isEqualTo("4165");
-		assertThat(invoiceRow.getAccountInformation().getArticle()).isEqualTo("3452000 - GULLGÅRDEN");
+		assertThat(invoiceRow.getAccountInformation().getArticle()).isEqualTo("3452000 - ANKEBORG");
 		assertThat(invoiceRow.getAccountInformation().getCostCenter()).isEqualTo("43200000");
 		assertThat(invoiceRow.getAccountInformation().getCounterpart()).isEqualTo("86000000");
 		assertThat(invoiceRow.getAccountInformation().getDepartment()).isEqualTo("315310");
 		assertThat(invoiceRow.getAccountInformation().getSubaccount()).isEqualTo("345000");
 		assertThat(invoiceRow.getCostPerUnit()).isEqualTo(700.0f);
-		assertThat(invoiceRow.getDescriptions().getFirst()).isEqualTo("Julmarknad Norra Berget. 3 marknadsplatser");
+		assertThat(invoiceRow.getDescriptions().getFirst()).isEqualTo("Julmarknad Ankeborg. 3 marknadsplatser");
 		assertThat(invoiceRow.getQuantity()).isEqualTo(3);
 		assertThat(invoiceRow.getTotalAmount()).isEqualTo(2100.0f);
 		assertThat(invoiceRow.getVatCode()).isEqualTo("00");
-		assertThat(wrapper.getBillingRecord().getRecipient().getAddressDetails().getCity()).isEqualTo("NJURUNDA");
+		assertThat(wrapper.getBillingRecord().getRecipient().getAddressDetails().getCity()).isEqualTo("ANKEBORG");
 		assertThat(wrapper.getBillingRecord().getRecipient().getAddressDetails().getPostalCode()).isEqualTo("862 96");
-		assertThat(wrapper.getBillingRecord().getRecipient().getAddressDetails().getStreet()).isEqualTo("MYRBODARNA 150");
-		assertThat(wrapper.getBillingRecord().getRecipient().getFirstName()).isEqualTo("Christina");
-		assertThat(wrapper.getBillingRecord().getRecipient().getLastName()).isEqualTo("Näslund");
+		assertThat(wrapper.getBillingRecord().getRecipient().getAddressDetails().getStreet()).isEqualTo("Ankeborgsv 150");
+		assertThat(wrapper.getBillingRecord().getRecipient().getFirstName()).isEqualTo("Kalle");
+		assertThat(wrapper.getBillingRecord().getRecipient().getLastName()).isEqualTo("Anka");
 		assertThat(wrapper.getBillingRecord().getRecipient().getPartyId()).isEqualTo("fb2f0290-3820-11ed-a261-0242ac120002");
 		assertThat(wrapper.getBillingRecord().getStatus()).isEqualTo(Status.APPROVED);
 		assertThat(wrapper.getBillingRecord().getType()).isEqualTo(Type.EXTERNAL);
@@ -71,23 +71,23 @@ class BillingRecordWrapperConverterTest {
 					.invoiceRows(List.of(new InvoiceRow()
 						.accountInformation(new AccountInformation()
 							.activity("4165")
-							.article("3452000 - GULLGÅRDEN")
+							.article("3452000 - ANKEBORG")
 							.costCenter("43200000")
 							.counterpart("86000000")
 							.department("315310")
 							.subaccount("345000"))
 						.costPerUnit(700.0f)
-						.descriptions(List.of("Julmarknad Norra Berget. 3 marknadsplatser"))
+						.descriptions(List.of("Julmarknad Ankeborg. 3 marknadsplatser"))
 						.quantity(3)
 						.totalAmount(2100.0f)
 						.vatCode("00"))))
 				.recipient(new Recipient()
 					.addressDetails(new AddressDetails()
-						.city("NJURUNDA")
+						.city("ANKEBORG")
 						.postalCode("862 96")
-						.street("MYRBODARNA 150"))
-					.firstName("Christina")
-					.lastName("Näslund")
+						.street("Ankeborgsv 150"))
+					.firstName("Kalle")
+					.lastName("Anka")
 					.partyId("fb2f0290-3820-11ed-a261-0242ac120002"))
 				.status(Status.APPROVED)
 				.type(Type.EXTERNAL))

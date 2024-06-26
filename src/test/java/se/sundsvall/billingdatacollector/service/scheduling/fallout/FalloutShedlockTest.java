@@ -1,4 +1,4 @@
-package se.sundsvall.billingdatacollector.service.scheduling;
+package se.sundsvall.billingdatacollector.service.scheduling.fallout;
 
 import static java.time.Clock.systemUTC;
 import static java.util.concurrent.TimeUnit.SECONDS;
@@ -28,22 +28,22 @@ import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import se.sundsvall.billingdatacollector.support.annotation.UnitTest;
 
 @SpringBootTest(properties = {
-	"scheduler.opene.cron.expression=* * * * * *", // Setup to execute every second
+	"scheduler.fallout.cron.expression=* * * * * *", // Setup to execute every second
 	"spring.datasource.driver-class-name=org.testcontainers.jdbc.ContainerDatabaseDriver",
 	"spring.datasource.url=jdbc:tc:mariadb:10.6.4:////",
 	"server.shutdown=immediate",
 	"spring.lifecycle.timeout-per-shutdown-phase=0s"
 })
 @UnitTest
-class BillingShedlockTest {
+class FalloutShedlockTest {
 
 	@TestConfiguration
 	public static class ShedlockTestConfiguration {
 		@Bean
 		@Primary
-		public BillingJobHandler createMock() {
+		public FalloutJobHandler createMock() {
 
-			final var mockBean =  Mockito.mock(BillingJobHandler.class);
+			final var mockBean =  Mockito.mock(FalloutJobHandler.class);
 
 			// Let mock hang
 			doAnswer(invocation -> {
@@ -51,14 +51,14 @@ class BillingShedlockTest {
 				await().forever()
 					.until(() -> false);
 				return null;
-			}).when(mockBean).handleBilling();
+			}).when(mockBean).handleFallout();
 
 			return mockBean;
 		}
 	}
 
 	@Autowired
-	private BillingJobHandler billingJobHandler;
+	private FalloutJobHandler falloutJobHandler;
 
 	@Autowired
 	private NamedParameterJdbcTemplate jdbcTemplate;
@@ -71,12 +71,12 @@ class BillingShedlockTest {
 
 		// Verify lock
 		await().atMost(5, SECONDS)
-			.untilAsserted(() -> assertThat(getLockedAt("opene"))
+			.untilAsserted(() -> assertThat(getLockedAt("fallout"))
 				.isCloseTo(LocalDateTime.now(systemUTC()), within(10, ChronoUnit.SECONDS)));
 
 		// Only one call should be made as long as handleJob() is locked and mock is waiting for first call to finish
-		verify(billingJobHandler).handleBilling();
-		verifyNoMoreInteractions(billingJobHandler);
+		verify(falloutJobHandler).handleFallout();
+		verifyNoMoreInteractions(falloutJobHandler);
 	}
 
 	private LocalDateTime getLockedAt(String name) {

@@ -1,4 +1,4 @@
-package se.sundsvall.billingdatacollector.service.scheduling;
+package se.sundsvall.billingdatacollector.service.scheduling.billing;
 
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
@@ -20,6 +20,6 @@ public class BillingScheduler {
 	@SchedulerLock(name = "${scheduler.opene.name}", lockAtMostFor = "${scheduler.opene.lock-at-most-for}")
 	public void runBillingJob() {
 		RequestId.init();
-		billingJobHandler.handleBilling();
+		billingJobHandler.performBilling();
 	}
 }

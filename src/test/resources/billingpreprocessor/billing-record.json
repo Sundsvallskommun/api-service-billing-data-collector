@@ -10,14 +10,14 @@
 			"partyId": "fb2f0290-3820-11ed-a261-0242ac120002",
 			"legalId": null,
 			"organizationName": null,
-			"firstName": "Christina",
-			"lastName": "Näslund",
+			"firstName": "Kalle",
+			"lastName": "Anka",
 			"userId": null,
 			"addressDetails": {
-				"street": "MYRBODARNA 150",
+				"street": "Ankeborgsv 150",
 				"careOf": null,
 				"postalCode": "862 96",
-				"city": "NJURUNDA"
+				"city": "ANKEBORG"
 			}
 		},
 		"invoice": {
@@ -32,7 +32,7 @@
 			"invoiceRows": [
 				{
 					"descriptions": [
-						"Julmarknad Norra Berget. 3 marknadsplatser"
+						"Julmarknad Ankeborg. 3 marknadsplatser"
 					],
 					"detailedDescriptions": [],
 					"totalAmount": 2100.0,
@@ -45,7 +45,7 @@
 						"department": "315310",
 						"accuralKey": null,
 						"activity": "4165",
-						"article": "3452000 - GULLGÅRDEN",
+						"article": "3452000 - ANKEBORG",
 						"project": null,
 						"counterpart": "86000000"
 					}
