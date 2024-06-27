@@ -1,5 +1,6 @@
-package se.sundsvall.billingdatacollector.service.scheduling;
+package se.sundsvall.billingdatacollector.service.scheduling.billing;
 
+import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 
@@ -7,7 +8,6 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 @ExtendWith(MockitoExtension.class)
@@ -22,13 +22,13 @@ class BillingSchedulerTest {
 	@Test
 	void testRunBillingJob() {
 		// Arrange
-		Mockito.doNothing().when(mockBillingJobHandler).handleBilling();
+		doNothing().when(mockBillingJobHandler).performBilling();
 
 		// Act
 		billingScheduler.runBillingJob();
 
 		// Assert
-		verify(mockBillingJobHandler).handleBilling();
+		verify(mockBillingJobHandler).performBilling();
 		verifyNoMoreInteractions(mockBillingJobHandler);
 	}
 }

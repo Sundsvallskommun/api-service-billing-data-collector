@@ -20,6 +20,7 @@ import java.util.Set;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentMatchers;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.ResponseEntity;
@@ -73,6 +74,7 @@ class CollectorServiceTest {
 		when(mockOpenEIntegration.getBillingRecord(SUPPORTED_FAMILY_ID)).thenReturn(Optional.of(billingRecordWrapper));
 		doNothing().when(mockDecorator).decorate(any(BillingRecordWrapper.class));
 		when(mockBillingPreprocessorClient.createBillingRecord(any())).thenReturn(ResponseEntity.ok().build());
+		doNothing().when(mockDbService).saveToHistory(any(BillingRecordWrapper.class), ArgumentMatchers.any());
 
 		//Act
 		collectorService.triggerBilling(SUPPORTED_FAMILY_ID);
@@ -80,8 +82,27 @@ class CollectorServiceTest {
 		//Assert
 		verify(mockOpenEIntegration).getBillingRecord(SUPPORTED_FAMILY_ID);
 		verify(mockDecorator).decorate(billingRecordWrapper);
+		verify(mockDbService).saveToHistory(billingRecordWrapper, ResponseEntity.ok().build());
 		verify(mockBillingPreprocessorClient).createBillingRecord(billingRecordWrapper.getBillingRecord());
 		verifyNoMoreInteractions(mockOpenEIntegration, mockDecorator, mockBillingPreprocessorClient);
+	}
+
+	@Test
+	void testTriggerBilling_shouldSaveToFallout_whenPreprocessorException() {
+		// Arrange
+		when(mockOpenEIntegration.getBillingRecord(SUPPORTED_FAMILY_ID)).thenReturn(Optional.of(TestDataFactory.createKundfakturaBillingRecordWrapper(true)));
+		when(mockBillingPreprocessorClient.createBillingRecord(any())).thenThrow(new RuntimeException("Something went wrong"));
+		doNothing().when(mockDecorator).decorate(any(BillingRecordWrapper.class));
+
+		// Act
+		collectorService.triggerBilling(SUPPORTED_FAMILY_ID);
+
+		// Assert
+		verify(mockOpenEIntegration).getBillingRecord(SUPPORTED_FAMILY_ID);
+		verify(mockBillingPreprocessorClient).createBillingRecord(any());
+		verify(mockDbService, times(0)).saveToHistory(any(BillingRecordWrapper.class), any());
+		verify(mockDbService).saveFailedBillingRecord(any(BillingRecordWrapper.class), anyString());
+		verifyNoMoreInteractions(mockOpenEIntegration, mockDbService, mockDecorator, mockBillingPreprocessorClient);
 	}
 
 	@Test
@@ -92,6 +113,8 @@ class CollectorServiceTest {
 		when(mockOpenEIntegration.getFlowInstanceIds(SUPPORTED_FAMILY_ID, START_DATE.toString(), END_DATE.toString())).thenReturn(FLOW_INSTANCE_IDS);
 		when(mockOpenEIntegration.getFlowInstanceIds(SUPPORTED_FAMILY_ID_2, START_DATE.toString(), END_DATE.toString())).thenReturn(FLOW_INSTANCE_IDS);
 		when(mockOpenEIntegration.getBillingRecord(anyString())).thenReturn(Optional.of(billingRecordWrapper));
+		when(mockDbService.hasAlreadyBeenProcessed(anyString(), anyString())).thenReturn(false);
+		doNothing().when(mockDbService).saveToHistory(any(BillingRecordWrapper.class), ArgumentMatchers.any());
 		doNothing().when(mockDecorator).decorate(any(BillingRecordWrapper.class));
 		when(mockBillingPreprocessorClient.createBillingRecord(any())).thenReturn(ResponseEntity.ok().build());
 
@@ -103,19 +126,23 @@ class CollectorServiceTest {
 		verify(mockOpenEIntegration, times(1)).getFlowInstanceIds(SUPPORTED_FAMILY_ID, START_DATE.toString(), END_DATE.toString());
 		verify(mockOpenEIntegration, times(2)).getBillingRecord(FLOW_INSTANCE_IDS.getFirst());
 		verify(mockOpenEIntegration, times(2)).getBillingRecord(FLOW_INSTANCE_IDS.getLast());
+		verify(mockDbService, times(4)).hasAlreadyBeenProcessed(anyString(), anyString());
+		verify(mockDbService, times(4)).saveToHistory(billingRecordWrapper, ResponseEntity.ok().build());
 		verify(mockDecorator, times(4)).decorate(billingRecordWrapper);
 		verify(mockBillingPreprocessorClient, times(4)).createBillingRecord(billingRecordWrapper.getBillingRecord());
-		verifyNoMoreInteractions(mockOpenEIntegration, mockDecorator, mockBillingPreprocessorClient);
+		verifyNoMoreInteractions(mockDbService, mockOpenEIntegration, mockDecorator, mockBillingPreprocessorClient);
 	}
 
 	@Test
-	void testTriggerBillingBetweenDates_wantedFamilyIds_shouldOnlyTriggerBillingSupported() {
+	void testTriggerBillingBetweenDates_withWantedFamilyIds_shouldOnlyTriggerBillingSupported() {
 		//Arrange
 		var billingRecordWrapper = TestDataFactory.createKundfakturaBillingRecordWrapper(true);
 		when(mockOpenEIntegration.getSupportedFamilyIds()).thenReturn(Sets.newHashSet(SUPPORTED_FAMILY_IDS));
 		when(mockOpenEIntegration.getFlowInstanceIds(SUPPORTED_FAMILY_ID, START_DATE.toString(), END_DATE.toString())).thenReturn(FLOW_INSTANCE_IDS);
 		when(mockOpenEIntegration.getFlowInstanceIds(SUPPORTED_FAMILY_ID_2, START_DATE.toString(), END_DATE.toString())).thenReturn(FLOW_INSTANCE_IDS);
 		when(mockOpenEIntegration.getBillingRecord(anyString())).thenReturn(Optional.of(billingRecordWrapper));
+		when(mockDbService.hasAlreadyBeenProcessed(anyString(), anyString())).thenReturn(false);
+		doNothing().when(mockDbService).saveToHistory(any(BillingRecordWrapper.class), ArgumentMatchers.any());
 		doNothing().when(mockDecorator).decorate(any(BillingRecordWrapper.class));
 		when(mockBillingPreprocessorClient.createBillingRecord(any())).thenReturn(ResponseEntity.ok().build());
 
@@ -127,9 +154,11 @@ class CollectorServiceTest {
 		verify(mockOpenEIntegration).getFlowInstanceIds(SUPPORTED_FAMILY_ID, START_DATE.toString(), END_DATE.toString());
 		verify(mockOpenEIntegration, times(2)).getBillingRecord(FLOW_INSTANCE_IDS.getFirst());
 		verify(mockOpenEIntegration, times(2)).getBillingRecord(FLOW_INSTANCE_IDS.getLast());
+		verify(mockDbService, times(4)).hasAlreadyBeenProcessed(anyString(), anyString());
+		verify(mockDbService, times(4)).saveToHistory(billingRecordWrapper, ResponseEntity.ok().build());
 		verify(mockDecorator, times(4)).decorate(billingRecordWrapper);
 		verify(mockBillingPreprocessorClient, times(4)).createBillingRecord(billingRecordWrapper.getBillingRecord());
-		verifyNoMoreInteractions(mockOpenEIntegration, mockDecorator, mockBillingPreprocessorClient);
+		verifyNoMoreInteractions(mockOpenEIntegration, mockDbService, mockDecorator, mockBillingPreprocessorClient);
 	}
 
 	@Test
@@ -139,6 +168,7 @@ class CollectorServiceTest {
 		billingRecordWrapper.setFamilyId("not_found");	//"Create" a familyId that has no decorator
 		when(mockOpenEIntegration.getBillingRecord(SUPPORTED_FAMILY_ID)).thenReturn(Optional.of(billingRecordWrapper));
 		when(mockBillingPreprocessorClient.createBillingRecord(any())).thenReturn(ResponseEntity.ok().build());
+		doNothing().when(mockDbService).saveToHistory(any(BillingRecordWrapper.class), ArgumentMatchers.any());
 
 		//Act
 		collectorService.triggerBilling(SUPPORTED_FAMILY_ID);
@@ -147,11 +177,12 @@ class CollectorServiceTest {
 		verify(mockOpenEIntegration).getBillingRecord(SUPPORTED_FAMILY_ID);
 		verify(mockDecorator, times(0)).decorate(billingRecordWrapper);
 		verify(mockBillingPreprocessorClient).createBillingRecord(billingRecordWrapper.getBillingRecord());
-		verifyNoMoreInteractions(mockOpenEIntegration, mockDecorator, mockBillingPreprocessorClient);
+		verify(mockDbService).saveToHistory(billingRecordWrapper, ResponseEntity.ok().build());
+		verifyNoMoreInteractions(mockOpenEIntegration, mockDbService, mockDecorator, mockBillingPreprocessorClient);
 	}
 
 	@Test
-	void testTriggerBillingBillingBetweenDates_noResponseFromOpenE_shouldNotCallDecorateOrCreateBillingRecord() {
+	void testTriggerBillingBetweenDates_noResponseFromOpenE_shouldNotCallDecorateOrCreateBillingRecord() {
 		//Arrange
 		when(mockOpenEIntegration.getSupportedFamilyIds()).thenReturn(new HashSet<>(List.of(SUPPORTED_FAMILY_ID)));
 		when(mockOpenEIntegration.getFlowInstanceIds(SUPPORTED_FAMILY_ID, START_DATE.toString(), END_DATE.toString())).thenReturn(List.of());
@@ -161,11 +192,12 @@ class CollectorServiceTest {
 
 		//Assert
 		verify(mockOpenEIntegration).getSupportedFamilyIds();
-		verifyNoMoreInteractions(mockOpenEIntegration, mockDecorator, mockBillingPreprocessorClient);
+		verify(mockOpenEIntegration).getFlowInstanceIds(SUPPORTED_FAMILY_ID, START_DATE.toString(), END_DATE.toString());
+		verifyNoMoreInteractions(mockOpenEIntegration, mockDbService, mockDecorator, mockBillingPreprocessorClient);
 	}
 
 	@Test
-	void testTriggerBillingBillingBetweenDates_noSupportedFamilyIds_shouldThrowException() {
+	void testTriggerBillingBetweenDates_noSupportedFamilyIds_shouldThrowException() {
 		//Arrange
 		when(mockOpenEIntegration.getSupportedFamilyIds()).thenReturn(Set.of("something_else"));
 
@@ -179,6 +211,25 @@ class CollectorServiceTest {
 			});
 
 		verify(mockOpenEIntegration).getSupportedFamilyIds();
-		verifyNoMoreInteractions(mockOpenEIntegration, mockDecorator, mockBillingPreprocessorClient);
+		verifyNoMoreInteractions(mockOpenEIntegration,mockDbService, mockDecorator, mockBillingPreprocessorClient);
+	}
+
+	@Test
+	void testTriggerBillingBetweenDates_alreadyProcessed_shouldNotTriggerBilling() {
+		// Arrange
+		when(mockOpenEIntegration.getSupportedFamilyIds()).thenReturn(SUPPORTED_FAMILY_IDS);
+		when(mockOpenEIntegration.getFlowInstanceIds(SUPPORTED_FAMILY_ID, START_DATE.toString(), END_DATE.toString())).thenReturn(FLOW_INSTANCE_IDS);
+		when(mockOpenEIntegration.getFlowInstanceIds(SUPPORTED_FAMILY_ID_2, START_DATE.toString(), END_DATE.toString())).thenReturn(FLOW_INSTANCE_IDS);
+		when(mockDbService.hasAlreadyBeenProcessed(anyString(), anyString())).thenReturn(true);
+
+		// Act
+		collectorService.triggerBillingBetweenDates(START_DATE, END_DATE, WANTED_FAMILY_IDS);
+
+		// Assert
+		verify(mockOpenEIntegration).getSupportedFamilyIds();
+		verify(mockOpenEIntegration, times(1)).getFlowInstanceIds(SUPPORTED_FAMILY_ID, START_DATE.toString(), END_DATE.toString());
+		verify(mockDbService, times(4)).hasAlreadyBeenProcessed(anyString(), anyString());
+		verify(mockDbService, times(0)).saveToHistory(any(BillingRecordWrapper.class), ArgumentMatchers.any());
+		verifyNoMoreInteractions(mockOpenEIntegration, mockDbService, mockDecorator, mockBillingPreprocessorClient);
 	}
 }

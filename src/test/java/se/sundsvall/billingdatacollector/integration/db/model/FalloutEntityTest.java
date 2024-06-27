@@ -74,8 +74,8 @@ class FalloutEntityTest {
 
 	@Test
 	void testNoDirt() {
-		assertThat(FalloutEntity.builder().build()).hasAllNullFieldsOrProperties();
-		assertThat(new FalloutEntity()).hasAllNullFieldsOrProperties();
+		assertThat(FalloutEntity.builder().build()).hasAllNullFieldsOrPropertiesExcept("reported");
+		assertThat(new FalloutEntity()).hasAllNullFieldsOrPropertiesExcept("reported");
 	}
 
 	@Test
@@ -88,7 +88,7 @@ class FalloutEntityTest {
 
 		assertThat(entity.getCreated()).isBeforeOrEqualTo(OffsetDateTime.now());
 		assertThat(entity.getModified()).isBeforeOrEqualTo(OffsetDateTime.now());
-		assertThat(entity).hasAllNullFieldsOrPropertiesExcept("created", "modified");
+		assertThat(entity).hasAllNullFieldsOrPropertiesExcept("created", "modified", "reported");
 	}
 
 	@Test

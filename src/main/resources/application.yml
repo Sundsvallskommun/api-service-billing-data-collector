@@ -14,10 +14,37 @@ spring:
   jpa:
     hibernate:
       ddl-auto: validate
-
 scheduler:
   opene:
     cron:
       expression: '0 0 3 * * *'
     name: opene
     lock-at-most-for: PT5M
+  fallout:
+    cron:
+      expression: '0 0 4 * * *'
+    name: fallout
+    lock-at-most-for: PT5M
+falloutreport:
+  recipients:
+    - dummy@sundsvall.se
+  sender: dummy@sundsvall.se
+  sender-name: Billing Data Collector
+  fallout-mail-template:
+    subject: Fel vid hämtning/skapande av faktura-poster
+    html-prefix: >
+      <!DOCTYPE html>
+      <html lang="en" xmlns="http://www.w3.org/1999/xhtml"><body>
+    body-prefix: >
+      <b>Följande problem har inträffat vid generering av faktura-poster (%s)</b>
+      <p>
+    list-prefix: <i>%s st. fel:</i><ul>
+    list-item: >
+      <li> familyId: %s, flowInstanceId: %s, requestId: %s</li>
+    list-suffix: </ul>
+    body-suffix: >
+      <p>
+        <b>Med vänlig hälsning <br/>
+        <a href="mailto:%s">%s</a></b>
+      </p>
+    html-suffix: </body></html>

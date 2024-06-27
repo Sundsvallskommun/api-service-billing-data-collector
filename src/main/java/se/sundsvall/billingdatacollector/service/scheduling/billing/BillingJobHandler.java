@@ -1,17 +1,14 @@
-package se.sundsvall.billingdatacollector.service.scheduling;
+package se.sundsvall.billingdatacollector.service.scheduling.billing;
 
 import static java.util.Collections.emptySet;
 
 import java.time.LocalDate;
-import java.util.List;
 import java.util.Optional;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
-import se.sundsvall.billingdatacollector.integration.db.model.FalloutEntity;
-import se.sundsvall.billingdatacollector.integration.db.model.HistoryEntity;
 import se.sundsvall.billingdatacollector.integration.db.model.ScheduledJobEntity;
 import se.sundsvall.billingdatacollector.service.CollectorService;
 import se.sundsvall.billingdatacollector.service.DbService;
@@ -29,10 +26,7 @@ public class BillingJobHandler {
 		this.dbService = dbService;
 	}
 
-	/**
-	 * Fetch billing data
-	 */
-	public void handleBilling() {
+	public void performBilling() {
 		LOG.info("Starting billing job");
 		var latestJob = dbService.getLatestJob();
 		var startDate = calculateStartDate(latestJob);
@@ -41,27 +35,7 @@ public class BillingJobHandler {
 		dbService.saveScheduledJob(startDate, endDate);	//Save that the job has been triggered
 
 		var processed = collectorService.triggerBillingBetweenDates(startDate, endDate, emptySet());
-		handleProcessed(processed);
-		LOG.info("Billing job done");
-	}
-
-	/**
-	 * Handle the processed jobs
-	 * @param processed The processed jobs
-	 */
-	private void handleProcessed(List<String> processed) {
-		if (processed.isEmpty()) {
-			LOG.info("No flowInstances processed.");
-			return;
-		}
-
-		//TODO handle failed jobs.. something slack.. something email..?
-
-		var foundSuccessful = dbService.getHistory(processed);
-		LOG.info("Found successful jobs: {}", foundSuccessful.stream().map(HistoryEntity::getFlowInstanceId).toList());
-
-		var foundFailed = dbService.getFallouts(processed);
-		LOG.info("Found failed jobs: {}", foundFailed.stream().map(FalloutEntity::getFlowInstanceId).toList());
+		LOG.info("Billing job done, processed {} records", processed.size());
 	}
 
 	/**

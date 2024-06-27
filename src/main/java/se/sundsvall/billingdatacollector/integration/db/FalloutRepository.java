@@ -28,7 +28,24 @@ public interface FalloutRepository extends JpaRepository<FalloutEntity, String> 
 	 */
 	boolean existsByFamilyIdAndFlowInstanceIdAndOpenEInstanceIsNotNull(String familyId, String flowInstanceId);
 
+	/**
+	 * Find all fallout records for the given flowinstanceIds
+	 * @param flowInstanceIds the flowInstanceIds
+	 * @return a list of FalloutEntity's
+	 */
 	List<FalloutEntity> findAllByFlowInstanceIdIn(List<String> flowInstanceIds);
 
+	/**
+	 * Check if a fallout record already exists for the given familyId and flowInstanceId
+	 * @param familyId the familyId
+	 * @param flowInstanceId the flowInstanceId
+	 * @return true if a fallout record already exists
+	 */
 	boolean existsByFamilyIdAndFlowInstanceId(String familyId, String flowInstanceId);
+
+	/**
+	 * Find all fallout records that have not been reported
+	 * @return a list of unreported FalloutEntity's
+	 */
+	List<FalloutEntity> findAllByReportedIsFalse();
 }

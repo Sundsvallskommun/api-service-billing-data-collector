@@ -45,19 +45,19 @@ integration:
         email-address: someEmailAddress
       subject: someSubject
       recipients:
-        - recipientA
-        - recipientB
-    slack:
-      token: someToken
-      channels:
-        - channelA
-        - channelB
-        - channelC
+        - someone@nowhere.com
+        - someone2@nowhere.com
 scheduler:
   opene:
     cron:
       expression: '-'
-    lock-at-most-for: PT30S
+  fallout:
+    cron:
+      expression: '-'
+falloutreport:
+  recipients:
+    - test@nowhere.com
+    - test2@nowhere.com
 spring:
   datasource:
     driver-class-name: org.testcontainers.jdbc.ContainerDatabaseDriver
@@ -67,15 +67,15 @@ spring:
       jakarta:
         persistence:
           schema-generation:
+            create-source: metadata
             database:
               action: update
             scripts:
               action: create
               create-target: target/database/generated-schema.sql
-            create-source: metadata
       hibernate:
+        format_sql: true
         hbm2ddl:
           schema-generation:
             script:
               append: false
-        format_sql: true

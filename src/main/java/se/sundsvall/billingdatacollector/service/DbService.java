@@ -88,4 +88,15 @@ public class DbService {
 	public List<FalloutEntity> getFallouts(List<String> flowInstanceIds) {
 		return falloutRepository.findAllByFlowInstanceIdIn(flowInstanceIds);
 	}
+
+	public List<FalloutEntity> getUnreportedFallouts() {
+		return falloutRepository.findAllByReportedIsFalse();
+	}
+
+	public void markAllFalloutsAsReported() {
+		var entities = falloutRepository.findAllByReportedIsFalse();
+		entities.forEach(fallout -> fallout.setReported(true));
+
+		falloutRepository.saveAllAndFlush(entities);
+	}
 }

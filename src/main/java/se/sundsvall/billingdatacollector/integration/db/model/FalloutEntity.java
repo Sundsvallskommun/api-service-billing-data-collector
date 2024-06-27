@@ -73,6 +73,9 @@ public class FalloutEntity {
 	@TimeZoneStorage(NORMALIZE)
 	private OffsetDateTime modified;
 
+	@Column(name = "reported", columnDefinition = "boolean default false")
+	private boolean reported;
+
 	@PreUpdate
 	@PrePersist
 	public void prePersist() {
@@ -86,12 +89,12 @@ public class FalloutEntity {
 	public boolean equals(Object o) {
 		if (this == o) return true;
 		if (!(o instanceof FalloutEntity that)) return false;
-		return Objects.equals(id, that.id) && Objects.deepEquals(openEInstance, that.openEInstance) && Objects.equals(familyId, that.familyId) && Objects.equals(flowInstanceId, that.flowInstanceId) && Objects.equals(created, that.created) && Objects.equals(modified, that.modified) && Objects.equals(requestId, that.requestId);
+		return Objects.equals(id, that.id) && Objects.deepEquals(openEInstance, that.openEInstance) && Objects.equals(familyId, that.familyId) && Objects.equals(flowInstanceId, that.flowInstanceId) && Objects.equals(created, that.created) && Objects.equals(modified, that.modified) && Objects.equals(requestId, that.requestId) && Objects.equals(reported, that.reported);
 	}
 
 	@Override
 	public int hashCode() {
-		return Objects.hash(id, familyId, flowInstanceId, created, modified, requestId);
+		return Objects.hash(id, familyId, flowInstanceId, created, modified, requestId, reported);
 	}
 
 	@Override
@@ -106,6 +109,7 @@ public class FalloutEntity {
 			", created=" + created +
 			", modified=" + modified +
 			", requestId='" + requestId + '\'' +
+			", reported=" + reported +
 			'}';
 	}
 }
