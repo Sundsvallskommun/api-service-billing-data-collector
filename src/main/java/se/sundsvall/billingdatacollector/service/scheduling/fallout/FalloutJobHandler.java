@@ -37,7 +37,7 @@ public class FalloutJobHandler {
 	@Transactional
 	public void handleFallout() {
 		if (isBlank(properties.sender()) || isEmpty(properties.recipients())) {
-			LOG.info("Report of billing errors will not be sent as sender or receiver has not been defined in properties.");
+			LOG.warn("Report of billing errors will not be sent as sender or receiver has not been defined in properties.");
 			return;
 		}
 

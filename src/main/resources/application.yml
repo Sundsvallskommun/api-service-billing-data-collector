@@ -27,8 +27,8 @@ scheduler:
     lock-at-most-for: PT5M
 falloutreport:
   recipients:
-    - teamunmasked@sundsvall.se
-  sender: teamunmasked@sundsvall.se
+    - dummy@sundsvall.se
+  sender: dummy@sundsvall.se
   sender-name: Billing Data Collector
   fallout-mail-template:
     subject: Fel vid hämtning/skapande av faktura-poster

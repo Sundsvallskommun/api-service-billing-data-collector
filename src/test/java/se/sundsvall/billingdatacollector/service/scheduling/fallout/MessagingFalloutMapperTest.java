@@ -38,7 +38,7 @@ class MessagingFalloutMapperTest {
                     <p>
                         <b>Med vänlig hälsning
                         <br/>
-                        <a href="mailto:teamunmasked@sundsvall.se">Billing Data Collector</a>
+                        <a href="mailto:dummy@sundsvall.se">Billing Data Collector</a>
                     </b>
                 </p>
             </body>
@@ -60,7 +60,7 @@ class MessagingFalloutMapperTest {
 		assertThat(emailBatchRequest.getHeaders()).isEmpty();
 		assertThat(emailBatchRequest.getSender()).satisfies(sender -> {
 			assertThat(sender.getName()).isEqualTo("Billing Data Collector");
-			assertThat(sender.getAddress()).isEqualTo("teamunmasked@sundsvall.se");
+			assertThat(sender.getAddress()).isEqualTo("dummy@sundsvall.se");
 			assertThat(sender.getReplyTo()).isNull();
 		});
 		assertThat(emailBatchRequest.getSubject()).isEqualTo("Fel vid hämtning/skapande av faktura-poster");

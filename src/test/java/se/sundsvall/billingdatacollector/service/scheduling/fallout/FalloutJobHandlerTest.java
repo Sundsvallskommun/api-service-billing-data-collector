@@ -11,6 +11,7 @@ import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -41,12 +42,8 @@ class FalloutJobHandlerTest {
 	@Mock
 	private DbService mockDbService;
 
+	@InjectMocks
 	private FalloutJobHandler jobHandler;
-
-	@BeforeEach
-	void setUp() {
-		jobHandler = new FalloutJobHandler(mockMessagingClient, mockProperties, mockFalloutMapper, mockDbService);
-	}
 
 	@Test
 	void testHandleFallout_shouldNotSendEmail_ifNoSenderIsPresent() {
