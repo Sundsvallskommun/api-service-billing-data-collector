@@ -1,0 +1,14 @@
+{
+	"request": {
+		"method": "GET",
+		"urlPathPattern": "/opene/api/instanceapi/getinstances/family/([a-zA-Z0-9/-]*)"
+	},
+	"response": {
+		"headers": {
+			"Content-Type": "application/xml",
+			"content-disposition": "inline;filename=\"flow-instances.xml\"; filename*=UTF-8''flow-instances.xml"
+		},
+		"status": 200,
+		"bodyFileName": "test3_fetchAndCreateBillingRecords_shouldGiveFallout_whenErrorFromOpenE/response/open-e-getinstances.xml"
+	}
+}

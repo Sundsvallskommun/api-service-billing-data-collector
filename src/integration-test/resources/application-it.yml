@@ -1,24 +1,83 @@
-logging:
-  level:
-    root: DEBUG
+integration:
+  # OpenE integration
+  open-e:
+    base-url: http://localhost:${wiremock.server.port}/opene
+    username: user
+    password: p4ssw0rd
+    connect-timeout: 1000
+    read-timeout: 3000
+
+  # Party integration
+  party:
+    base-url: http://localhost:${wiremock.server.port}/party
+    oauth2:
+      token-url: http://localhost:${wiremock.server.port}/token
+      client-id: someClientId
+      client-secret: someClientSecret
+      authorization-grant-type: client_credentials
+    connect-timeout: 1000
+    read-timeout: 3000
+
+  # BillingPreprocessor integration
+  billing-preprocessor:
+    base-url: http://localhost:${wiremock.server.port}/bpp
+    oauth2:
+      token-url: http://localhost:${wiremock.server.port}/token
+      client-id: someClientId
+      client-secret: someClientSecret
+      authorization-grant-type: client_credentials
+    connect-timeout: 1000
+    read-timeout: 3000
+
+  # Messaging integration
+  messaging:
+    base-url: http://localhost:${wiremock.server.port}/
+    oauth2:
+      token-url: http://localhost:${wiremock.server.port}/token
+      client-id: someClientId
+      client-secret: someClientSecret
+      authorization-grant-type: client_credentials
+    connect-timeout: 1000
+    read-timeout: 3000
+    email:
+      sender:
+        name: someName
+        email-address: someEmailAddress
+      subject: someSubject
+      recipients:
+        - someone@nowhere.com
+        - someone2@nowhere.com
+scheduler:
+  opene:
+    cron:
+      expression: '-'
+  fallout:
+    cron:
+      expression: '-'
+falloutreport:
+  recipients:
+    - test@nowhere.com
+    - test2@nowhere.com
 spring:
+  cache:
+    type: none
   datasource:
     driver-class-name: org.testcontainers.jdbc.ContainerDatabaseDriver
-    url: jdbc:tc:mariadb:10.6.12:///
+    url: jdbc:tc:mariadb:10.6.12:///ittest
   jpa:
     properties:
       jakarta:
         persistence:
           schema-generation:
+            create-source: metadata
             database:
               action: validate
             scripts:
               action: create
               create-target: target/database/generated-schema.sql
-            create-source: metadata
       hibernate:
+        format_sql: true
         hbm2ddl:
           schema-generation:
             script:
               append: false
-        format_sql: true
