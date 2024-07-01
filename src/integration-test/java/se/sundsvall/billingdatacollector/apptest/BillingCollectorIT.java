@@ -60,12 +60,12 @@ class BillingCollectorIT extends AbstractAppTest {
 			.atMost(5, SECONDS)
 			.until(() -> historyRepository.count() > 0);
 
-		var historyEntitites = historyRepository.findAll();
+		var historyEntities = historyRepository.findAll();
 
 		//Check that we have two records in the database and that they're the ones we want.
 		// We won't assert everything, that's done in the unit tests.
-		assertThat(historyEntitites).hasSize(2);
-		historyEntitites.forEach(entity -> {
+		assertThat(historyEntities).hasSize(2);
+		historyEntities.forEach(entity -> {
 			assertThat(entity.getFamilyId()).isEqualTo(FAMILY_ID);
 			assertThat(entity.getFlowInstanceId()).isIn(FLOW_INSTANCE_IDS);
 		});
@@ -93,10 +93,10 @@ class BillingCollectorIT extends AbstractAppTest {
 			.atMost(5, SECONDS)
 			.until(() -> falloutRepository.count() > 0);
 
-		var historyEntitites = historyRepository.findAll();
+		var historyEntities = historyRepository.findAll();
 
 		//Check that we have no history
-		assertThat(historyEntitites).isEmpty();
+		assertThat(historyEntities).isEmpty();
 
 		// And check that we have a fallout, not verifying mapping, only that we have the correct one.
 		var fallouts = falloutRepository.findAll();
@@ -106,6 +106,13 @@ class BillingCollectorIT extends AbstractAppTest {
 		assertThat(fallouts.getFirst().getBillingRecordWrapper()).isNotNull();
 		assertThat(fallouts.getFirst().getBillingRecordWrapper().getBillingRecord()).isNotNull();
 		assertThat(fallouts.getFirst().getOpenEInstance()).isNull();
+
+		// Check that the scheduled job has been saved in the database
+		var jobEntity = scheduledJobRepository.findAll();
+		assertThat(jobEntity).hasSize(1);
+		assertThat(jobEntity.getFirst().getFetchedEndDate()).isEqualTo(LocalDate.now().minusDays(1));
+		assertThat(jobEntity.getFirst().getFetchedStartDate()).isEqualTo(LocalDate.now().minusDays(1));
+		assertThat(jobEntity.getFirst().getProcessed()).isCloseTo(OffsetDateTime.now(), within(5, ChronoUnit.SECONDS));
 	}
 
 	@Test
@@ -119,10 +126,10 @@ class BillingCollectorIT extends AbstractAppTest {
 			.atMost(5, SECONDS)
 			.until(() -> falloutRepository.count() > 0);
 
-		var historyEntitites = historyRepository.findAll();
+		var historyEntities = historyRepository.findAll();
 
 		//Check that we have no history
-		assertThat(historyEntitites).isEmpty();
+		assertThat(historyEntities).isEmpty();
 
 		// And check that we have a fallout, not verifying mapping, only that we have the correct one.
 		var fallouts = falloutRepository.findAll();
@@ -131,11 +138,12 @@ class BillingCollectorIT extends AbstractAppTest {
 		assertThat(fallouts.getFirst().getFlowInstanceId()).isEqualTo(FLOW_INSTANCE_IDS.getFirst());
 		assertThat(fallouts.getFirst().getOpenEInstance()).isNotNull();
 		assertThat(fallouts.getFirst().getBillingRecordWrapper()).isNull();
-	}
 
-	private void print() {
-		System.err.println("Fallout: " + falloutRepository.count());
-		System.err.println("History: " + historyRepository.count());
-		System.err.println("ScheduledJob: " + scheduledJobRepository.count());
+		// Check that the scheduled job has been saved in the database
+		var jobEntity = scheduledJobRepository.findAll();
+		assertThat(jobEntity).hasSize(1);
+		assertThat(jobEntity.getFirst().getFetchedEndDate()).isEqualTo(LocalDate.now().minusDays(1));
+		assertThat(jobEntity.getFirst().getFetchedStartDate()).isEqualTo(LocalDate.now().minusDays(1));
+		assertThat(jobEntity.getFirst().getProcessed()).isCloseTo(OffsetDateTime.now(), within(5, ChronoUnit.SECONDS));
 	}
 }
