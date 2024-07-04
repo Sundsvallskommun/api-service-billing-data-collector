@@ -39,14 +39,6 @@ integration:
       authorization-grant-type: client_credentials
     connect-timeout: 54
     read-timeout: 32
-    email:
-      sender:
-        name: someName
-        email-address: someEmailAddress
-      subject: someSubject
-      recipients:
-        - someone@nowhere.com
-        - someone2@nowhere.com
 scheduler:
   opene:
     cron:
