@@ -5,7 +5,7 @@ VALUES ('{"billingRecord":{"id":null,"category":"KUNDFAKTURA","type":"EXTERNAL",
         '2024-06-26 10:14:42.707561',
         'Bad Gateway: billing-preprocessor error: {status=502 Bad Gateway, title=Bad Gateway}',
         '358', '185376', 'b14f84dc-ec63-4c0d-b65c-070bfe57295e', '2024-06-26 10:14:57.576337', null,
-        1, '83f2ba1f-8b9c-4df9-b05f-c27b40985eee');
+        0, '83f2ba1f-8b9c-4df9-b05f-c27b40985eee');
 
 INSERT INTO history (billing_record_wrapper, created, family_id,
                                           flow_instance_id, id, location, request_id)

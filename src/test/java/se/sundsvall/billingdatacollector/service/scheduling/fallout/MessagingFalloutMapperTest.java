@@ -54,8 +54,6 @@ class MessagingFalloutMapperTest {
 		// Act
 		var emailBatchRequest = mapper.createEmailBatchRequest(new ArrayList<>(List.of(fallout1, fallout2, fallout3)));
 
-		System.out.println(emailBatchRequest);
-
 		assertThat(emailBatchRequest.getAttachments()).isEmpty();
 		assertThat(emailBatchRequest.getHeaders()).isEmpty();
 		assertThat(emailBatchRequest.getSender()).satisfies(sender -> {

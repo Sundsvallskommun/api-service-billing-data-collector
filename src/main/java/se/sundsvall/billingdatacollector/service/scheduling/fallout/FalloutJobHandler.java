@@ -3,7 +3,9 @@ package se.sundsvall.billingdatacollector.service.scheduling.fallout;
 import static org.apache.commons.lang3.StringUtils.isBlank;
 import static org.springframework.util.CollectionUtils.isEmpty;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -45,7 +47,7 @@ public class FalloutJobHandler {
 		var unreportedFallouts = dbService.getUnreportedFallouts()
 			.stream()
 			.map(falloutEntity -> new Fallout(falloutEntity.getFamilyId(), falloutEntity.getFlowInstanceId(), falloutEntity.getRequestId()))
-			.toList();
+			.collect(Collectors.toCollection(ArrayList::new));  //We want a mutable list
 
 		//Send email if there are any unreported fallouts
 		if (isEmpty(unreportedFallouts)) {
