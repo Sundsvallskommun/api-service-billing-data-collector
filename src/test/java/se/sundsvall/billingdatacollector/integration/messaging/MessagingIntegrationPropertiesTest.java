@@ -27,13 +27,5 @@ class MessagingIntegrationPropertiesTest {
         });
         assertThat(properties.connectTimeout()).isEqualTo(54);
         assertThat(properties.readTimeout()).isEqualTo(32);
-        assertThat(properties.email()).isNotNull().satisfies(emailProperties -> {
-            assertThat(emailProperties.sender()).isNotNull().satisfies(sender -> {
-                assertThat(sender.name()).isEqualTo("someName");
-                assertThat(sender.emailAddress()).isEqualTo("someEmailAddress");
-            });
-            assertThat(emailProperties.subject()).isEqualTo("someSubject");
-            assertThat(emailProperties.recipients()).containsExactlyInAnyOrder("someone@nowhere.com", "someone2@nowhere.com");
-        });
     }
 }
