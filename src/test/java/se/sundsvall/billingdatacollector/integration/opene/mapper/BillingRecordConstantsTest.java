@@ -10,6 +10,5 @@ class BillingRecordConstantsTest {
 	void testConstants() {
 		assertThat(BillingRecordConstants.SUNDSVALLS_MUNICIPALIY).isEqualTo("Sundsvalls Kommun");
 		assertThat(BillingRecordConstants.SUNSVALLS_MUNICIPALITY_ORGANIZATION_NUMBER).isEqualTo("2120002411");
-		assertThat(BillingRecordConstants.KUNDFAKTURA_FORMULAR_FAMILY_ID).isEqualTo("358");
 	}
 }

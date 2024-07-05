@@ -1,11 +1,11 @@
 package se.sundsvall.billingdatacollector.service.decorator;
 
 import static org.zalando.problem.Status.INTERNAL_SERVER_ERROR;
-import static se.sundsvall.billingdatacollector.integration.opene.mapper.BillingRecordConstants.KUNDFAKTURA_FORMULAR_FAMILY_ID;
 
 import org.springframework.stereotype.Component;
 import org.zalando.problem.Problem;
 
+import se.sundsvall.billingdatacollector.integration.opene.OpenEIntegrationProperties;
 import se.sundsvall.billingdatacollector.integration.party.PartyIntegration;
 import se.sundsvall.billingdatacollector.model.BillingRecordWrapper;
 
@@ -15,14 +15,17 @@ import generated.se.sundsvall.billingpreprocessor.Type;
 public class KundfakturaformularBillingRecordDecorator implements BillingRecordDecorator {
 
 	private final PartyIntegration partyIntegration;
+	private final OpenEIntegrationProperties properties;
 
-	public KundfakturaformularBillingRecordDecorator(PartyIntegration partyIntegration) {
+	public KundfakturaformularBillingRecordDecorator(PartyIntegration partyIntegration, OpenEIntegrationProperties properties) {
 		this.partyIntegration = partyIntegration;
+		this.properties = properties;
 	}
+
 
 	@Override
 	public String getSupportedFamilyId() {
-		return KUNDFAKTURA_FORMULAR_FAMILY_ID;
+		return properties.kundfakturaFormularFamilyId();
 	}
 
 	@Override
