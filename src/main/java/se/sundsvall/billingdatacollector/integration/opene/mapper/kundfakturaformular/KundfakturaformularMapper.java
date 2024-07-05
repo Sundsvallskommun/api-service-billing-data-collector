@@ -1,6 +1,5 @@
 package se.sundsvall.billingdatacollector.integration.opene.mapper.kundfakturaformular;
 
-import static se.sundsvall.billingdatacollector.integration.opene.mapper.BillingRecordConstants.KUNDFAKTURA_FORMULAR_FAMILY_ID;
 import static se.sundsvall.billingdatacollector.integration.opene.mapper.BillingRecordConstants.SUNDSVALLS_MUNICIPALIY;
 import static se.sundsvall.billingdatacollector.integration.opene.mapper.BillingRecordConstants.SUNSVALLS_MUNICIPALITY_ORGANIZATION_NUMBER;
 import static se.sundsvall.billingdatacollector.integration.opene.util.XPathUtil.extractValue;
@@ -10,6 +9,7 @@ import java.util.List;
 
 import org.springframework.stereotype.Component;
 
+import se.sundsvall.billingdatacollector.integration.opene.OpenEIntegrationProperties;
 import se.sundsvall.billingdatacollector.integration.opene.OpenEMapper;
 import se.sundsvall.billingdatacollector.integration.opene.mapper.MapperHelper;
 import se.sundsvall.billingdatacollector.model.BillingRecordWrapper;
@@ -29,14 +29,16 @@ class KundfakturaformularMapper implements OpenEMapper {
 	private static final String CATEGORY = "KUNDFAKTURA";
 
 	private final MapperHelper mapperHelper;
+	private final OpenEIntegrationProperties properties;
 
-	KundfakturaformularMapper(MapperHelper mapperHelper) {
+	KundfakturaformularMapper(MapperHelper mapperHelper, OpenEIntegrationProperties properties) {
 		this.mapperHelper = mapperHelper;
+		this.properties = properties;
 	}
 
 	@Override
 	public String getSupportedFamilyId() {
-		return KUNDFAKTURA_FORMULAR_FAMILY_ID;
+		return properties.kundfakturaFormularFamilyId();
 	}
 
 	@Override

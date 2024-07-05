@@ -20,13 +20,17 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.zalando.problem.ThrowableProblem;
 
 import se.sundsvall.billingdatacollector.TestDataFactory;
+import se.sundsvall.billingdatacollector.integration.opene.OpenEIntegrationProperties;
 import se.sundsvall.billingdatacollector.integration.party.PartyIntegration;
 
 @ExtendWith(MockitoExtension.class)
-class KundfakturaformularDecoratorTest {
+class KundfakturaformularBillingDecoratorTest {
 
 	@Mock
 	private PartyIntegration mockPartyIntegration;
+
+	@Mock
+	private OpenEIntegrationProperties mockProperties;
 
 	@InjectMocks
 	private KundfakturaformularBillingRecordDecorator kundfakturaformularDecorator;
@@ -79,6 +83,7 @@ class KundfakturaformularDecoratorTest {
 
 	@Test
 	void testGetSupportedFamilyId() {
-		assertThat(kundfakturaformularDecorator.getSupportedFamilyId()).isEqualTo("358");
+		when(mockProperties.kundfakturaFormularFamilyId()).thenReturn("198");
+		assertThat(kundfakturaformularDecorator.getSupportedFamilyId()).isEqualTo("198");
 	}
 }

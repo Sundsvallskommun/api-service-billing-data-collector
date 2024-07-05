@@ -6,6 +6,7 @@ integration:
     password: p4ssw0rd
     connect-timeout: 12
     read-timeout: 34
+    kundfaktura-formular-family-id: 198
 
   # Party integration
   party:

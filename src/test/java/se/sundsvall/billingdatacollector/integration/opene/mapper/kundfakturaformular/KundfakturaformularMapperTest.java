@@ -11,6 +11,7 @@ import java.nio.file.Paths;
 
 import org.junit.jupiter.api.Test;
 
+import se.sundsvall.billingdatacollector.integration.opene.OpenEIntegrationProperties;
 import se.sundsvall.billingdatacollector.integration.opene.mapper.MapperHelper;
 
 import generated.se.sundsvall.billingpreprocessor.Status;
@@ -18,11 +19,13 @@ import generated.se.sundsvall.billingpreprocessor.Type;
 
 class KundfakturaformularMapperTest {
 
-	private final KundfakturaformularMapper mapper = new KundfakturaformularMapper(new MapperHelper());
+	private final KundfakturaformularMapper mapper = new KundfakturaformularMapper(new MapperHelper(),
+		new OpenEIntegrationProperties("http://open-e.nosuchhost.com", "user", "p4ssw0rd", 12, 34, "198")
+	);
 
 	@Test
 	void getSupportedFamilyId() {
-		assertThat(mapper.getSupportedFamilyId()).isEqualTo("358");
+		assertThat(mapper.getSupportedFamilyId()).isEqualTo("198");
 	}
 
 	@Test

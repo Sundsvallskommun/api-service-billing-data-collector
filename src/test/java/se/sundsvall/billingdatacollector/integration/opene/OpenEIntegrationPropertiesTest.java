@@ -13,15 +13,16 @@ import se.sundsvall.billingdatacollector.support.annotation.UnitTest;
 @SpringBootTest(classes = Application.class)
 class OpenEIntegrationPropertiesTest {
 
-    @Autowired
-    private OpenEIntegrationProperties properties;
+	@Autowired
+	private OpenEIntegrationProperties properties;
 
-    @Test
-    void testProperties() {
-        assertThat(properties.baseUrl()).isEqualTo("http://open-e.nosuchhost.com");
-        assertThat(properties.username()).isEqualTo("user");
-        assertThat(properties.password()).isEqualTo("p4ssw0rd");
-        assertThat(properties.connectTimeout()).isEqualTo(12);
-        assertThat(properties.readTimeout()).isEqualTo(34);
-    }
+	@Test
+	void testProperties() {
+		assertThat(properties.baseUrl()).isEqualTo("http://open-e.nosuchhost.com");
+		assertThat(properties.username()).isEqualTo("user");
+		assertThat(properties.password()).isEqualTo("p4ssw0rd");
+		assertThat(properties.connectTimeout()).isEqualTo(12);
+		assertThat(properties.readTimeout()).isEqualTo(34);
+		assertThat(properties.kundfakturaFormularFamilyId()).isEqualTo("198");
+	}
 }
