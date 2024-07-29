@@ -13,7 +13,7 @@
 	<name>api-service-billing-data-collector</name>
 
 	<properties>
-		<shedlock.version>5.13.0</shedlock.version>
+		<shedlock.version>5.14.0</shedlock.version>
 		<xsoup.version>0.3.7</xsoup.version>
 
 		<generated-sources-path>${project.build.directory}/generated-sources</generated-sources-path>
