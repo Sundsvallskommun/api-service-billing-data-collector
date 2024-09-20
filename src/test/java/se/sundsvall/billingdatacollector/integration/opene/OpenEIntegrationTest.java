@@ -23,7 +23,7 @@ import se.sundsvall.billingdatacollector.service.DbService;
 import se.sundsvall.dept44.test.annotation.resource.Load;
 import se.sundsvall.dept44.test.extension.ResourceLoaderExtension;
 
-@ExtendWith({MockitoExtension.class, ResourceLoaderExtension.class})
+@ExtendWith({ MockitoExtension.class, ResourceLoaderExtension.class })
 class OpenEIntegrationTest {
 
 	@Mock
@@ -48,7 +48,7 @@ class OpenEIntegrationTest {
 	void testGetFlowInstanceIds(@Load("/open-e/flow-instances.xml") final String xml) {
 		when(mockOpenEClient.getErrands("123", "2024-04-25", "2024-04-25")).thenReturn(xml.getBytes(ISO_8859_1));
 
-		var result = openEIntegration.getFlowInstanceIds("123", "2024-04-25", "2024-04-25");
+		final var result = openEIntegration.getFlowInstanceIds("123", "2024-04-25", "2024-04-25");
 		assertThat(result).isNotNull().containsExactlyInAnyOrder("123456", "234567", "345678");
 
 		verify(mockOpenEClient).getErrands("123", "2024-04-25", "2024-04-25");
@@ -61,7 +61,7 @@ class OpenEIntegrationTest {
 		when(mockOpenEClient.getErrand("123456")).thenReturn(xml.getBytes(ISO_8859_1));
 		when(mockMapper.mapToBillingRecordWrapper(any(byte[].class))).thenReturn(BillingRecordWrapper.builder().build());
 
-		var result = openEIntegration.getBillingRecord("123456");
+		final var result = openEIntegration.getBillingRecord("123456");
 		assertThat(result).isNotNull();
 
 		verify(mockOpenEClient).getErrand("123456");
@@ -105,16 +105,16 @@ class OpenEIntegrationTest {
 
 	@Test
 	void testGetBillingRecord_shouldSaveToFalloutTable_whenMappingFails(@Load("/open-e/flow-instance.external-faulty.xml") final String xml) {
-		//Arrange
+		// Arrange
 		when(mockOpenEClient.getErrand("123456")).thenReturn(xml.getBytes(ISO_8859_1));
 
-		//Act
+		// Act
 		openEIntegration.getBillingRecord("123456");
 
-		//Assert
+		// Assert
 		verify(mockOpenEClient).getErrand("123456");
-		//Not too important to verify how it fails, just that it fails and is saved.
-		verify(mockDbService).saveFailedFlowInstance(xml.getBytes(ISO_8859_1), "123456", "123",
+		// Not too important to verify how it fails, just that it fails and is saved.
+		verify(mockDbService).saveFailedFlowInstance(xml.getBytes(ISO_8859_1), "123456", "123", "2281",
 			"Cannot invoke \"se.sundsvall.billingdatacollector.model.BillingRecordWrapper.setFamilyId(String)\" because \"billingRecordWrapper\" is null");
 	}
 }

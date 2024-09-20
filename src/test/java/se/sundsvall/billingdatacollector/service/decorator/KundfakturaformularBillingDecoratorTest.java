@@ -37,47 +37,47 @@ class KundfakturaformularBillingDecoratorTest {
 
 	@Test
 	void testDecorateExternalBillingRecord() {
-		//Arrange
-		var wrapper = TestDataFactory.createKundfakturaBillingRecordWrapper(false);
-		var uuid = UUID.randomUUID().toString();
-		when(mockPartyIntegration.getPartyId(anyString())).thenReturn(Optional.of(uuid));
+		// Arrange
+		final var wrapper = TestDataFactory.createKundfakturaBillingRecordWrapper(false);
+		final var uuid = UUID.randomUUID().toString();
+		when(mockPartyIntegration.getPartyId(anyString(), anyString())).thenReturn(Optional.of(uuid));
 
-		//Act
+		// Act
 		kundfakturaformularDecorator.decorate(wrapper);
 
-		//Assert
+		// Assert
 		assertThat(wrapper.getBillingRecord().getRecipient().getPartyId()).isEqualTo(uuid);
-		verify(mockPartyIntegration).getPartyId(wrapper.getLegalId());
+		verify(mockPartyIntegration).getPartyId(wrapper.getMunicipalityId(), wrapper.getLegalId());
 		verifyNoMoreInteractions(mockPartyIntegration);
 	}
 
 	@Test
 	void testDecorateInternalBillingRecord() {
-		//Arrange
-		var wrapper = TestDataFactory.createKundfakturaBillingRecordWrapper(true);
+		// Arrange
+		final var wrapper = TestDataFactory.createKundfakturaBillingRecordWrapper(true);
 
-		//Act
+		// Act
 		kundfakturaformularDecorator.decorate(wrapper);
 
-		//Assert
+		// Assert
 		assertThat(wrapper.getBillingRecord().getRecipient().getPartyId()).isNull();
 		verifyNoInteractions(mockPartyIntegration);
 	}
 
 	@Test
 	void testDecorateCannotFindPartyId_shouldThrowException() {
-		//Arrange
-		var wrapper = TestDataFactory.createKundfakturaBillingRecordWrapper(false);
-		when(mockPartyIntegration.getPartyId(anyString())).thenReturn(Optional.empty());
+		// Arrange
+		final var wrapper = TestDataFactory.createKundfakturaBillingRecordWrapper(false);
+		when(mockPartyIntegration.getPartyId(anyString(), anyString())).thenReturn(Optional.empty());
 
-		//Act & Assert
+		// Act & Assert
 		assertThatExceptionOfType(ThrowableProblem.class).isThrownBy(() -> kundfakturaformularDecorator.decorate(wrapper))
 			.satisfies(throwableProblem -> {
 				assertThat(throwableProblem.getTitle()).isEqualTo("Couldn't find partyId for legalId " + wrapper.getLegalId());
 				assertThat(throwableProblem.getStatus()).isEqualTo(INTERNAL_SERVER_ERROR);
 			});
 
-		verify(mockPartyIntegration).getPartyId(wrapper.getLegalId());
+		verify(mockPartyIntegration).getPartyId(wrapper.getMunicipalityId(), wrapper.getLegalId());
 		verifyNoMoreInteractions(mockPartyIntegration);
 	}
 

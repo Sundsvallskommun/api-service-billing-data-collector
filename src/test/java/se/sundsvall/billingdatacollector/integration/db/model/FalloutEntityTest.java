@@ -38,18 +38,20 @@ class FalloutEntityTest {
 
 	@Test
 	void testBuilderMethods() {
-		var id = UUID.randomUUID().toString();
-		var requestId = UUID.randomUUID().toString();
-		var billingRecordWrapper = BillingRecordWrapper.builder().build();
-		var openEInstance = "some xml";
-		var familyId = "familyId";
-		var flowInstanceId = "flowInstanceId";
-		var created = OffsetDateTime.now();
-		var modified = OffsetDateTime.now();
-		var errorMessage = "an error message";
+		final var id = UUID.randomUUID().toString();
+		final var municipalityId = "municipalityId";
+		final var requestId = UUID.randomUUID().toString();
+		final var billingRecordWrapper = BillingRecordWrapper.builder().build();
+		final var openEInstance = "some xml";
+		final var familyId = "familyId";
+		final var flowInstanceId = "flowInstanceId";
+		final var created = OffsetDateTime.now();
+		final var modified = OffsetDateTime.now();
+		final var errorMessage = "an error message";
 
-		var entity = FalloutEntity.builder()
+		final var entity = FalloutEntity.builder()
 			.withId(id)
+			.withMunicipalityId(municipalityId)
 			.withRequestId(requestId)
 			.withBillingRecordWrapper(billingRecordWrapper)
 			.withOpenEInstance(openEInstance)
@@ -62,6 +64,7 @@ class FalloutEntityTest {
 
 		assertThat(entity).isNotNull().hasNoNullFieldsOrProperties();
 		assertThat(entity.getId()).isEqualTo(id);
+		assertThat(entity.getMunicipalityId()).isEqualTo(municipalityId);
 		assertThat(entity.getRequestId()).isEqualTo(requestId);
 		assertThat(entity.getBillingRecordWrapper()).isEqualTo(billingRecordWrapper);
 		assertThat(entity.getOpenEInstance()).isEqualTo(openEInstance);
@@ -80,7 +83,7 @@ class FalloutEntityTest {
 
 	@Test
 	void testPrePersist() {
-		var entity = FalloutEntity.builder().build();
+		final var entity = FalloutEntity.builder().build();
 		assertThat(entity.getCreated()).isNull();
 		assertThat(entity.getModified()).isNull();
 
@@ -92,10 +95,10 @@ class FalloutEntityTest {
 	}
 
 	@Test
-	void testPrePersist_shouldNotUpdateCreated () {
-		var entity = FalloutEntity.builder().build();
+	void testPrePersist_shouldNotUpdateCreated() {
+		final var entity = FalloutEntity.builder().build();
 		entity.prePersist();
-		var created = entity.getCreated();
+		final var created = entity.getCreated();
 		entity.prePersist();
 		assertThat(entity.getCreated()).isEqualTo(created);
 	}

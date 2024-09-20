@@ -9,9 +9,6 @@ import org.hibernate.Length;
 import org.hibernate.annotations.TimeZoneStorage;
 import org.hibernate.annotations.UuidGenerator;
 
-import se.sundsvall.billingdatacollector.integration.db.converter.BillingRecordWrapperConverter;
-import se.sundsvall.billingdatacollector.model.BillingRecordWrapper;
-
 import jakarta.persistence.Column;
 import jakarta.persistence.Convert;
 import jakarta.persistence.Entity;
@@ -25,6 +22,8 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import se.sundsvall.billingdatacollector.integration.db.converter.BillingRecordWrapperConverter;
+import se.sundsvall.billingdatacollector.model.BillingRecordWrapper;
 
 @Getter
 @Setter
@@ -37,14 +36,17 @@ import lombok.Setter;
 	indexes = {
 		@Index(name = "idx_family_id", columnList = "family_id"),
 		@Index(name = "idx_flow_instance_id", columnList = "flow_instance_id"),
-	}
-)
+		@Index(name = "idx_municipality_id", columnList = "municipality_id")
+	})
 public class FalloutEntity {
 
 	@Id
 	@UuidGenerator
 	@Column(name = "id")
 	private String id;
+
+	@Column(name = "municipality_id")
+	private String municipalityId;
 
 	@Column(name = "request_id", length = 36)
 	private String requestId;
@@ -86,30 +88,25 @@ public class FalloutEntity {
 	}
 
 	@Override
-	public boolean equals(Object o) {
-		if (this == o) return true;
-		if (!(o instanceof FalloutEntity that)) return false;
-		return Objects.equals(id, that.id) && Objects.deepEquals(openEInstance, that.openEInstance) && Objects.equals(familyId, that.familyId) && Objects.equals(flowInstanceId, that.flowInstanceId) && Objects.equals(created, that.created) && Objects.equals(modified, that.modified) && Objects.equals(requestId, that.requestId) && Objects.equals(reported, that.reported);
+	public int hashCode() {
+		return Objects.hash(billingRecordWrapper, created, errorMessage, familyId, flowInstanceId, id, modified, municipalityId, openEInstance, reported, requestId);
 	}
 
 	@Override
-	public int hashCode() {
-		return Objects.hash(id, familyId, flowInstanceId, created, modified, requestId, reported);
+	public boolean equals(Object obj) {
+		if (this == obj) { return true; }
+		if (!(obj instanceof final FalloutEntity other)) { return false; }
+		return Objects.equals(billingRecordWrapper, other.billingRecordWrapper) && Objects.equals(created, other.created) && Objects.equals(errorMessage, other.errorMessage) && Objects.equals(familyId, other.familyId) && Objects.equals(flowInstanceId,
+			other.flowInstanceId) && Objects.equals(id, other.id) && Objects.equals(modified, other.modified) && Objects.equals(municipalityId, other.municipalityId) && Objects.equals(openEInstance, other.openEInstance) && (reported == other.reported)
+			&& Objects.equals(requestId, other.requestId);
 	}
 
 	@Override
 	public String toString() {
-		return "FalloutEntity{" +
-			"id='" + id + '\'' +
-			", billingRecordWrapper=" + billingRecordWrapper +
-			", openEInstance=" + openEInstance +
-			", familyId='" + familyId + '\'' +
-			", flowInstanceId='" + flowInstanceId + '\'' +
-			", errorMessage='" + errorMessage + '\'' +
-			", created=" + created +
-			", modified=" + modified +
-			", requestId='" + requestId + '\'' +
-			", reported=" + reported +
-			'}';
+		final StringBuilder builder = new StringBuilder();
+		builder.append("FalloutEntity [id=").append(id).append(", municipalityId=").append(municipalityId).append(", requestId=").append(requestId).append(", billingRecordWrapper=").append(billingRecordWrapper).append(", openEInstance=").append(
+			openEInstance).append(", familyId=").append(familyId).append(", flowInstanceId=").append(flowInstanceId).append(", errorMessage=").append(errorMessage).append(", created=").append(created).append(", modified=").append(modified).append(
+				", reported=").append(reported).append("]");
+		return builder.toString();
 	}
 }

@@ -11,11 +11,11 @@ import se.sundsvall.dept44.requestid.RequestId;
 
 final class EntityMapper {
 
-	private EntityMapper() {
-	}
+	private EntityMapper() {}
 
-	public static FalloutEntity mapToOpenEFalloutEntity(byte[] bytes, String flowInstanceId, String familyId, String message) {
+	public static FalloutEntity mapToOpenEFalloutEntity(byte[] bytes, String flowInstanceId, String familyId, String municipalityId, String message) {
 		return FalloutEntity.builder()
+			.withMunicipalityId(municipalityId)
 			.withOpenEInstance(new String(bytes, StandardCharsets.ISO_8859_1))
 			.withFlowInstanceId(flowInstanceId)
 			.withFamilyId(familyId)
@@ -28,6 +28,7 @@ final class EntityMapper {
 		return FalloutEntity.builder()
 			.withBillingRecordWrapper(wrapper)
 			.withFamilyId(wrapper.getFamilyId())
+			.withMunicipalityId(wrapper.getMunicipalityId())
 			.withFlowInstanceId(wrapper.getFlowInstanceId())
 			.withErrorMessage(message)
 			.withRequestId(RequestId.get())
@@ -38,6 +39,7 @@ final class EntityMapper {
 		return HistoryEntity.builder()
 			.withBillingRecordWrapper(wrapper)
 			.withFamilyId(wrapper.getFamilyId())
+			.withMunicipalityId(wrapper.getMunicipalityId())
 			.withFlowInstanceId(wrapper.getFlowInstanceId())
 			.withLocation(location)
 			.withRequestId(RequestId.get())

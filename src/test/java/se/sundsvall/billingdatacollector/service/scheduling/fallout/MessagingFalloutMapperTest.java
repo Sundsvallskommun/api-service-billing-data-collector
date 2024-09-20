@@ -10,11 +10,10 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
+import generated.se.sundsvall.messaging.Party;
 import se.sundsvall.billingdatacollector.Application;
 import se.sundsvall.billingdatacollector.model.Fallout;
 import se.sundsvall.billingdatacollector.support.annotation.UnitTest;
-
-import generated.se.sundsvall.messaging.Party;
 
 @SpringBootTest(classes = Application.class, webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @UnitTest
@@ -25,34 +24,34 @@ class MessagingFalloutMapperTest {
 
 	private static final String HTML_MESSAGE = """
 		<!DOCTYPE html>
-        <html lang="en" xmlns="http://www.w3.org/1999/xhtml">
-            <body>
-                <b>Följande problem har inträffat vid generering av faktura-poster (%s)</b>
-                <p>
-                    <i>3 st. fel:</i>
-                    <ul>
-                        <li> familyId: 123, flowInstanceId: 12345, requestId: abc123</li>
-                        <li> familyId: 123, flowInstanceId: 23456, requestId: abc234</li>
-                        <li> familyId: 234, flowInstanceId: 34567, requestId: abc345</li>
-                    </ul>
-                    <p>
-                        <b>Med vänlig hälsning
-                        <br/>
-                        <a href="mailto:dummy@sundsvall.se">Billing Data Collector</a>
-                    </b>
-                </p>
-            </body>
-        </html>""";
+		      <html lang="en" xmlns="http://www.w3.org/1999/xhtml">
+		          <body>
+		              <b>Följande problem har inträffat vid generering av faktura-poster (%s)</b>
+		              <p>
+		                  <i>3 st. fel:</i>
+		                  <ul>
+		                      <li> familyId: 123, flowInstanceId: 12345, requestId: abc123</li>
+		                      <li> familyId: 123, flowInstanceId: 23456, requestId: abc234</li>
+		                      <li> familyId: 234, flowInstanceId: 34567, requestId: abc345</li>
+		                  </ul>
+		                  <p>
+		                      <b>Med vänlig hälsning
+		                      <br/>
+		                      <a href="mailto:dummy@sundsvall.se">Billing Data Collector</a>
+		                  </b>
+		              </p>
+		          </body>
+		      </html>""";
 
 	@Test
 	void testComposeFalloutEmail() {
 		// Arrange
-		var fallout1 = new Fallout("123", "12345", "abc123");
-		var fallout2 = new Fallout("123", "23456", "abc234");
-		var fallout3 = new Fallout("234", "34567", "abc345");
+		final var fallout1 = new Fallout("123", "12345", "2281", "abc123");
+		final var fallout2 = new Fallout("123", "23456", "2281", "abc234");
+		final var fallout3 = new Fallout("234", "34567", "2281", "abc345");
 
 		// Act
-		var emailBatchRequest = mapper.createEmailBatchRequest(new ArrayList<>(List.of(fallout1, fallout2, fallout3)));
+		final var emailBatchRequest = mapper.createEmailBatchRequest(new ArrayList<>(List.of(fallout1, fallout2, fallout3)));
 
 		assertThat(emailBatchRequest.getAttachments()).isEmpty();
 		assertThat(emailBatchRequest.getHeaders()).isEmpty();
@@ -65,9 +64,8 @@ class MessagingFalloutMapperTest {
 		assertThat(emailBatchRequest.getMessage()).isNull();
 		assertThat(emailBatchRequest.getParties()).containsExactlyInAnyOrder(
 			new Party().emailAddress("test@nowhere.com"),
-			new Party().emailAddress("test2@nowhere.com")
-		);
-		//Replace all spaces and compare
+			new Party().emailAddress("test2@nowhere.com"));
+		// Replace all spaces and compare
 		assertThat(
 			emailBatchRequest.getHtmlMessage().replaceAll("\\s+", "")).isEqualTo(HTML_MESSAGE.formatted(LocalDate.now()).replaceAll("\\s+", ""));
 	}

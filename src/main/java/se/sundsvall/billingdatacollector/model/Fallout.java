@@ -1,8 +1,8 @@
 package se.sundsvall.billingdatacollector.model;
 
-public record Fallout (
+public record Fallout(
 	String familyId,
 	String flowInstanceId,
-	String requestId
-){
+	String municipalityId,
+	String requestId) {
 }

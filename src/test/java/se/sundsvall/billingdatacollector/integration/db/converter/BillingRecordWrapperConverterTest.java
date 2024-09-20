@@ -8,10 +8,6 @@ import java.util.List;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
-import se.sundsvall.billingdatacollector.model.BillingRecordWrapper;
-import se.sundsvall.dept44.test.annotation.resource.Load;
-import se.sundsvall.dept44.test.extension.ResourceLoaderExtension;
-
 import generated.se.sundsvall.billingpreprocessor.AccountInformation;
 import generated.se.sundsvall.billingpreprocessor.AddressDetails;
 import generated.se.sundsvall.billingpreprocessor.BillingRecord;
@@ -21,6 +17,9 @@ import generated.se.sundsvall.billingpreprocessor.Recipient;
 import generated.se.sundsvall.billingpreprocessor.Status;
 import generated.se.sundsvall.billingpreprocessor.Type;
 import jakarta.persistence.PersistenceException;
+import se.sundsvall.billingdatacollector.model.BillingRecordWrapper;
+import se.sundsvall.dept44.test.annotation.resource.Load;
+import se.sundsvall.dept44.test.extension.ResourceLoaderExtension;
 
 @ExtendWith(ResourceLoaderExtension.class)
 class BillingRecordWrapperConverterTest {
@@ -29,14 +28,14 @@ class BillingRecordWrapperConverterTest {
 
 	@Test
 	void convertToDatabaseColumn(@Load("/billingpreprocessor/billing-record.json") String recordAsJson) {
-		var wrapper = converter.convertToEntityAttribute(recordAsJson);
+		final var wrapper = converter.convertToEntityAttribute(recordAsJson);
 		assertThat(wrapper).isNotNull();
 		assertThat(wrapper.getFamilyId()).isEqualTo("358");
 		assertThat(wrapper.getFlowInstanceId()).isEqualTo("12345");
 		assertThat(wrapper.getLegalId()).isEqualTo("1234567890");
 		assertThat(wrapper.getBillingRecord().getCategory()).isEqualTo("KUNDFAKTURA");
 
-		var invoiceRow = wrapper.getBillingRecord().getInvoice().getInvoiceRows().getFirst();
+		final var invoiceRow = wrapper.getBillingRecord().getInvoice().getInvoiceRows().getFirst();
 
 		assertThat(invoiceRow.getAccountInformation().getActivity()).isEqualTo("4165");
 		assertThat(invoiceRow.getAccountInformation().getArticle()).isEqualTo("3452000 - ANKEBORG");
@@ -61,7 +60,8 @@ class BillingRecordWrapperConverterTest {
 
 	@Test
 	void convertToEntityAttribute(@Load("/billingpreprocessor/billing-record.json") String recordAsJson) {
-		var wrapper = BillingRecordWrapper.builder()
+		final var wrapper = BillingRecordWrapper.builder()
+			.withMunicipalityId("2281")
 			.withFamilyId("358")
 			.withFlowInstanceId("12345")
 			.withLegalId("1234567890")
@@ -93,7 +93,7 @@ class BillingRecordWrapperConverterTest {
 				.type(Type.EXTERNAL))
 			.build();
 
-		var json = converter.convertToDatabaseColumn(wrapper);
+		final var json = converter.convertToDatabaseColumn(wrapper);
 		assertThat(json).isEqualToIgnoringWhitespace(recordAsJson);
 	}
 

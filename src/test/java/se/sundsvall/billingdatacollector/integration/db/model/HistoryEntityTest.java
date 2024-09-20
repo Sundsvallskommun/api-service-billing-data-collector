@@ -42,6 +42,7 @@ class HistoryEntityTest {
 	void testBuilderMethods() {
 		// Set values as variables
 		final var id = UUID.randomUUID().toString();
+		final var municipalityId = "municipalityId";
 		final var requestId = UUID.randomUUID().toString();
 		final var billingRecordWrapper = new BillingRecordWrapper();
 		final var familyId = "familyId";
@@ -51,6 +52,7 @@ class HistoryEntityTest {
 
 		final var historyEntity = HistoryEntity.builder()
 			.withId(id)
+			.withMunicipalityId(municipalityId)
 			.withRequestId(requestId)
 			.withBillingRecordWrapper(billingRecordWrapper)
 			.withFamilyId(familyId)
@@ -61,6 +63,7 @@ class HistoryEntityTest {
 
 		assertThat(historyEntity).isNotNull().hasNoNullFieldsOrProperties();
 		assertThat(historyEntity.getId()).isEqualTo(id);
+		assertThat(historyEntity.getMunicipalityId()).isEqualTo(municipalityId);
 		assertThat(historyEntity.getRequestId()).isEqualTo(requestId);
 		assertThat(historyEntity.getBillingRecordWrapper()).isEqualTo(billingRecordWrapper);
 		assertThat(historyEntity.getFamilyId()).isEqualTo(familyId);

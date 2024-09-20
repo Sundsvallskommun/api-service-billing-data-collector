@@ -11,12 +11,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
+import jakarta.transaction.Transactional;
 import se.sundsvall.billingdatacollector.integration.messaging.FalloutMessageProperties;
 import se.sundsvall.billingdatacollector.integration.messaging.MessagingClient;
 import se.sundsvall.billingdatacollector.model.Fallout;
 import se.sundsvall.billingdatacollector.service.DbService;
-
-import jakarta.transaction.Transactional;
 
 @Component
 public class FalloutJobHandler {
@@ -43,26 +42,26 @@ public class FalloutJobHandler {
 			return;
 		}
 
-		//Get all unreported fallouts and map them to a Fallout list
-		var unreportedFallouts = dbService.getUnreportedFallouts()
+		// Get all unreported fallouts and map them to a Fallout list
+		final var unreportedFallouts = dbService.getUnreportedFallouts()
 			.stream()
-			.map(falloutEntity -> new Fallout(falloutEntity.getFamilyId(), falloutEntity.getFlowInstanceId(), falloutEntity.getRequestId()))
-			.collect(Collectors.toCollection(ArrayList::new));  //We want a mutable list
+			.map(falloutEntity -> new Fallout(falloutEntity.getFamilyId(), falloutEntity.getFlowInstanceId(), falloutEntity.getMunicipalityId(), falloutEntity.getRequestId()))
+			.collect(Collectors.toCollection(ArrayList::new));  // We want a mutable list
 
-		//Send email if there are any unreported fallouts
+		// Send email if there are any unreported fallouts
 		if (isEmpty(unreportedFallouts)) {
 			LOG.info("No unreported fallouts found.");
 		} else {
 			LOG.info("Found {} unreported fallouts, will send email", unreportedFallouts.size());
 			composeAndSendMail(unreportedFallouts);
-			//Mark all fallouts as reported
+			// Mark all fallouts as reported
 			dbService.markAllFalloutsAsReported();
 		}
 	}
 
 	private void composeAndSendMail(List<Fallout> fallouts) {
-		var emailBatchRequest = falloutMapper.createEmailBatchRequest(fallouts);
+		final var emailBatchRequest = falloutMapper.createEmailBatchRequest(fallouts);
 
-		messagingClient.sendEmailBatch(emailBatchRequest);
+		messagingClient.sendEmailBatch(fallouts.getFirst().municipalityId(), emailBatchRequest);
 	}
 }

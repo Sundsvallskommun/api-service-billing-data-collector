@@ -40,13 +40,16 @@ class ScheduledJobEntityTest {
 
 	@Test
 	void testBuilderMethods() {
-		var id = UUID.randomUUID().toString();
-		var fetchedStartDate = LocalDate.now();
-		var fetchedEndDate = LocalDate.now().plusDays(1);
-		var processed = OffsetDateTime.now();
 
-		var scheduledJobEntity = ScheduledJobEntity.builder()
+		final var id = UUID.randomUUID().toString();
+		final var municipalityId = "municipalityId";
+		final var fetchedStartDate = LocalDate.now();
+		final var fetchedEndDate = LocalDate.now().plusDays(1);
+		final var processed = OffsetDateTime.now();
+
+		final var scheduledJobEntity = ScheduledJobEntity.builder()
 			.withId(id)
+			.withMunicipalityId(municipalityId)
 			.withFetchedStartDate(fetchedStartDate)
 			.withFetchedEndDate(fetchedEndDate)
 			.withProcessed(processed)
@@ -54,6 +57,7 @@ class ScheduledJobEntityTest {
 
 		assertThat(scheduledJobEntity).isNotNull().hasNoNullFieldsOrProperties();
 		assertThat(scheduledJobEntity.getId()).isEqualTo(id);
+		assertThat(scheduledJobEntity.getMunicipalityId()).isEqualTo(municipalityId);
 		assertThat(scheduledJobEntity.getFetchedStartDate()).isEqualTo(fetchedStartDate);
 		assertThat(scheduledJobEntity.getFetchedEndDate()).isEqualTo(fetchedEndDate);
 		assertThat(scheduledJobEntity.getProcessed()).isEqualTo(processed);
@@ -67,10 +71,9 @@ class ScheduledJobEntityTest {
 
 	@Test
 	void testPrePersist() {
-		ScheduledJobEntity scheduledJobEntity = new ScheduledJobEntity();
+		final ScheduledJobEntity scheduledJobEntity = new ScheduledJobEntity();
 		scheduledJobEntity.prePersist();
 		assertThat(scheduledJobEntity.getProcessed()).isCloseTo(OffsetDateTime.now(), within(1, ChronoUnit.SECONDS));
 		assertThat(scheduledJobEntity).hasAllNullFieldsOrPropertiesExcept("processed");
 	}
-
 }

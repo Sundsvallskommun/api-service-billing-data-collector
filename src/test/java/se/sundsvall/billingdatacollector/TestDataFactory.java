@@ -1,14 +1,11 @@
 package se.sundsvall.billingdatacollector;
 
 import static se.sundsvall.billingdatacollector.integration.opene.mapper.BillingRecordConstants.SUNDSVALLS_MUNICIPALIY;
+import static se.sundsvall.billingdatacollector.integration.opene.mapper.BillingRecordConstants.SUNDSVALLS_MUNICIPALIY_ID;
 import static se.sundsvall.billingdatacollector.integration.opene.mapper.BillingRecordConstants.SUNSVALLS_MUNICIPALITY_ORGANIZATION_NUMBER;
 
 import java.time.LocalDate;
 import java.util.List;
-
-import se.sundsvall.billingdatacollector.integration.db.model.HistoryEntity;
-import se.sundsvall.billingdatacollector.integration.db.model.ScheduledJobEntity;
-import se.sundsvall.billingdatacollector.model.BillingRecordWrapper;
 
 import generated.se.sundsvall.billingpreprocessor.AccountInformation;
 import generated.se.sundsvall.billingpreprocessor.AddressDetails;
@@ -18,13 +15,17 @@ import generated.se.sundsvall.billingpreprocessor.InvoiceRow;
 import generated.se.sundsvall.billingpreprocessor.Recipient;
 import generated.se.sundsvall.billingpreprocessor.Status;
 import generated.se.sundsvall.billingpreprocessor.Type;
+import se.sundsvall.billingdatacollector.integration.db.model.HistoryEntity;
+import se.sundsvall.billingdatacollector.integration.db.model.ScheduledJobEntity;
+import se.sundsvall.billingdatacollector.model.BillingRecordWrapper;
 
 public final class TestDataFactory {
 
 	public static BillingRecordWrapper createKundfakturaBillingRecordWrapper(boolean internal) {
-		var wrapper = BillingRecordWrapper.builder()
+		final var wrapper = BillingRecordWrapper.builder()
 			.withFamilyId("123")
 			.withLegalId("1234567890")
+			.withMunicipalityId(SUNDSVALLS_MUNICIPALIY_ID)
 			.build();
 
 		if (internal) {
@@ -88,13 +89,13 @@ public final class TestDataFactory {
 	}
 
 	public static HistoryEntity createHistoryEntity(String flowInstanceId) {
-		HistoryEntity historyEntity = new HistoryEntity();
+		final HistoryEntity historyEntity = new HistoryEntity();
 		historyEntity.setFlowInstanceId(flowInstanceId);
 		return historyEntity;
 	}
 
 	public static ScheduledJobEntity createScheduledJobEntity() {
-		ScheduledJobEntity scheduledJobEntity = new ScheduledJobEntity();
+		final ScheduledJobEntity scheduledJobEntity = new ScheduledJobEntity();
 		scheduledJobEntity.setFetchedStartDate(LocalDate.now().minusDays(4));
 		scheduledJobEntity.setFetchedEndDate(LocalDate.now().minusDays(3));
 		return scheduledJobEntity;

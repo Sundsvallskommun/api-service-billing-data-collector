@@ -36,7 +36,7 @@ public class CollectorService {
 		this.openEIntegration = openEIntegration;
 		this.preprocessorIntegration = preProcessorClient;
 
-		//Get all Decorators and add them to the map with their corresponding familyId.
+		// Get all Decorators and add them to the map with their corresponding familyId.
 		this.decorators = decorators.stream().collect(Collectors.toMap(BillingRecordDecorator::getSupportedFamilyId, Function.identity()));
 	}
 
@@ -48,9 +48,9 @@ public class CollectorService {
 	public void triggerBilling(String flowInstanceId) {
 		LOG.info("Triggering billing for flowInstanceId: {}", flowInstanceId);
 
-		var possibleWrapper = openEIntegration.getBillingRecord(flowInstanceId);
+		final var possibleWrapper = openEIntegration.getBillingRecord(flowInstanceId);
 
-		//If we have a BillingRecordWrapper, decorate it and send it to the preprocessor
+		// If we have a BillingRecordWrapper, decorate it and send it to the preprocessor
 		possibleWrapper.ifPresentOrElse(
 			wrapper -> {
 				decorate(wrapper);
@@ -61,11 +61,11 @@ public class CollectorService {
 
 	private void createBillingRecord(BillingRecordWrapper billingRecordWrapper) {
 		try {
-			var response = preprocessorIntegration.createBillingRecord(billingRecordWrapper.getBillingRecord());
+			final var response = preprocessorIntegration.createBillingRecord(billingRecordWrapper.getMunicipalityId(), billingRecordWrapper.getBillingRecord());
 			LOG.info("Successfully sent record to preprocessor for flowInstanceId: {}", billingRecordWrapper.getFlowInstanceId());
 			dbService.saveToHistory(billingRecordWrapper, response);
-		} catch (Exception e) {
-			//Save the BillingRecordWrapper if we failed to send it to the preprocessor
+		} catch (final Exception e) {
+			// Save the BillingRecordWrapper if we failed to send it to the preprocessor
 			LOG.warn("Failed to create a record for flowInstanceId: {}", billingRecordWrapper.getFlowInstanceId(), e);
 			dbService.saveFailedBillingRecord(billingRecordWrapper, e.getMessage());
 		}
@@ -75,40 +75,38 @@ public class CollectorService {
 	 * Trigger billing for all supported familyIds between the provided dates.
 	 * Will check which flowInstanceIds that have already been processed and only trigger billing for the unprocessed ones.
 	 *
-	 * @param startDate The start date
-	 * @param endDate The end date
-	 * @param familyIds The familyIds to trigger billing for, may be null/empty
-	 * @return A list of flowInstanceIds that have been triggered
+	 * @param  startDate The start date
+	 * @param  endDate   The end date
+	 * @param  familyIds The familyIds to trigger billing for, may be null/empty
+	 * @return           A list of flowInstanceIds that have been triggered
 	 */
 	public List<String> triggerBillingBetweenDates(LocalDate startDate, LocalDate endDate, Set<String> familyIds) {
-		var supportedFamilyIds = getSupportedFamilyIds(familyIds);
+		final var supportedFamilyIds = getSupportedFamilyIds(familyIds);
 
 		LOG.info("Triggering billing for familyIds: {}", supportedFamilyIds);
 
-		List<String> idsToReturn = new ArrayList<>();
+		final List<String> idsToReturn = new ArrayList<>();
 
 		// For each supported familyId, get all flowInstanceIds and trigger billing for them
 		supportedFamilyIds
 			.forEach(supportedFamilyId -> {
-					LOG.info("Getting flowInstanceIds for familyId: {}", supportedFamilyId);
-					var receivedFlowInstanceIds = openEIntegration.getFlowInstanceIds(supportedFamilyId, startDate.toString(), endDate.toString());
+				LOG.info("Getting flowInstanceIds for familyId: {}", supportedFamilyId);
+				final var receivedFlowInstanceIds = openEIntegration.getFlowInstanceIds(supportedFamilyId, startDate.toString(), endDate.toString());
 
-					// Trigger billing for the unprocessed flowInstanceIds
-					receivedFlowInstanceIds.forEach(flowInstanceId ->
-						checkIfAlreadyProcessed(supportedFamilyId, flowInstanceId, idsToReturn));
-				}
-			);
+				// Trigger billing for the unprocessed flowInstanceIds
+				receivedFlowInstanceIds.forEach(flowInstanceId -> checkIfAlreadyProcessed(supportedFamilyId, flowInstanceId, idsToReturn));
+			});
 
 		return idsToReturn;
 	}
 
 	private void checkIfAlreadyProcessed(String supportedFamilyId, String flowInstanceId, List<String> idsToReturn) {
-		//Check if it's already been processed, if so skip it
-		if(!dbService.hasAlreadyBeenProcessed(supportedFamilyId, flowInstanceId)) {
+		// Check if it's already been processed, if so skip it
+		if (!dbService.hasAlreadyBeenProcessed(supportedFamilyId, flowInstanceId)) {
 			try {
 				idsToReturn.add(flowInstanceId);
 				triggerBilling(flowInstanceId);
-			} catch (Exception e) {
+			} catch (final Exception e) {
 				LOG.warn("Failed to trigger billing for familyId: {} and flowInstanceId: {}", supportedFamilyId, flowInstanceId, e);
 			}
 		} else {
@@ -122,14 +120,14 @@ public class CollectorService {
 	 * If familyIds are provided, return the intersection of supported familyIds and provided familyIds.
 	 * If no supported familyIds are found (and familyIds are provided), throw a Problem.
 	 *
-	 * @param wantedFamilyIds The familyIds to check
-	 * @return A Set of supported familyIds
+	 * @param  wantedFamilyIds The familyIds to check
+	 * @return                 A Set of supported familyIds
 	 */
 	private Set<String> getSupportedFamilyIds(Set<String> wantedFamilyIds) {
-		var supportedFamilyIds = openEIntegration.getSupportedFamilyIds();
+		final var supportedFamilyIds = openEIntegration.getSupportedFamilyIds();
 		LOG.info("Wanted familyIds: {}. Supported familyIds: {}", wantedFamilyIds, supportedFamilyIds);
 
-		var validFamilyIds = new HashSet<>(supportedFamilyIds);	// Creating a copy to be able to relay information about supported familyIds
+		final var validFamilyIds = new HashSet<>(supportedFamilyIds);	// Creating a copy to be able to relay information about supported familyIds
 
 		Optional.ofNullable(wantedFamilyIds)
 			.filter(wanted -> !wanted.isEmpty())
@@ -152,7 +150,7 @@ public class CollectorService {
 	 * @param recordWrapper The BillingRecordWrapper to decorate
 	 */
 	private void decorate(BillingRecordWrapper recordWrapper) {
-		//Decorate only if we have a decorator for the familyId
+		// Decorate only if we have a decorator for the familyId
 		Optional.ofNullable(decorators.get(recordWrapper.getFamilyId()))
 			.ifPresent(decorator -> decorator.decorate(recordWrapper));
 	}

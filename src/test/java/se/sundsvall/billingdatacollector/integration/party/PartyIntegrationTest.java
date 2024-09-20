@@ -3,7 +3,6 @@ package se.sundsvall.billingdatacollector.integration.party;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
@@ -23,48 +22,50 @@ import generated.se.sundsvall.party.PartyType;
 @ExtendWith(MockitoExtension.class)
 class PartyIntegrationTest {
 
-    @Mock
-    private PartyClient mockPartyClient;
+	private static final String MUNICIPALITY_ID = "2281";
 
-    @InjectMocks
-    private PartyIntegration partyIntegration;
+	@Mock
+	private PartyClient mockPartyClient;
 
-    @Test
-    void testGetPartyId() {
-        when(mockPartyClient.getPartyId(eq(PartyType.PRIVATE), any(String.class)))
-            .thenReturn(Optional.of("somePartyId"));
+	@InjectMocks
+	private PartyIntegration partyIntegration;
 
-        var partyId = partyIntegration.getPartyId("5505158888");
+	@Test
+	void testGetPartyId() {
+		when(mockPartyClient.getPartyId(eq(MUNICIPALITY_ID), eq(PartyType.PRIVATE), any(String.class)))
+			.thenReturn(Optional.of("somePartyId"));
 
-        assertThat(partyId).hasValue("somePartyId");
+		final var partyId = partyIntegration.getPartyId(MUNICIPALITY_ID, "5505158888");
 
-        verify(mockPartyClient, times(1)).getPartyId(eq(PartyType.PRIVATE), any(String.class));
-        verifyNoMoreInteractions(mockPartyClient);
-    }
+		assertThat(partyId).hasValue("somePartyId");
 
-    @Test
-    void testGetPartyIdWhenNothingIsFound() {
-        when(mockPartyClient.getPartyId(eq(PartyType.PRIVATE), any(String.class)))
-            .thenReturn(Optional.empty());
+		verify(mockPartyClient).getPartyId(eq(MUNICIPALITY_ID), eq(PartyType.PRIVATE), any(String.class));
+		verifyNoMoreInteractions(mockPartyClient);
+	}
 
-        var partyId = partyIntegration.getPartyId("5505158888");
+	@Test
+	void testGetPartyIdWhenNothingIsFound() {
+		when(mockPartyClient.getPartyId(eq(MUNICIPALITY_ID), eq(PartyType.PRIVATE), any(String.class)))
+			.thenReturn(Optional.empty());
 
-        assertThat(partyId).isEmpty();
+		final var partyId = partyIntegration.getPartyId(MUNICIPALITY_ID, "5505158888");
 
-        verify(mockPartyClient, times(1)).getPartyId(eq(PartyType.PRIVATE), any(String.class));
-        verifyNoMoreInteractions(mockPartyClient);
-    }
+		assertThat(partyId).isEmpty();
 
-    @Test
-    void testGetPartyIdWhenExceptionIsThrown() {
-        when(mockPartyClient.getPartyId(eq(PartyType.PRIVATE), any(String.class)))
-            .thenThrow(new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR));
+		verify(mockPartyClient).getPartyId(eq(MUNICIPALITY_ID), eq(PartyType.PRIVATE), any(String.class));
+		verifyNoMoreInteractions(mockPartyClient);
+	}
 
-        var partyId = partyIntegration.getPartyId("5505158888");
+	@Test
+	void testGetPartyIdWhenExceptionIsThrown() {
+		when(mockPartyClient.getPartyId(eq(MUNICIPALITY_ID), eq(PartyType.PRIVATE), any(String.class)))
+			.thenThrow(new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR));
 
-        assertThat(partyId).isEmpty();
+		final var partyId = partyIntegration.getPartyId(MUNICIPALITY_ID, "5505158888");
 
-        verify(mockPartyClient, times(1)).getPartyId(eq(PartyType.PRIVATE), any(String.class));
-        verifyNoMoreInteractions(mockPartyClient);
-    }
+		assertThat(partyId).isEmpty();
+
+		verify(mockPartyClient).getPartyId(eq(MUNICIPALITY_ID), eq(PartyType.PRIVATE), any(String.class));
+		verifyNoMoreInteractions(mockPartyClient);
+	}
 }

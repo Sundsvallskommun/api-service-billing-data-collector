@@ -9,16 +9,18 @@ class FalloutTest {
 	@Test
 	void testCreationAndGetters() {
 		// Arrange
-		var familyId = "familyId";
-		var flowInstanceId = "flowInstanceId";
-		var requestId = "requestId";
+		final var familyId = "familyId";
+		final var flowInstanceId = "flowInstanceId";
+		final var municipalityId = "municipalityId";
+		final var requestId = "requestId";
 
 		// Act
-		var fallout = new Fallout(familyId, flowInstanceId, requestId);
+		final var fallout = new Fallout(familyId, flowInstanceId, municipalityId, requestId);
 
 		// Assert
 		assertThat(fallout.familyId()).isEqualTo(familyId);
 		assertThat(fallout.flowInstanceId()).isEqualTo(flowInstanceId);
+		assertThat(fallout.municipalityId()).isEqualTo(municipalityId);
 		assertThat(fallout.requestId()).isEqualTo(requestId);
 	}
 }

@@ -12,6 +12,7 @@ import org.hibernate.annotations.UuidGenerator;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
+import jakarta.persistence.Index;
 import jakarta.persistence.PrePersist;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
@@ -26,13 +27,20 @@ import lombok.Setter;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
-@Table(name = "scheduled_job_log")
+@Table(
+	name = "scheduled_job_log",
+	indexes = {
+		@Index(name = "idx_municipality_id", columnList = "municipality_id")
+	})
 public class ScheduledJobEntity {
 
 	@Id
 	@Column(name = "id")
 	@UuidGenerator
 	private String id;
+
+	@Column(name = "municipality_id")
+	private String municipalityId;
 
 	/**
 	 * Which start date was used when we fetched data.
@@ -61,24 +69,23 @@ public class ScheduledJobEntity {
 	}
 
 	@Override
-	public boolean equals(Object o) {
-		if (this == o) return true;
-		if (!(o instanceof ScheduledJobEntity that)) return false;
-		return Objects.equals(id, that.id) && Objects.equals(fetchedStartDate, that.fetchedStartDate) && Objects.equals(fetchedEndDate, that.fetchedEndDate) && Objects.equals(processed, that.processed);
+	public int hashCode() {
+		return Objects.hash(fetchedEndDate, fetchedStartDate, id, municipalityId, processed);
 	}
 
 	@Override
-	public int hashCode() {
-		return Objects.hash(id, fetchedStartDate, fetchedEndDate, processed);
+	public boolean equals(Object obj) {
+		if (this == obj) { return true; }
+		if (!(obj instanceof final ScheduledJobEntity other)) { return false; }
+		return Objects.equals(fetchedEndDate, other.fetchedEndDate) && Objects.equals(fetchedStartDate, other.fetchedStartDate) && Objects.equals(id, other.id) && Objects.equals(municipalityId, other.municipalityId) && Objects.equals(processed,
+			other.processed);
 	}
 
 	@Override
 	public String toString() {
-		return "ScheduledJobEntity{" +
-			"id='" + id + '\'' +
-			", fetchedStartDate=" + fetchedStartDate +
-			", fetchedEndDate=" + fetchedEndDate +
-			", processed=" + processed +
-			'}';
+		final StringBuilder builder = new StringBuilder();
+		builder.append("ScheduledJobEntity [id=").append(id).append(", municipalityId=").append(municipalityId).append(", fetchedStartDate=").append(fetchedStartDate).append(", fetchedEndDate=").append(fetchedEndDate).append(", processed=").append(
+			processed).append("]");
+		return builder.toString();
 	}
 }
