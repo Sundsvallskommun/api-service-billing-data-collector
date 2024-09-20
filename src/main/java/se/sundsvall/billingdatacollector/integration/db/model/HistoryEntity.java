@@ -6,9 +6,6 @@ import java.util.Objects;
 import org.hibernate.Length;
 import org.hibernate.annotations.UuidGenerator;
 
-import se.sundsvall.billingdatacollector.integration.db.converter.BillingRecordWrapperConverter;
-import se.sundsvall.billingdatacollector.model.BillingRecordWrapper;
-
 import jakarta.persistence.Column;
 import jakarta.persistence.Convert;
 import jakarta.persistence.Entity;
@@ -21,6 +18,8 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import se.sundsvall.billingdatacollector.integration.db.converter.BillingRecordWrapperConverter;
+import se.sundsvall.billingdatacollector.model.BillingRecordWrapper;
 
 @Getter
 @Setter
@@ -33,14 +32,17 @@ import lombok.Setter;
 	indexes = {
 		@Index(name = "idx_family_id", columnList = "family_id"),
 		@Index(name = "idx_flow_instance_id", columnList = "flow_instance_id"),
-	}
-)
+		@Index(name = "idx_municipality_id", columnList = "municipality_id")
+	})
 public class HistoryEntity {
 
 	@Id
 	@UuidGenerator
 	@Column(name = "id")
 	private String id;
+
+	@Column(name = "municipality_id")
+	private String municipalityId;
 
 	@Column(name = "request_id", length = 36)
 	private String requestId;
@@ -67,27 +69,23 @@ public class HistoryEntity {
 	}
 
 	@Override
-	public boolean equals(Object o) {
-		if (this == o) return true;
-		if (!(o instanceof HistoryEntity that)) return false;
-		return Objects.equals(id, that.id) && Objects.equals(familyId, that.familyId) && Objects.equals(flowInstanceId, that.flowInstanceId) && Objects.equals(created, that.created) && Objects.equals(location, that.location) && Objects.equals(requestId, that.requestId);
+	public int hashCode() {
+		return Objects.hash(billingRecordWrapper, created, familyId, flowInstanceId, id, location, municipalityId, requestId);
 	}
 
 	@Override
-	public int hashCode() {
-		return Objects.hash(id, familyId, flowInstanceId, created, location, requestId);
+	public boolean equals(Object obj) {
+		if (this == obj) { return true; }
+		if (!(obj instanceof final HistoryEntity other)) { return false; }
+		return Objects.equals(billingRecordWrapper, other.billingRecordWrapper) && Objects.equals(created, other.created) && Objects.equals(familyId, other.familyId) && Objects.equals(flowInstanceId, other.flowInstanceId) && Objects.equals(id, other.id)
+			&& Objects.equals(location, other.location) && Objects.equals(municipalityId, other.municipalityId) && Objects.equals(requestId, other.requestId);
 	}
 
 	@Override
 	public String toString() {
-		return "HistoryEntity{" +
-			"id='" + id + '\'' +
-			", billingRecordWrapper=" + billingRecordWrapper +
-			", familyId='" + familyId + '\'' +
-			", flowInstanceId='" + flowInstanceId + '\'' +
-			", created=" + created +
-			", location='" + location + '\'' +
-			", requestId='" + requestId + '\'' +
-			'}';
+		final StringBuilder builder = new StringBuilder();
+		builder.append("HistoryEntity [id=").append(id).append(", municipalityId=").append(municipalityId).append(", requestId=").append(requestId).append(", billingRecordWrapper=").append(billingRecordWrapper).append(", familyId=").append(familyId)
+			.append(", flowInstanceId=").append(flowInstanceId).append(", created=").append(created).append(", location=").append(location).append("]");
+		return builder.toString();
 	}
 }

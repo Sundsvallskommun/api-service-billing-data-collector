@@ -28,6 +28,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 
+import generated.se.sundsvall.billingpreprocessor.BillingRecord;
 import se.sundsvall.billingdatacollector.integration.db.FalloutRepository;
 import se.sundsvall.billingdatacollector.integration.db.HistoryRepository;
 import se.sundsvall.billingdatacollector.integration.db.ScheduledJobRepository;
@@ -35,8 +36,6 @@ import se.sundsvall.billingdatacollector.integration.db.model.FalloutEntity;
 import se.sundsvall.billingdatacollector.integration.db.model.HistoryEntity;
 import se.sundsvall.billingdatacollector.integration.db.model.ScheduledJobEntity;
 import se.sundsvall.billingdatacollector.model.BillingRecordWrapper;
-
-import generated.se.sundsvall.billingpreprocessor.BillingRecord;
 
 @ExtendWith(MockitoExtension.class)
 class DbServiceTest {
@@ -58,13 +57,14 @@ class DbServiceTest {
 
 	private static final String FAMILY_ID = "familyId";
 	private static final String FLOW_INSTANCE_ID = "flowInstanceId";
+	private static final String MUNICIPALITY_ID = "municipalityId";
 
 	@Test
 	void testSaveFailedBillingRecord() {
-		//Arrange
-		var wrapper = createBillingRecordWrapper();
+		// Arrange
+		final var wrapper = createBillingRecordWrapper();
 
-		FalloutEntity expectedEntity = FalloutEntity.builder()
+		final FalloutEntity expectedEntity = FalloutEntity.builder()
 			.withBillingRecordWrapper(wrapper)
 			.withFamilyId(FAMILY_ID)
 			.withFlowInstanceId(FLOW_INSTANCE_ID)
@@ -73,28 +73,27 @@ class DbServiceTest {
 		when(mockFalloutRepository.existsByFamilyIdAndFlowInstanceIdAndBillingRecordWrapperIsNotNull(FAMILY_ID, FLOW_INSTANCE_ID)).thenReturn(false);
 		when(mockFalloutRepository.saveAndFlush(Mockito.any(FalloutEntity.class))).thenReturn(expectedEntity);
 
-		//Act
+		// Act
 		dbService.saveFailedBillingRecord(wrapper, "en error message");
 
-		//Assert
+		// Assert
 		verify(mockFalloutRepository).existsByFamilyIdAndFlowInstanceIdAndBillingRecordWrapperIsNotNull(FAMILY_ID, FLOW_INSTANCE_ID);
-		verify(mockFalloutRepository).saveAndFlush(argThat(entity ->
-			entity.getFamilyId().equals(FAMILY_ID) &&
-			entity.getFlowInstanceId().equals(FLOW_INSTANCE_ID) &&
+		verify(mockFalloutRepository).saveAndFlush(argThat(entity -> FAMILY_ID.equals(entity.getFamilyId()) &&
+			FLOW_INSTANCE_ID.equals(entity.getFlowInstanceId()) &&
 			entity.getBillingRecordWrapper().equals(wrapper)));
 		verifyNoMoreInteractions(mockFalloutRepository);
 	}
 
 	@Test
 	void testSaveFailedBillingRecord_shouldNotSave_whenAlreadyExists() {
-		//Arrange
-		var wrapper = createBillingRecordWrapper();
+		// Arrange
+		final var wrapper = createBillingRecordWrapper();
 		when(mockFalloutRepository.existsByFamilyIdAndFlowInstanceIdAndBillingRecordWrapperIsNotNull(FAMILY_ID, FLOW_INSTANCE_ID)).thenReturn(true);
 
-		//Act
+		// Act
 		dbService.saveFailedBillingRecord(wrapper, "an error message");
 
-		//Assert
+		// Assert
 		verify(mockFalloutRepository).existsByFamilyIdAndFlowInstanceIdAndBillingRecordWrapperIsNotNull(FAMILY_ID, FLOW_INSTANCE_ID);
 		verify(mockFalloutRepository, never()).saveAndFlush(Mockito.any(FalloutEntity.class));
 		verifyNoMoreInteractions(mockFalloutRepository);
@@ -102,33 +101,32 @@ class DbServiceTest {
 
 	@Test
 	void testSaveFailedFlowInstance() {
-		//Arrange
-		byte[] bytes = new byte[0];
+		// Arrange
+		final byte[] bytes = {};
 		when(mockFalloutRepository.existsByFamilyIdAndFlowInstanceIdAndOpenEInstanceIsNotNull(FAMILY_ID, FLOW_INSTANCE_ID)).thenReturn(false);
 		when(mockFalloutRepository.saveAndFlush(Mockito.any(FalloutEntity.class))).thenReturn(FalloutEntity.builder().build());
 
-		//Act
-		dbService.saveFailedFlowInstance(bytes, FLOW_INSTANCE_ID, FAMILY_ID, "an error message");
+		// Act
+		dbService.saveFailedFlowInstance(bytes, FLOW_INSTANCE_ID, FAMILY_ID, MUNICIPALITY_ID, "an error message");
 
-		//Assert
+		// Assert
 		verify(mockFalloutRepository).existsByFamilyIdAndFlowInstanceIdAndOpenEInstanceIsNotNull(FAMILY_ID, FLOW_INSTANCE_ID);
-		verify(mockFalloutRepository).saveAndFlush(argThat(entity ->
-			entity.getFamilyId().equals(FAMILY_ID) &&
-			entity.getFlowInstanceId().equals(FLOW_INSTANCE_ID) &&
+		verify(mockFalloutRepository).saveAndFlush(argThat(entity -> FAMILY_ID.equals(entity.getFamilyId()) &&
+			FLOW_INSTANCE_ID.equals(entity.getFlowInstanceId()) &&
 			entity.getOpenEInstance().equals(new String(bytes, StandardCharsets.ISO_8859_1))));
 		verifyNoMoreInteractions(mockFalloutRepository);
 	}
 
 	@Test
 	void testSaveFailedOpenEInstance_shouldNotSave_whenAlreadyExists() {
-		//Arrange
-		byte[] bytes = new byte[0];
+		// Arrange
+		final byte[] bytes = {};
 		when(mockFalloutRepository.existsByFamilyIdAndFlowInstanceIdAndOpenEInstanceIsNotNull(FAMILY_ID, FLOW_INSTANCE_ID)).thenReturn(true);
 
-		//Act
-		dbService.saveFailedFlowInstance(bytes, FLOW_INSTANCE_ID, FAMILY_ID, "an error message");
+		// Act
+		dbService.saveFailedFlowInstance(bytes, FLOW_INSTANCE_ID, FAMILY_ID, MUNICIPALITY_ID, "an error message");
 
-		//Assert
+		// Assert
 		verify(mockFalloutRepository).existsByFamilyIdAndFlowInstanceIdAndOpenEInstanceIsNotNull(FAMILY_ID, FLOW_INSTANCE_ID);
 		verify(mockFalloutRepository, never()).saveAndFlush(Mockito.any(FalloutEntity.class));
 		verifyNoMoreInteractions(mockFalloutRepository);
@@ -136,35 +134,34 @@ class DbServiceTest {
 
 	@Test
 	void testSaveToHistory() {
-		//Arrange
-		var wrapper = createBillingRecordWrapper();
-		var headers = createHeaders();
+		// Arrange
+		final var wrapper = createBillingRecordWrapper();
+		final var headers = createHeaders();
 
 		when(mockResponseEntity.getHeaders()).thenReturn(headers);
 
-		//Act
+		// Act
 		dbService.saveToHistory(wrapper, mockResponseEntity);
 
-		//Assert
+		// Assert
 		verify(mockResponseEntity).getHeaders();
-		verify(mockHistoryRepository).saveAndFlush(argThat(entity ->
-			entity.getFlowInstanceId().equals(FLOW_INSTANCE_ID) &&
-			entity.getFamilyId().equals(FAMILY_ID) &&
-			entity.getLocation().equals("/location/uuid")));
+		verify(mockHistoryRepository).saveAndFlush(argThat(entity -> FLOW_INSTANCE_ID.equals(entity.getFlowInstanceId()) &&
+			FAMILY_ID.equals(entity.getFamilyId()) &&
+			"/location/uuid".equals(entity.getLocation())));
 		verifyNoMoreInteractions(mockFalloutRepository);
 	}
 
 	@ParameterizedTest
 	@MethodSource("processedParameters")
 	void testHasAlreadyBeenProcessed(boolean historyExists, boolean falloutExists, boolean expectedOutcome) {
-		//Arrange
+		// Arrange
 		when(mockHistoryRepository.existsByFamilyIdAndFlowInstanceId(FAMILY_ID, FLOW_INSTANCE_ID)).thenReturn(historyExists);
 		when(mockFalloutRepository.existsByFamilyIdAndFlowInstanceId(FAMILY_ID, FLOW_INSTANCE_ID)).thenReturn(falloutExists);
 
-		//Act
-		boolean result = dbService.hasAlreadyBeenProcessed(FAMILY_ID, FLOW_INSTANCE_ID);
+		// Act
+		final boolean result = dbService.hasAlreadyBeenProcessed(FAMILY_ID, FLOW_INSTANCE_ID);
 
-		//Assert
+		// Assert
 		assertThat(result).isEqualTo(expectedOutcome);
 		verify(mockHistoryRepository).existsByFamilyIdAndFlowInstanceId(FAMILY_ID, FLOW_INSTANCE_ID);
 		verify(mockFalloutRepository).existsByFamilyIdAndFlowInstanceId(FAMILY_ID, FLOW_INSTANCE_ID);
@@ -178,36 +175,34 @@ class DbServiceTest {
 			Arguments.of(true, false, true),
 			Arguments.of(false, true, true),
 			Arguments.of(true, true, true),
-			Arguments.of(false, false, false)
-		);
+			Arguments.of(false, false, false));
 	}
 
 	@Test
 	void testSaveScheduledJob() {
-		//Arrange
-		var startDate = java.time.LocalDate.now();
-		var endDate = java.time.LocalDate.now().plusDays(1);
+		// Arrange
+		final var startDate = java.time.LocalDate.now();
+		final var endDate = java.time.LocalDate.now().plusDays(1);
 
-		//Act
+		// Act
 		dbService.saveScheduledJob(startDate, endDate);
 
-		//Assert
-		verify(mockScheduledJobRepository).saveAndFlush(argThat(entity ->
-			entity.getFetchedStartDate().equals(startDate) &&
+		// Assert
+		verify(mockScheduledJobRepository).saveAndFlush(argThat(entity -> entity.getFetchedStartDate().equals(startDate) &&
 			entity.getFetchedEndDate().equals(endDate)));
 		verifyNoMoreInteractions(mockScheduledJobRepository);
 	}
 
 	@Test
 	void testGetLatestJob() {
-		//Arrange
-		var expectedEntity = ScheduledJobEntity.builder().build();
+		// Arrange
+		final var expectedEntity = ScheduledJobEntity.builder().build();
 		when(mockScheduledJobRepository.findFirstByOrderByFetchedEndDateDesc()).thenReturn(Optional.of(expectedEntity));
 
-		//Act
-		var result = dbService.getLatestJob();
+		// Act
+		final var result = dbService.getLatestJob();
 
-		//Assert
+		// Assert
 		assertThat(result)
 			.isPresent()
 			.contains(expectedEntity);
@@ -217,13 +212,13 @@ class DbServiceTest {
 
 	@Test
 	void testGetLatestJob_shouldReturnEmpty_whenNoJobExists() {
-		//Arrange
+		// Arrange
 		when(mockScheduledJobRepository.findFirstByOrderByFetchedEndDateDesc()).thenReturn(Optional.empty());
 
-		//Act
-		var result = dbService.getLatestJob();
+		// Act
+		final var result = dbService.getLatestJob();
 
-		//Assert
+		// Assert
 		assertThat(result).isEmpty();
 		verify(mockScheduledJobRepository).findFirstByOrderByFetchedEndDateDesc();
 		verifyNoMoreInteractions(mockScheduledJobRepository);
@@ -235,7 +230,7 @@ class DbServiceTest {
 		when(mockHistoryRepository.findAllByFlowInstanceIdIn(anyList())).thenReturn(List.of(HistoryEntity.builder().build()));
 
 		// Act
-		var result = dbService.getHistory(List.of("flowInstanceId"));
+		final var result = dbService.getHistory(List.of("flowInstanceId"));
 
 		// Assert
 		assertThat(result).hasSize(1);
@@ -249,7 +244,7 @@ class DbServiceTest {
 		when(mockFalloutRepository.findAllByFlowInstanceIdIn(anyList())).thenReturn(List.of(FalloutEntity.builder().build()));
 
 		// Act
-		var result = dbService.getFallouts(List.of("flowInstanceId"));
+		final var result = dbService.getFallouts(List.of("flowInstanceId"));
 
 		// Assert
 		assertThat(result).hasSize(1);
@@ -263,7 +258,7 @@ class DbServiceTest {
 		when(mockFalloutRepository.findAllByReportedIsFalse()).thenReturn(List.of(FalloutEntity.builder().build()));
 
 		// Act
-		var result = dbService.getUnreportedFallouts();
+		final var result = dbService.getUnreportedFallouts();
 
 		// Assert
 		assertThat(result).hasSize(1);
@@ -274,7 +269,7 @@ class DbServiceTest {
 	@Test
 	void testMarkAllFalloutsAsReported() {
 		// Arrange
-		var entities = List.of(FalloutEntity.builder().build());
+		final var entities = List.of(FalloutEntity.builder().build());
 		when(mockFalloutRepository.findAllByReportedIsFalse()).thenReturn(entities);
 
 		// Act
@@ -287,9 +282,9 @@ class DbServiceTest {
 	}
 
 	private static @NotNull HttpHeaders createHeaders() {
-		MultiValueMap<String, String> map = new LinkedMultiValueMap<>();
+		final MultiValueMap<String, String> map = new LinkedMultiValueMap<>();
 		map.add("location", "/location/uuid");
-		HttpHeaders headers = new HttpHeaders();
+		final HttpHeaders headers = new HttpHeaders();
 		headers.addAll(map);
 		return headers;
 	}

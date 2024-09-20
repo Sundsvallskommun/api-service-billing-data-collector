@@ -1,6 +1,6 @@
 package se.sundsvall.billingdatacollector.integration.opene.mapper.kundfakturaformular;
 
-import static se.sundsvall.billingdatacollector.integration.opene.mapper.BillingRecordConstants.SUNDSVALLS_MUNICIPALIY;
+import static se.sundsvall.billingdatacollector.integration.opene.mapper.BillingRecordConstants.SUNDSVALLS_MUNICIPALITY;
 import static se.sundsvall.billingdatacollector.integration.opene.mapper.BillingRecordConstants.SUNSVALLS_MUNICIPALITY_ORGANIZATION_NUMBER;
 import static se.sundsvall.billingdatacollector.integration.opene.util.XPathUtil.extractValue;
 import static se.sundsvall.billingdatacollector.integration.opene.util.XPathUtil.getString;
@@ -61,7 +61,7 @@ class KundfakturaformularMapper implements OpenEMapper {
 			.status(Status.APPROVED)
 			.type(Type.INTERNAL)
 			.recipient(new Recipient()
-				.organizationName(SUNDSVALLS_MUNICIPALIY)
+				.organizationName(SUNDSVALLS_MUNICIPALITY)
 				.legalId(SUNSVALLS_MUNICIPALITY_ORGANIZATION_NUMBER))
 			.invoice(new Invoice()
 				.customerId(customerId)

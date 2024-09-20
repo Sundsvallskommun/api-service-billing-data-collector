@@ -27,16 +27,18 @@ class BillingRecordWrapperTest {
 
 	@Test
 	void testBuilderMethods() {
-		var billingRecord = new BillingRecord();
-		var legalId = "1234567890";
-		var familyId = "123";
-		var flowInstanceId = "4657";
+		final var billingRecord = new BillingRecord();
+		final var legalId = "1234567890";
+		final var familyId = "123";
+		final var flowInstanceId = "4657";
+		final var municipalityId = "2281";
 
-		var wrapper = BillingRecordWrapper.builder()
+		final var wrapper = BillingRecordWrapper.builder()
 			.withBillingRecord(billingRecord)
 			.withLegalId(legalId)
 			.withFamilyId(familyId)
 			.withFlowInstanceId(flowInstanceId)
+			.withMunicipalityId(municipalityId)
 			.build();
 
 		assertThat(wrapper).isNotNull().hasNoNullFieldsOrProperties();
@@ -44,6 +46,7 @@ class BillingRecordWrapperTest {
 		assertThat(wrapper.getLegalId()).isEqualTo(legalId);
 		assertThat(wrapper.getFamilyId()).isEqualTo(familyId);
 		assertThat(wrapper.getFlowInstanceId()).isEqualTo(flowInstanceId);
+		assertThat(wrapper.getMunicipalityId()).isEqualTo(municipalityId);
 	}
 
 	@Test

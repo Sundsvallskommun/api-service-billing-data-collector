@@ -1,6 +1,7 @@
 package se.sundsvall.billingdatacollector.integration.opene;
 
 import static java.util.stream.Collectors.toMap;
+import static se.sundsvall.billingdatacollector.integration.opene.mapper.BillingRecordConstants.SUNDSVALLS_MUNICIPALITY_ID;
 import static se.sundsvall.billingdatacollector.integration.opene.util.XPathUtil.evaluateXPath;
 import static se.sundsvall.billingdatacollector.integration.opene.util.XPathUtil.getString;
 
@@ -42,9 +43,9 @@ public class OpenEIntegration {
 
 	public List<String> getFlowInstanceIds(final String familyId, final String fromDate, final String toDate) {
 		// Get the XML from OpenE...
-		var xml = client.getErrands(familyId, fromDate, toDate);
+		final var xml = client.getErrands(familyId, fromDate, toDate);
 		// Extract the errand id:s
-		var result = evaluateXPath(xml, "/FlowInstances/FlowInstance/flowInstanceID");
+		final var result = evaluateXPath(xml, "/FlowInstances/FlowInstance/flowInstanceID");
 
 		return result.eachText().stream()
 			.map(String::trim)
@@ -55,29 +56,32 @@ public class OpenEIntegration {
 	 * Get a billing record from OpenE.
 	 * If the familyId is not supported or if the familyId is not found in the XML, a Problem will be thrown.
 	 * If the mapping fails, the XML will be saved to the fallout table.
-	 * @param flowInstanceId The flowInstanceId to get the billing record for
-	 * @return a {@link BillingRecordWrapper} with the billing record
+	 *
+	 * @param  flowInstanceId The flowInstanceId to get the billing record for
+	 * @return                a {@link BillingRecordWrapper} with the billing record
 	 */
 	public Optional<BillingRecordWrapper> getBillingRecord(final String flowInstanceId) {
 		// Get the XML from OpenE...
-		var xml = client.getErrand(flowInstanceId);
+		final var xml = client.getErrand(flowInstanceId);
 
 		// Validate and extract the familyId
-		var familyId = validateResponseAndExtractFamilyId(xml);
+		final var familyId = validateResponseAndExtractFamilyId(xml);
 
 		BillingRecordWrapper billingRecordWrapper = null;
 
 		try {
 			// If we got a sane response and a mapper for the familyId, map the XML to a BillingRecordWrapper
 			billingRecordWrapper = mappers.get(familyId).mapToBillingRecordWrapper(xml);
-			//Set the familyId to make it possible to apply decorator
+			// Set the familyId to make it possible to apply decorator
 			billingRecordWrapper.setFamilyId(familyId);
-			//We set it here for convenience.
+			// Set default municipalityId
+			billingRecordWrapper.setMunicipalityId(SUNDSVALLS_MUNICIPALITY_ID);
+			// We set it here for convenience.
 			billingRecordWrapper.setFlowInstanceId(billingRecordWrapper.getFlowInstanceId());
-		} catch (Exception e) {
-			//If it fails, save it so we can investigate why.
+		} catch (final Exception e) {
+			// If it fails, save it so we can investigate why.
 			LOG.warn("Failed to map XML to BillingRecordWrapper, saving to fallout table", e);
-			dbService.saveFailedFlowInstance(xml, flowInstanceId, familyId, e.getMessage());
+			dbService.saveFailedFlowInstance(xml, flowInstanceId, familyId, SUNDSVALLS_MUNICIPALITY_ID, e.getMessage());
 		}
 
 		return Optional.ofNullable(billingRecordWrapper);
@@ -85,9 +89,9 @@ public class OpenEIntegration {
 
 	private String validateResponseAndExtractFamilyId(byte[] xml) {
 		// Extract the familyId
-		var familyId = getString(xml, "/FlowInstance/Header/Flow/FamilyID");
+		final var familyId = getString(xml, "/FlowInstance/Header/Flow/FamilyID");
 
-		//If no familyId is found, throw a Problem
+		// If no familyId is found, throw a Problem
 		Optional.ofNullable(familyId)
 			.filter(StringUtils::isNotBlank)
 			.orElseThrow(() -> Problem.builder()
@@ -96,7 +100,7 @@ public class OpenEIntegration {
 				.withStatus(Status.INTERNAL_SERVER_ERROR)
 				.build());
 
-		//If the familyId is not supported, also throw a Problem
+		// If the familyId is not supported, also throw a Problem
 		Optional.of(familyId)
 			.filter(mappers::containsKey)
 			.orElseThrow(() -> Problem.builder()

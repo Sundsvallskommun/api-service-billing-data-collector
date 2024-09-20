@@ -24,7 +24,7 @@ import se.sundsvall.dept44.test.annotation.wiremock.WireMockAppTestSuite;
 })
 class BillingCollectorAPIIT extends AbstractAppTest {
 
-	private static final String SERVICE_PATH = "/trigger";
+	private static final String SERVICE_PATH = "/2281/trigger";
 	private static final String RESPONSE_FILE = "response.json";
 
 	private static final String FAMILY_ID = "358";
@@ -50,9 +50,9 @@ class BillingCollectorAPIIT extends AbstractAppTest {
 			.sendRequestAndVerifyResponse()
 			.verifyAllStubs();
 
-		var historyEntities = historyRepository.findAll();
+		final var historyEntities = historyRepository.findAll();
 
-		//Not verifying the content, only that we have saved the entities.
+		// Not verifying the content, only that we have saved the entities.
 		assertThat(historyEntities).hasSize(2);
 		historyEntities.forEach(entity -> {
 			assertThat(entity.getFamilyId()).isEqualTo(FAMILY_ID);
@@ -85,9 +85,9 @@ class BillingCollectorAPIIT extends AbstractAppTest {
 			.sendRequestAndVerifyResponse()
 			.verifyAllStubs();
 
-		var historyEntities = historyRepository.findAll();
+		final var historyEntities = historyRepository.findAll();
 
-		//Not verifying the content, only that we have saved the entities.
+		// Not verifying the content, only that we have saved the entities.
 		assertThat(historyEntities).hasSize(1);
 
 		assertThat(historyEntities.getFirst().getFamilyId()).isEqualTo(FAMILY_ID);

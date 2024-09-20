@@ -1,7 +1,7 @@
 package se.sundsvall.billingdatacollector.integration.opene.mapper.kundfakturaformular;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static se.sundsvall.billingdatacollector.integration.opene.mapper.BillingRecordConstants.SUNDSVALLS_MUNICIPALIY;
+import static se.sundsvall.billingdatacollector.integration.opene.mapper.BillingRecordConstants.SUNDSVALLS_MUNICIPALITY;
 import static se.sundsvall.billingdatacollector.integration.opene.mapper.BillingRecordConstants.SUNSVALLS_MUNICIPALITY_ORGANIZATION_NUMBER;
 
 import java.io.IOException;
@@ -39,7 +39,7 @@ class KundfakturaformularMapperTest {
 		assertThat(billingRecord.getType()).isEqualTo(Type.INTERNAL);
 
 		var recipient = billingRecord.getRecipient();
-		assertThat(recipient.getOrganizationName()).isEqualTo(SUNDSVALLS_MUNICIPALIY);
+		assertThat(recipient.getOrganizationName()).isEqualTo(SUNDSVALLS_MUNICIPALITY);
 		assertThat(recipient.getLegalId()).isEqualTo(SUNSVALLS_MUNICIPALITY_ORGANIZATION_NUMBER);
 
 		var invoice = billingRecord.getInvoice();

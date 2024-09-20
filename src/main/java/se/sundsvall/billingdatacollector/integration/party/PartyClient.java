@@ -17,14 +17,12 @@ import generated.se.sundsvall.party.PartyType;
 	name = CLIENT_ID,
 	configuration = PartyIntegrationConfiguration.class,
 	url = "${integration.party.base-url}",
-	dismiss404 = true
-)
+	dismiss404 = true)
 interface PartyClient {
 
 	@GetMapping(
-		path = "/{type}/{legalId}/partyId",
-		produces = { TEXT_PLAIN_VALUE, APPLICATION_PROBLEM_JSON_VALUE }
-	)
+		path = "/{municipalityId}/{type}/{legalId}/partyId",
+		produces = { TEXT_PLAIN_VALUE, APPLICATION_PROBLEM_JSON_VALUE })
 	@Cacheable("partyId")
-	Optional<String> getPartyId(@PathVariable("type") PartyType partyType, @PathVariable("legalId") String legalId);
+	Optional<String> getPartyId(@PathVariable("municipalityId") String municipalityId, @PathVariable("type") PartyType partyType, @PathVariable("legalId") String legalId);
 }

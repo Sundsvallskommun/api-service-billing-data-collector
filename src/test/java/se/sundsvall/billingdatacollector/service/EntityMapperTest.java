@@ -13,18 +13,19 @@ class EntityMapperTest {
 
 	@Test
 	void testMapToOpenEFalloutEntity() {
-		var falloutEntity = EntityMapper.mapToOpenEFalloutEntity("<åäöÅÄÖ>".getBytes(StandardCharsets.ISO_8859_1), "flowInstanceId", "familyId", "message");
+		final var falloutEntity = EntityMapper.mapToOpenEFalloutEntity("<åäöÅÄÖ>".getBytes(StandardCharsets.ISO_8859_1), "flowInstanceId", "familyId", "municipalityId", "message");
 
 		assertThat(falloutEntity.getFlowInstanceId()).isEqualTo("flowInstanceId");
 		assertThat(falloutEntity.getFamilyId()).isEqualTo("familyId");
+		assertThat(falloutEntity.getMunicipalityId()).isEqualTo("municipalityId");
 		assertThat(falloutEntity.getErrorMessage()).isEqualTo("message");
 		assertThat(falloutEntity.getOpenEInstance()).isEqualTo("<åäöÅÄÖ>");
 	}
 
 	@Test
 	void testMapToBillingRecordFalloutEntity() {
-		var wrapper = TestDataFactory.createKundfakturaBillingRecordWrapper(true);
-		var falloutEntity = EntityMapper.mapToBillingRecordFalloutEntity(wrapper, "message");
+		final var wrapper = TestDataFactory.createKundfakturaBillingRecordWrapper(true);
+		final var falloutEntity = EntityMapper.mapToBillingRecordFalloutEntity(wrapper, "message");
 
 		assertThat(falloutEntity.getBillingRecordWrapper()).isEqualTo(wrapper);
 		assertThat(falloutEntity.getFamilyId()).isEqualTo(wrapper.getFamilyId());
@@ -34,8 +35,8 @@ class EntityMapperTest {
 
 	@Test
 	void testMapToHistoryEntity() {
-		var wrapper = TestDataFactory.createKundfakturaBillingRecordWrapper(true);
-		var historyEntity = EntityMapper.mapToHistoryEntity(wrapper, "location");
+		final var wrapper = TestDataFactory.createKundfakturaBillingRecordWrapper(true);
+		final var historyEntity = EntityMapper.mapToHistoryEntity(wrapper, "location");
 
 		assertThat(historyEntity.getBillingRecordWrapper()).isEqualTo(wrapper);
 		assertThat(historyEntity.getFamilyId()).isEqualTo(wrapper.getFamilyId());
@@ -45,9 +46,9 @@ class EntityMapperTest {
 
 	@Test
 	void testMapToScheduledJobEntity() {
-		var fromDate = LocalDate.of(2024, 6, 14);
-		var toDate = LocalDate.of(2024, 6, 15);
-		var scheduledJobEntity = EntityMapper.mapToScheduledJobEntity(fromDate, toDate);
+		final var fromDate = LocalDate.of(2024, 6, 14);
+		final var toDate = LocalDate.of(2024, 6, 15);
+		final var scheduledJobEntity = EntityMapper.mapToScheduledJobEntity(fromDate, toDate);
 
 		assertThat(scheduledJobEntity.getFetchedStartDate()).isEqualTo(fromDate);
 		assertThat(scheduledJobEntity.getFetchedEndDate()).isEqualTo(toDate);

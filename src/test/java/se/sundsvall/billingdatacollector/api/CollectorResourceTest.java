@@ -1,6 +1,7 @@
 package se.sundsvall.billingdatacollector.api;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.tuple;
 import static org.mockito.ArgumentMatchers.isNull;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.verify;
@@ -23,6 +24,8 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.web.reactive.server.WebTestClient;
 import org.zalando.problem.ThrowableProblem;
+import org.zalando.problem.violations.ConstraintViolationProblem;
+import org.zalando.problem.violations.Violation;
 
 import se.sundsvall.billingdatacollector.Application;
 import se.sundsvall.billingdatacollector.service.CollectorService;
@@ -31,6 +34,10 @@ import se.sundsvall.billingdatacollector.support.annotation.UnitTest;
 @SpringBootTest(classes = Application.class, webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @UnitTest
 class CollectorResourceTest {
+
+	private static final String PATH = "/{municipalityId}/trigger";
+	private static final String PATH_FLOW_INSTANCE_ID = "/{municipalityId}/trigger/{flowInstanceId}";
+	private static final String MUNICIPALITY_ID = "2281";
 
 	@Autowired
 	private WebTestClient webTestClient;
@@ -45,88 +52,116 @@ class CollectorResourceTest {
 
 	@Test
 	void testTriggerBilling() {
-		//Arrange
-		var flowInstanceId = "123";
+		// Arrange
+		final var flowInstanceId = "123";
 		doNothing().when(mockService).triggerBilling(flowInstanceId);
 
-		//Act
+		// Act
 		webTestClient.post()
-			.uri(uriBuilder -> uriBuilder.path("/trigger/{flowInstanceId}")
-				.build(flowInstanceId))
+			.uri(uriBuilder -> uriBuilder.path(PATH_FLOW_INSTANCE_ID)
+				.build(MUNICIPALITY_ID, flowInstanceId))
 			.exchange()
 			.expectStatus().isAccepted();
 
-		//Assert
+		// Assert
 		verify(mockService).triggerBilling(flowInstanceId);
 		verifyNoMoreInteractions(mockService);
 	}
 
 	@Test
 	void testTriggerBillingBetweenTwoValidDates() {
-		//Arrange
+		// Arrange
 		when(mockService.triggerBillingBetweenDates(Mockito.any(LocalDate.class), Mockito.any(LocalDate.class), isNull())).thenReturn(PROCESSED_FAMILY_IDS);
 
-		//Act
+		// Act
 		webTestClient.post()
-			.uri(uriBuilder -> uriBuilder.path("/trigger")
+			.uri(uriBuilder -> uriBuilder.path(PATH)
 				.queryParam("startDate", START_DATE)
 				.queryParam("endDate", END_DATE)
-				.build())
+				.build(MUNICIPALITY_ID))
 			.exchange()
 			.expectStatus().isAccepted();
 
-		//Assert
+		// Assert
 		verify(mockService).triggerBillingBetweenDates(START_DATE, END_DATE, null);
 		verifyNoMoreInteractions(mockService);
 	}
 
 	@Test
 	void testTriggerBillingBetweenTwoEqualDates() {
-		//Arrange
+		// Arrange
 		when(mockService.triggerBillingBetweenDates(Mockito.any(LocalDate.class), Mockito.any(LocalDate.class), isNull())).thenReturn(PROCESSED_FAMILY_IDS);
 
-		//Act
+		// Act
 		webTestClient.post()
-			.uri(uriBuilder -> uriBuilder.path("/trigger")
+			.uri(uriBuilder -> uriBuilder.path(PATH)
 				.queryParam("startDate", START_DATE)
 				.queryParam("endDate", START_DATE)
-				.build())
+				.build(MUNICIPALITY_ID))
 			.exchange()
 			.expectStatus().isAccepted();
 
-		//Assert
+		// Assert
 		verify(mockService).triggerBillingBetweenDates(START_DATE, START_DATE, null);
 		verifyNoMoreInteractions(mockService);
 	}
 
 	@Test
 	void testTriggerBillingWithDatesAndFamilyIds() {
-		//Arrange
+		// Arrange
 		when(mockService.triggerBillingBetweenDates(Mockito.any(LocalDate.class), Mockito.any(LocalDate.class), isNull())).thenReturn(PROCESSED_FAMILY_IDS);
 
-		//Act
+		// Act
 		webTestClient.post()
-			.uri(uriBuilder -> uriBuilder.path("/trigger")
+			.uri(uriBuilder -> uriBuilder.path(PATH)
 				.queryParam("startDate", START_DATE)
 				.queryParam("endDate", END_DATE)
 				.queryParam("familyIds", List.of(FAMILY_IDS.toArray()))
-				.build())
+				.build(MUNICIPALITY_ID))
 			.exchange()
 			.expectStatus().isAccepted();
 
-		//Assert
+		// Assert
 		verify(mockService).triggerBillingBetweenDates(START_DATE, END_DATE, FAMILY_IDS);
 		verifyNoMoreInteractions(mockService);
 	}
 
 	@Test
+	void testTriggerWithInvalidMunicipalityId_shouldThrowException() {
+		// Arrange & Act
+		final var responseBody = webTestClient.post()
+			.uri(uriBuilder -> uriBuilder.path(PATH)
+				.queryParam("startDate", START_DATE)
+				.queryParam("endDate", END_DATE)
+				.build("invalid"))
+			.exchange()
+			.expectStatus().isBadRequest()
+			.expectHeader().contentType(APPLICATION_PROBLEM_JSON)
+			.expectBody(ConstraintViolationProblem.class)
+			.returnResult()
+			.getResponseBody();
+
+		// Assert
+		// Assert
+		assertThat(responseBody).isNotNull();
+		assertThat(responseBody.getTitle()).isEqualTo("Constraint Violation");
+		assertThat(responseBody.getStatus()).isEqualTo(BAD_REQUEST);
+		assertThat(responseBody.getViolations())
+			.extracting(Violation::getField, Violation::getMessage)
+			.containsExactlyInAnyOrder(tuple("triggerBilling.municipalityId", "not a valid municipality ID"));
+
+		verifyNoInteractions(mockService);
+		verifyNoMoreInteractions(mockService);
+	}
+
+	@Test
 	void testTriggerBetweenFaultyDateInterval_shouldThrowException() {
-		//Arrange & Act
-		var responseBody = webTestClient.post()
-			.uri(uriBuilder -> uriBuilder.path("/trigger")
+		// Arrange & Act
+		final var responseBody = webTestClient.post()
+			.uri(uriBuilder -> uriBuilder.path(PATH)
 				.queryParam("startDate", END_DATE)	// End date as start date and vice versa
 				.queryParam("endDate", START_DATE)
-				.build())
+				.build(MUNICIPALITY_ID))
 			.exchange()
 			.expectStatus().isBadRequest()
 			.expectHeader().contentType(APPLICATION_PROBLEM_JSON)
@@ -134,7 +169,7 @@ class CollectorResourceTest {
 			.returnResult()
 			.getResponseBody();
 
-		//Assert
+		// Assert
 		assertThat(responseBody).isNotNull();
 		assertThat(responseBody.getStatus()).isEqualTo(BAD_REQUEST);
 		assertThat(responseBody.getTitle()).isEqualTo("Invalid date range");
@@ -146,12 +181,12 @@ class CollectorResourceTest {
 
 	@Test
 	void testTriggerBillingWithInvalidDate_shouldThrowBadRequest() {
-		//Arrange & Act
-		var responseBody = webTestClient.post()
-			.uri(uriBuilder -> uriBuilder.path("/trigger")
+		// Arrange & Act
+		final var responseBody = webTestClient.post()
+			.uri(uriBuilder -> uriBuilder.path(PATH)
 				.queryParam("startDate", START_DATE)
 				.queryParam("endDate", "2024-13-01")
-				.build())
+				.build(MUNICIPALITY_ID))
 			.exchange()
 			.expectStatus().isBadRequest()
 			.expectHeader().contentType(APPLICATION_PROBLEM_JSON)
@@ -159,7 +194,7 @@ class CollectorResourceTest {
 			.returnResult()
 			.getResponseBody();
 
-		//Assert
+		// Assert
 		assertThat(responseBody).isNotNull();
 		assertThat(responseBody.getStatus()).isEqualTo(BAD_REQUEST);
 		assertThat(responseBody.getTitle()).isEqualTo("Bad Request");
