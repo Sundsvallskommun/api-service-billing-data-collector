@@ -1,7 +1,7 @@
 package se.sundsvall.billingdatacollector;
 
-import static se.sundsvall.billingdatacollector.integration.opene.mapper.BillingRecordConstants.SUNDSVALLS_MUNICIPALIY;
-import static se.sundsvall.billingdatacollector.integration.opene.mapper.BillingRecordConstants.SUNDSVALLS_MUNICIPALIY_ID;
+import static se.sundsvall.billingdatacollector.integration.opene.mapper.BillingRecordConstants.SUNDSVALLS_MUNICIPALITY;
+import static se.sundsvall.billingdatacollector.integration.opene.mapper.BillingRecordConstants.SUNDSVALLS_MUNICIPALITY_ID;
 import static se.sundsvall.billingdatacollector.integration.opene.mapper.BillingRecordConstants.SUNSVALLS_MUNICIPALITY_ORGANIZATION_NUMBER;
 
 import java.time.LocalDate;
@@ -25,7 +25,7 @@ public final class TestDataFactory {
 		final var wrapper = BillingRecordWrapper.builder()
 			.withFamilyId("123")
 			.withLegalId("1234567890")
-			.withMunicipalityId(SUNDSVALLS_MUNICIPALIY_ID)
+			.withMunicipalityId(SUNDSVALLS_MUNICIPALITY_ID)
 			.build();
 
 		if (internal) {
@@ -43,7 +43,7 @@ public final class TestDataFactory {
 			.status(Status.APPROVED)
 			.type(Type.INTERNAL)
 			.recipient(new Recipient()
-				.organizationName(SUNDSVALLS_MUNICIPALIY)
+				.organizationName(SUNDSVALLS_MUNICIPALITY)
 				.legalId(SUNSVALLS_MUNICIPALITY_ORGANIZATION_NUMBER))
 			.invoice(new Invoice()
 				.customerId("customerId")

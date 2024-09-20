@@ -10,7 +10,7 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
-import static se.sundsvall.billingdatacollector.integration.opene.mapper.BillingRecordConstants.SUNDSVALLS_MUNICIPALIY_ID;
+import static se.sundsvall.billingdatacollector.integration.opene.mapper.BillingRecordConstants.SUNDSVALLS_MUNICIPALITY_ID;
 
 import java.time.LocalDate;
 import java.util.Arrays;
@@ -84,7 +84,7 @@ class CollectorServiceTest {
 		verify(mockOpenEIntegration).getBillingRecord(SUPPORTED_FAMILY_ID);
 		verify(mockDecorator).decorate(billingRecordWrapper);
 		verify(mockDbService).saveToHistory(billingRecordWrapper, ResponseEntity.ok().build());
-		verify(mockBillingPreprocessorClient).createBillingRecord(SUNDSVALLS_MUNICIPALIY_ID, billingRecordWrapper.getBillingRecord());
+		verify(mockBillingPreprocessorClient).createBillingRecord(SUNDSVALLS_MUNICIPALITY_ID, billingRecordWrapper.getBillingRecord());
 		verifyNoMoreInteractions(mockOpenEIntegration, mockDecorator, mockBillingPreprocessorClient);
 	}
 
@@ -92,7 +92,7 @@ class CollectorServiceTest {
 	void testTriggerBilling_shouldSaveToFallout_whenPreprocessorException() {
 		// Arrange
 		when(mockOpenEIntegration.getBillingRecord(SUPPORTED_FAMILY_ID)).thenReturn(Optional.of(TestDataFactory.createKundfakturaBillingRecordWrapper(true)));
-		when(mockBillingPreprocessorClient.createBillingRecord(eq(SUNDSVALLS_MUNICIPALIY_ID), any())).thenThrow(new RuntimeException("Something went wrong"));
+		when(mockBillingPreprocessorClient.createBillingRecord(eq(SUNDSVALLS_MUNICIPALITY_ID), any())).thenThrow(new RuntimeException("Something went wrong"));
 		doNothing().when(mockDecorator).decorate(any(BillingRecordWrapper.class));
 
 		// Act
@@ -100,7 +100,7 @@ class CollectorServiceTest {
 
 		// Assert
 		verify(mockOpenEIntegration).getBillingRecord(SUPPORTED_FAMILY_ID);
-		verify(mockBillingPreprocessorClient).createBillingRecord(eq(SUNDSVALLS_MUNICIPALIY_ID), any());
+		verify(mockBillingPreprocessorClient).createBillingRecord(eq(SUNDSVALLS_MUNICIPALITY_ID), any());
 		verify(mockDbService, times(0)).saveToHistory(any(BillingRecordWrapper.class), any());
 		verify(mockDbService).saveFailedBillingRecord(any(BillingRecordWrapper.class), anyString());
 		verifyNoMoreInteractions(mockOpenEIntegration, mockDbService, mockDecorator, mockBillingPreprocessorClient);
@@ -130,7 +130,7 @@ class CollectorServiceTest {
 		verify(mockDbService, times(4)).hasAlreadyBeenProcessed(anyString(), anyString());
 		verify(mockDbService, times(4)).saveToHistory(billingRecordWrapper, ResponseEntity.ok().build());
 		verify(mockDecorator, times(4)).decorate(billingRecordWrapper);
-		verify(mockBillingPreprocessorClient, times(4)).createBillingRecord(SUNDSVALLS_MUNICIPALIY_ID, billingRecordWrapper.getBillingRecord());
+		verify(mockBillingPreprocessorClient, times(4)).createBillingRecord(SUNDSVALLS_MUNICIPALITY_ID, billingRecordWrapper.getBillingRecord());
 		verifyNoMoreInteractions(mockDbService, mockOpenEIntegration, mockDecorator, mockBillingPreprocessorClient);
 	}
 
@@ -158,7 +158,7 @@ class CollectorServiceTest {
 		verify(mockDbService, times(4)).hasAlreadyBeenProcessed(anyString(), anyString());
 		verify(mockDbService, times(4)).saveToHistory(billingRecordWrapper, ResponseEntity.ok().build());
 		verify(mockDecorator, times(4)).decorate(billingRecordWrapper);
-		verify(mockBillingPreprocessorClient, times(4)).createBillingRecord(SUNDSVALLS_MUNICIPALIY_ID, billingRecordWrapper.getBillingRecord());
+		verify(mockBillingPreprocessorClient, times(4)).createBillingRecord(SUNDSVALLS_MUNICIPALITY_ID, billingRecordWrapper.getBillingRecord());
 		verifyNoMoreInteractions(mockOpenEIntegration, mockDbService, mockDecorator, mockBillingPreprocessorClient);
 	}
 
@@ -177,7 +177,7 @@ class CollectorServiceTest {
 		// Assert
 		verify(mockOpenEIntegration).getBillingRecord(SUPPORTED_FAMILY_ID);
 		verify(mockDecorator, times(0)).decorate(billingRecordWrapper);
-		verify(mockBillingPreprocessorClient).createBillingRecord(SUNDSVALLS_MUNICIPALIY_ID, billingRecordWrapper.getBillingRecord());
+		verify(mockBillingPreprocessorClient).createBillingRecord(SUNDSVALLS_MUNICIPALITY_ID, billingRecordWrapper.getBillingRecord());
 		verify(mockDbService).saveToHistory(billingRecordWrapper, ResponseEntity.ok().build());
 		verifyNoMoreInteractions(mockOpenEIntegration, mockDbService, mockDecorator, mockBillingPreprocessorClient);
 	}

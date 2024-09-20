@@ -1,7 +1,7 @@
 package se.sundsvall.billingdatacollector.integration.opene;
 
 import static java.util.stream.Collectors.toMap;
-import static se.sundsvall.billingdatacollector.integration.opene.mapper.BillingRecordConstants.SUNDSVALLS_MUNICIPALIY_ID;
+import static se.sundsvall.billingdatacollector.integration.opene.mapper.BillingRecordConstants.SUNDSVALLS_MUNICIPALITY_ID;
 import static se.sundsvall.billingdatacollector.integration.opene.util.XPathUtil.evaluateXPath;
 import static se.sundsvall.billingdatacollector.integration.opene.util.XPathUtil.getString;
 
@@ -75,13 +75,13 @@ public class OpenEIntegration {
 			// Set the familyId to make it possible to apply decorator
 			billingRecordWrapper.setFamilyId(familyId);
 			// Set default municipalityId
-			billingRecordWrapper.setMunicipalityId(SUNDSVALLS_MUNICIPALIY_ID);
+			billingRecordWrapper.setMunicipalityId(SUNDSVALLS_MUNICIPALITY_ID);
 			// We set it here for convenience.
 			billingRecordWrapper.setFlowInstanceId(billingRecordWrapper.getFlowInstanceId());
 		} catch (final Exception e) {
 			// If it fails, save it so we can investigate why.
 			LOG.warn("Failed to map XML to BillingRecordWrapper, saving to fallout table", e);
-			dbService.saveFailedFlowInstance(xml, flowInstanceId, familyId, SUNDSVALLS_MUNICIPALIY_ID, e.getMessage());
+			dbService.saveFailedFlowInstance(xml, flowInstanceId, familyId, SUNDSVALLS_MUNICIPALITY_ID, e.getMessage());
 		}
 
 		return Optional.ofNullable(billingRecordWrapper);
