@@ -38,7 +38,7 @@
 					"totalAmount": 2100.0,
 					"vatCode": "00",
 					"costPerUnit": 700.0,
-					"quantity": 3,
+					"quantity": 3.0,
 					"accountInformation": {
 						"costCenter": "43200000",
 						"subaccount": "345000",

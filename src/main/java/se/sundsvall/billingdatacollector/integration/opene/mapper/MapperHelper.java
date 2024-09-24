@@ -2,16 +2,22 @@ package se.sundsvall.billingdatacollector.integration.opene.mapper;
 
 import static org.zalando.problem.Status.INTERNAL_SERVER_ERROR;
 
+import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 import org.zalando.problem.Problem;
 
 @Component
 public class MapperHelper {
+
+	private static final Logger LOGGER = LoggerFactory.getLogger(MapperHelper.class);
 
 	private static final Pattern LEADING_DIGITS_PATTERN = Pattern.compile("^\\d+");
 	private static final Pattern TRAILING_DIGITS_PATTERN = Pattern.compile("\\d+(?=\\D*$)");
@@ -130,5 +136,22 @@ public class MapperHelper {
 				.withTitle(String.format(MOTPART_ERROR, customerId))
 				.withStatus(INTERNAL_SERVER_ERROR)
 				.build());
+	}
+
+	/**
+	 * Converts a string on the format "2024-09-20T15:28:23" (ISO_LOCAL_DATE_TIME) to an OffsetDateTime
+	 * @param stringToConvert The string to convert on the format YYYY-MM-DDTHH:MM:SS
+	 * @return The string converted to an OffsetDateTime, or null if the string is null or couldn't be parsed.
+	 */
+	public OffsetDateTime convertStringToOffsetDateTime(String stringToConvert) {
+		try {
+			return Optional.ofNullable(stringToConvert)
+				.map(LocalDateTime::parse) //First parse the string to a LocalDateTime since it's missing the timezone
+				.map(ldt -> OffsetDateTime.of(ldt, OffsetDateTime.now().getOffset()))
+				.orElse(null);
+		} catch (Exception e) {
+			LOGGER.warn("Couldn't convert \"{}\" to OffsetDateTime, returning null", stringToConvert);
+			return null;
+		}
 	}
 }

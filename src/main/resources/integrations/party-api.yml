@@ -1,38 +1,44 @@
 openapi: 3.0.1
 info:
-  title: api-party
+  title: party
   contact: {}
   license:
     name: MIT License
     url: https://opensource.org/licenses/MIT
-  version: "1.0"
+  version: "2.0"
 servers:
-- url: https://api.sundsvall.se/party
-  description: Generated server url
+  - url: https://api.sundsvall.se/party/2.0
 tags:
-- name: Party
-  description: Party operations
+  - name: Party
+    description: Party operations
 paths:
-  /{type}/{partyId}/legalId:
+  /{municipalityId}/{type}/{partyId}/legalId:
     get:
       tags:
-      - Party
+        - Party
       summary: Get partys legal-ID by unique identifier
       operationId: getLegalIdByPartyId
       parameters:
-      - name: type
-        in: path
-        description: Party type
-        required: true
-        schema:
-          $ref: '#/components/schemas/PartyType'
-      - name: partyId
-        in: path
-        description: Universally unique identifier for the party
-        required: true
-        schema:
-          type: string
-        example: 81471222-5798-11e9-ae24-57fa13b361e1
+        - name: municipalityId
+          in: path
+          description: Municipality id
+          required: true
+          schema:
+            type: string
+          example: 2281
+        - name: type
+          in: path
+          description: Party type
+          required: true
+          schema:
+            $ref: "#/components/schemas/PartyType"
+        - name: partyId
+          in: path
+          description: Universally unique identifier for the party
+          required: true
+          schema:
+            type: string
+          example: 81471222-5798-11e9-ae24-57fa13b361e1
       responses:
         "200":
           description: Successful Operation
@@ -45,41 +51,48 @@ paths:
           content:
             application/problem+json:
               schema:
-                $ref: '#/components/schemas/Problem'
+                $ref: "#/components/schemas/Problem"
+        "500":
+          description: Internal Server Error
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Problem"
         "400":
           description: Bad Request
           content:
             application/problem+json:
               schema:
                 oneOf:
-                - $ref: '#/components/schemas/Problem'
-                - $ref: '#/components/schemas/ConstraintViolationProblem'
-        "500":
-          description: Internal Server Error
-          content:
-            application/problem+json:
-              schema:
-                $ref: '#/components/schemas/Problem'
-  /{type}/{legalId}/partyId:
+                  - $ref: "#/components/schemas/Problem"
+                  - $ref: "#/components/schemas/ConstraintViolationProblem"
+  /{municipalityId}/{type}/{legalId}/partyId:
     get:
       tags:
-      - Party
+        - Party
       summary: Get partys unique identifier by legal-ID
       operationId: getPartyIdByLegalId
       parameters:
-      - name: type
-        in: path
-        description: Party type
-        required: true
-        schema:
-          $ref: '#/components/schemas/PartyType'
-      - name: legalId
-        in: path
-        description: Legal-ID
-        required: true
-        schema:
-          type: string
-        example: 5565125584
+        - name: municipalityId
+          in: path
+          description: Municipality id
+          required: true
+          schema:
+            type: string
+          example: 2281
+        - name: type
+          in: path
+          description: Party type
+          required: true
+          schema:
+            $ref: "#/components/schemas/PartyType"
+        - name: legalId
+          in: path
+          description: Legal-ID
+          required: true
+          schema:
+            type: string
+          example: 5565125584
       responses:
         "200":
           description: Successful Operation
@@ -92,25 +105,25 @@ paths:
           content:
             application/problem+json:
               schema:
-                $ref: '#/components/schemas/Problem'
+                $ref: "#/components/schemas/Problem"
+        "500":
+          description: Internal Server Error
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Problem"
         "400":
           description: Bad Request
           content:
             application/problem+json:
               schema:
                 oneOf:
-                - $ref: '#/components/schemas/Problem'
-                - $ref: '#/components/schemas/ConstraintViolationProblem'
-        "500":
-          description: Internal Server Error
-          content:
-            application/problem+json:
-              schema:
-                $ref: '#/components/schemas/Problem'
+                  - $ref: "#/components/schemas/Problem"
+                  - $ref: "#/components/schemas/ConstraintViolationProblem"
   /api-docs:
     get:
       tags:
-      - API
+        - API
       summary: OpenAPI
       operationId: getApiDocs
       responses:
@@ -129,8 +142,8 @@ components:
       type: string
       description: Party type model
       enum:
-      - ENTERPRISE
-      - PRIVATE
+        - ENTERPRISE
+        - PRIVATE
     Problem:
       type: object
       properties:
@@ -144,25 +157,25 @@ components:
           type: object
           additionalProperties:
             type: object
+        status:
+          $ref: "#/components/schemas/StatusType"
         title:
           type: string
         detail:
           type: string
-        status:
-          $ref: '#/components/schemas/StatusType'
     StatusType:
       type: object
       properties:
+        reasonPhrase:
+          type: string
         statusCode:
           type: integer
           format: int32
-        reasonPhrase:
-          type: string
     ConstraintViolationProblem:
       type: object
       properties:
         cause:
-          $ref: '#/components/schemas/ThrowableProblem'
+          $ref: "#/components/schemas/ThrowableProblem"
         stackTrace:
           type: array
           items:
@@ -189,11 +202,11 @@ components:
           type: string
           format: uri
         status:
-          $ref: '#/components/schemas/StatusType'
+          $ref: "#/components/schemas/StatusType"
         violations:
           type: array
           items:
-            $ref: '#/components/schemas/Violation'
+            $ref: "#/components/schemas/Violation"
         title:
           type: string
         message:
@@ -212,35 +225,6 @@ components:
           items:
             type: object
             properties:
-              cause:
-                type: object
-                properties:
-                  stackTrace:
-                    type: array
-                    items:
-                      type: object
-                      properties:
-                        classLoaderName:
-                          type: string
-                        moduleName:
-                          type: string
-                        moduleVersion:
-                          type: string
-                        methodName:
-                          type: string
-                        fileName:
-                          type: string
-                        lineNumber:
-                          type: integer
-                          format: int32
-                        className:
-                          type: string
-                        nativeMethod:
-                          type: boolean
-                  message:
-                    type: string
-                  localizedMessage:
-                    type: string
               stackTrace:
                 type: array
                 items:
@@ -273,7 +257,7 @@ components:
       type: object
       properties:
         cause:
-          $ref: '#/components/schemas/ThrowableProblem'
+          $ref: "#/components/schemas/ThrowableProblem"
         stackTrace:
           type: array
           items:
@@ -308,46 +292,17 @@ components:
           type: object
           additionalProperties:
             type: object
+        status:
+          $ref: "#/components/schemas/StatusType"
         title:
           type: string
         detail:
           type: string
-        status:
-          $ref: '#/components/schemas/StatusType'
         suppressed:
           type: array
           items:
             type: object
             properties:
-              cause:
-                type: object
-                properties:
-                  stackTrace:
-                    type: array
-                    items:
-                      type: object
-                      properties:
-                        classLoaderName:
-                          type: string
-                        moduleName:
-                          type: string
-                        moduleVersion:
-                          type: string
-                        methodName:
-                          type: string
-                        fileName:
-                          type: string
-                        lineNumber:
-                          type: integer
-                          format: int32
-                        className:
-                          type: string
-                        nativeMethod:
-                          type: boolean
-                  message:
-                    type: string
-                  localizedMessage:
-                    type: string
               stackTrace:
                 type: array
                 items:
@@ -384,4 +339,3 @@ components:
         message:
           type: string
   securitySchemes: {}
-

@@ -10,6 +10,9 @@ record InternFaktura(
 	@XPath("/FlowInstance/Header/FlowInstanceID")
 	String flowInstanceId,
 
+	@XPath("/FlowInstance/Header/Posted")
+	String posted,
+
 	@XPath("/FlowInstance/Values/FakturanSkickasTill/Value")
 	String fakturanSkickasTill,
 
@@ -26,7 +29,7 @@ record InternFaktura(
 	String aPris,
 
 	@XPath("/FlowInstance/Values/SummeringIntern1/TotSummeringIntern1")
-	String summering,
+	String summeringIntern,
 
 	@XPath("/FlowInstance/Values/AnsvarIntern1/Value")
 	String ansvar,

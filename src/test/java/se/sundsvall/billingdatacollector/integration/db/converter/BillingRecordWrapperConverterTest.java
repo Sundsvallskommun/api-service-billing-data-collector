@@ -78,7 +78,7 @@ class BillingRecordWrapperConverterTest {
 							.subaccount("345000"))
 						.costPerUnit(700.0f)
 						.descriptions(List.of("Julmarknad Ankeborg. 3 marknadsplatser"))
-						.quantity(3)
+						.quantity(3f)
 						.totalAmount(2100.0f)
 						.vatCode("00"))))
 				.recipient(new Recipient()

@@ -10,6 +10,9 @@ record ExternFaktura(
 	@XPath("/FlowInstance/Header/FlowInstanceID")
 	String flowInstanceId,
 
+	@XPath("/FlowInstance/Header/Posted")
+	String posted,
+
 	@XPath("/FlowInstance/Values/KontaktuppgifterPrivatperson/Firstname")
 	String fornamn,
 
@@ -41,7 +44,7 @@ record ExternFaktura(
 	String aPris,
 
 	@XPath("/FlowInstance/Values/SummeringExtern1/TotSummeringExtern1")
-	String summering,
+	String summeringExtern,
 
 	@XPath("/FlowInstance/Values/MomssatsExtern1/Value")
 	String momssats,

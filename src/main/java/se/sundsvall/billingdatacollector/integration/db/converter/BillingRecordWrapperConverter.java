@@ -4,6 +4,7 @@ import static java.util.Optional.ofNullable;
 import static java.util.function.Predicate.not;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 
 import se.sundsvall.billingdatacollector.model.BillingRecordWrapper;
 
@@ -15,7 +16,7 @@ import jakarta.persistence.PersistenceException;
  **/
 public class BillingRecordWrapperConverter implements AttributeConverter<BillingRecordWrapper, String> {
 
-	private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
+	private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper().registerModule(new JavaTimeModule());
 
 	@Override
 	public String convertToDatabaseColumn(final BillingRecordWrapper billingRecordWrapper) {

@@ -5,16 +5,16 @@ info:
   license:
     name: MIT License
     url: https://opensource.org/licenses/MIT
-  version: '1.4'
+  version: "2.0"
 servers:
-  - url: https://api.sundsvall.se/billingpreprocessor/1.4
+  - url: https://api.sundsvall.se/billingpreprocessor/2.0
 tags:
   - name: BillingRecord
     description: Billing record operations
   - name: Jobs
     description: Jobs resources
 paths:
-  /billingrecords/{id}:
+  /{municipalityId}/billingrecords/{id}:
     get:
       tags:
         - BillingRecord
@@ -22,62 +22,69 @@ paths:
       description: Fetches the billing record that matches the provided id
       operationId: readBillingRecord
       parameters:
+        - name: municipalityId
+          in: path
+          description: Municipality ID
+          required: true
+          schema:
+            type: string
+          example: 2281
         - name: id
           in: path
           description: BillingRecord id
           required: true
-          style: simple
-          explode: false
           schema:
             type: string
           example: b82bd8ac-1507-4d9a-958d-369261eecc15
       responses:
-        '200':
+        "404":
+          description: Not Found
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Problem"
+        "500":
+          description: Internal Server Error
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Problem"
+        "200":
           description: Successful Operation
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/BillingRecord'
+                $ref: "#/components/schemas/BillingRecord"
             application/problem+json:
               schema:
-                $ref: '#/components/schemas/BillingRecord'
-        '400':
+                $ref: "#/components/schemas/BillingRecord"
+        "400":
           description: Bad Request
           content:
             application/problem+json:
               schema:
                 oneOf:
-                  - $ref: '#/components/schemas/Problem'
-                  - $ref: '#/components/schemas/ConstraintViolationProblem'
-        '404':
-          description: Not Found
-          content:
-            application/problem+json:
-              schema:
-                $ref: '#/components/schemas/Problem'
-        '500':
-          description: Internal Server Error
-          content:
-            application/problem+json:
-              schema:
-                $ref: '#/components/schemas/Problem'
-      security:
-        - default: []
-      x-throttling-tier: Unlimited
-      x-auth-type: Application & Application User
+                  - $ref: "#/components/schemas/Problem"
+                  - $ref: "#/components/schemas/ConstraintViolationProblem"
     put:
       tags:
         - BillingRecord
       summary: Update billing record
-      description: Updates the billing record matching provided id with the supplied attributes
+      description: Updates the billing record matching provided id with the supplied
+        attributes
       operationId: updateBillingRecord
       parameters:
+        - name: municipalityId
+          in: path
+          description: Municipality ID
+          required: true
+          schema:
+            type: string
+          example: 2281
         - name: id
           in: path
           description: BillingRecord id
           required: true
-          style: simple
-          explode: false
           schema:
             type: string
           example: b82bd8ac-1507-4d9a-958d-369261eecc15
@@ -85,164 +92,175 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/BillingRecord'
+              $ref: "#/components/schemas/BillingRecord"
         required: true
       responses:
-        '200':
+        "200":
           description: Successful operation
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/BillingRecord'
+                $ref: "#/components/schemas/BillingRecord"
             application/problem+json:
               schema:
-                $ref: '#/components/schemas/BillingRecord'
-        '400':
-          description: Bad request
-          content:
-            application/problem+json:
-              schema:
-                oneOf:
-                  - $ref: '#/components/schemas/Problem'
-                  - $ref: '#/components/schemas/ConstraintViolationProblem'
-        '404':
+                $ref: "#/components/schemas/BillingRecord"
+        "404":
           description: Not found
           content:
             application/problem+json:
               schema:
-                $ref: '#/components/schemas/Problem'
-        '500':
-          description: Internal Server error
-          content:
-            application/problem+json:
-              schema:
-                $ref: '#/components/schemas/Problem'
-      security:
-        - default: []
-      x-throttling-tier: Unlimited
-      x-auth-type: Application & Application User
-    delete:
-      tags:
-        - BillingRecord
-      summary: Delete billing record
-      description: Deletes the billing record that matches the provided id, but only if status of record is 'NEW'. Otherwise a client error is returned.
-      operationId: deleteBillingRecord
-      parameters:
-        - name: id
-          in: path
-          description: BillingRecord id
-          required: true
-          style: simple
-          explode: false
-          schema:
-            type: string
-          example: b82bd8ac-1507-4d9a-958d-369261eecc15
-      responses:
-        '204':
-          description: Successful operation
-        '400':
+                $ref: "#/components/schemas/Problem"
+        "400":
           description: Bad request
           content:
             application/problem+json:
               schema:
                 oneOf:
-                  - $ref: '#/components/schemas/Problem'
-                  - $ref: '#/components/schemas/ConstraintViolationProblem'
-        '404':
-          description: Not Found
-          content:
-            application/problem+json:
-              schema:
-                $ref: '#/components/schemas/Problem'
-        '405':
-          description: Method not allowed
-          content:
-            application/problem+json:
-              schema:
-                $ref: '#/components/schemas/Problem'
-        '500':
+                  - $ref: "#/components/schemas/Problem"
+                  - $ref: "#/components/schemas/ConstraintViolationProblem"
+        "500":
           description: Internal Server error
           content:
             application/problem+json:
               schema:
-                $ref: '#/components/schemas/Problem'
-      security:
-        - default: []
-      x-throttling-tier: Unlimited
-      x-auth-type: Application & Application User
-  /jobs/filetransferrer:
-    post:
+                $ref: "#/components/schemas/Problem"
+    delete:
       tags:
-        - Jobs
-      summary: Triggers job for transferring files with status CREATED or SEND_FAILED to final destination
-      operationId: transferFiles
+        - BillingRecord
+      summary: Delete billing record
+      description: "Deletes the billing record that matches the provided id, but only\
+        \ if status of record is 'NEW'. Otherwise a client error is returned."
+      operationId: deleteBillingRecord
+      parameters:
+        - name: municipalityId
+          in: path
+          description: Municipality ID
+          required: true
+          schema:
+            type: string
+          example: 2281
+        - name: id
+          in: path
+          description: BillingRecord id
+          required: true
+          schema:
+            type: string
+          example: b82bd8ac-1507-4d9a-958d-369261eecc15
       responses:
-        '202':
-          description: Successful Operation
-        '404':
+        "404":
           description: Not Found
           content:
             application/problem+json:
               schema:
-                $ref: '#/components/schemas/Problem'
-        '500':
+                $ref: "#/components/schemas/Problem"
+        "405":
+          description: Method not allowed
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Problem"
+        "204":
+          description: Successful operation
+        "400":
+          description: Bad request
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                  - $ref: "#/components/schemas/Problem"
+                  - $ref: "#/components/schemas/ConstraintViolationProblem"
+        "500":
+          description: Internal Server error
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Problem"
+  /{municipalityId}/jobs/filetransferrer:
+    post:
+      tags:
+        - Jobs
+      summary: Triggers job for transferring files with status CREATED or SEND_FAILED
+        to final destination
+      operationId: transferFiles
+      parameters:
+        - name: municipalityId
+          in: path
+          description: Municipality ID
+          required: true
+          schema:
+            type: string
+          example: 2281
+      responses:
+        "404":
+          description: Not Found
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Problem"
+        "500":
           description: Internal Server Error
           content:
             application/problem+json:
               schema:
-                $ref: '#/components/schemas/Problem'
-      security:
-        - default: []
-      x-throttling-tier: Unlimited
-      x-auth-type: Application & Application User
-  /jobs/filecreator:
+                $ref: "#/components/schemas/Problem"
+        "202":
+          description: Successful Operation
+  /{municipalityId}/jobs/filecreator:
     post:
       tags:
         - Jobs
       summary: Triggers job for creating files from billing records with status APPROVED
       operationId: createFileEntities
+      parameters:
+        - name: municipalityId
+          in: path
+          description: Municipality ID
+          required: true
+          schema:
+            type: string
+          example: 2281
       responses:
-        '202':
-          description: Successful Operation
-        '404':
+        "404":
           description: Not Found
           content:
             application/problem+json:
               schema:
-                $ref: '#/components/schemas/Problem'
-        '500':
+                $ref: "#/components/schemas/Problem"
+        "500":
           description: Internal Server Error
           content:
             application/problem+json:
               schema:
-                $ref: '#/components/schemas/Problem'
-      security:
-        - default: []
-      x-throttling-tier: Unlimited
-      x-auth-type: Application & Application User
-  /billingrecords:
+                $ref: "#/components/schemas/Problem"
+        "202":
+          description: Successful Operation
+  /{municipalityId}/billingrecords:
     get:
       tags:
         - BillingRecord
       summary: Read matching billing records
-      description: Query for billing records with or without filters. The resource allows the client a wide range of variations on how to filter the result.
+      description: Query for billing records with or without filters. The resource
+        allows the client a wide range of variations on how to filter the result.
       operationId: findBillingRecords
       parameters:
-        - name: filter
-          in: query
-          description: 'Syntax description: [spring-filter](https://github.com/turkraft/spring-filter/blob/85730f950a5f8623159cc0eb4d737555f9382bb7/README.md#syntax)'
+        - name: municipalityId
+          in: path
+          description: Municipality ID
           required: true
-          style: form
-          explode: true
           schema:
             type: string
-          example: 'category : ''ACCESS_CARD'' and status : ''NEW'''
+          example: 2281
+        - name: filter
+          in: query
+          description: "Syntax description: [spring-filter](https://github.com/turkraft/spring-filter/blob/85730f950a5f8623159cc0eb4d737555f9382bb7/README.md#syntax)"
+          required: true
+          schema:
+            type: string
+          example: "category : 'ACCESS_CARD' and status : 'NEW'"
         - name: page
           in: query
           description: Zero-based page index (0..N)
           required: false
-          style: form
-          explode: true
           schema:
             minimum: 0
             type: integer
@@ -251,111 +269,114 @@ paths:
           in: query
           description: The size of the page to be returned
           required: false
-          style: form
-          explode: true
           schema:
             minimum: 1
             type: integer
             default: 20
         - name: sort
           in: query
-          description: 'Sorting criteria in the format: property,(asc|desc). Default sort order is ascending. Multiple sort criteria are supported.'
+          description: "Sorting criteria in the format: property,(asc|desc). Default\
+          \ sort order is ascending. Multiple sort criteria are supported."
           required: false
-          style: form
-          explode: true
           schema:
             type: array
             items:
               type: string
       responses:
-        '200':
+        "500":
+          description: Internal Server Error
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Problem"
+        "200":
           description: Successful Operation
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/PageBillingRecord'
+                $ref: "#/components/schemas/PageBillingRecord"
             application/problem+json:
               schema:
-                $ref: '#/components/schemas/PageBillingRecord'
-        '400':
+                $ref: "#/components/schemas/PageBillingRecord"
+        "400":
           description: Bad Request
           content:
             application/problem+json:
               schema:
                 oneOf:
-                  - $ref: '#/components/schemas/Problem'
-                  - $ref: '#/components/schemas/ConstraintViolationProblem'
-        '500':
-          description: Internal Server Error
-          content:
-            application/problem+json:
-              schema:
-                $ref: '#/components/schemas/Problem'
-      security:
-        - default: []
-      x-throttling-tier: Unlimited
-      x-auth-type: Application & Application User
+                  - $ref: "#/components/schemas/Problem"
+                  - $ref: "#/components/schemas/ConstraintViolationProblem"
     post:
       tags:
         - BillingRecord
       summary: Create billing record
       description: Creates a new billing record defined by the supplied attributes
       operationId: createBillingRecord
+      parameters:
+        - name: municipalityId
+          in: path
+          description: Municipality ID
+          required: true
+          schema:
+            type: string
+          example: 2281
       requestBody:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/BillingRecord'
+              $ref: "#/components/schemas/BillingRecord"
         required: true
       responses:
-        '201':
+        "201":
           description: Successful operation
           headers:
             Location:
               style: simple
-              explode: false
               schema:
                 type: string
-        '400':
+        "400":
           description: Bad request
           content:
             application/problem+json:
               schema:
                 oneOf:
-                  - $ref: '#/components/schemas/Problem'
-                  - $ref: '#/components/schemas/ConstraintViolationProblem'
-        '500':
+                  - $ref: "#/components/schemas/Problem"
+                  - $ref: "#/components/schemas/ConstraintViolationProblem"
+        "500":
           description: Internal Server error
           content:
             application/problem+json:
               schema:
-                $ref: '#/components/schemas/Problem'
-      security:
-        - default: []
-      x-throttling-tier: Unlimited
-      x-auth-type: Application & Application User
-  /billingrecords/batch:
+                $ref: "#/components/schemas/Problem"
+  /{municipalityId}/billingrecords/batch:
     post:
       tags:
         - BillingRecord
       summary: Create billing records
       description: Creates new billing records defined by the supplied attributes
       operationId: createBillingRecords
+      parameters:
+        - name: municipalityId
+          in: path
+          description: Municipality ID
+          required: true
+          schema:
+            type: string
+          example: 2281
       requestBody:
         content:
           application/json:
             schema:
               type: array
               items:
-                $ref: '#/components/schemas/BillingRecord'
+                $ref: "#/components/schemas/BillingRecord"
         required: true
       responses:
-        '201':
+        "201":
           description: Successful operation
           headers:
             Location:
               style: simple
-              explode: false
               schema:
                 type: string
           content:
@@ -369,24 +390,20 @@ paths:
                 type: array
                 items:
                   type: string
-        '400':
+        "400":
           description: Bad request
           content:
             application/problem+json:
               schema:
                 oneOf:
-                  - $ref: '#/components/schemas/Problem'
-                  - $ref: '#/components/schemas/ConstraintViolationProblem'
-        '500':
+                  - $ref: "#/components/schemas/Problem"
+                  - $ref: "#/components/schemas/ConstraintViolationProblem"
+        "500":
           description: Internal Server error
           content:
             application/problem+json:
               schema:
-                $ref: '#/components/schemas/Problem'
-      security:
-        - default: []
-      x-throttling-tier: Unlimited
-      x-auth-type: Application & Application User
+                $ref: "#/components/schemas/Problem"
   /api-docs:
     get:
       tags:
@@ -394,14 +411,12 @@ paths:
       summary: OpenAPI
       operationId: getApiDocs
       responses:
-        '200':
+        "200":
           description: OK
           content:
             application/yaml:
               schema:
                 type: string
-      security:
-        - default: []
       x-auth-type: None
       x-throttling-tier: Unlimited
       x-wso2-mutual-ssl: Optional
@@ -413,23 +428,23 @@ components:
         costCenter:
           type: string
           description: Cost center
-          example: '15800100'
+          example: "15800100"
         subaccount:
           type: string
           description: Subaccount
-          example: '936300'
+          example: "936300"
         department:
           type: string
           description: Department
-          example: '920360'
+          example: "920360"
         accuralKey:
           type: string
           description: Accural key
-          example: '5647'
+          example: "5647"
         activity:
           type: string
           description: Activity
-          example: '5756'
+          example: "5756"
         article:
           type: string
           description: Article
@@ -437,11 +452,11 @@ components:
         project:
           type: string
           description: Project
-          example: '11041'
+          example: "11041"
         counterpart:
           type: string
           description: Counterpart
-          example: '11830000'
+          example: "11830000"
       description: Account information model
     AddressDetails:
       type: object
@@ -457,7 +472,7 @@ components:
         postalCode:
           type: string
           description: Postal code. Mandatory for EXTERNAL billing record.
-          example: '12345'
+          example: "12345"
         city:
           type: string
           description: City. Mandatory for EXTERNAL billing record.
@@ -481,35 +496,36 @@ components:
           type: string
           description: Billing category
         type:
-          $ref: '#/components/schemas/Type'
+          $ref: "#/components/schemas/Type"
         status:
-          $ref: '#/components/schemas/Status'
+          $ref: "#/components/schemas/Status"
         approvedBy:
           type: string
-          description: Information regarding the person that has approved the billing record
+          description: Information regarding the person that has approved the billing
+            record
           example: Big Bird
         approved:
           type: string
           description: Timestamp when the billing record got approved status
           format: date-time
           readOnly: true
-          example: '2022-11-21T14:57:13.988Z'
+          example: 2022-11-21T16:57:13.988+02:00
         recipient:
-          $ref: '#/components/schemas/Recipient'
+          $ref: "#/components/schemas/Recipient"
         invoice:
-          $ref: '#/components/schemas/Invoice'
+          $ref: "#/components/schemas/Invoice"
         created:
           type: string
           description: Timestamp when the billing record was created
           format: date-time
           readOnly: true
-          example: '2022-10-31T12:30:00.001Z'
+          example: 2022-10-31T14:30:00.001+02:00
         modified:
           type: string
           description: Timestamp when the billing record was last modified
           format: date-time
           readOnly: true
-          example: '2022-11-14T06:57:42.358Z'
+          example: 2022-11-14T08:57:42.358+02:00
       description: Billing record model
     Invoice:
       required:
@@ -521,11 +537,11 @@ components:
         customerId:
           type: string
           description: Customer number in Raindance
-          example: '16'
+          example: "16"
         description:
           type: string
           description: Description of the invoice
-          example: 'Errand number: 2113-01784'
+          example: "Errand number: 2113-01784"
         ourReference:
           type: string
           description: Our reference
@@ -542,10 +558,12 @@ components:
           type: string
           description: Date for the invoice
           format: date
+          example: 2022-12-24
         dueDate:
           type: string
           description: Due date for the invoice
           format: date
+          example: 2022-12-24
         totalAmount:
           type: number
           description: Total sum of all invoice rows
@@ -555,7 +573,7 @@ components:
         invoiceRows:
           type: array
           items:
-            $ref: '#/components/schemas/InvoiceRow'
+            $ref: "#/components/schemas/InvoiceRow"
       description: Invoice model
     InvoiceRow:
       type: object
@@ -584,19 +602,19 @@ components:
           pattern: 00|06|12|25
           type: string
           description: VAT code for invoice row
-          example: '25'
+          example: "25"
         costPerUnit:
           type: number
           description: Cost per unit
           format: float
           example: 155.55
         quantity:
-          type: integer
+          type: number
           description: Total amount of units
-          format: int32
-          example: 9
+          format: float
+          example: 9.0
         accountInformation:
-          $ref: '#/components/schemas/AccountInformation'
+          $ref: "#/components/schemas/AccountInformation"
       description: Invoice row model
     Recipient:
       required:
@@ -605,15 +623,18 @@ components:
       properties:
         partyId:
           type: string
-          description: Unique id for the person issuing the billing record. Mandatory for EXTERNAL billing record if legalId is null.
+          description: Unique id for the person issuing the billing record. Mandatory
+            for EXTERNAL billing record if legalId is null.
           example: f0882f1d-06bc-47fd-b017-1d8307f5ce95
         legalId:
           type: string
-          description: LegalId for the organization issuing the billing record. Mandatory for EXTERNAL billing record if partyId is null.
-          example: '3456789123'
+          description: LegalId for the organization issuing the billing record. Mandatory
+            for EXTERNAL billing record if partyId is null.
+          example: "3456789123"
         organizationName:
           type: string
-          description: Name of issuing organization of the billing record if the recipient is an organization
+          description: Name of issuing organization of the billing record if the recipient
+            is an organization
           example: Sesame Merc AB
         firstName:
           type: string
@@ -628,7 +649,7 @@ components:
           description: User id of the billing record recipient
           example: ALI22SNU
         addressDetails:
-          $ref: '#/components/schemas/AddressDetails'
+          $ref: "#/components/schemas/AddressDetails"
       description: Billing recipient model
     Status:
       type: string
@@ -659,7 +680,7 @@ components:
           additionalProperties:
             type: object
         status:
-          $ref: '#/components/schemas/StatusType'
+          $ref: "#/components/schemas/StatusType"
         title:
           type: string
         detail:
@@ -676,7 +697,7 @@ components:
       type: object
       properties:
         cause:
-          $ref: '#/components/schemas/ThrowableProblem'
+          $ref: "#/components/schemas/ThrowableProblem"
         stackTrace:
           type: array
           items:
@@ -703,11 +724,11 @@ components:
           type: string
           format: uri
         status:
-          $ref: '#/components/schemas/StatusType'
+          $ref: "#/components/schemas/StatusType"
         violations:
           type: array
           items:
-            $ref: '#/components/schemas/Violation'
+            $ref: "#/components/schemas/Violation"
         title:
           type: string
         message:
@@ -758,7 +779,7 @@ components:
       type: object
       properties:
         cause:
-          $ref: '#/components/schemas/ThrowableProblem'
+          $ref: "#/components/schemas/ThrowableProblem"
         stackTrace:
           type: array
           items:
@@ -794,7 +815,7 @@ components:
           additionalProperties:
             type: object
         status:
-          $ref: '#/components/schemas/StatusType'
+          $ref: "#/components/schemas/StatusType"
         title:
           type: string
         detail:
@@ -849,19 +870,21 @@ components:
           type: integer
           format: int64
         pageable:
-          $ref: '#/components/schemas/PageableObject'
+          $ref: "#/components/schemas/PageableObject"
         size:
           type: integer
           format: int32
         content:
           type: array
           items:
-            $ref: '#/components/schemas/BillingRecord'
+            $ref: "#/components/schemas/BillingRecord"
         number:
           type: integer
           format: int32
         sort:
-          $ref: '#/components/schemas/SortObject'
+          type: array
+          items:
+            $ref: "#/components/schemas/SortObject"
         numberOfElements:
           type: integer
           format: int32
@@ -886,23 +909,22 @@ components:
           type: integer
           format: int64
         sort:
-          $ref: '#/components/schemas/SortObject'
+          type: array
+          items:
+            $ref: "#/components/schemas/SortObject"
         unpaged:
           type: boolean
     SortObject:
       type: object
       properties:
-        unsorted:
+        direction:
+          type: string
+        nullHandling:
+          type: string
+        ascending:
           type: boolean
-        empty:
+        property:
+          type: string
+        ignoreCase:
           type: boolean
-        sorted:
-          type: boolean
-  securitySchemes:
-    default:
-      type: oauth2
-      flows:
-        implicit:
-          authorizationUrl: https://test.com
-          scopes: {}
-
+  securitySchemes: {}
