@@ -13,7 +13,7 @@ import net.javacrumbs.shedlock.provider.jdbctemplate.JdbcTemplateLockProvider;
 public class ShedLockConfiguration {
 
 	@Bean
-	public LockProvider lockProvider(DataSource dataSource) {
+	LockProvider lockProvider(DataSource dataSource) {
 		return new JdbcTemplateLockProvider(JdbcTemplateLockProvider.Configuration.builder()
 			.usingDbTime()
 			.withJdbcTemplate(new JdbcTemplate(dataSource))
