@@ -1,5 +1,7 @@
 package se.sundsvall.billingdatacollector.api;
 
+import static org.springframework.http.HttpHeaders.CONTENT_TYPE;
+import static org.springframework.http.MediaType.ALL_VALUE;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 import static org.springframework.http.MediaType.APPLICATION_PROBLEM_JSON_VALUE;
 import static org.springframework.http.ResponseEntity.accepted;
@@ -69,7 +71,9 @@ class CollectorResource {
 
 		collectorService.triggerBilling(flowInstanceId);
 
-		return accepted().build();
+		return accepted()
+			.header(CONTENT_TYPE, ALL_VALUE)
+			.build();
 	}
 
 	@Operation(
