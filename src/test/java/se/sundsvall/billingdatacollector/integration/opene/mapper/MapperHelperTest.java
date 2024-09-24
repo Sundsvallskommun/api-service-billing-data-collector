@@ -4,6 +4,9 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.zalando.problem.Status.INTERNAL_SERVER_ERROR;
 
+import java.time.OffsetDateTime;
+import java.time.ZoneOffset;
+
 import org.junit.jupiter.api.Test;
 import org.zalando.problem.ThrowableProblem;
 
@@ -96,5 +99,21 @@ class MapperHelperTest {
 	@Test
 	void testGetLeadingDigits_shouldReturnLeadingDigits() {
 		assertThat(mapper.getLeadingDigits("123 - Something 456")).isEqualTo("123");
+	}
+
+	@Test
+	void testConvertStringToOffsetDateTime() {
+		assertThat(mapper.convertStringToOffsetDateTime("2024-09-20T15:28:23"))
+			.isEqualTo(OffsetDateTime.of(2024, 9, 20, 15, 28, 23, 0, ZoneOffset.ofHours(2)));
+	}
+
+	@Test
+	void testConvertNullStringToOffsetDateTime() {
+		assertThat(mapper.convertStringToOffsetDateTime(null)).isNull();
+	}
+
+	@Test
+	void testConvertFaultyDateStringToOffsetDateTime() {
+		assertThat(mapper.convertStringToOffsetDateTime("not a date")).isNull();
 	}
 }

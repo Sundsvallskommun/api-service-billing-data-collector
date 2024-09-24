@@ -52,20 +52,21 @@ public class CollectorService {
 
 		// If we have a BillingRecordWrapper, decorate it and send it to the preprocessor
 		possibleWrapper.ifPresentOrElse(
-			wrapper -> {
-				decorate(wrapper);
-				createBillingRecord(wrapper);
-			},
+			this::createBillingRecord,
 			() -> LOG.warn("No record found for flowInstanceId: {}", flowInstanceId));
 	}
 
 	private void createBillingRecord(BillingRecordWrapper billingRecordWrapper) {
 		try {
+			LOG.info("Decorating and sending record to preprocessor for flowInstanceId: {}", billingRecordWrapper.getFlowInstanceId());
+			//Try to decorate
+			decorate(billingRecordWrapper);
+			//Try to create billing record and save to history
 			final var response = preprocessorIntegration.createBillingRecord(billingRecordWrapper.getMunicipalityId(), billingRecordWrapper.getBillingRecord());
 			LOG.info("Successfully sent record to preprocessor for flowInstanceId: {}", billingRecordWrapper.getFlowInstanceId());
 			dbService.saveToHistory(billingRecordWrapper, response);
 		} catch (final Exception e) {
-			// Save the BillingRecordWrapper if we failed to send it to the preprocessor
+			// Save the BillingRecordWrapper if we failed to decorate or send it to the preprocessor
 			LOG.warn("Failed to create a record for flowInstanceId: {}", billingRecordWrapper.getFlowInstanceId(), e);
 			dbService.saveFailedBillingRecord(billingRecordWrapper, e.getMessage());
 		}

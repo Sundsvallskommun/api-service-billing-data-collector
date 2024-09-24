@@ -10,19 +10,20 @@ class InternFakturaTest {
 	void constructorAndAccessors() {
 		var familyId = "358";
 		var flowInstanceId = "12345";
+		var posted = "2023-11-24T15:40:23";
 		var fakturanSkickasTill = "fakturanSkickasTill";
 		var forvaltningSomSkaBetala = "forvaltningSomSkaBetala";
 		var fakturaText = "fakturaText";
 		var antal = 123;
 		var aPris = "123,45";
-		var summering = "15184,35";
+		var summeringIntern = "15184,35";
 		var ansvar = "ansvar";
 		var underkonto = "underkonto";
 		var verksamhet = "verksamhet";
 		var aktivitetskonto = "aktivitetskonto";
 
-		var internFaktura = new InternFaktura(familyId, flowInstanceId, fakturanSkickasTill, forvaltningSomSkaBetala,
-			fakturaText, antal, aPris, summering, ansvar, underkonto, verksamhet, aktivitetskonto);
+		var internFaktura = new InternFaktura(familyId, flowInstanceId, posted, fakturanSkickasTill, forvaltningSomSkaBetala,
+			fakturaText, antal, aPris, summeringIntern, ansvar, underkonto, verksamhet, aktivitetskonto);
 
 		assertThat(internFaktura.familyId()).isEqualTo(familyId);
 		assertThat(internFaktura.flowInstanceId()).isEqualTo(flowInstanceId);
@@ -31,7 +32,7 @@ class InternFakturaTest {
 		assertThat(internFaktura.fakturaText()).isEqualTo(fakturaText);
 		assertThat(internFaktura.antal()).isEqualTo(antal);
 		assertThat(internFaktura.aPris()).isEqualTo(aPris);
-		assertThat(internFaktura.summering()).isEqualTo(summering);
+		assertThat(internFaktura.summeringIntern()).isEqualTo(summeringIntern);
 		assertThat(internFaktura.ansvar()).isEqualTo(ansvar);
 		assertThat(internFaktura.underkonto()).isEqualTo(underkonto);
 		assertThat(internFaktura.verksamhet()).isEqualTo(verksamhet);
