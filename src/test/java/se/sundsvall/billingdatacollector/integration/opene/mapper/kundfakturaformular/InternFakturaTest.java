@@ -4,6 +4,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import org.junit.jupiter.api.Test;
 
+import se.sundsvall.billingdatacollector.integration.opene.mapper.kundfakturaformular.model.InternFaktura;
+
 class InternFakturaTest {
 
 	@Test
@@ -13,29 +15,19 @@ class InternFakturaTest {
 		var posted = "2023-11-24T15:40:23";
 		var fakturanSkickasTill = "fakturanSkickasTill";
 		var forvaltningSomSkaBetala = "forvaltningSomSkaBetala";
-		var fakturaText = "fakturaText";
-		var antal = 123;
-		var aPris = "123,45";
-		var summeringIntern = "15184,35";
-		var ansvar = "ansvar";
-		var underkonto = "underkonto";
-		var verksamhet = "verksamhet";
-		var aktivitetskonto = "aktivitetskonto";
+		var saljarensFornamn = "saljarensFornamn";
+		var saljarensEfternamn = "saljarensEfternamn";
+		var internReferens = "internReferens";
 
 		var internFaktura = new InternFaktura(familyId, flowInstanceId, posted, fakturanSkickasTill, forvaltningSomSkaBetala,
-			fakturaText, antal, aPris, summeringIntern, ansvar, underkonto, verksamhet, aktivitetskonto);
+			saljarensFornamn, saljarensEfternamn, internReferens);
 
 		assertThat(internFaktura.familyId()).isEqualTo(familyId);
 		assertThat(internFaktura.flowInstanceId()).isEqualTo(flowInstanceId);
 		assertThat(internFaktura.fakturanSkickasTill()).isEqualTo(fakturanSkickasTill);
 		assertThat(internFaktura.forvaltningSomSkaBetala()).isEqualTo(forvaltningSomSkaBetala);
-		assertThat(internFaktura.fakturaText()).isEqualTo(fakturaText);
-		assertThat(internFaktura.antal()).isEqualTo(antal);
-		assertThat(internFaktura.aPris()).isEqualTo(aPris);
-		assertThat(internFaktura.summeringIntern()).isEqualTo(summeringIntern);
-		assertThat(internFaktura.ansvar()).isEqualTo(ansvar);
-		assertThat(internFaktura.underkonto()).isEqualTo(underkonto);
-		assertThat(internFaktura.verksamhet()).isEqualTo(verksamhet);
-		assertThat(internFaktura.aktivitetskonto()).isEqualTo(aktivitetskonto);
+		assertThat(internFaktura.saljarensFornamn()).isEqualTo(saljarensFornamn);
+		assertThat(internFaktura.saljarensEfternamn()).isEqualTo(saljarensEfternamn);
+		assertThat(internFaktura.internReferens()).isEqualTo(internReferens);
 	}
 }

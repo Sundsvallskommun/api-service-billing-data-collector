@@ -1,8 +1,8 @@
-package se.sundsvall.billingdatacollector.integration.opene.mapper.kundfakturaformular;
+package se.sundsvall.billingdatacollector.integration.opene.mapper.kundfakturaformular.model;
 
 import se.sundsvall.billingdatacollector.integration.opene.util.annotation.XPath;
 
-record ExternFaktura(
+public record ExternFaktura(
 
 	@XPath("/FlowInstance/Header/Flow/FamilyID")
 	String familyId,
@@ -34,6 +34,22 @@ record ExternFaktura(
 	@XPath("/FlowInstance/Values/MotpartPrivatperson/Name")
 	String motpartNamn,
 
+	@XPath("/FlowInstance/Values/SaljarensUppg/Firstname")
+	String saljarensFornamn,
+
+	@XPath("/FlowInstance/Values/SaljarensUppg/Lastname")
+	String saljarensEfternamn,
+
+	@XPath("/FlowInstance/Values/KontaktuppgifterPrivatperson/Firstname")
+	String kontaktuppgifterPrivatpersonFornamn,
+
+	@XPath("/FlowInstance/Values/KontaktuppgifterPrivatperson/Lastname")
+	String kontaktuppgifterPrivatpersonEfternamn
+
+	/*
+	@XPath("/FlowInstance/Values/ObjektkontoExtern1/Value")
+	String objektkonto,
+
 	@XPath("/FlowInstance/Values/BarakningarExtern1/FakturatextExtern1")
 	String fakturaText,
 
@@ -59,7 +75,5 @@ record ExternFaktura(
 	String verksamhet,
 
 	@XPath("/FlowInstance/Values/AktivitetskontoExtern1/Value")
-	String aktivitetskonto,
-
-	@XPath("/FlowInstance/Values/ObjektkontoExtern1/Value")
-	String objektkonto) { }
+	String aktivitetskonto,*/
+	) { }

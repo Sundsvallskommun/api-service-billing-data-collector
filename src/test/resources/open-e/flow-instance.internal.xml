@@ -1,173 +1,140 @@
 <?xml version="1.0" encoding="ISO-8859-1" standalone="no"?>
-<FlowInstance
-        xmlns="http://www.oeplatform.org/version/2.0/schemas/flowinstance"
-        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.oeplatform.org/version/2.0/schemas/flowinstance schema-1910.xsd">
-    <Header>
-        <Flow>
-            <FamilyID>123</FamilyID>
-            <Version>27</Version>
-            <FlowID>1910</FlowID>
-            <Name>
-                <![CDATA[Kundfakturaformulär]]>
-            </Name>
-        </Flow>
-        <FlowInstanceID>123456</FlowInstanceID>
-        <Status>
-            <ID>14052</ID>
-            <Name>
-                <![CDATA[Inskickat]]>
-            </Name>
-        </Status>
-        <Poster>
-            <Firstname>
-                <![CDATA[Kalle]]>
-            </Firstname>
-            <Lastname>
-                <![CDATA[Karlssonberg]]>
-            </Lastname>
-            <Email>
-                <![CDATA[kalle.karlssonberg@sundsvall.se]]>
-            </Email>
-            <ID>9999</ID>
-        </Poster>
-        <Owner>
-            <Firstname>
-                <![CDATA[Kalle]]>
-            </Firstname>
-            <Lastname>
-                <![CDATA[Karlssonberg]]>
-            </Lastname>
-            <Email>
-                <![CDATA[kalle.karlssonberg@sundsvall.se]]>
-            </Email>
-            <ID>9999</ID>
-        </Owner>
-        <Posted>2023-05-31T10:03:43</Posted>
-        <FirstSubmitted>2023-05-31T10:03:43</FirstSubmitted>
-        <LastSubmitted>2023-05-31T10:03:43</LastSubmitted>
-    </Header>
-    <Values>
-        <VemArKontaktperson>
-            <QueryID>48665</QueryID>
-            <Name>
-                <![CDATA[Vem är vår kontaktperson?]]>
-            </Name>
-            <Value>Jag själv</Value>
-        </VemArKontaktperson>
-        <SaljarensUppg>
-            <QueryID>48667</QueryID>
-            <Name>
-                <![CDATA[Säljarens namn]]>
-            </Name>
-            <Firstname>
-                <![CDATA[Kalle]]>
-            </Firstname>
-            <Lastname>
-                <![CDATA[Karlssonberg]]>
-            </Lastname>
-            <Phone>
-                <![CDATA[060-190000]]>
-            </Phone>
-            <Email>
-                <![CDATA[kalle.karlssonberg@sundsvall.se]]>
-            </Email>
-        </SaljarensUppg>
-        <FakturerandeForvaltning>
-            <QueryID>48668</QueryID>
-            <Name>
-                <![CDATA[Fakturerande förvaltning/verksamhet (för statistikändamål)]]>
-            </Name>
-            <Value>16 - Drakfastigheter</Value>
-        </FakturerandeForvaltning>
-        <FakturanSkickasTill>
-            <QueryID>48669</QueryID>
-            <Name>
-                <![CDATA[Fakturan ska skickas till:]]>
-            </Name>
-            <Value>Sundsvalls kommun</Value>
-        </FakturanSkickasTill>
-        <ForvaltningSomSkaBetala>
-            <QueryID>48670</QueryID>
-            <Name>
-                <![CDATA[Vilken förvaltning/verksamhet ska betala fakturan?]]>
-            </Name>
-            <Value>70 - Vård och omsorgsförvaltningen</Value>
-        </ForvaltningSomSkaBetala>
-        <RefNrSundsvallsKommun>
-            <QueryID>48699</QueryID>
-            <Name>
-                <![CDATA[Ange referensnummer på den som är mottagare av fakturan]]>
-            </Name>
-            <Value>3XPR39BXC - Perssonström Anna                     </Value>
-        </RefNrSundsvallsKommun>
-        <FakturaraderIntern>
-            <QueryID>48711</QueryID>
-            <Name>
-                <![CDATA[Hur många fakturarader vill du lägga till?]]>
-            </Name>
-            <Value>1</Value>
-        </FakturaraderIntern>
-        <BerakningIntern1>
-            <QueryID>48713</QueryID>
-            <Name>
-                <![CDATA[Beräkningar (1)]]>
-            </Name>
-            <FakturatextIntern1>
-                <![CDATA[Passerkort med foto Pelle Lundströmsson enl E-tjänst 161342]]>
-            </FakturatextIntern1>
-            <AntalIntern1>
-                <![CDATA[1]]>
-            </AntalIntern1>
-            <APrisIntern1>
-                <![CDATA[150,00]]>
-            </APrisIntern1>
-        </BerakningIntern1>
-        <SummeringIntern1>
-            <QueryID>48717</QueryID>
-            <Name>
-                <![CDATA[Summering (1)]]>
-            </Name>
-            <TotSummeringIntern1>
-                <![CDATA[150,00 SEK]]>
-            </TotSummeringIntern1>
-        </SummeringIntern1>
-        <AnsvarIntern1>
-            <QueryID>48719</QueryID>
-            <Name>
-                <![CDATA[Ansvar (1)]]>
-            </Name>
-            <Value>16300000 - Vakant</Value>
-        </AnsvarIntern1>
-        <UnderkontoIntern1>
-            <QueryID>48720</QueryID>
-            <Name>
-                <![CDATA[Intäktskonto (1)]]>
-            </Name>
-            <Value>936100 Försäljning av verksamheter</Value>
-        </UnderkontoIntern1>
-        <VerksamhetIntern1>
-            <QueryID>48721</QueryID>
-            <Name>
-                <![CDATA[Verksamhet (1)]]>
-            </Name>
-            <Value>910300 - Gemensam administration fastig</Value>
-        </VerksamhetIntern1>
-        <AktivitetskontoIntern1>
-            <QueryID>48722</QueryID>
-            <Name>
-                <![CDATA[Aktivitet (obligatoriskt för Barn och utbildningsförvaltningen) (1)]]>
-            </Name>
-            <Value>5247 - OH</Value>
-        </AktivitetskontoIntern1>
-        <TotalSummeringIntern>
-            <QueryID>48777</QueryID>
-            <Name>
-                <![CDATA[Total summering]]>
-            </Name>
-            <TotalSummeringIntern>
-                <![CDATA[150,00 SEK]]>
-            </TotalSummeringIntern>
-        </TotalSummeringIntern>
-    </Values>
+<FlowInstance xmlns="http://www.oeplatform.org/version/2.0/schemas/flowinstance" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.oeplatform.org/version/2.0/schemas/flowinstance schema-475.xsd">
+	<Header>
+		<Flow>
+			<FamilyID>123</FamilyID>
+			<Version>1</Version>
+			<FlowID>475</FlowID>
+			<Name><![CDATA[Kundfakturaformulär]]></Name>
+		</Flow>
+		<FlowInstanceID>6859</FlowInstanceID>
+		<Status>
+			<ID>4085</ID>
+			<Name><![CDATA[Klart]]></Name>
+		</Status>
+		<Poster>
+			<Firstname><![CDATA[Kalle]]></Firstname>
+			<Lastname><![CDATA[Anka]]></Lastname>
+			<Email><![CDATA[kalle.anka@sundsvall.se]]></Email>
+			<ID>26028</ID>
+		</Poster>
+		<Owner>
+			<Firstname><![CDATA[Kalle]]></Firstname>
+			<Lastname><![CDATA[Anka]]></Lastname>
+			<Email><![CDATA[kalle.anka@sundsvall.se]]></Email>
+			<ID>26028</ID>
+		</Owner>
+		<Posted>2024-09-24T15:00:59</Posted>
+		<FirstSubmitted>2024-09-24T15:00:59</FirstSubmitted>
+		<LastSubmitted>2024-09-24T15:00:59</LastSubmitted>
+	</Header>
+	<Values>
+		<VemArKontaktperson>
+			<QueryID>16997</QueryID>
+			<Name><![CDATA[Vem är vår kontaktperson?]]></Name>
+			<Value>Jag själv</Value>
+		</VemArKontaktperson>
+		<SaljarensUppg>
+			<QueryID>16999</QueryID>
+			<Name><![CDATA[Säljarens namn]]></Name>
+			<Firstname><![CDATA[Kalle]]></Firstname>
+			<Lastname><![CDATA[Anka]]></Lastname>
+			<Phone><![CDATA[0702429049]]></Phone>
+			<Email><![CDATA[kalle.anka@sundsvall.se]]></Email>
+		</SaljarensUppg>
+		<FakturerandeForvaltning>
+			<QueryID>17000</QueryID>
+			<Name><![CDATA[Fakturerande förvaltning/verksamhet (för statistikändamål)]]></Name>
+			<Value>30 - Stadsbyggnadskontoret</Value>
+		</FakturerandeForvaltning>
+		<FakturanSkickasTill>
+			<QueryID>17001</QueryID>
+			<Name><![CDATA[Fakturan ska skickas till:]]></Name>
+			<Value>Sundsvalls kommun</Value>
+		</FakturanSkickasTill>
+		<ForvaltningSomSkaBetala>
+			<QueryID>17002</QueryID>
+			<Name><![CDATA[Vilken förvaltning/verksamhet ska betala fakturan?]]></Name>
+			<Value>15 - Servicecenter</Value>
+		</ForvaltningSomSkaBetala>
+		<RefNrSundsvallsKommun>
+			<QueryID>17031</QueryID>
+			<Name><![CDATA[Ange referensnummer på den som är mottagare av fakturan]]></Name>
+			<Value>1JAN16LAN - Janne Långben                   </Value>
+		</RefNrSundsvallsKommun>
+		<FakturaraderIntern>
+			<QueryID>17043</QueryID>
+			<Name><![CDATA[Hur många fakturarader vill du lägga till?]]></Name>
+			<Value>2</Value>
+		</FakturaraderIntern>
+		<BerakningIntern1>
+			<QueryID>17045</QueryID>
+			<Name><![CDATA[Beräkningar (1)]]></Name>
+			<FakturatextIntern1><![CDATA[Bra fakturatext1]]></FakturatextIntern1>
+			<AntalIntern1><![CDATA[3]]></AntalIntern1>
+			<APrisIntern1><![CDATA[567.89]]></APrisIntern1>
+		</BerakningIntern1>
+		<SummeringIntern1>
+			<QueryID>17049</QueryID>
+			<Name><![CDATA[Summering (1)]]></Name>
+			<TotSummeringIntern1><![CDATA[1703,67 SEK]]></TotSummeringIntern1>
+		</SummeringIntern1>
+		<AnsvarIntern1>
+			<QueryID>17051</QueryID>
+			<Name><![CDATA[Ansvar (1)]]></Name>
+			<Value>15810100 - SC LOP HR Drift</Value>
+		</AnsvarIntern1>
+		<UnderkontoIntern1>
+			<QueryID>17052</QueryID>
+			<Name><![CDATA[Intäktskonto (1)]]></Name>
+			<Value>931311 Parkeringsavgift, intern</Value>
+		</UnderkontoIntern1>
+		<VerksamhetIntern1>
+			<QueryID>17053</QueryID>
+			<Name><![CDATA[Verksamhet (1)]]></Name>
+			<Value>510410 - Aktivitetscenter för tecknade</Value>
+		</VerksamhetIntern1>
+		<ProjektkontoIntern1>
+			<QueryID>17055</QueryID>
+			<Name><![CDATA[Projekt (1)]]></Name>
+			<Value>11009 - 11 009 Kaffemaskin</Value>
+		</ProjektkontoIntern1>
+		<BerakningarIntern2>
+			<QueryID>17058</QueryID>
+			<Name><![CDATA[Beräkningar (2)]]></Name>
+			<FakturatextIntern2><![CDATA[Bra fakturatext2]]></FakturatextIntern2>
+			<AntalIntern2><![CDATA[1]]></AntalIntern2>
+			<APrisIntern2><![CDATA[234.56]]></APrisIntern2>
+		</BerakningarIntern2>
+		<SummeringIntern2>
+			<QueryID>17062</QueryID>
+			<Name><![CDATA[Summering (2)]]></Name>
+			<TotSummeringIntern2><![CDATA[234,56 SEK]]></TotSummeringIntern2>
+		</SummeringIntern2>
+		<AnsvarIntern2>
+			<QueryID>17064</QueryID>
+			<Name><![CDATA[Ansvar (2)]]></Name>
+			<Value>11200100 - Ekonomi- och verksamhetsstyrni</Value>
+		</AnsvarIntern2>
+		<UnderkontoIntern2>
+			<QueryID>17065</QueryID>
+			<Name><![CDATA[Intäktskonto (2)]]></Name>
+			<Value>930110 Försäljning</Value>
+		</UnderkontoIntern2>
+		<VerksamhetIntern2>
+			<QueryID>17066</QueryID>
+			<Name><![CDATA[Verksamhet (2)]]></Name>
+			<Value>100500 - Socialnämnd</Value>
+		</VerksamhetIntern2>
+		<ProjektkontoIntern2>
+			<QueryID>17068</QueryID>
+			<Name><![CDATA[Projekt (2)]]></Name>
+			<Value>11061 - Reglering SC IT till KSK</Value>
+		</ProjektkontoIntern2>
+		<TotalSummeringIntern>
+			<QueryID>17109</QueryID>
+			<Name><![CDATA[Total summering]]></Name>
+			<TotalSummeringIntern><![CDATA[1938,23 SEK]]></TotalSummeringIntern>
+		</TotalSummeringIntern>
+	</Values>
 </FlowInstance>
-
