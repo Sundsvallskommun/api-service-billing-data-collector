@@ -8,6 +8,7 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 import se.sundsvall.dept44.ServiceApplication;
 
 @ServiceApplication
+@EnableFeignClients(basePackageClasses = Application.class)
 @EnableCaching
 @EnableFeignClients
 @EnableScheduling

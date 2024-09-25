@@ -12,6 +12,7 @@
 	<artifactId>api-service-billing-data-collector</artifactId>
 	<version>1.0</version>
 	<name>api-service-billing-data-collector</name>
+
 	<properties>
 		<xsoup.version>0.3.7</xsoup.version>
 		<generated-sources-path>${project.build.directory}/generated-sources</generated-sources-path>
@@ -81,6 +82,13 @@
 			<groupId>com.github.ben-manes.caffeine</groupId>
 			<artifactId>caffeine</artifactId>
 		</dependency>
+		<dependency>
+			<groupId>dom4j</groupId>
+			<artifactId>dom4j</artifactId>
+			<version>1.1</version>
+			<scope>test</scope>
+		</dependency>
+
 	</dependencies>
 	<build>
 		<plugins>
