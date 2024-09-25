@@ -21,10 +21,7 @@ public class MapperHelper {
 
 	private static final Pattern LEADING_DIGITS_PATTERN = Pattern.compile("^\\d+");
 	private static final Pattern TRAILING_DIGITS_PATTERN = Pattern.compile("\\d+(?=\\D*$)");
-
-	private static final String MOTPART_ERROR = "Couldn't extract motpart numbers from '%s'";
-	private static final String TRAILING_DIGITS_ERROR = "Couldn't extract trailing digits from '%s'";
-	private static final String LEADING_DIGITS_ERROR = "Couldn't extract leading digits from '%s'";
+	private static final String DIGITS_AND_DECIMAL_SEPARATORS_REGEX = "[^0-9.,]+";
 	private static final String STRING_TO_FLOAT_ERROR = "Couldn't convert '%s' to a float";
 
 	/**
@@ -71,7 +68,7 @@ public class MapperHelper {
 	 */
 	String removeCurrencyFromString(String stringToParse) {
 		return Optional.ofNullable(stringToParse)
-			.map(string -> string.replaceAll("[^0-9.,]", ""))
+			.map(string -> string.replaceAll(DIGITS_AND_DECIMAL_SEPARATORS_REGEX, ""))
 			.orElse(null);
 	}
 
@@ -81,15 +78,12 @@ public class MapperHelper {
 	 * @param stringToParse The string to parse
 	 * @return Any leading numbers from the string
 	 */
-	public String getLeadingDigits(String stringToParse) {
+	public String getLeadingDigitsFromString(String stringToParse) {
 		return Optional.ofNullable(stringToParse)
 			.map(LEADING_DIGITS_PATTERN::matcher)
 			.filter(Matcher::find)
 			.map(Matcher::group)
-			.orElseThrow(() -> Problem.builder()
-				.withTitle(String.format(LEADING_DIGITS_ERROR, stringToParse))
-				.withStatus(INTERNAL_SERVER_ERROR)
-				.build());
+			.orElse(null);
 	}
 
 	/**
@@ -103,10 +97,7 @@ public class MapperHelper {
 			.map(TRAILING_DIGITS_PATTERN::matcher)
 			.filter(Matcher::find)
 			.map(Matcher::group)
-			.orElseThrow(() -> Problem.builder()
-				.withTitle(String.format(TRAILING_DIGITS_ERROR, stringToParse))
-				.withStatus(INTERNAL_SERVER_ERROR)
-				.build());
+			.orElse(null);
 	}
 
 	/**
@@ -118,10 +109,7 @@ public class MapperHelper {
 		return Optional.ofNullable(motpart)
 			.map(this::getTrailingDigitsFromString)
 			.map(numbers -> StringUtils.rightPad(numbers, 8, "0"))
-			.orElseThrow(() -> Problem.builder()
-				.withTitle(String.format(TRAILING_DIGITS_ERROR, motpart))
-				.withStatus(INTERNAL_SERVER_ERROR)
-				.build());
+			.orElse(null);
 	}
 
 	/**
@@ -132,10 +120,7 @@ public class MapperHelper {
 	public String getInternalMotpartNumbers(String customerId) {
 		return Optional.ofNullable(customerId)
 			.map(id -> "1" + id)
-			.orElseThrow(() -> Problem.builder()
-				.withTitle(String.format(MOTPART_ERROR, customerId))
-				.withStatus(INTERNAL_SERVER_ERROR)
-				.build());
+			.orElse(null);
 	}
 
 	/**

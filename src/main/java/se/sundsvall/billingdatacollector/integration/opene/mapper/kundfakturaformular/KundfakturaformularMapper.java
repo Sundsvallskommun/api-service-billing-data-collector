@@ -54,7 +54,7 @@ class KundfakturaformularMapper implements OpenEMapper {
 		var result = extractValue(xml, InternFaktura.class);
 
 		// Get the customerId, we will reuse this and add a "1" in front of it to create the counterpart
-		var customerId = mapperHelper.getLeadingDigits(result.forvaltningSomSkaBetala());
+		var customerId = mapperHelper.getLeadingDigitsFromString(result.forvaltningSomSkaBetala());
 
 		var billingRecord = new BillingRecord()
 			.category(CATEGORY)
@@ -75,10 +75,10 @@ class KundfakturaformularMapper implements OpenEMapper {
 					.costPerUnit(mapperHelper.convertStringToFloat(result.aPris()))
 					.totalAmount(mapperHelper.convertStringToFloat(result.summeringIntern()))
 					.accountInformation(new AccountInformation()
-						.costCenter(mapperHelper.getLeadingDigits(result.ansvar()))
-						.subaccount(mapperHelper.getLeadingDigits(result.underkonto()))
-						.department(mapperHelper.getLeadingDigits(result.verksamhet()))
-						.activity(mapperHelper.getLeadingDigits(result.aktivitetskonto()))
+						.costCenter(mapperHelper.getLeadingDigitsFromString(result.ansvar()))
+						.subaccount(mapperHelper.getLeadingDigitsFromString(result.underkonto()))
+						.department(mapperHelper.getLeadingDigitsFromString(result.verksamhet()))
+						.activity(mapperHelper.getLeadingDigitsFromString(result.aktivitetskonto()))
 						.counterpart(mapperHelper.getInternalMotpartNumbers(customerId))))));
 
 		return BillingRecordWrapper.builder()
@@ -114,10 +114,10 @@ class KundfakturaformularMapper implements OpenEMapper {
 					.vatCode(result.momssats())
 					.totalAmount(mapperHelper.convertStringToFloat(result.summeringExtern()))
 					.accountInformation(new AccountInformation()
-						.costCenter(mapperHelper.getLeadingDigits(result.ansvar()))
-						.subaccount(mapperHelper.getLeadingDigits(result.underkonto()))
-						.department(mapperHelper.getLeadingDigits(result.verksamhet()))
-						.activity(mapperHelper.getLeadingDigits(result.aktivitetskonto()))
+						.costCenter(mapperHelper.getLeadingDigitsFromString(result.ansvar()))
+						.subaccount(mapperHelper.getLeadingDigitsFromString(result.underkonto()))
+						.department(mapperHelper.getLeadingDigitsFromString(result.verksamhet()))
+						.activity(mapperHelper.getLeadingDigitsFromString(result.aktivitetskonto()))
 						.article(result.objektkonto())
 						.counterpart(mapperHelper.getExternalMotpartNumbers(result.motpartNamn()))))));
 
