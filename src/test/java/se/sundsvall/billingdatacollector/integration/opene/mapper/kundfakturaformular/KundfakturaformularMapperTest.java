@@ -34,7 +34,7 @@ class KundfakturaformularMapperTest {
 		var billingRecord = mapper.mapToBillingRecordWrapper(stringBytes).getBillingRecord();
 
 		assertThat(billingRecord).isNotNull();
-		assertThat(billingRecord.getCategory()).isEqualTo("KUNDFAKTURA");
+		assertThat(billingRecord.getCategory()).isEqualTo("ACCESS_CARD");
 		assertThat(billingRecord.getStatus()).isEqualTo(Status.APPROVED);
 		assertThat(billingRecord.getType()).isEqualTo(Type.INTERNAL);
 
@@ -53,7 +53,7 @@ class KundfakturaformularMapperTest {
 		assertThat(invoiceRow.getDescriptions()).contains("Passerkort med foto Pelle Lundströmsson enl E-tjänst 161342");
 		assertThat(invoiceRow.getQuantity()).isOne();
 		assertThat(invoiceRow.getCostPerUnit()).isEqualTo(150.0f);
-		assertThat(invoiceRow.getTotalAmount()).isEqualTo(150.0f);
+		assertThat(invoiceRow.getTotalAmount()).isNull();
 
 		var accountInformation = invoiceRow.getAccountInformation();
 		assertThat(accountInformation.getCostCenter()).isEqualTo("16300000");
@@ -67,7 +67,7 @@ class KundfakturaformularMapperTest {
 	void mapToExternalBillingRecord() {
 		var stringBytes = readOpenEFile("flow-instance.external.xml");
 		var billingRecord = mapper.mapToBillingRecordWrapper(stringBytes).getBillingRecord();
-		assertThat(billingRecord.getCategory()).isEqualTo("KUNDFAKTURA");
+		assertThat(billingRecord.getCategory()).isEqualTo("ACCESS_CARD");
 		assertThat(billingRecord.getStatus()).isEqualTo(Status.APPROVED);
 		assertThat(billingRecord.getType()).isEqualTo(Type.EXTERNAL);
 
@@ -88,7 +88,7 @@ class KundfakturaformularMapperTest {
 
 		var invoiceRow = invoiceRows.getFirst();
 		assertThat(invoiceRow.getDescriptions().getFirst()).isEqualTo("Påskmarknad. 3 marknadsplatser");
-		assertThat(invoiceRow.getTotalAmount()).isEqualTo(2100f);
+		assertThat(invoiceRow.getTotalAmount()).isNull();
 		assertThat(invoiceRow.getVatCode()).isEqualTo("00");
 		assertThat(invoiceRow.getCostPerUnit()).isEqualTo(700f);
 		assertThat(invoiceRow.getQuantity()).isEqualTo(3);

@@ -41,5 +41,11 @@ record InternFaktura(
 	String verksamhet,
 
 	@XPath("/FlowInstance/Values/AktivitetskontoIntern1/Value")
-	String aktivitetskonto
+	String aktivitetskonto,
+
+	@XPath("/FlowInstance/Values/SaljarensUppg/Firstname")
+	String saljarensFornamn,
+
+	@XPath("/FlowInstance/Values/SaljarensUppg/Lastname")
+	String saljarensEfternamn
 	) { }
