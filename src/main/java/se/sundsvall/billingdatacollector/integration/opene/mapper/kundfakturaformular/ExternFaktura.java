@@ -62,4 +62,11 @@ record ExternFaktura(
 	String aktivitetskonto,
 
 	@XPath("/FlowInstance/Values/ObjektkontoExtern1/Value")
-	String objektkonto) { }
+	String objektkonto,
+
+	@XPath("/FlowInstance/Values/SaljarensUppg/Firstname")
+	String saljarensFornamn,
+
+	@XPath("/FlowInstance/Values/SaljarensUppg/Lastname")
+	String saljarensEfternamn
+	) { }

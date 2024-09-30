@@ -17,15 +17,16 @@ class BillingPreprocessorIntegrationConfiguration {
 
     @Bean
     FeignBuilderCustomizer feignBuilderCustomizer(final BillingPreprocessorIntegrationProperties properties) {
-        return FeignMultiCustomizer.create()
-            .withErrorDecoder(new ProblemErrorDecoder(CLIENT_ID))
-            .withRetryableOAuth2InterceptorForClientRegistration(ClientRegistration.withRegistrationId(CLIENT_ID)
-                .tokenUri(properties.oauth2().tokenUrl())
-                .clientId(properties.oauth2().clientId())
-                .clientSecret(properties.oauth2().clientSecret())
-                .authorizationGrantType(new AuthorizationGrantType(properties.oauth2().authorizationGrantType()))
-                .build())
-            .withRequestTimeoutsInSeconds(properties.connectTimeout(), properties.readTimeout())
-            .composeCustomizersToOne();
+	    return FeignMultiCustomizer.create()
+		    .withErrorDecoder(new ProblemErrorDecoder(CLIENT_ID))
+		    .withRetryableOAuth2InterceptorForClientRegistration(ClientRegistration
+			    .withRegistrationId(CLIENT_ID)
+			    .tokenUri(properties.oauth2().tokenUrl())
+			    .clientId(properties.oauth2().clientId())
+			    .clientSecret(properties.oauth2().clientSecret())
+			    .authorizationGrantType(new AuthorizationGrantType(properties.oauth2().authorizationGrantType()))
+			    .build())
+		    .withRequestTimeoutsInSeconds(properties.connectTimeout(), properties.readTimeout())
+		    .composeCustomizersToOne();
     }
 }

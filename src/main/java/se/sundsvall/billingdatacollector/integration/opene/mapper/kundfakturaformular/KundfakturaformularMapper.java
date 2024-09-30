@@ -26,7 +26,8 @@ import generated.se.sundsvall.billingpreprocessor.Type;
 @Component
 class KundfakturaformularMapper implements OpenEMapper {
 
-	private static final String CATEGORY = "KUNDFAKTURA";
+	private static final String CATEGORY = "ACCESS_CARD";
+	private static final String APPROVED_BY = "E_SERVICE";
 
 	private final MapperHelper mapperHelper;
 	private final OpenEIntegrationProperties properties;
@@ -58,8 +59,8 @@ class KundfakturaformularMapper implements OpenEMapper {
 
 		var billingRecord = new BillingRecord()
 			.category(CATEGORY)
-			.created(mapperHelper.convertStringToOffsetDateTime(result.posted()))
 			.status(Status.APPROVED)
+			.approvedBy(APPROVED_BY)
 			.type(Type.INTERNAL)
 			.recipient(new Recipient()
 				.organizationName(SUNDSVALLS_MUNICIPALITY)
@@ -67,13 +68,12 @@ class KundfakturaformularMapper implements OpenEMapper {
 			.invoice(new Invoice()
 				.customerId(customerId)
 				.description(result.fakturaText())
+				.ourReference(getInternalSellerName(result))
 				.referenceId(result.flowInstanceId())
-				.totalAmount(mapperHelper.convertStringToFloat(result.summeringIntern()))
 				.invoiceRows(List.of(new InvoiceRow()
 					.descriptions(List.of(result.fakturaText()))
 					.quantity(result.antal().floatValue())
 					.costPerUnit(mapperHelper.convertStringToFloat(result.aPris()))
-					.totalAmount(mapperHelper.convertStringToFloat(result.summeringIntern()))
 					.accountInformation(new AccountInformation()
 						.costCenter(mapperHelper.getLeadingDigitsFromString(result.ansvar()))
 						.subaccount(mapperHelper.getLeadingDigitsFromString(result.underkonto()))
@@ -91,9 +91,9 @@ class KundfakturaformularMapper implements OpenEMapper {
 		var result = extractValue(xml, ExternFaktura.class);
 
 		var billingRecord = new BillingRecord()
-			.created(mapperHelper.convertStringToOffsetDateTime(result.posted()))
 			.category(CATEGORY)
 			.status(Status.APPROVED)
+			.approvedBy(APPROVED_BY)
 			.type(Type.EXTERNAL)
 			.recipient(new Recipient()
 				.firstName(result.fornamn())
@@ -105,26 +105,33 @@ class KundfakturaformularMapper implements OpenEMapper {
 			.invoice(new Invoice()
 				.customerId(result.personnummer())
 				.description(result.fakturaText())
+				.ourReference(getExternalSellerName(result))
 				.referenceId(result.flowInstanceId())
-				.totalAmount(mapperHelper.convertStringToFloat(result.summeringExtern()))
 				.invoiceRows(List.of(new InvoiceRow()
 					.descriptions(List.of(result.fakturaText()))
 					.quantity(result.antal().floatValue())
 					.costPerUnit(mapperHelper.convertStringToFloat(result.aPris()))
 					.vatCode(result.momssats())
-					.totalAmount(mapperHelper.convertStringToFloat(result.summeringExtern()))
 					.accountInformation(new AccountInformation()
-						.costCenter(mapperHelper.getLeadingDigitsFromString(result.ansvar()))
-						.subaccount(mapperHelper.getLeadingDigitsFromString(result.underkonto()))
-						.department(mapperHelper.getLeadingDigitsFromString(result.verksamhet()))
 						.activity(mapperHelper.getLeadingDigitsFromString(result.aktivitetskonto()))
 						.article(result.objektkonto())
-						.counterpart(mapperHelper.getExternalMotpartNumbers(result.motpartNamn()))))));
+						.costCenter(mapperHelper.getLeadingDigitsFromString(result.ansvar()))
+						.counterpart(mapperHelper.getExternalMotpartNumbers(result.motpartNamn()))
+						.department(mapperHelper.getLeadingDigitsFromString(result.verksamhet()))
+						.subaccount(mapperHelper.getLeadingDigitsFromString(result.underkonto()))))));
 
 		return BillingRecordWrapper.builder()
 			.withBillingRecord(billingRecord)
 			.withLegalId(result.personnummer())
 			.withFlowInstanceId(result.flowInstanceId())
 			.build();
+	}
+
+	String getInternalSellerName(InternFaktura result) {
+		return result.saljarensFornamn() + " " + result.saljarensEfternamn();
+	}
+
+	String getExternalSellerName(ExternFaktura result) {
+		return result.saljarensFornamn() + " " + result.saljarensEfternamn();
 	}
 }

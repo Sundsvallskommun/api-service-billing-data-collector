@@ -21,9 +21,11 @@ class InternFakturaTest {
 		var underkonto = "underkonto";
 		var verksamhet = "verksamhet";
 		var aktivitetskonto = "aktivitetskonto";
+		var saljarensFornamn = "saljarensFornamn";
+		var saljarensEfternamn = "saljarensEfternamn";
 
 		var internFaktura = new InternFaktura(familyId, flowInstanceId, posted, fakturanSkickasTill, forvaltningSomSkaBetala,
-			fakturaText, antal, aPris, summeringIntern, ansvar, underkonto, verksamhet, aktivitetskonto);
+			fakturaText, antal, aPris, summeringIntern, ansvar, underkonto, verksamhet, aktivitetskonto, saljarensFornamn, saljarensEfternamn);
 
 		assertThat(internFaktura.familyId()).isEqualTo(familyId);
 		assertThat(internFaktura.flowInstanceId()).isEqualTo(flowInstanceId);
@@ -37,5 +39,7 @@ class InternFakturaTest {
 		assertThat(internFaktura.underkonto()).isEqualTo(underkonto);
 		assertThat(internFaktura.verksamhet()).isEqualTo(verksamhet);
 		assertThat(internFaktura.aktivitetskonto()).isEqualTo(aktivitetskonto);
+		assertThat(internFaktura.saljarensFornamn()).isEqualTo(saljarensFornamn);
+		assertThat(internFaktura.saljarensEfternamn()).isEqualTo(saljarensEfternamn);
 	}
 }
