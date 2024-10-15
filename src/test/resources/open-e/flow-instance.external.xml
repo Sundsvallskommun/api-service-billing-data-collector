@@ -1,122 +1,122 @@
 <?xml version="1.0" encoding="ISO-8859-1" standalone="no"?>
-<FlowInstance xmlns="http://www.oeplatform.org/version/2.0/schemas/flowinstance" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.oeplatform.org/version/2.0/schemas/flowinstance schema-1925.xsd">
-    <Header>
-        <Flow>
-            <FamilyID>456</FamilyID>
-            <Version>28</Version>
-            <FlowID>1925</FlowID>
-            <Name><![CDATA[Kundfakturaformulär]]></Name>
-        </Flow>
-        <FlowInstanceID>234567</FlowInstanceID>
-        <Status>
-            <ID>14152</ID>
-            <Name><![CDATA[Inskickat]]></Name>
-        </Status>
-        <Poster>
-            <Firstname><![CDATA[Kalle]]></Firstname>
-            <Lastname><![CDATA[Karlssonberg]]></Lastname>
-            <Email><![CDATA[kalle.karlssonberg@sundsvall.se]]></Email>
-            <ID>9999</ID>
-        </Poster>
-        <Owner>
-            <Firstname><![CDATA[Kalle]]></Firstname>
-            <Lastname><![CDATA[Karlssonberg]]></Lastname>
-            <Email><![CDATA[kalle.karlssonberg@sundsvall.se]]></Email>
-            <ID>9999</ID>
-        </Owner>
-        <Posted>2023-11-24T15:40:23</Posted>
-        <FirstSubmitted>2023-11-24T15:40:23</FirstSubmitted>
-        <LastSubmitted>2023-11-24T15:40:23</LastSubmitted>
-    </Header>
-    <Values>
-        <VemArKontaktperson>
-            <QueryID>49276</QueryID>
-            <Name><![CDATA[Vem är vår kontaktperson?]]></Name>
-            <Value>Jag själv</Value>
-        </VemArKontaktperson>
-        <SaljarensUppg>
-            <QueryID>49278</QueryID>
-            <Name><![CDATA[Säljarens namn]]></Name>
-            <Firstname><![CDATA[Kalle]]></Firstname>
-            <Lastname><![CDATA[Karlssonberg]]></Lastname>
-            <Phone><![CDATA[0701234567]]></Phone>
-            <Email><![CDATA[kalle.karlssonberg@sundsvall.se]]></Email>
-        </SaljarensUppg>
-        <FakturerandeForvaltning>
-            <QueryID>49279</QueryID>
-            <Name><![CDATA[Fakturerande förvaltning/verksamhet (för statistikändamål)]]></Name>
-            <Value>40 - Kultur &amp; Fritid</Value>
-        </FakturerandeForvaltning>
-        <FakturanSkickasTill>
-            <QueryID>49280</QueryID>
-            <Name><![CDATA[Fakturan ska skickas till:]]></Name>
-            <Value>Privatperson</Value>
-        </FakturanSkickasTill>
-        <KontaktuppgifterPrivatperson>
-            <QueryID>49318</QueryID>
-            <Name><![CDATA[Kontaktuppgifter privatperson]]></Name>
-            <Firstname><![CDATA[Nisse]]></Firstname>
-            <Lastname><![CDATA[Nilssonkvist]]></Lastname>
-            <Address><![CDATA[Hittepågatan 12]]></Address>
-            <ZipCode><![CDATA[123 45]]></ZipCode>
-            <PostalAddress><![CDATA[ORTEN]]></PostalAddress>
-            <SocialSecurityNumber><![CDATA[198001112385]]></SocialSecurityNumber>
-        </KontaktuppgifterPrivatperson>
-        <MotpartPrivatperson>
-            <QueryID>49320</QueryID>
-            <Name><![CDATA[Motpart privatperson 860]]></Name>
-        </MotpartPrivatperson>
-        <FakturaraderExtern>
-            <QueryID>49390</QueryID>
-            <Name><![CDATA[Hur många fakturarader vill du lägga till?]]></Name>
-            <Value>1</Value>
-        </FakturaraderExtern>
-        <BarakningarExtern1>
-            <QueryID>49392</QueryID>
-            <Name><![CDATA[Beräkningar (1)]]></Name>
-            <FakturatextExtern1><![CDATA[Påskmarknad. 3 marknadsplatser]]></FakturatextExtern1>
-            <AntalExtern1><![CDATA[3]]></AntalExtern1>
-            <APrisExtern1><![CDATA[700.00]]></APrisExtern1>
-        </BarakningarExtern1>
-        <SummeringExtern1>
-            <QueryID>49396</QueryID>
-            <Name><![CDATA[Summering (1)]]></Name>
-            <TotSummeringExtern1><![CDATA[2100,00 SEK]]></TotSummeringExtern1>
-        </SummeringExtern1>
-        <MomssatsExtern1>
-            <QueryID>49397</QueryID>
-            <Name><![CDATA[Momssats i % (1)]]></Name>
-            <Value>00</Value>
-        </MomssatsExtern1>
-        <AnsvarExtern1>
-            <QueryID>49399</QueryID>
-            <Name><![CDATA[Ansvar (1)]]></Name>
-            <Value>43200000 - Lasse Heikkinenfors</Value>
-        </AnsvarExtern1>
-        <UnderkontoExtern1>
-            <QueryID>49403</QueryID>
-            <Name><![CDATA[Välj Intäktskonto 0% Moms (1)]]></Name>
-            <Value>345000 Tillf lokalupplåtelser 0%</Value>
-        </UnderkontoExtern1>
-        <VerksamhetExtern1>
-            <QueryID>49404</QueryID>
-            <Name><![CDATA[Verksamhet (1)]]></Name>
-            <Value>315310 - Kulturarvsverksamhet</Value>
-        </VerksamhetExtern1>
-        <AktivitetskontoExtern1>
-            <QueryID>49405</QueryID>
-            <Name><![CDATA[Aktivitet (obligatoriskt för Barn och utbildningsförvaltningen) (1)]]></Name>
-            <Value>4165 - Uthyrning</Value>
-        </AktivitetskontoExtern1>
-        <ObjektkontoExtern1>
-            <QueryID>49407</QueryID>
-            <Name><![CDATA[Objekt (obligatoriskt för Sundsvalls Mat och Måltider) (1)]]></Name>
-            <Value>3452000 - GULLGÅRDEN</Value>
-        </ObjektkontoExtern1>
-        <TotalSummeringIntern>
-            <QueryID>49476</QueryID>
-            <Name><![CDATA[Total summering]]></Name>
-            <TotalSummeringIntern><![CDATA[2100,00 SEK]]></TotalSummeringIntern>
-        </TotalSummeringIntern>
-    </Values>
+<FlowInstance xmlns="http://www.oeplatform.org/version/2.0/schemas/flowinstance" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.oeplatform.org/version/2.0/schemas/flowinstance schema-2295.xsd">
+	<Header>
+		<Flow>
+			<FamilyID>358</FamilyID>
+			<Version>32</Version>
+			<FlowID>2295</FlowID>
+			<Name><![CDATA[Kundfakturaformulär]]></Name>
+		</Flow>
+		<FlowInstanceID>225965</FlowInstanceID>
+		<Status>
+			<ID>16703</ID>
+			<Name><![CDATA[Klart]]></Name>
+		</Status>
+		<Poster>
+			<Firstname><![CDATA[Kalle]]></Firstname>
+			<Lastname><![CDATA[Anka]]></Lastname>
+			<Email><![CDATA[kalle.anka@sundsvall.se]]></Email>
+			<ID>22903</ID>
+		</Poster>
+		<Owner>
+			<Firstname><![CDATA[Kalle]]></Firstname>
+			<Lastname><![CDATA[Anka]]></Lastname>
+			<Email><![CDATA[kalle.anka@sundsvall.se]]></Email>
+			<ID>22903</ID>
+		</Owner>
+		<Posted>2024-10-09T13:04:14</Posted>
+		<FirstSubmitted>2024-10-09T13:04:14</FirstSubmitted>
+		<LastSubmitted>2024-10-09T13:04:14</LastSubmitted>
+	</Header>
+	<Values>
+		<VemArKontaktperson>
+			<QueryID>63498</QueryID>
+			<Name><![CDATA[Vem är vår kontaktperson?]]></Name>
+			<Value>Jag själv</Value>
+		</VemArKontaktperson>
+		<SaljarensUppg>
+			<QueryID>63500</QueryID>
+			<Name><![CDATA[Säljarens namn]]></Name>
+			<Firstname><![CDATA[Kalle]]></Firstname>
+			<Lastname><![CDATA[Anka]]></Lastname>
+			<Phone><![CDATA[0730210669]]></Phone>
+			<Email><![CDATA[kalle.anka@sundsvall.se]]></Email>
+		</SaljarensUppg>
+		<FakturerandeForvaltning>
+			<QueryID>63501</QueryID>
+			<Name><![CDATA[Fakturerande förvaltning/verksamhet (för statistikändamål)]]></Name>
+			<Value>60 - Barn och Utbildning</Value>
+		</FakturerandeForvaltning>
+		<FakturanSkickasTill>
+			<QueryID>63502</QueryID>
+			<Name><![CDATA[Fakturan ska skickas till:]]></Name>
+			<Value>Privatperson</Value>
+		</FakturanSkickasTill>
+		<KontaktuppgifterPrivatperson>
+			<QueryID>63540</QueryID>
+			<Name><![CDATA[Kontaktuppgifter privatperson]]></Name>
+			<Firstname><![CDATA[Kajsa]]></Firstname>
+			<Lastname><![CDATA[Anka]]></Lastname>
+			<Address><![CDATA[Sundsvall 222]]></Address>
+			<ZipCode><![CDATA[862 95]]></ZipCode>
+			<PostalAddress><![CDATA[NJURUNDA]]></PostalAddress>
+			<SocialSecurityNumber><![CDATA[190101011234]]></SocialSecurityNumber>
+		</KontaktuppgifterPrivatperson>
+		<ReferensPrivatperson>
+			<QueryID>63541</QueryID>
+			<Name><![CDATA[Kundens referens]]></Name>
+			<Value><![CDATA[Kajsa Anka]]></Value>
+		</ReferensPrivatperson>
+		<MotpartPrivatperson>
+			<QueryID>63542</QueryID>
+			<Name><![CDATA[Motpart privatperson 860]]></Name>
+		</MotpartPrivatperson>
+		<FakturaraderExtern>
+			<QueryID>63612</QueryID>
+			<Name><![CDATA[Hur många fakturarader vill du lägga till?]]></Name>
+			<Value>1</Value>
+		</FakturaraderExtern>
+		<BarakningarExtern1>
+			<QueryID>63614</QueryID>
+			<Name><![CDATA[Beräkningar (1)]]></Name>
+			<FakturatextExtern1><![CDATA[Slutfaktura 1st. källare]]></FakturatextExtern1>
+			<AntalExtern1><![CDATA[1]]></AntalExtern1>
+			<APrisExtern1><![CDATA[24000,00]]></APrisExtern1>
+		</BarakningarExtern1>
+		<SummeringExtern1>
+			<QueryID>63618</QueryID>
+			<Name><![CDATA[Summering (1)]]></Name>
+			<TotSummeringExtern1><![CDATA[15000,00 SEK]]></TotSummeringExtern1>
+		</SummeringExtern1>
+		<MomssatsExtern1>
+			<QueryID>63619</QueryID>
+			<Name><![CDATA[Momssats i % (1)]]></Name>
+			<Value>25</Value>
+		</MomssatsExtern1>
+		<AnsvarExtern1>
+			<QueryID>63621</QueryID>
+			<Name><![CDATA[Ansvar (1)]]></Name>
+			<Value>66050000 - Arbetslag BA</Value>
+		</AnsvarExtern1>
+		<UnderkontoExtern1>
+			<QueryID>63622</QueryID>
+			<Name><![CDATA[Välj Intäktskonto 25% Moms (1)]]></Name>
+			<Value>301100 Försäljning momspliktigt 25%</Value>
+		</UnderkontoExtern1>
+		<VerksamhetExtern1>
+			<QueryID>63626</QueryID>
+			<Name><![CDATA[Verksamhet (1)]]></Name>
+			<Value>450220 - Bygg- och anläggningsprogramme</Value>
+		</VerksamhetExtern1>
+		<AktivitetskontoExtern1>
+			<QueryID>63627</QueryID>
+			<Name><![CDATA[Aktivitet (obligatoriskt för Barn och utbildningsförvaltningen) (1)]]></Name>
+			<Value>6200 - Lärverktyg pedagogiskt mtrl</Value>
+		</AktivitetskontoExtern1>
+		<TotalSummeringIntern>
+			<QueryID>63698</QueryID>
+			<Name><![CDATA[Total summering]]></Name>
+			<TotalSummeringIntern><![CDATA[15000,00 SEK]]></TotalSummeringIntern>
+		</TotalSummeringIntern>
+	</Values>
 </FlowInstance>

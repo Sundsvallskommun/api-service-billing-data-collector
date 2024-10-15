@@ -256,7 +256,7 @@ paths:
           required: true
           schema:
             type: string
-          example: "category : 'ACCESS_CARD' and status : 'NEW'"
+          example: "category : 'CUSTOMER_INVOICE' and status : 'NEW'"
         - name: page
           in: query
           description: Zero-based page index (0..N)
@@ -492,7 +492,7 @@ components:
           readOnly: true
           example: 71258e7d-5285-46ce-b9b2-877f8cad8edd
         category:
-          pattern: ACCESS_CARD|SALARY_AND_PENSION|ISYCASE
+          pattern: CUSTOMER_INVOICE|SALARY_AND_PENSION|ISYCASE
           type: string
           description: Billing category
         type:

@@ -79,7 +79,7 @@ class OpenEIntegrationTest {
 			.satisfies(throwableProblem -> {
 				assertThat(throwableProblem.getStatus()).isEqualTo(Status.INTERNAL_SERVER_ERROR);
 				assertThat(throwableProblem.getTitle()).isEqualTo("Couldn't map billing record from OpenE");
-				assertThat(throwableProblem.getDetail()).startsWith("Unsupported familyId: 456");
+				assertThat(throwableProblem.getDetail()).startsWith("Unsupported familyId: 358");
 			});
 
 		verify(mockOpenEClient).getErrand("123456");

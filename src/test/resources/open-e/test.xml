@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="ISO-8859-1" standalone="no"?>
+<FlowInstance xmlns="http://www.oeplatform.org/version/2.0/schemas/flowinstance" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.oeplatform.org/version/2.0/schemas/flowinstance schema-1925.xsd">
+	<Header>
+		<Flow>
+			<FamilyID>358</FamilyID>
+			<Version>28</Version>
+			<FlowID>1925</FlowID>
+			<Name><![CDATA[Kundfakturaformulär]]></Name>
+		</Flow>
+		<FlowInstanceID>185375</FlowInstanceID>
+		<Status>
+			<ID>14152</ID>
+			<Name><![CDATA[Inskickat]]></Name>
+		</Status>
+		<Poster>
+			<Firstname><![CDATA[Anette]]></Firstname>
+			<Lastname><![CDATA[Tjärnberg]]></Lastname>
+			<Email><![CDATA[anette.tjarnberg@sundsvall.se]]></Email>
+			<ID>8240</ID>
+		</Poster>
+		<Owner>
+			<Firstname><![CDATA[Anette]]></Firstname>
+			<Lastname><![CDATA[Tjärnberg]]></Lastname>
+			<Email><![CDATA[anette.tjarnberg@sundsvall.se]]></Email>
+			<ID>8240</ID>
+		</Owner>
+		<Posted>2023-11-24T15:40:23</Posted>
+		<FirstSubmitted>2023-11-24T15:40:23</FirstSubmitted>
+		<LastSubmitted>2023-11-24T15:40:23</LastSubmitted>
+	</Header>
+	<Values>
+		<VemArKontaktperson>
+			<QueryID>49276</QueryID>
+			<Name><![CDATA[Vem är vår kontaktperson?]]></Name>
+			<Value>Jag själv</Value>
+		</VemArKontaktperson>
+		<SaljarensUppg>
+			<QueryID>49278</QueryID>
+			<Name><![CDATA[Säljarens namn]]></Name>
+			<Firstname><![CDATA[Anette]]></Firstname>
+			<Lastname><![CDATA[Tjärnberg]]></Lastname>
+			<Phone><![CDATA[0701836680]]></Phone>
+			<Email><![CDATA[anette.tjarnberg@sundsvall.se]]></Email>
+		</SaljarensUppg>
+		<FakturerandeForvaltning>
+			<QueryID>49279</QueryID>
+			<Name><![CDATA[Fakturerande förvaltning/verksamhet (för statistikändamål)]]></Name>
+			<Value>40 - Kultur &amp; Fritid</Value>
+		</FakturerandeForvaltning>
+		<FakturanSkickasTill>
+			<QueryID>49280</QueryID>
+			<Name><![CDATA[Fakturan ska skickas till:]]></Name>
+			<Value>Privatperson</Value>
+		</FakturanSkickasTill>
+		<KontaktuppgifterPrivatperson>
+			<QueryID>49318</QueryID>
+			<Name><![CDATA[Kontaktuppgifter privatperson]]></Name>
+			<Firstname><![CDATA[Christina]]></Firstname>
+			<Lastname><![CDATA[Näslund]]></Lastname>
+			<Address><![CDATA[MYRBODARNA 150]]></Address>
+			<ZipCode><![CDATA[862 96]]></ZipCode>
+			<PostalAddress><![CDATA[NJURUNDA]]></PostalAddress>
+			<SocialSecurityNumber><![CDATA[196306297968]]></SocialSecurityNumber>
+		</KontaktuppgifterPrivatperson>
+		<MotpartPrivatperson>
+			<QueryID>49320</QueryID>
+			<Name><![CDATA[Motpart privatperson 860]]></Name>
+		</MotpartPrivatperson>
+		<FakturaraderExtern>
+			<QueryID>49390</QueryID>
+			<Name><![CDATA[Hur många fakturarader vill du lägga till?]]></Name>
+			<Value>1</Value>
+		</FakturaraderExtern>
+		<BarakningarExtern1>
+			<QueryID>49392</QueryID>
+			<Name><![CDATA[Beräkningar (1)]]></Name>
+			<FakturatextExtern1><![CDATA[Julmarknad Norra Berget. 3 marknadsplatser]]></FakturatextExtern1>
+			<AntalExtern1><![CDATA[3]]></AntalExtern1>
+			<APrisExtern1><![CDATA[700.00]]></APrisExtern1>
+		</BarakningarExtern1>
+		<SummeringExtern1>
+			<QueryID>49396</QueryID>
+			<Name><![CDATA[Summering (1)]]></Name>
+			<TotSummeringExtern1><![CDATA[2100,00 SEK]]></TotSummeringExtern1>
+		</SummeringExtern1>
+		<MomssatsExtern1>
+			<QueryID>49397</QueryID>
+			<Name><![CDATA[Momssats i % (1)]]></Name>
+			<Value>00</Value>
+		</MomssatsExtern1>
+		<AnsvarExtern1>
+			<QueryID>49399</QueryID>
+			<Name><![CDATA[Ansvar (1)]]></Name>
+			<Value>43200000 - Erika Forsberg</Value>
+		</AnsvarExtern1>
+		<UnderkontoExtern1>
+			<QueryID>49403</QueryID>
+			<Name><![CDATA[Välj Intäktskonto 0% Moms (1)]]></Name>
+			<Value>345000 Tillf lokalupplåtelser 0%</Value>
+		</UnderkontoExtern1>
+		<VerksamhetExtern1>
+			<QueryID>49404</QueryID>
+			<Name><![CDATA[Verksamhet (1)]]></Name>
+			<Value>315310 - Kulturarvsverksamhet</Value>
+		</VerksamhetExtern1>
+		<AktivitetskontoExtern1>
+			<QueryID>49405</QueryID>
+			<Name><![CDATA[Aktivitet (obligatoriskt för Barn och utbildningsförvaltningen) (1)]]></Name>
+			<Value>4165 - Uthyrning</Value>
+		</AktivitetskontoExtern1>
+		<ObjektkontoExtern1>
+			<QueryID>49407</QueryID>
+			<Name><![CDATA[Objekt (obligatoriskt för Sundsvalls Mat och Måltider) (1)]]></Name>
+			<Value>3452000 - GULLGÅRDEN</Value>
+		</ObjektkontoExtern1>
+		<TotalSummeringIntern>
+			<QueryID>49476</QueryID>
+			<Name><![CDATA[Total summering]]></Name>
+			<TotalSummeringIntern><![CDATA[2100,00 SEK]]></TotalSummeringIntern>
+		</TotalSummeringIntern>
+	</Values>
+</FlowInstance>

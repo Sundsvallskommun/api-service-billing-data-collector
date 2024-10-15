@@ -7,15 +7,11 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 import org.zalando.problem.Problem;
 
 @Component
 public class MapperHelper {
-
-	private static final Logger LOGGER = LoggerFactory.getLogger(MapperHelper.class);
 
 	private static final Pattern LEADING_DIGITS_PATTERN = Pattern.compile("^\\d+");
 	private static final Pattern TRAILING_DIGITS_PATTERN = Pattern.compile("\\d+(?=\\D*$)");
