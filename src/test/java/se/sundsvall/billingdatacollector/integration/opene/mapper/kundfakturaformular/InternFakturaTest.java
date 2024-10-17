@@ -4,7 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import org.junit.jupiter.api.Test;
 
-import se.sundsvall.billingdatacollector.integration.opene.mapper.kundfakturaformular.model.InternFaktura;
+import se.sundsvall.billingdatacollector.integration.opene.model.InternFaktura;
 
 class InternFakturaTest {
 

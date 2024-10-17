@@ -1,4 +1,4 @@
-package se.sundsvall.billingdatacollector.integration.opene.mapper.kundfakturaformular.model;
+package se.sundsvall.billingdatacollector.integration.opene.model;
 
 import se.sundsvall.billingdatacollector.integration.opene.util.annotation.XPath;
 

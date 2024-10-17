@@ -19,19 +19,19 @@ import org.zalando.problem.Problem;
 import se.sundsvall.billingdatacollector.integration.opene.OpenEIntegrationProperties;
 import se.sundsvall.billingdatacollector.integration.opene.OpenEMapper;
 import se.sundsvall.billingdatacollector.integration.opene.mapper.MapperHelper;
-import se.sundsvall.billingdatacollector.integration.opene.mapper.kundfakturaformular.model.ExternFaktura;
-import se.sundsvall.billingdatacollector.integration.opene.mapper.kundfakturaformular.model.InternFaktura;
-import se.sundsvall.billingdatacollector.integration.opene.mapper.kundfakturaformular.model.OpeneCollections;
-import se.sundsvall.billingdatacollector.integration.opene.mapper.kundfakturaformular.model.external.AnsvarExtern;
-import se.sundsvall.billingdatacollector.integration.opene.mapper.kundfakturaformular.model.external.BarakningarExtern;
-import se.sundsvall.billingdatacollector.integration.opene.mapper.kundfakturaformular.model.external.ObjektkontoExtern;
-import se.sundsvall.billingdatacollector.integration.opene.mapper.kundfakturaformular.model.external.UnderkontoExtern;
-import se.sundsvall.billingdatacollector.integration.opene.mapper.kundfakturaformular.model.external.VerksamhetExtern;
-import se.sundsvall.billingdatacollector.integration.opene.mapper.kundfakturaformular.model.internal.AktivitetskontoIntern;
-import se.sundsvall.billingdatacollector.integration.opene.mapper.kundfakturaformular.model.internal.AnsvarIntern;
-import se.sundsvall.billingdatacollector.integration.opene.mapper.kundfakturaformular.model.internal.BerakningIntern;
-import se.sundsvall.billingdatacollector.integration.opene.mapper.kundfakturaformular.model.internal.UnderkontoIntern;
-import se.sundsvall.billingdatacollector.integration.opene.mapper.kundfakturaformular.model.internal.VerksamhetIntern;
+import se.sundsvall.billingdatacollector.integration.opene.model.ExternFaktura;
+import se.sundsvall.billingdatacollector.integration.opene.model.InternFaktura;
+import se.sundsvall.billingdatacollector.integration.opene.model.OpeneCollections;
+import se.sundsvall.billingdatacollector.integration.opene.model.external.AnsvarExtern;
+import se.sundsvall.billingdatacollector.integration.opene.model.external.BerakningExtern;
+import se.sundsvall.billingdatacollector.integration.opene.model.external.ObjektkontoExtern;
+import se.sundsvall.billingdatacollector.integration.opene.model.external.UnderkontoExtern;
+import se.sundsvall.billingdatacollector.integration.opene.model.external.VerksamhetExtern;
+import se.sundsvall.billingdatacollector.integration.opene.model.internal.AktivitetskontoIntern;
+import se.sundsvall.billingdatacollector.integration.opene.model.internal.AnsvarIntern;
+import se.sundsvall.billingdatacollector.integration.opene.model.internal.BerakningIntern;
+import se.sundsvall.billingdatacollector.integration.opene.model.internal.UnderkontoIntern;
+import se.sundsvall.billingdatacollector.integration.opene.model.internal.VerksamhetIntern;
 import se.sundsvall.billingdatacollector.integration.opene.util.ListUtil;
 import se.sundsvall.billingdatacollector.model.BillingRecordWrapper;
 
@@ -138,7 +138,6 @@ class KundfakturaformularMapper implements OpenEMapper {
 			LOGGER.info("Creating internal invoice row for index: {}", index);
 
 			var invoiceRow = new InvoiceRow()
-
 				.descriptions(ofNullable(truncateString(
 					ofNullable(collections.getBerakningInternMap().get(index)).map(BerakningIntern::getFakturatextIntern).orElse(null), MAX_DESCRIPTION_LENGTH))
 					.map(List::of)
@@ -203,16 +202,19 @@ class KundfakturaformularMapper implements OpenEMapper {
 	List<InvoiceRow> createExternalInvoiceRows(OpeneCollections collections, String customerId) {
 		List<InvoiceRow> invoiceRows = new ArrayList<>();
 
+		LOGGER.info("Yääh: {}", collections.getNumberOfRows());
+
 		for(int index = 1; index < collections.getNumberOfRows() + 1; index++ ) {
+			LOGGER.info("Creating external invoice row for index: {}", index);
 			var invoiceRow = new InvoiceRow()
 				.descriptions(ofNullable(truncateString(
-					ofNullable(collections.getBarakningarExternMap().get(index)).map(BarakningarExtern::getFakturatextExtern).orElse(null), MAX_DESCRIPTION_LENGTH))
+					ofNullable(collections.getBerakningExternMap().get(index)).map(BerakningExtern::getFakturatextExtern).orElse(null), MAX_DESCRIPTION_LENGTH))
 					.map(List::of)
 					.orElseGet(Collections::emptyList))
 				.quantity(mapperHelper.convertStringToFloat(
-					ofNullable(collections.getBarakningarExternMap().get(index)).map(BarakningarExtern::getAntalExtern).orElse(null)))
+					ofNullable(collections.getBerakningExternMap().get(index)).map(BerakningExtern::getAntalExtern).orElse(null)))
 				.costPerUnit(mapperHelper.convertStringToFloat(
-					ofNullable(collections.getBarakningarExternMap().get(index)).map(BarakningarExtern::getAPrisExtern).orElse(null)))
+					ofNullable(collections.getBerakningExternMap().get(index)).map(BerakningExtern::getAPrisExtern).orElse(null)))
 				.vatCode(collections.getMomssatsExternMap().get(index).getValue())
 				.accountInformation(new AccountInformation()
 					.activity(mapperHelper.getLeadingDigitsFromString(
