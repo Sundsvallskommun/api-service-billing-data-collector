@@ -12,20 +12,20 @@ import se.sundsvall.dept44.configuration.feign.decoder.ProblemErrorDecoder;
 @Import(FeignConfiguration.class)
 class BillingPreprocessorIntegrationConfiguration {
 
-    static final String CLIENT_ID = "billing-preprocessor";
+	static final String CLIENT_ID = "billing-preprocessor";
 
-    @Bean
-    FeignBuilderCustomizer feignBuilderCustomizer(final BillingPreprocessorIntegrationProperties properties) {
-	    return FeignMultiCustomizer.create()
-		    .withErrorDecoder(new ProblemErrorDecoder(CLIENT_ID))
-		    .withRetryableOAuth2InterceptorForClientRegistration(ClientRegistration
-			    .withRegistrationId(CLIENT_ID)
-			    .tokenUri(properties.oauth2().tokenUrl())
-			    .clientId(properties.oauth2().clientId())
-			    .clientSecret(properties.oauth2().clientSecret())
-			    .authorizationGrantType(new AuthorizationGrantType(properties.oauth2().authorizationGrantType()))
-			    .build())
-		    .withRequestTimeoutsInSeconds(properties.connectTimeout(), properties.readTimeout())
-		    .composeCustomizersToOne();
-    }
+	@Bean
+	FeignBuilderCustomizer feignBuilderCustomizer(final BillingPreprocessorIntegrationProperties properties) {
+		return FeignMultiCustomizer.create()
+			.withErrorDecoder(new ProblemErrorDecoder(CLIENT_ID))
+			.withRetryableOAuth2InterceptorForClientRegistration(ClientRegistration
+				.withRegistrationId(CLIENT_ID)
+				.tokenUri(properties.oauth2().tokenUrl())
+				.clientId(properties.oauth2().clientId())
+				.clientSecret(properties.oauth2().clientSecret())
+				.authorizationGrantType(new AuthorizationGrantType(properties.oauth2().authorizationGrantType()))
+				.build())
+			.withRequestTimeoutsInSeconds(properties.connectTimeout(), properties.readTimeout())
+			.composeCustomizersToOne();
+	}
 }

@@ -3,6 +3,17 @@ package se.sundsvall.billingdatacollector.integration.db.converter;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 
+import java.util.List;
+
+import org.json.JSONException;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.skyscreamer.jsonassert.JSONAssert;
+
+import se.sundsvall.billingdatacollector.model.BillingRecordWrapper;
+import se.sundsvall.dept44.test.annotation.resource.Load;
+import se.sundsvall.dept44.test.extension.ResourceLoaderExtension;
+
 import generated.se.sundsvall.billingpreprocessor.AccountInformation;
 import generated.se.sundsvall.billingpreprocessor.AddressDetails;
 import generated.se.sundsvall.billingpreprocessor.BillingRecord;
@@ -12,12 +23,6 @@ import generated.se.sundsvall.billingpreprocessor.Recipient;
 import generated.se.sundsvall.billingpreprocessor.Status;
 import generated.se.sundsvall.billingpreprocessor.Type;
 import jakarta.persistence.PersistenceException;
-import java.util.List;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import se.sundsvall.billingdatacollector.model.BillingRecordWrapper;
-import se.sundsvall.dept44.test.annotation.resource.Load;
-import se.sundsvall.dept44.test.extension.ResourceLoaderExtension;
 
 @ExtendWith(ResourceLoaderExtension.class)
 class BillingRecordWrapperConverterTest {
@@ -57,7 +62,7 @@ class BillingRecordWrapperConverterTest {
 	}
 
 	@Test
-	void convertToEntityAttribute(@Load("/billingpreprocessor/billing-record.json") String recordAsJson) {
+	void convertToEntityAttribute(@Load("/billingpreprocessor/billing-record.json") String recordAsJson) throws JSONException {
 		final var wrapper = BillingRecordWrapper.builder()
 			.withMunicipalityId("2281")
 			.withFamilyId("358")
@@ -92,7 +97,8 @@ class BillingRecordWrapperConverterTest {
 			.build();
 
 		final var json = converter.convertToDatabaseColumn(wrapper);
-		assertThat(json).isEqualToIgnoringWhitespace(recordAsJson);
+
+		JSONAssert.assertEquals(recordAsJson, json, true);
 	}
 
 	@Test

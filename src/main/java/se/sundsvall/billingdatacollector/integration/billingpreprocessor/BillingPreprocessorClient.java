@@ -20,7 +20,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 public interface BillingPreprocessorClient {
 
 	@PostMapping(
-		path ="/{municipalityId}/billingrecords",
+		path = "/{municipalityId}/billingrecords",
 		consumes = APPLICATION_JSON_VALUE,
 		produces = APPLICATION_PROBLEM_JSON_VALUE)
 	ResponseEntity<Void> createBillingRecord(@PathVariable("municipalityId") String municipalityId, @RequestBody BillingRecord billingRecord);

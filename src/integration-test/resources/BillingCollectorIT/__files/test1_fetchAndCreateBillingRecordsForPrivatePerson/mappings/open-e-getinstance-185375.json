@@ -1,0 +1,14 @@
+{
+	"request": {
+		"method": "GET",
+		"urlPathPattern": "/opene/api/instanceapi/getinstance/185375/xml"
+	},
+	"response": {
+		"headers": {
+			"content-disposition": "inline;filename=\"flowinstance-185375-event-787422.xml\"; filename*=UTF-8''flowinstance-185375-event-787422.xml",
+			"Content-Type": "application/xml"
+		},
+		"bodyFileName": "test1_fetchAndCreateBillingRecordsForPrivatePerson/response/open-e-getinstance-185375.xml",
+		"status": 200
+	}
+}
