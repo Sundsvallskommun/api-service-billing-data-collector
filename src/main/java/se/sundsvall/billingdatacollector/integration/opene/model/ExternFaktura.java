@@ -44,7 +44,13 @@ public record ExternFaktura(
 	String kontaktuppgifterPrivatpersonFornamn,
 
 	@XPath("/FlowInstance/Values/KontaktuppgifterPrivatperson/Lastname")
-	String kontaktuppgifterPrivatpersonEfternamn
+	String kontaktuppgifterPrivatpersonEfternamn,
+
+	@XPath("/FlowInstance/Values/OrganisationsnummerExtForetagRD/Value")
+	String organisationsInformation,
+
+	@XPath("/FlowInstance/Values/ReferensForetag/Value")
+	String referensForetag
 
 	/*
 	@XPath("/FlowInstance/Values/ObjektkontoExtern1/Value")

@@ -25,10 +25,13 @@ class ExternFakturaTest {
 		var saljarensEfternamn = "saljarensEfternamn";
 		var kontaktuppgifterPrivatpersonFornamn = "Name";
 		var kontaktuppgifterPrivatpersonEfternamn = "Namesson";
+		var organisationsNummer = "1234567890";
+		var referensForetag = "referensForetag";
 
 
 		var externFaktura = new ExternFaktura(familyId, flowInstanceId, posted, fornamn, efternamn, adress, postnummer, ort,
-			personnummer, motpartNamn, saljarensFornamn, saljarensEfternamn, kontaktuppgifterPrivatpersonFornamn, kontaktuppgifterPrivatpersonEfternamn);
+			personnummer, motpartNamn, saljarensFornamn, saljarensEfternamn, kontaktuppgifterPrivatpersonFornamn,
+			kontaktuppgifterPrivatpersonEfternamn, organisationsNummer, referensForetag);
 
 		assertThat(externFaktura.familyId()).isEqualTo(familyId);
 		assertThat(externFaktura.flowInstanceId()).isEqualTo(flowInstanceId);
@@ -43,5 +46,7 @@ class ExternFakturaTest {
 		assertThat(externFaktura.saljarensEfternamn()).isEqualTo(saljarensEfternamn);
 		assertThat(externFaktura.kontaktuppgifterPrivatpersonFornamn()).isEqualTo(kontaktuppgifterPrivatpersonFornamn);
 		assertThat(externFaktura.kontaktuppgifterPrivatpersonEfternamn()).isEqualTo(kontaktuppgifterPrivatpersonEfternamn);
+		assertThat(externFaktura.organisationsInformation()).isEqualTo(organisationsNummer);
+		assertThat(externFaktura.referensForetag()).isEqualTo(referensForetag);
 	}
 }

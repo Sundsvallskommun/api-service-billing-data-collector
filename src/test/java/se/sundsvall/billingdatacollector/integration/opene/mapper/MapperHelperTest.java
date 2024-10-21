@@ -11,6 +11,12 @@ class MapperHelperTest {
 
 	private final MapperHelper mapper = new MapperHelper();
 
+	// Most common case, i.e. missing care of and it's quite messy with spaces
+	private static final String ORG_STRING_MISSING_CARE_OF = "5591628136 - Tennisbanan AB - Ankeborgsvägen 22 -   - 123 45 Ankeborg - 789";
+	// Care of is present
+	private static final String ORG_STRING = "5591628136 - Tennisbanan AB - Ankeborgsvägen 22 - Some Care of address - 123 45 Ankeborg - 789";
+
+
 	@Test
 	void testConvertStringToFloat_shouldThrowException_whenNotParseableToFloat() {
 		var unparseable = "not a float";
@@ -72,5 +78,38 @@ class MapperHelperTest {
 	@Test
 	void testGetLeadingDigitsFromString_shouldReturnLeadingDigits() {
 		assertThat(mapper.getLeadingDigitsFromString("123 - Something 456")).isEqualTo("123");
+	}
+
+	@Test
+	void testGetOrganizationInformation_withoutCareOf() {
+		var organizationInformation = mapper.getOrganizationInformation(ORG_STRING_MISSING_CARE_OF);
+		assertThat(organizationInformation.getOrganizationNumber()).isEqualTo("5591628136");
+		assertThat(organizationInformation.getName()).isEqualTo("Tennisbanan AB");
+		assertThat(organizationInformation.getStreetAddress()).isEqualTo("Ankeborgsvägen 22");
+		assertThat(organizationInformation.getZipCode()).isEqualTo("123 45");
+		assertThat(organizationInformation.getCity()).isEqualTo("Ankeborg");
+		assertThat(organizationInformation.getCareOf()).isEmpty();
+	}
+
+	@Test
+	void testGetOrganizationInformation_withCareOf() {
+		var organizationInformation = mapper.getOrganizationInformation(ORG_STRING);
+		assertThat(organizationInformation.getOrganizationNumber()).isEqualTo("5591628136");
+		assertThat(organizationInformation.getName()).isEqualTo("Tennisbanan AB");
+		assertThat(organizationInformation.getStreetAddress()).isEqualTo("Ankeborgsvägen 22");
+		assertThat(organizationInformation.getZipCode()).isEqualTo("123 45");
+		assertThat(organizationInformation.getCity()).isEqualTo("Ankeborg");
+		assertThat(organizationInformation.getCareOf()).isEqualTo("Some Care of address");
+	}
+
+	@Test
+	void testGetOrganizationInformation_cannotMatch_shouldThrowException() {
+		assertThatExceptionOfType(ThrowableProblem.class)
+			.isThrownBy(() -> mapper.getOrganizationInformation("not matching"))
+			.satisfies(throwableProblem -> {
+				assertThat(throwableProblem.getStatus()).isEqualTo(INTERNAL_SERVER_ERROR);
+				assertThat(throwableProblem.getTitle()).isEqualTo("Could not parse organization information");
+				assertThat(throwableProblem.getDetail()).isEqualTo("Could not parse organization information from string: not matching");
+			});
 	}
 }

@@ -57,7 +57,7 @@ class OpenEIntegrationTest {
 	}
 
 	@Test
-	void testGetBillingRecord(@Load("/open-e/flow-instance.internal.xml") final String xml) {
+	void testGetBillingRecord(@Load("/open-e/flow-instance.internal.organization.xml") final String xml) {
 		when(mockOpenEClient.getErrand("123456")).thenReturn(xml.getBytes(ISO_8859_1));
 		when(mockMapper.mapToBillingRecordWrapper(any(byte[].class))).thenReturn(BillingRecordWrapper.builder().build());
 
@@ -71,7 +71,7 @@ class OpenEIntegrationTest {
 	}
 
 	@Test
-	void testGetGetBillingRecordWhenNoMatchingMapperExists(@Load("/open-e/flow-instance.external.xml") final String xml) {
+	void testGetGetBillingRecordWhenNoMatchingMapperExists(@Load("/open-e/flow-instance.external.organization.xml") final String xml) {
 		when(mockOpenEClient.getErrand("123456")).thenReturn(xml.getBytes(ISO_8859_1));
 
 		assertThatExceptionOfType(ThrowableProblem.class)

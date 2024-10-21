@@ -20,6 +20,12 @@ import org.xml.sax.SAXException;
 
 import se.sundsvall.billingdatacollector.integration.opene.model.OpeneCollections;
 
+/**
+ * Util class to parse XML from OpenE into lists.
+ * The XML contains no lists but instead each item in the list is a separate object suffixed an ID, e.g. "BarakningarExtern1" to indicate
+ * that it is the first item in the list.
+ * Each object contains a number of properties (also suffixed with an ID) that are mapped to fields in a bean in the context.
+ */
 @Component
 public class ListUtil {
 

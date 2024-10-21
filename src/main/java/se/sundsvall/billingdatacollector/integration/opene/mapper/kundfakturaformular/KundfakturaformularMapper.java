@@ -1,6 +1,7 @@
 package se.sundsvall.billingdatacollector.integration.opene.mapper.kundfakturaformular;
 
 import static java.util.Optional.ofNullable;
+import static org.apache.commons.lang3.StringUtils.isBlank;
 import static org.apache.commons.lang3.StringUtils.isNotBlank;
 import static se.sundsvall.billingdatacollector.integration.opene.mapper.BillingRecordConstants.SUNDSVALLS_MUNICIPALITY;
 import static se.sundsvall.billingdatacollector.integration.opene.mapper.BillingRecordConstants.SUNSVALLS_MUNICIPALITY_ORGANIZATION_NUMBER;
@@ -22,6 +23,7 @@ import se.sundsvall.billingdatacollector.integration.opene.mapper.MapperHelper;
 import se.sundsvall.billingdatacollector.integration.opene.model.ExternFaktura;
 import se.sundsvall.billingdatacollector.integration.opene.model.InternFaktura;
 import se.sundsvall.billingdatacollector.integration.opene.model.OpeneCollections;
+import se.sundsvall.billingdatacollector.integration.opene.model.external.AktivitetskontoExtern;
 import se.sundsvall.billingdatacollector.integration.opene.model.external.AnsvarExtern;
 import se.sundsvall.billingdatacollector.integration.opene.model.external.BerakningExtern;
 import se.sundsvall.billingdatacollector.integration.opene.model.external.ObjektkontoExtern;
@@ -167,6 +169,46 @@ class KundfakturaformularMapper implements OpenEMapper {
 		LOGGER.info("Mapping to external billing record");
 		var result = extractValue(xml, ExternFaktura.class);
 
+		// Check if it's an external person or organization
+		if(isBlank(result.referensForetag())) {
+			LOGGER.info("Mapping to billing record for an external  person");
+			return mapToExternalBillingRecordForPerson(result, collections);
+		} else {
+			LOGGER.info("Mapping to billing record for an external organization");
+			return mapToExternalBillingRecordForOrganization(result, collections);
+		}
+	}
+
+	private BillingRecordWrapper mapToExternalBillingRecordForOrganization(ExternFaktura result, OpeneCollections collections) {
+		LOGGER.info("All values for ExternFaktura: {}", result.organisationsInformation());
+
+		var organizationInformation = mapperHelper.getOrganizationInformation(result.organisationsInformation());
+
+		var billingRecord = new BillingRecord()
+			.category(CATEGORY)
+			.status(Status.APPROVED)
+			.approvedBy(APPROVED_BY)
+			.type(Type.EXTERNAL)
+			.recipient(new Recipient()
+				.organizationName(organizationInformation.getOrganizationNumber())
+				.firstName(result.fornamn())
+				.lastName(result.efternamn())
+				.addressDetails(new AddressDetails()
+					.careOf(organizationInformation.getCareOf())
+					.street(organizationInformation.getStreetAddress())
+					.postalCode(organizationInformation.getZipCode())
+					.city(organizationInformation.getCity())))
+			.invoice(createExternalInvoice(result, collections, result.personnummer()));
+
+		return BillingRecordWrapper.builder()
+			.withBillingRecord(billingRecord)
+			.withLegalId(organizationInformation.getOrganizationNumber())
+			.withFamilyId(result.familyId())
+			.withFlowInstanceId(result.flowInstanceId())
+			.build();
+	}
+
+	private BillingRecordWrapper mapToExternalBillingRecordForPerson(ExternFaktura result, OpeneCollections collections) {
 		var billingRecord = new BillingRecord()
 			.category(CATEGORY)
 			.status(Status.APPROVED)
@@ -202,8 +244,6 @@ class KundfakturaformularMapper implements OpenEMapper {
 	List<InvoiceRow> createExternalInvoiceRows(OpeneCollections collections, String customerId) {
 		List<InvoiceRow> invoiceRows = new ArrayList<>();
 
-		LOGGER.info("Yääh: {}", collections.getNumberOfRows());
-
 		for(int index = 1; index < collections.getNumberOfRows() + 1; index++ ) {
 			LOGGER.info("Creating external invoice row for index: {}", index);
 			var invoiceRow = new InvoiceRow()
@@ -218,7 +258,7 @@ class KundfakturaformularMapper implements OpenEMapper {
 				.vatCode(collections.getMomssatsExternMap().get(index).getValue())
 				.accountInformation(new AccountInformation()
 					.activity(mapperHelper.getLeadingDigitsFromString(
-						ofNullable(collections.getAktivitetskontoInternMap().get(index)).map(AktivitetskontoIntern::getValue).orElse(null)))
+						ofNullable(collections.getAktivitetskontoExternMap().get(index)).map(AktivitetskontoExtern::getValue).orElse(null)))
 					.article(ofNullable(collections.getObjektKontoExternMap().get(index)).map(ObjektkontoExtern::getValue).orElse(null))
 					.costCenter(mapperHelper.getLeadingDigitsFromString(
 						ofNullable(collections.getAnsvarExternMap().get(index)).map(AnsvarExtern::getValue).orElse(null)))
