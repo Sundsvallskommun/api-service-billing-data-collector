@@ -4,6 +4,7 @@ import static java.util.Optional.ofNullable;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.util.regex.Pattern;
 
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -18,12 +19,22 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
-import se.sundsvall.billingdatacollector.integration.opene.model.OpeneCollections;
+import se.sundsvall.billingdatacollector.integration.opene.kundfakturaformular.model.OpeneCollections;
 
+import lombok.ToString;
+
+/**
+ * Util class to parse XML from OpenE-"lists" into lists.
+ * The XML contains no lists but instead each item in the list is a separate object suffixed an ID, e.g. "BarakningarExtern1" to indicate
+ * that it is the first item in the list.
+ * Each xml-object contains a number of properties (which may also be suffixed with an ID) that are mapped to fields in a bean in the context.
+ */
 @Component
+@ToString
 public class ListUtil {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(ListUtil.class);
+
 	private static final String OEP_NAMESPACE_URI = "http://www.oeplatform.org/version/2.0/schemas/flowinstance";
 	private static final String VALUES_NODE_NAME = "Values";
 	private static final String ENDING_WITH_NUMBER_REGEX = "\\d$"; // Regex to match tags ending with a number
@@ -37,7 +48,7 @@ public class ListUtil {
 
 	public OpeneCollections parseLists(byte[] xml) {
 		LOGGER.info("Parsing xml from OpenE into lists");
-		var collect = new OpeneCollections();
+		var openeCollections = new OpeneCollections();
 		try {
 			var nodeList = getNodeList(xml);
 
@@ -55,19 +66,19 @@ public class ListUtil {
 						if (ENDING_WITH_NUMBER_PATTERN.matcher(nodeName).find()) { // Check if it ends with a number
 							// Remove the number from the node name and make into camelCase
 							// so we can match it against the bean name in the context
-							createOpeneObject(nodeName, node, collect);
+							addOpeneObject(nodeName, node, openeCollections);
 						}
 					}
 				}
 			}
-		} catch (Exception e) {
-			LOGGER.error("Error parsing xml", e);
+		} catch (ParserConfigurationException | SAXException | IOException e) {
+			throw new IllegalStateException("Error parsing xml", e);
 		}
 
-		return collect;
+		return openeCollections;
 	}
 
-	private void createOpeneObject(String nodeName, Node node, OpeneCollections internalOpeneCollections) {
+	private void addOpeneObject(String nodeName, Node node, OpeneCollections openeCollections) {
 		var id = nodeName.substring(nodeName.length() - 1);   //Get the id of the object, we will use this as the index in the map
 		nodeName = nodeName.replaceAll(ENDING_WITH_NUMBER_REGEX, ""); // Remove the number from the node name so we can find the bean in the context
 		final var nodeNameToUse = nodeName.substring(0, 1).toLowerCase() + nodeName.substring(1); //Make sure the first letter is lowercase
@@ -75,8 +86,8 @@ public class ListUtil {
 		var beanToUse = getBean(nodeNameToUse);
 
 		ofNullable(beanToUse).ifPresentOrElse(bean -> {
-			var mappedBean = mapObjects(bean, node.getChildNodes());
-			internalOpeneCollections.add(Integer.parseInt(id), mappedBean);
+			var mappedBean = setProperties(bean, node.getChildNodes());
+			openeCollections.add(Integer.parseInt(id), mappedBean);
 		}, () -> LOGGER.warn("No bean found for xml-node: <{}>", nodeNameToUse));
 	}
 
@@ -85,18 +96,24 @@ public class ListUtil {
 		var inputStream = new ByteArrayInputStream(xml);
 
 		var documentBuilderFactory = DocumentBuilderFactory.newDefaultInstance();
-		documentBuilderFactory.setNamespaceAware(true); // Handle namespaces
+		documentBuilderFactory.setNamespaceAware(true); // Needed to parse namespaces
 		var documentBuilder = documentBuilderFactory.newDocumentBuilder();
-		var document = documentBuilder.parse(inputStream);
+		var document = documentBuilder.parse(inputStream, StandardCharsets.ISO_8859_1.name());
 
 		// Normalize the document
 		document.getDocumentElement().normalize();
+
+		//Check that we have the correct namespace, otherwise we won't be able to parse anything
+		var rootNamespace = document.getDocumentElement().getNamespaceURI();
+		if (!OEP_NAMESPACE_URI.equals(rootNamespace)) {
+			throw new IllegalStateException("Namespace mismatch: expected " + OEP_NAMESPACE_URI + " but found " + rootNamespace);
+		}
 
 		// Get the <Values> node where all data we want is located
 		return document.getElementsByTagNameNS(OEP_NAMESPACE_URI, VALUES_NODE_NAME);
 	}
 
-	public void setProperty(Object obj, String propertyName, String propertyValue) {
+	private void setProperty(Object obj, String propertyName, String propertyValue) {
 		try {
 			// Capitalize the first letter of the property name and prepend "set"
 			var setterName = "set" + propertyName.substring(0, 1).toUpperCase() + propertyName.substring(1);
@@ -110,11 +127,12 @@ public class ListUtil {
 			// Invoke the setter method
 			setterMethod.invoke(obj, propertyValue);
 		} catch (Exception e) {
+			//No biggie
 			LOGGER.warn("Couldn't set property {} on object {}", propertyName, obj.getClass().getName(), e);
 		}
 	}
 
-	private <T> T mapObjects(T object, NodeList nodeChildren) {
+	private <T> T setProperties(T object, NodeList nodeChildren) {
 		for (int childCounter = 0; childCounter < nodeChildren.getLength(); childCounter++) {
 			Node valueNode = nodeChildren.item(childCounter);
 			if (valueNode.getNodeType() == Node.ELEMENT_NODE) {
