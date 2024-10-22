@@ -1,4 +1,4 @@
-package se.sundsvall.billingdatacollector.integration.opene.model;
+package se.sundsvall.billingdatacollector.integration.opene.mapper.model;
 
 import se.sundsvall.billingdatacollector.integration.opene.util.annotation.XPath;
 

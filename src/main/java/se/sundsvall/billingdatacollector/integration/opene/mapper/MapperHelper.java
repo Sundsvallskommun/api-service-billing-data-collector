@@ -12,7 +12,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 import org.zalando.problem.Problem;
 
-import se.sundsvall.billingdatacollector.integration.opene.model.OrganizationInformation;
+import se.sundsvall.billingdatacollector.integration.opene.mapper.model.OrganizationInformation;
 
 @Component
 public class MapperHelper {

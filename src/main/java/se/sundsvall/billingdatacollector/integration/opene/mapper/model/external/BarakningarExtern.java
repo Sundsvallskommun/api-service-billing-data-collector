@@ -1,4 +1,4 @@
-package se.sundsvall.billingdatacollector.integration.opene.model.external;
+package se.sundsvall.billingdatacollector.integration.opene.mapper.model.external;
 
 import lombok.Builder;
 import lombok.Getter;

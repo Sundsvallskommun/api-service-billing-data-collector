@@ -1,4 +1,4 @@
-package se.sundsvall.billingdatacollector.integration.opene.model.external;
+package se.sundsvall.billingdatacollector.integration.opene.mapper.model.internal;
 
 import lombok.Builder;
 import lombok.Getter;
@@ -9,10 +9,8 @@ import lombok.ToString;
 @Getter
 @Builder(setterPrefix = "with")
 @ToString
-public class BerakningExtern {
+public class ProjektkontoIntern {
 	private String queryID;
 	private String name;
-	private String fakturatextExtern;
-	private String antalExtern;
-	private String aPrisExtern;
+	private String value;
 }

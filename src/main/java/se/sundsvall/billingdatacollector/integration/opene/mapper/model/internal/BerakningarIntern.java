@@ -1,4 +1,4 @@
-package se.sundsvall.billingdatacollector.integration.opene.model.internal;
+package se.sundsvall.billingdatacollector.integration.opene.mapper.model.internal;
 
 import lombok.Builder;
 import lombok.Getter;
@@ -9,7 +9,7 @@ import lombok.ToString;
 @Getter
 @Builder(setterPrefix = "with")
 @ToString
-public class BerakningIntern {
+public class BerakningarIntern {
 	private String queryID;
 	private String name;
 	private String fakturatextIntern;

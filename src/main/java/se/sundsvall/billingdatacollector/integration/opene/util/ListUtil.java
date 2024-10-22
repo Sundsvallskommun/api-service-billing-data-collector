@@ -18,7 +18,7 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
-import se.sundsvall.billingdatacollector.integration.opene.model.OpeneCollections;
+import se.sundsvall.billingdatacollector.integration.opene.mapper.model.OpeneCollections;
 
 /**
  * Util class to parse XML from OpenE into lists.

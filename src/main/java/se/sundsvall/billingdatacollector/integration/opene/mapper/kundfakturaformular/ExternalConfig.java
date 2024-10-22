@@ -5,16 +5,17 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Scope;
 
-import se.sundsvall.billingdatacollector.integration.opene.model.external.AktivitetskontoExtern;
-import se.sundsvall.billingdatacollector.integration.opene.model.external.AnsvarExtern;
-import se.sundsvall.billingdatacollector.integration.opene.model.external.BerakningExtern;
-import se.sundsvall.billingdatacollector.integration.opene.model.external.BarakningarExtern;
-import se.sundsvall.billingdatacollector.integration.opene.model.external.MomssatsExtern;
-import se.sundsvall.billingdatacollector.integration.opene.model.external.ObjektkontoExtern;
-import se.sundsvall.billingdatacollector.integration.opene.model.external.ProjektkontoExtern;
-import se.sundsvall.billingdatacollector.integration.opene.model.external.SummeringExtern;
-import se.sundsvall.billingdatacollector.integration.opene.model.external.UnderkontoExtern;
-import se.sundsvall.billingdatacollector.integration.opene.model.external.VerksamhetExtern;
+import se.sundsvall.billingdatacollector.integration.opene.mapper.model.external.AktivitetskontoExtern;
+import se.sundsvall.billingdatacollector.integration.opene.mapper.model.external.AnsvarExtern;
+import se.sundsvall.billingdatacollector.integration.opene.mapper.model.external.BarakningarExtern;
+import se.sundsvall.billingdatacollector.integration.opene.mapper.model.external.BerakningExtern;
+import se.sundsvall.billingdatacollector.integration.opene.mapper.model.external.BerakningarExtern;
+import se.sundsvall.billingdatacollector.integration.opene.mapper.model.external.MomssatsExtern;
+import se.sundsvall.billingdatacollector.integration.opene.mapper.model.external.ObjektkontoExtern;
+import se.sundsvall.billingdatacollector.integration.opene.mapper.model.external.ProjektkontoExtern;
+import se.sundsvall.billingdatacollector.integration.opene.mapper.model.external.SummeringExtern;
+import se.sundsvall.billingdatacollector.integration.opene.mapper.model.external.UnderkontoExtern;
+import se.sundsvall.billingdatacollector.integration.opene.mapper.model.external.VerksamhetExtern;
 
 /**
  * Configuration class for external OpenE objects
@@ -40,6 +41,12 @@ public class ExternalConfig {
 	@Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
 	public BarakningarExtern barakningarExtern() {
 		return BarakningarExtern.builder().build();
+	}
+
+	@Bean
+	@Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
+	public BerakningarExtern berakningarExtern() {
+		return BerakningarExtern.builder().build();
 	}
 
 	@Bean

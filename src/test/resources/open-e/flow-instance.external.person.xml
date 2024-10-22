@@ -39,7 +39,7 @@
 			<Name><![CDATA[Säljarens namn]]></Name>
 			<Firstname><![CDATA[Kalle]]></Firstname>
 			<Lastname><![CDATA[Anka]]></Lastname>
-			<Phone><![CDATA[0730210669]]></Phone>
+			<Phone><![CDATA[0701234567]]></Phone>
 			<Email><![CDATA[kalle.anka@sundsvall.se]]></Email>
 		</SaljarensUppg>
 		<FakturerandeForvaltning>
@@ -58,8 +58,8 @@
 			<Firstname><![CDATA[Kajsa]]></Firstname>
 			<Lastname><![CDATA[Anka]]></Lastname>
 			<Address><![CDATA[Sundsvall 222]]></Address>
-			<ZipCode><![CDATA[862 95]]></ZipCode>
-			<PostalAddress><![CDATA[NJURUNDA]]></PostalAddress>
+			<ZipCode><![CDATA[123 45]]></ZipCode>
+			<PostalAddress><![CDATA[ANKEBORG]]></PostalAddress>
 			<SocialSecurityNumber><![CDATA[190101011234]]></SocialSecurityNumber>
 		</KontaktuppgifterPrivatperson>
 		<ReferensPrivatperson>
@@ -79,7 +79,7 @@
 		<BarakningarExtern1>
 			<QueryID>63614</QueryID>
 			<Name><![CDATA[Beräkningar (1)]]></Name>
-			<FakturatextExtern1><![CDATA[Slutfaktura 1st. källare]]></FakturatextExtern1>
+			<FakturatextExtern1><![CDATA[Slutfaktura 1st. pengavalv]]></FakturatextExtern1>
 			<AntalExtern1><![CDATA[1]]></AntalExtern1>
 			<APrisExtern1><![CDATA[24000,00]]></APrisExtern1>
 		</BarakningarExtern1>

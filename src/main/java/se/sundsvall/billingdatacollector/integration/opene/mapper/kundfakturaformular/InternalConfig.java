@@ -5,14 +5,14 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Scope;
 
-import se.sundsvall.billingdatacollector.integration.opene.model.internal.AktivitetskontoIntern;
-import se.sundsvall.billingdatacollector.integration.opene.model.internal.AnsvarIntern;
-import se.sundsvall.billingdatacollector.integration.opene.model.internal.BerakningIntern;
-import se.sundsvall.billingdatacollector.integration.opene.model.internal.BerakningarIntern;
-import se.sundsvall.billingdatacollector.integration.opene.model.internal.ProjektkontoIntern;
-import se.sundsvall.billingdatacollector.integration.opene.model.internal.SummeringIntern;
-import se.sundsvall.billingdatacollector.integration.opene.model.internal.UnderkontoIntern;
-import se.sundsvall.billingdatacollector.integration.opene.model.internal.VerksamhetIntern;
+import se.sundsvall.billingdatacollector.integration.opene.mapper.model.internal.AktivitetskontoIntern;
+import se.sundsvall.billingdatacollector.integration.opene.mapper.model.internal.AnsvarIntern;
+import se.sundsvall.billingdatacollector.integration.opene.mapper.model.internal.BerakningIntern;
+import se.sundsvall.billingdatacollector.integration.opene.mapper.model.internal.BerakningarIntern;
+import se.sundsvall.billingdatacollector.integration.opene.mapper.model.internal.ProjektkontoIntern;
+import se.sundsvall.billingdatacollector.integration.opene.mapper.model.internal.SummeringIntern;
+import se.sundsvall.billingdatacollector.integration.opene.mapper.model.internal.UnderkontoIntern;
+import se.sundsvall.billingdatacollector.integration.opene.mapper.model.internal.VerksamhetIntern;
 
 /**
  * Configuration class for internal OpenE objects

@@ -5,7 +5,7 @@
 			<FamilyID>358</FamilyID>
 			<Version>1</Version>
 			<FlowID>475</FlowID>
-			<Name><![CDATA[Kundfakturaformul�r]]></Name>
+			<Name><![CDATA[Kundfakturaformulär]]></Name>
 		</Flow>
 		<FlowInstanceID>6931</FlowInstanceID>
 		<Status>
@@ -13,15 +13,15 @@
 			<Name><![CDATA[Klart]]></Name>
 		</Status>
 		<Poster>
-			<Firstname><![CDATA[Martin]]></Firstname>
-			<Lastname><![CDATA[Hansson]]></Lastname>
-			<Email><![CDATA[martin.hansson@sundsvall.se]]></Email>
+			<Firstname><![CDATA[Kalle]]></Firstname>
+			<Lastname><![CDATA[Anka]]></Lastname>
+			<Email><![CDATA[kalle.anka@sundsvall.se]]></Email>
 			<ID>26028</ID>
 		</Poster>
 		<Owner>
-			<Firstname><![CDATA[Martin]]></Firstname>
-			<Lastname><![CDATA[Hansson]]></Lastname>
-			<Email><![CDATA[martin.hansson@sundsvall.se]]></Email>
+			<Firstname><![CDATA[Kalle]]></Firstname>
+			<Lastname><![CDATA[Anka]]></Lastname>
+			<Email><![CDATA[martin.anka@sundsvall.se]]></Email>
 			<ID>26028</ID>
 		</Owner>
 		<Posted>2024-10-18T13:25:58</Posted>
@@ -31,36 +31,36 @@
 	<Values>
 		<VemArKontaktperson>
 			<QueryID>16997</QueryID>
-			<Name><![CDATA[Vem �r v�r kontaktperson?]]></Name>
-			<Value>Jag sj�lv</Value>
+			<Name><![CDATA[Vem är vår kontaktperson?]]></Name>
+			<Value>Jag själv</Value>
 		</VemArKontaktperson>
 		<SaljarensUppg>
 			<QueryID>16999</QueryID>
-			<Name><![CDATA[S�ljarens namn]]></Name>
-			<Firstname><![CDATA[Martin]]></Firstname>
-			<Lastname><![CDATA[Hansson]]></Lastname>
+			<Name><![CDATA[Säljarens namn]]></Name>
+			<Firstname><![CDATA[Kalle]]></Firstname>
+			<Lastname><![CDATA[Anka]]></Lastname>
 			<Phone><![CDATA[0702429049]]></Phone>
-			<Email><![CDATA[martin.hansson@sundsvall.se]]></Email>
+			<Email><![CDATA[kalle.anka@sundsvall.se]]></Email>
 		</SaljarensUppg>
 		<FakturerandeForvaltning>
 			<QueryID>17000</QueryID>
-			<Name><![CDATA[Fakturerande f�rvaltning/verksamhet (f�r statistik�ndam�l)]]></Name>
+			<Name><![CDATA[Fakturerande förvaltning/verksamhet (för statistik�ndam�l)]]></Name>
 			<Value>15 - ServiceCenter</Value>
 		</FakturerandeForvaltning>
 		<FakturanSkickasTill>
 			<QueryID>17001</QueryID>
 			<Name><![CDATA[Fakturan ska skickas till:]]></Name>
-			<Value>Externt f�retag (inklusive kommunalt bolag)</Value>
+			<Value>Externt företag (inklusive kommunalt bolag)</Value>
 		</FakturanSkickasTill>
 		<SokLaggTillForetag>
 			<QueryID>17032</QueryID>
-			<Name><![CDATA[Klicka p� s�k och v�lj f�retag. Om inte f�retaget finns i s�klistan s� v�lj l�gg till f�retagsuppgifter]]></Name>
-			<Value>S�k och v�lj f�retag</Value>
+			<Name><![CDATA[Klicka på sök och välj företag. Om inte företaget finns i söklistan så välj lägg till företagsuppgifter]]></Name>
+			<Value>sök och välj företag</Value>
 		</SokLaggTillForetag>
 		<OrganisationsnummerExtForetagRD>
 			<QueryID>17033</QueryID>
-			<Name><![CDATA[S�k och v�lj f�retag (Externt f�retag)]]></Name>
-			<Value>5591628770 - IDO Te Och Kafferosteri AB - Nybrogatan 8 -  - 852 31 Sundsvall - 870</Value>
+			<Name><![CDATA[sök och välj företag (Externt företag)]]></Name>
+			<Value>5591628770 - Väldigt långt företagsnamn indeed AB - Ankeborgsvägen 123 -   - 123 45 Ankeborg - 870</Value>
 		</OrganisationsnummerExtForetagRD>
 		<ReferensForetag>
 			<QueryID>17034</QueryID>
@@ -69,13 +69,13 @@
 		</ReferensForetag>
 		<FakturaraderExtern>
 			<QueryID>17111</QueryID>
-			<Name><![CDATA[Hur m�nga fakturarader vill du l�gga till?]]></Name>
+			<Name><![CDATA[Hur många fakturarader vill du lägga till?]]></Name>
 			<Value>1</Value>
 		</FakturaraderExtern>
 		<BarakningarExtern1>
 			<QueryID>17113</QueryID>
-			<Name><![CDATA[Ber�kningar (1)]]></Name>
-			<FakturatextExtern1><![CDATA[Oerh�rt bra fakturatext]]></FakturatextExtern1>
+			<Name><![CDATA[Beräkningar (1)]]></Name>
+			<FakturatextExtern1><![CDATA[Oerhört bra fakturatext]]></FakturatextExtern1>
 			<AntalExtern1><![CDATA[1]]></AntalExtern1>
 			<APrisExtern1><![CDATA[12.34]]></APrisExtern1>
 		</BarakningarExtern1>
@@ -96,7 +96,7 @@
 		</AnsvarExtern1>
 		<UnderkontoExtern1>
 			<QueryID>17121</QueryID>
-			<Name><![CDATA[V�lj Int�ktskonto 25% Moms (1)]]></Name>
+			<Name><![CDATA[välj Intäktskonto 25% Moms (1)]]></Name>
 			<Value>313210 Parkeringsavgifter 25%</Value>
 		</UnderkontoExtern1>
 		<VerksamhetExtern1>

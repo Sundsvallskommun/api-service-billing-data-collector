@@ -45,6 +45,11 @@ class KundfakturaformularMapperTest {
 		var billingRecordWrapper = mapper.mapToBillingRecordWrapper(readOpenEFile("flow-instance.external.person.xml"));
 	}
 
+	@Test
+	void test() {
+		mapper.mapToBillingRecordWrapper(readOpenEFile("test.xml"));
+	}
+
 	@MethodSource("provideStringsForTruncation")
 	@ParameterizedTest
 	void testTruncateString(String input, String wanted, int maxLength) {
