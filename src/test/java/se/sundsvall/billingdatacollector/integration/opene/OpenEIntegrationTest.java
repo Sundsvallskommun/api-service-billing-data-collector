@@ -88,7 +88,7 @@ class OpenEIntegrationTest {
 	}
 
 	@Test
-	void testGetBillingRecordWhenNoFamilyIdExists(@Load("/open-e/flow-instance-404.xml") final String xml) {
+	void testGetBillingRecordWhenNoFamilyIdExists(@Load("/open-e/flow-instance.404.xml") final String xml) {
 		when(mockOpenEClient.getErrand("123456")).thenReturn(xml.getBytes(ISO_8859_1));
 
 		assertThatExceptionOfType(ThrowableProblem.class)
@@ -104,7 +104,7 @@ class OpenEIntegrationTest {
 	}
 
 	@Test
-	void testGetBillingRecord_shouldSaveToFalloutTable_whenMappingFails(@Load("/open-e/flow-instance.external-faulty.xml") final String xml) {
+	void testGetBillingRecord_shouldSaveToFalloutTable_whenMappingFails(@Load("/open-e/flow-instance.external.incomplete.xml") final String xml) {
 		// Arrange
 		when(mockOpenEClient.getErrand("123456")).thenReturn(xml.getBytes(ISO_8859_1));
 

@@ -10,7 +10,7 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
-import static se.sundsvall.billingdatacollector.integration.opene.mapper.BillingRecordConstants.SUNDSVALLS_MUNICIPALITY_ID;
+import static se.sundsvall.billingdatacollector.integration.opene.kundfakturaformular.model.BillingRecordConstants.SUNDSVALLS_MUNICIPALITY_ID;
 
 import java.time.LocalDate;
 import java.util.Arrays;
@@ -34,6 +34,7 @@ import se.sundsvall.billingdatacollector.integration.billingpreprocessor.Billing
 import se.sundsvall.billingdatacollector.integration.opene.OpenEIntegration;
 import se.sundsvall.billingdatacollector.model.BillingRecordWrapper;
 import se.sundsvall.billingdatacollector.service.decorator.BillingRecordDecorator;
+
 import wiremock.com.google.common.collect.Sets;
 
 @ExtendWith(MockitoExtension.class)

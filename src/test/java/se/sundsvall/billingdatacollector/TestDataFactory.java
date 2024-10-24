@@ -1,11 +1,19 @@
 package se.sundsvall.billingdatacollector;
 
-import static se.sundsvall.billingdatacollector.integration.opene.mapper.BillingRecordConstants.SUNDSVALLS_MUNICIPALITY;
-import static se.sundsvall.billingdatacollector.integration.opene.mapper.BillingRecordConstants.SUNDSVALLS_MUNICIPALITY_ID;
-import static se.sundsvall.billingdatacollector.integration.opene.mapper.BillingRecordConstants.SUNSVALLS_MUNICIPALITY_ORGANIZATION_NUMBER;
+import static se.sundsvall.billingdatacollector.integration.opene.kundfakturaformular.model.BillingRecordConstants.SUNDSVALLS_MUNICIPALITY;
+import static se.sundsvall.billingdatacollector.integration.opene.kundfakturaformular.model.BillingRecordConstants.SUNDSVALLS_MUNICIPALITY_ID;
+import static se.sundsvall.billingdatacollector.integration.opene.kundfakturaformular.model.BillingRecordConstants.SUNDSVALLS_MUNICIPALITY_ORGANIZATION_NUMBER;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.time.LocalDate;
 import java.util.List;
+
+import se.sundsvall.billingdatacollector.integration.db.model.HistoryEntity;
+import se.sundsvall.billingdatacollector.integration.db.model.ScheduledJobEntity;
+import se.sundsvall.billingdatacollector.model.BillingRecordWrapper;
 
 import generated.se.sundsvall.billingpreprocessor.AccountInformation;
 import generated.se.sundsvall.billingpreprocessor.AddressDetails;
@@ -15,11 +23,17 @@ import generated.se.sundsvall.billingpreprocessor.InvoiceRow;
 import generated.se.sundsvall.billingpreprocessor.Recipient;
 import generated.se.sundsvall.billingpreprocessor.Status;
 import generated.se.sundsvall.billingpreprocessor.Type;
-import se.sundsvall.billingdatacollector.integration.db.model.HistoryEntity;
-import se.sundsvall.billingdatacollector.integration.db.model.ScheduledJobEntity;
-import se.sundsvall.billingdatacollector.model.BillingRecordWrapper;
 
 public final class TestDataFactory {
+
+	public static byte[] readBytesFromOpenEFile(String fileName) {
+		Path path = Paths.get("src/test/resources/open-e/" + fileName);
+		try {
+			return Files.readAllBytes(path);
+		} catch (IOException e) {
+			throw new RuntimeException(e);
+		}
+	}
 
 	public static BillingRecordWrapper createKundfakturaBillingRecordWrapper(boolean internal) {
 		final var wrapper = BillingRecordWrapper.builder()
@@ -44,7 +58,7 @@ public final class TestDataFactory {
 			.type(Type.INTERNAL)
 			.recipient(new Recipient()
 				.organizationName(SUNDSVALLS_MUNICIPALITY)
-				.legalId(SUNSVALLS_MUNICIPALITY_ORGANIZATION_NUMBER))
+				.legalId(SUNDSVALLS_MUNICIPALITY_ORGANIZATION_NUMBER))
 			.invoice(new Invoice()
 				.customerId("customerId")
 				.invoiceRows(List.of(new InvoiceRow()
