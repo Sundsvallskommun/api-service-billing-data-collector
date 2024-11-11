@@ -74,7 +74,7 @@ public class InternalMapper {
 		return new Invoice()
 			.customerId(customerId)
 			.customerReference(getTruncatedInternalReference(internFaktura.internReferens()))
-			.description(mapperHelper.truncateString(INVOICE_DESCRIPTION, MAX_DESCRIPTION_LENGTH))  //Cannot be more than 30 chars
+			.description(mapperHelper.truncateString(INVOICE_DESCRIPTION, MAX_DESCRIPTION_LENGTH))  // Cannot be more than 30 chars
 			.ourReference(getInternalSellerName(internFaktura))
 			.referenceId(internFaktura.flowInstanceId())
 			.invoiceRows(createInternalInvoiceRows(collections, customerId));
@@ -83,7 +83,7 @@ public class InternalMapper {
 	List<InvoiceRow> createInternalInvoiceRows(OpeneCollections collections, String customerId) {
 		List<InvoiceRow> invoiceRows = new ArrayList<>();
 
-		for(int index = 1; index < collections.getNumberOfRows() + 1; index++ ) {
+		for (int index = 1; index < collections.getNumberOfRows() + 1; index++) {
 			LOGGER.info("Creating internal invoice row for index: {}", index);
 
 			var invoiceRow = new InvoiceRow()
@@ -115,8 +115,9 @@ public class InternalMapper {
 	/**
 	 * Get the internal reference and only the first "word".
 	 * e.g. 1NAM16NAM - Name Namesson will return 1NAM16NAM
-	 * @param reference The internal reference
-	 * @return The internal reference if present, otherwise null
+	 * 
+	 * @param  reference The internal reference
+	 * @return           The internal reference if present, otherwise null
 	 */
 	String getTruncatedInternalReference(String reference) {
 		return ofNullable(reference)

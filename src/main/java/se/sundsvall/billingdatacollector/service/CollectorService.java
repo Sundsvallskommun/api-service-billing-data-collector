@@ -59,9 +59,9 @@ public class CollectorService {
 	private void createBillingRecord(BillingRecordWrapper billingRecordWrapper) {
 		try {
 			LOG.info("Decorating and sending record to preprocessor for flowInstanceId: {}", billingRecordWrapper.getFlowInstanceId());
-			//Try to decorate
+			// Try to decorate
 			decorate(billingRecordWrapper);
-			//Try to create billing record and save to history
+			// Try to create billing record and save to history
 			final var response = preprocessorIntegration.createBillingRecord(billingRecordWrapper.getMunicipalityId(), billingRecordWrapper.getBillingRecord());
 			LOG.info("Successfully sent record to preprocessor for flowInstanceId: {}", billingRecordWrapper.getFlowInstanceId());
 			dbService.saveToHistory(billingRecordWrapper, response);

@@ -20,7 +20,7 @@ public class MapperHelper {
 
 	private static final String DIGITS_AND_DECIMAL_SEPARATORS_REGEX = "[^0-9.,]+";
 	private static final String LEADING_DIGITS_REGEX = "^\\d+";
-	private static final String ORGANIZATION_INFORMATION_REGEX = "(\\d+)\\s-\\s([a-zA-ZåäöÅÄÖ\\s]+)\\s-\\s(.*)\\s-\\s(.*)\\s-\\s(\\d{3}\\s\\d{2})([a-zA-ZåäöÅÄÖ\\s]+)\\s-\\s(\\d+)";
+	private static final String ORGANIZATION_INFORMATION_REGEX = "(\\d+)\\s-\\s(.*)\\s-\\s(.*)\\s-\\s(.*)\\s-\\s(\\d{3}\\s\\d{2})(.*)\\s-\\s(\\d+)";
 	private static final String TRAILING_DIGITS_REGEX = "\\d+$";
 
 	private static final Pattern LEADING_DIGITS_PATTERN = Pattern.compile(LEADING_DIGITS_REGEX);
@@ -33,8 +33,9 @@ public class MapperHelper {
 	/**
 	 * Converts a string to a float.
 	 * e.g. "123,45 SEK" will be converted to Float: 123.45
-	 * @param stringToConvert The string to convert to a float
-	 * @return The string converted to a float, or 0 if the string is null.
+	 * 
+	 * @param  stringToConvert The string to convert to a float
+	 * @return                 The string converted to a float, or 0 if the string is null.
 	 */
 	public float convertStringToFloat(String stringToConvert) {
 		return ofNullable(stringToConvert)
@@ -57,8 +58,9 @@ public class MapperHelper {
 
 	/**
 	 * Replaces commas with dots in a currency string to be able to parse it to a Float
-	 * @param stringToParse The string to parse
-	 * @return The string with commas replaced with dots (if any).
+	 * 
+	 * @param  stringToParse The string to parse
+	 * @return               The string with commas replaced with dots (if any).
 	 */
 	String replaceCommasInCurrencyString(String stringToParse) {
 		return ofNullable(stringToParse)
@@ -68,8 +70,9 @@ public class MapperHelper {
 
 	/**
 	 * Removes all characters that are not numbers, commas or dots.
-	 * @param stringToParse The string to parse
-	 * @return The string with all characters that are not numbers, commas or dots removed.
+	 * 
+	 * @param  stringToParse The string to parse
+	 * @return               The string with all characters that are not numbers, commas or dots removed.
 	 */
 	String removeCurrencyFromString(String stringToParse) {
 		return ofNullable(stringToParse)
@@ -80,8 +83,9 @@ public class MapperHelper {
 	/**
 	 * Extracts leading digits from a string.
 	 * e.g. "123 - Something 456" will return "123"
-	 * @param stringToParse The string to parse
-	 * @return Any leading numbers from the string
+	 * 
+	 * @param  stringToParse The string to parse
+	 * @return               Any leading numbers from the string
 	 */
 	public String getLeadingDigitsFromString(String stringToParse) {
 		return ofNullable(stringToParse)
@@ -94,8 +98,9 @@ public class MapperHelper {
 	/**
 	 * Extracts only trailing digits from a string.
 	 * e.g. "123 - Something 456" will return "456"
-	 * @param stringToParse The string to parse
-	 * @return Any trailing numbers from the string
+	 * 
+	 * @param  stringToParse The string to parse
+	 * @return               Any trailing numbers from the string
 	 */
 	String getTrailingDigitsFromString(String stringToParse) {
 		return ofNullable(stringToParse)
@@ -107,8 +112,9 @@ public class MapperHelper {
 
 	/**
 	 * Extracts the motpart/counterpart numbers from a string and fill with 0's up to 8 characters
-	 * @param motpart The string to extract motpart numbers from
-	 * @return The motpart numbers
+	 * 
+	 * @param  motpart The string to extract motpart numbers from
+	 * @return         The motpart numbers
 	 */
 	public String getExternalMotpartNumbers(String motpart) {
 		return ofNullable(motpart)
@@ -119,8 +125,9 @@ public class MapperHelper {
 
 	/**
 	 * Extracts the internal motpart/counterpart numbers from a string and add a "1" in front of it
-	 * @param customerId The string to extract motpart numbers from
-	 * @return The motpart numbers
+	 * 
+	 * @param  customerId The string to extract motpart numbers from
+	 * @return            The motpart numbers
 	 */
 	public String getInternalMotpartNumbers(String customerId) {
 		return ofNullable(customerId)
@@ -151,12 +158,13 @@ public class MapperHelper {
 
 	/**
 	 * Limit the length of a string, if it's more than the maxLength it will be truncated.
-	 * @param string the string to potentially limit
-	 * @param maxLength the maximum length of the string
-	 * @return the string if it's less than maxLength, otherwise the string truncated to maxLength
+	 * 
+	 * @param  string    the string to potentially limit
+	 * @param  maxLength the maximum length of the string
+	 * @return           the string if it's less than maxLength, otherwise the string truncated to maxLength
 	 */
 	public String truncateString(String string, int maxLength) {
-		if(isNotBlank(string) && string.length() >= maxLength) {
+		if (isNotBlank(string) && string.length() >= maxLength) {
 			return string.substring(0, maxLength);
 		}
 		return string;

@@ -18,9 +18,8 @@ class MapperHelperTest {
 
 	// Most common case, i.e. missing care of
 	private static final String ORG_STRING_MISSING_CARE_OF = "5591628136 - Tennisbanan AB - Ankeborgsvägen 22 -   - 123 45 Ankeborg - 789";
-	// Care of is present
-	private static final String ORG_STRING = "5591628136 - Tennisbanan AB - Ankeborgsvägen 22 - Some Care of address - 123 45 Ankeborg - 789";
-
+	// Care of is present, plus some extra characters to make sure that we can handle special characters
+	private static final String ORG_STRING = "5591628136 - Tennisbanan!@#$%^&*()-_=+\\|[]{};:/?.>< AB - Ankeborgsvägen 22 - Some Care of address - 123 45 Ankeborg - 789";
 
 	@Test
 	void testConvertStringToFloat_shouldThrowException_whenNotParseableToFloat() {
@@ -105,7 +104,7 @@ class MapperHelperTest {
 	void testGetOrganizationInformation_withCareOf() {
 		var organizationInformation = mapper.getOrganizationInformation(ORG_STRING);
 		assertThat(organizationInformation.getOrganizationNumber()).isEqualTo("5591628136");
-		assertThat(organizationInformation.getName()).isEqualTo("Tennisbanan AB");
+		assertThat(organizationInformation.getName()).isEqualTo("Tennisbanan!@#$%^&*()-_=+\\|[]{};:/?.>< AB");
 		assertThat(organizationInformation.getStreetAddress()).isEqualTo("Ankeborgsvägen 22");
 		assertThat(organizationInformation.getZipCode()).isEqualTo("123 45");
 		assertThat(organizationInformation.getCity()).isEqualTo("Ankeborg");
@@ -137,7 +136,6 @@ class MapperHelperTest {
 			Arguments.of(" ", " ", 5),
 			Arguments.of("abcd", "abcd", 5),
 			Arguments.of("abcde", "abcde", 5),
-			Arguments.of("abcdef", "abcde", 5)
-		);
+			Arguments.of("abcdef", "abcde", 5));
 	}
 }

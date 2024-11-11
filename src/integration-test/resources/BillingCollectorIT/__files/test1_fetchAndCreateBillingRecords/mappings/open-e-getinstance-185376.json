@@ -5,10 +5,10 @@
 	},
 	"response": {
 		"headers": {
-			"Content-Type": "application/xml",
-			"content-disposition": "inline;filename=\"flowinstance-185376-event-787422.xml\"; filename*=UTF-8''flowinstance-185376-event-787422.xml"
+			"content-disposition": "inline;filename=\"flowinstance-185376-event-787422.xml\"; filename*=UTF-8''flowinstance-185376-event-787422.xml",
+			"Content-Type": "application/xml"
 		},
-		"status": 200,
-		"bodyFileName": "test1_fetchAndCreateBillingRecords/response/open-e-getinstance-185376.xml"
+		"bodyFileName": "test1_fetchAndCreateBillingRecords/response/open-e-getinstance-185376.xml",
+		"status": 200
 	}
 }

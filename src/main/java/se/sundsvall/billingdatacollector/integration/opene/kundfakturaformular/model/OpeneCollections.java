@@ -96,6 +96,7 @@ public class OpeneCollections {
 	 * KundfakturaformularMapper to determine how many rows to loop over
 	 * Also make sure there are only two sizes, e.g. 0 and 2, any other number means we have diverging information
 	 * and will throw an exception
+	 * 
 	 * @return the number of rows in the maps
 	 */
 	public int getNumberOfRows() {
@@ -105,7 +106,7 @@ public class OpeneCollections {
 
 		// We only want two sizes, any more means we have missing information
 		if (sizes.size() == MAX_NUMBER_OF_SIZES) {
-			//Get the highest number of rows
+			// Get the highest number of rows
 			return sizes.stream().max(Integer::compareTo).orElse(0);
 		} else {
 			LOGGER.error("Got mismatch in the number of iterations in the maps: {}", sizes);
@@ -118,8 +119,8 @@ public class OpeneCollections {
 	// ==============================
 
 	/**
-	 * @param berakningarExtern the object to consolidate
-	 * @return a BerakningExtern object
+	 * @param  berakningarExtern the object to consolidate
+	 * @return                   a BerakningExtern object
 	 */
 	private BerakningExtern consolidateBerakningarExternWithBerakningExtern(BerakningarExtern berakningarExtern) {
 		return BerakningExtern.builder()
@@ -134,8 +135,9 @@ public class OpeneCollections {
 	/**
 	 * Special case since OpenE names the first iteration to BerakningIntern1 and the second one to BerakningarIntern[x]
 	 * Consolidate the two into one and only use the BerakningIntern name
-	 * @param berakningarIntern the object to consolidate
-	 * @return a BerakningExtern object
+	 * 
+	 * @param  berakningarIntern the object to consolidate
+	 * @return                   a BerakningExtern object
 	 */
 	private BerakningIntern consolidateBerakningarWithBerakningIntern(BerakningarIntern berakningarIntern) {
 		return BerakningIntern.builder()
@@ -150,8 +152,9 @@ public class OpeneCollections {
 	/**
 	 * Special case since OpenE names the first iteration to BerakningExtern1 and the second one to BarakningarExtern[x]
 	 * Consolidate the two into one and only use the BarakningExtern name
-	 * @param barakningarExtern the object to consolidate
-	 * @return a BerakningExtern object
+	 * 
+	 * @param  barakningarExtern the object to consolidate
+	 * @return                   a BerakningExtern object
 	 */
 	private BerakningExtern consolidateBarakningarExternWithBerakningExtern(BarakningarExtern barakningarExtern) {
 		// Create a new BerakningExtern object

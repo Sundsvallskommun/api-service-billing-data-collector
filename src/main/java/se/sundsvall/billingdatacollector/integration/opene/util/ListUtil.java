@@ -25,9 +25,11 @@ import lombok.ToString;
 
 /**
  * Util class to parse XML from OpenE-"lists" into lists.
- * The XML contains no lists but instead each item in the list is a separate object suffixed an ID, e.g. "BarakningarExtern1" to indicate
+ * The XML contains no lists but instead each item in the list is a separate object suffixed an ID, e.g.
+ * "BarakningarExtern1" to indicate
  * that it is the first item in the list.
- * Each xml-object contains a number of properties (which may also be suffixed with an ID) that are mapped to fields in a bean in the context.
+ * Each xml-object contains a number of properties (which may also be suffixed with an ID) that are mapped to fields in
+ * a bean in the context.
  */
 @Component
 @ToString
@@ -79,9 +81,9 @@ public class ListUtil {
 	}
 
 	private void addOpeneObject(String nodeName, Node node, OpeneCollections openeCollections) {
-		var id = nodeName.substring(nodeName.length() - 1);   //Get the id of the object, we will use this as the index in the map
+		var id = nodeName.substring(nodeName.length() - 1);   // Get the id of the object, we will use this as the index in the map
 		nodeName = nodeName.replaceAll(ENDING_WITH_NUMBER_REGEX, ""); // Remove the number from the node name so we can find the bean in the context
-		final var nodeNameToUse = nodeName.substring(0, 1).toLowerCase() + nodeName.substring(1); //Make sure the first letter is lowercase
+		final var nodeNameToUse = nodeName.substring(0, 1).toLowerCase() + nodeName.substring(1); // Make sure the first letter is lowercase
 
 		var beanToUse = getBean(nodeNameToUse);
 
@@ -92,7 +94,7 @@ public class ListUtil {
 	}
 
 	private NodeList getNodeList(byte[] xml) throws ParserConfigurationException, SAXException, IOException {
-		//Convert xml string to InputStream
+		// Convert xml string to InputStream
 		var inputStream = new ByteArrayInputStream(xml);
 
 		var documentBuilderFactory = DocumentBuilderFactory.newDefaultInstance();
@@ -103,7 +105,7 @@ public class ListUtil {
 		// Normalize the document
 		document.getDocumentElement().normalize();
 
-		//Check that we have the correct namespace, otherwise we won't be able to parse anything
+		// Check that we have the correct namespace, otherwise we won't be able to parse anything
 		var rootNamespace = document.getDocumentElement().getNamespaceURI();
 		if (!OEP_NAMESPACE_URI.equals(rootNamespace)) {
 			throw new IllegalStateException("Namespace mismatch: expected " + OEP_NAMESPACE_URI + " but found " + rootNamespace);
@@ -127,7 +129,7 @@ public class ListUtil {
 			// Invoke the setter method
 			setterMethod.invoke(obj, propertyValue);
 		} catch (Exception e) {
-			//No biggie
+			// No biggie
 			LOGGER.warn("Couldn't set property {} on object {}", propertyName, obj.getClass().getName(), e);
 		}
 	}

@@ -19,20 +19,20 @@ import se.sundsvall.dept44.configuration.feign.decoder.ProblemErrorDecoder;
 @EnableConfigurationProperties(MessagingIntegrationProperties.class)
 class MessagingIntegrationConfiguration {
 
-    static final String CLIENT_ID = "messaging";
+	static final String CLIENT_ID = "messaging";
 
-    @Bean
-    FeignBuilderCustomizer feignBuilderCustomizer(final MessagingIntegrationProperties properties) {
-        return FeignMultiCustomizer.create()
-            .withErrorDecoder(new ProblemErrorDecoder(CLIENT_ID, List.of(NOT_FOUND.value())))
-            .withRetryableOAuth2InterceptorForClientRegistration(ClientRegistration
-                .withRegistrationId(CLIENT_ID)
-                .tokenUri(properties.oauth2().tokenUrl())
-                .clientId(properties.oauth2().clientId())
-                .clientSecret(properties.oauth2().clientSecret())
-                .authorizationGrantType(new AuthorizationGrantType(properties.oauth2().authorizationGrantType()))
-                .build())
-            .withRequestTimeoutsInSeconds(properties.connectTimeout(), properties.readTimeout())
-            .composeCustomizersToOne();
-    }
+	@Bean
+	FeignBuilderCustomizer feignBuilderCustomizer(final MessagingIntegrationProperties properties) {
+		return FeignMultiCustomizer.create()
+			.withErrorDecoder(new ProblemErrorDecoder(CLIENT_ID, List.of(NOT_FOUND.value())))
+			.withRetryableOAuth2InterceptorForClientRegistration(ClientRegistration
+				.withRegistrationId(CLIENT_ID)
+				.tokenUri(properties.oauth2().tokenUrl())
+				.clientId(properties.oauth2().clientId())
+				.clientSecret(properties.oauth2().clientSecret())
+				.authorizationGrantType(new AuthorizationGrantType(properties.oauth2().authorizationGrantType()))
+				.build())
+			.withRequestTimeoutsInSeconds(properties.connectTimeout(), properties.readTimeout())
+			.composeCustomizersToOne();
+	}
 }

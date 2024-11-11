@@ -22,7 +22,9 @@ interface PartyClient {
 
 	@GetMapping(
 		path = "/{municipalityId}/{type}/{legalId}/partyId",
-		produces = { TEXT_PLAIN_VALUE, APPLICATION_PROBLEM_JSON_VALUE })
+		produces = {
+			TEXT_PLAIN_VALUE, APPLICATION_PROBLEM_JSON_VALUE
+		})
 	@Cacheable("partyId")
 	Optional<String> getPartyId(@PathVariable("municipalityId") String municipalityId, @PathVariable("type") PartyType partyType, @PathVariable("legalId") String legalId);
 }

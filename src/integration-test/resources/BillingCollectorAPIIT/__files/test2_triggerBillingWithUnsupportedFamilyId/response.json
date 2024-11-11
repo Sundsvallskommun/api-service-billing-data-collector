@@ -1,1 +1,5 @@
-{"title":"No supported familyIds found","status":400,"detail":"Supported familyIds: [358]"}
+{
+	"detail": "Supported familyIds: [358]",
+	"title": "No supported familyIds found",
+	"status": 400
+}

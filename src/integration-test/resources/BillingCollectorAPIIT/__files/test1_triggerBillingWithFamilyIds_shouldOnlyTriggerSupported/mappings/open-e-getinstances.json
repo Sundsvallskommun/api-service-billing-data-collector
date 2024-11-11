@@ -5,10 +5,10 @@
 	},
 	"response": {
 		"headers": {
-			"Content-Type": "application/xml",
-			"content-disposition": "inline;filename=\"flow-instances.xml\"; filename*=UTF-8''flow-instances.xml"
+			"content-disposition": "inline;filename=\"flow-instances.xml\"; filename*=UTF-8''flow-instances.xml",
+			"Content-Type": "application/xml"
 		},
-		"status": 200,
-		"bodyFileName": "test1_triggerBillingWithFamilyIds_shouldOnlyTriggerSupported/response/open-e-getinstances.xml"
+		"bodyFileName": "test1_triggerBillingWithFamilyIds_shouldOnlyTriggerSupported/response/open-e-getinstances.xml",
+		"status": 200
 	}
 }

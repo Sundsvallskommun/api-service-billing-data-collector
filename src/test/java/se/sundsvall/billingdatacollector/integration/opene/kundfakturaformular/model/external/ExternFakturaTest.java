@@ -28,7 +28,6 @@ class ExternFakturaTest {
 		var organisationsNummer = "1234567890";
 		var referensForetag = "referensForetag";
 
-
 		var externFaktura = new ExternFaktura(familyId, flowInstanceId, posted, fornamn, efternamn, adress, postnummer, ort,
 			personnummer, motpartNamn, saljarensFornamn, saljarensEfternamn, kontaktuppgifterPrivatpersonFornamn,
 			kontaktuppgifterPrivatpersonEfternamn, organisationsNummer, referensForetag);

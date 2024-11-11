@@ -54,7 +54,7 @@ public class ExternalConfig {
 	public BerakningExtern berakningExtern() {
 		return BerakningExtern.builder().build();
 	}
-	
+
 	@Bean
 	@Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
 	public MomssatsExtern momssatsExtern() {

@@ -14,15 +14,10 @@ import jakarta.validation.constraints.NotNull;
 @ConfigurationProperties(prefix = "integration.party")
 record PartyIntegrationProperties(
 
-    @NotBlank
-    String baseUrl,
+	@NotBlank String baseUrl,
 
-    @DefaultValue("5")
-    int connectTimeout,
+	@DefaultValue("5") int connectTimeout,
 
-    @DefaultValue("30")
-    int readTimeout,
+	@DefaultValue("30") int readTimeout,
 
-    @Valid
-    @NotNull
-    Oauth2 oauth2) { }
+	@Valid @NotNull Oauth2 oauth2) {}

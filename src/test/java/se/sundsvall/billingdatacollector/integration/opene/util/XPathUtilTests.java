@@ -16,7 +16,9 @@ import se.sundsvall.billingdatacollector.integration.opene.util.annotation.XPath
 import se.sundsvall.dept44.test.annotation.resource.Load;
 import se.sundsvall.dept44.test.extension.ResourceLoaderExtension;
 
-@ExtendWith({ MockitoExtension.class, ResourceLoaderExtension.class })
+@ExtendWith({
+	MockitoExtension.class, ResourceLoaderExtension.class
+})
 class XPathUtilTests {
 
 	private byte[] xml;

@@ -14,15 +14,10 @@ import jakarta.validation.constraints.NotNull;
 @ConfigurationProperties(prefix = "integration.billing-preprocessor")
 record BillingPreprocessorIntegrationProperties(
 
-    @NotBlank
-    String baseUrl,
+	@NotBlank String baseUrl,
 
-    @Valid
-    @NotNull
-    Oauth2 oauth2,
+	@Valid @NotNull Oauth2 oauth2,
 
-    @DefaultValue("5")
-    int connectTimeout,
+	@DefaultValue("5") int connectTimeout,
 
-    @DefaultValue("30")
-    int readTimeout) { }
+	@DefaultValue("30") int readTimeout) {}

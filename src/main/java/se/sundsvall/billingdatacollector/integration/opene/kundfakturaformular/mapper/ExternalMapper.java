@@ -54,7 +54,7 @@ public class ExternalMapper {
 		mapperHelper.checkForNeededFieldsForExternal(collections);
 
 		// Check if it's an external person or organization
-		if(isBlank(result.referensForetag())) {
+		if (isBlank(result.referensForetag())) {
 			LOGGER.info("Mapping to billing record for an external  person");
 			return mapToExternalBillingRecordForPerson(result, collections);
 		} else {
@@ -82,7 +82,7 @@ public class ExternalMapper {
 					.street(organizationInformation.getStreetAddress())
 					.postalCode(organizationInformation.getZipCode())
 					.city(organizationInformation.getCity())))
-			.invoice(createExternalInvoice(result, collections, mapperHelper.getExternalMotpartNumbers(result.organisationsInformation())));
+			.invoice(createExternalInvoice(result, collections, mapperHelper.getExternalMotpartNumbers(result.organisationsInformation()), organizationInformation.getOrganizationNumber()));
 
 		return BillingRecordWrapper.builder()
 			.withBillingRecord(billingRecord)
@@ -105,7 +105,7 @@ public class ExternalMapper {
 					.street(result.adress())
 					.postalCode(result.postnummer())
 					.city(result.ort())))
-			.invoice(createExternalInvoice(result, collections, mapperHelper.getExternalMotpartNumbers(result.motpartNamn())));
+			.invoice(createExternalInvoice(result, collections, mapperHelper.getExternalMotpartNumbers(result.motpartNamn()), result.personnummer()));
 
 		return BillingRecordWrapper.builder()
 			.withBillingRecord(billingRecord)
@@ -115,11 +115,12 @@ public class ExternalMapper {
 			.build();
 	}
 
-	Invoice createExternalInvoice(ExternFaktura externFaktura, OpeneCollections collections, String motpart) {
+	Invoice createExternalInvoice(ExternFaktura externFaktura, OpeneCollections collections, String motpart, String customerId) {
 		return new Invoice()
 			.customerReference(getExternalCustomerReference(externFaktura))
-			.customerId(externFaktura.personnummer())
-			.description(mapperHelper.truncateString(INVOICE_DESCRIPTION, MAX_DESCRIPTION_LENGTH))  //Cannot be more than 30 chars
+			//.customerId(externFaktura.personnummer())
+			.customerId(customerId)
+			.description(mapperHelper.truncateString(INVOICE_DESCRIPTION, MAX_DESCRIPTION_LENGTH))  // Cannot be more than 30 chars
 			.ourReference(getExternalSellerName(externFaktura))
 			.referenceId(externFaktura.flowInstanceId())
 			.invoiceRows(createExternalInvoiceRows(collections, motpart));
@@ -128,7 +129,7 @@ public class ExternalMapper {
 	List<InvoiceRow> createExternalInvoiceRows(OpeneCollections collections, String motpart) {
 		List<InvoiceRow> invoiceRows = new ArrayList<>();
 
-		for(int index = 1; index < collections.getNumberOfRows() + 1; index++ ) {
+		for (int index = 1; index < collections.getNumberOfRows() + 1; index++) {
 			LOGGER.info("Creating external invoice row for index: {}", index);
 			var invoiceRow = new InvoiceRow()
 				.descriptions(ofNullable(mapperHelper.truncateString(
@@ -164,6 +165,5 @@ public class ExternalMapper {
 	String getExternalCustomerReference(ExternFaktura externFaktura) {
 		return externFaktura.kontaktuppgifterPrivatpersonFornamn() + " " + externFaktura.kontaktuppgifterPrivatpersonEfternamn();
 	}
-
 
 }

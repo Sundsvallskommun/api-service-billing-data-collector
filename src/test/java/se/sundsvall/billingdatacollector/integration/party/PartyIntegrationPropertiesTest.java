@@ -13,19 +13,19 @@ import se.sundsvall.billingdatacollector.support.annotation.UnitTest;
 @SpringBootTest(classes = Application.class)
 class PartyIntegrationPropertiesTest {
 
-    @Autowired
-    private PartyIntegrationProperties properties;
+	@Autowired
+	private PartyIntegrationProperties properties;
 
-    @Test
-    void testProperties() {
-        assertThat(properties.baseUrl()).isEqualTo("http://party.nosuchhost.com");
-        assertThat(properties.oauth2()).isNotNull().satisfies(oauth2 -> {
-            assertThat(oauth2.tokenUrl()).isEqualTo("http://token.nosuchhost.com");
-            assertThat(oauth2.clientId()).isEqualTo("someClientId");
-            assertThat(oauth2.clientSecret()).isEqualTo("someClientSecret");
-            assertThat(oauth2.authorizationGrantType()).isEqualTo("client_credentials");
-        });
-        assertThat(properties.connectTimeout()).isEqualTo(56);
-        assertThat(properties.readTimeout()).isEqualTo(78);
-    }
+	@Test
+	void testProperties() {
+		assertThat(properties.baseUrl()).isEqualTo("http://party.nosuchhost.com");
+		assertThat(properties.oauth2()).isNotNull().satisfies(oauth2 -> {
+			assertThat(oauth2.tokenUrl()).isEqualTo("http://token.nosuchhost.com");
+			assertThat(oauth2.clientId()).isEqualTo("someClientId");
+			assertThat(oauth2.clientSecret()).isEqualTo("someClientSecret");
+			assertThat(oauth2.authorizationGrantType()).isEqualTo("client_credentials");
+		});
+		assertThat(properties.connectTimeout()).isEqualTo(56);
+		assertThat(properties.readTimeout()).isEqualTo(78);
+	}
 }

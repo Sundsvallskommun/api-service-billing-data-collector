@@ -23,7 +23,9 @@ import se.sundsvall.billingdatacollector.service.DbService;
 import se.sundsvall.dept44.test.annotation.resource.Load;
 import se.sundsvall.dept44.test.extension.ResourceLoaderExtension;
 
-@ExtendWith({ MockitoExtension.class, ResourceLoaderExtension.class })
+@ExtendWith({
+	MockitoExtension.class, ResourceLoaderExtension.class
+})
 class OpenEIntegrationTest {
 
 	@Mock

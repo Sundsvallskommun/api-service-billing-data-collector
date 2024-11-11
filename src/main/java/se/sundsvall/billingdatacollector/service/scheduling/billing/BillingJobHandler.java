@@ -32,7 +32,7 @@ public class BillingJobHandler {
 		var startDate = calculateStartDate(latestJob);
 		var endDate = LocalDate.now().minusDays(1);	// Always set enddate to yesterday
 
-		dbService.saveScheduledJob(startDate, endDate);	//Save that the job has been triggered
+		dbService.saveScheduledJob(startDate, endDate);	// Save that the job has been triggered
 
 		var processed = collectorService.triggerBillingBetweenDates(startDate, endDate, emptySet());
 		LOG.info("Billing job done, processed {} records", processed.size());
@@ -41,8 +41,9 @@ public class BillingJobHandler {
 	/**
 	 * If we have no last date, set it to fetch for yesterday
 	 * This will render a fetch for one day, yesterday.
-	 * @param lastJob The last job fetched
-	 * @return The start date to fetch from
+	 * 
+	 * @param  lastJob The last job fetched
+	 * @return         The start date to fetch from
 	 */
 	private LocalDate calculateStartDate(Optional<ScheduledJobEntity> lastJob) {
 		return lastJob.map(ScheduledJobEntity::getFetchedEndDate)

@@ -1,13 +1,11 @@
 {
-    "request": {
-        "method": "GET",
-        "url": "/party/2281/PRIVATE/190101011234/partyId"
-    },
-    "response": {
-        "body": "fb2f0290-3820-11ed-a261-0242ac121234",
-        "headers": {
-            "Content-Type": "text/plain"
-        },
-        "status": 200
-    }
+	"request": {
+		"method": "GET",
+		"url": "/party/2281/PRIVATE/190101011234/partyId"
+	},
+	"response": {
+		"headers": {"Content-Type": "text/plain"},
+		"body": "fb2f0290-3820-11ed-a261-0242ac121234",
+		"status": 200
+	}
 }

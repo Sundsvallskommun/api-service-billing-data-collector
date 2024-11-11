@@ -10,21 +10,14 @@ import jakarta.validation.constraints.NotBlank;
 @ConfigurationProperties(prefix = "integration.open-e")
 public record OpenEIntegrationProperties(
 
-		@NotBlank
-		String baseUrl,
+	@NotBlank String baseUrl,
 
-		@NotBlank
-		String username,
+	@NotBlank String username,
 
-		@NotBlank
-		String password,
+	@NotBlank String password,
 
-		@DefaultValue("5")
-		int connectTimeout,
+	@DefaultValue("5") int connectTimeout,
 
-		@DefaultValue("30")
-		int readTimeout,
+	@DefaultValue("30") int readTimeout,
 
-		@NotBlank
-		String kundfakturaFormularFamilyId)
-{ }
+	@NotBlank String kundfakturaFormularFamilyId) {}

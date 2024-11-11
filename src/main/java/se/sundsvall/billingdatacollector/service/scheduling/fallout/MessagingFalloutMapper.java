@@ -32,7 +32,7 @@ public class MessagingFalloutMapper {
 	}
 
 	public EmailBatchRequest createEmailBatchRequest(List<Fallout> fallouts) {
-		//Sort the list by familyId and then flowInstanceId
+		// Sort the list by familyId and then flowInstanceId
 		fallouts.sort(Comparator.comparing(Fallout::familyId).thenComparing(Fallout::flowInstanceId));
 
 		var template = properties.falloutMailTemplate();
@@ -40,20 +40,19 @@ public class MessagingFalloutMapper {
 		// Start
 		var bodyBuilder = new StringBuilder(template.htmlPrefix());
 
-		//Set the body heading with the date
+		// Set the body heading with the date
 		bodyBuilder.append(template.bodyPrefix().formatted(LocalDate.now().format(DateTimeFormatter.ISO_LOCAL_DATE)));
 
 		// Set number of errors and "start" the list.
 		bodyBuilder.append(template.listPrefix().formatted(fallouts.size()));
 
-		//Add each fallout with familyId, flowInstanceId and requestId
-		fallouts.forEach(fallout ->
-			bodyBuilder.append(template.listItem().formatted(fallout.familyId(), fallout.flowInstanceId(), fallout.requestId())));
+		// Add each fallout with familyId, flowInstanceId and requestId
+		fallouts.forEach(fallout -> bodyBuilder.append(template.listItem().formatted(fallout.familyId(), fallout.flowInstanceId(), fallout.requestId())));
 
-		//End the list
+		// End the list
 		bodyBuilder.append(template.listSuffix());
 
-		//Add the sender
+		// Add the sender
 		bodyBuilder.append(template.bodySuffix().formatted(properties.sender(), properties.senderName()));
 
 		// The end

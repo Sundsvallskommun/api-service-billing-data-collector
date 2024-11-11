@@ -1,17 +1,11 @@
 {
 	"request": {
 		"method": "POST",
-		"url": "/2281/email/batch",
-		"bodyPatterns": [
-			{
-				"contains": "familyId: 358, flowInstanceId: 185376, requestId: 83f2ba1f-8b9c-4df9-b05f-c27b40985eee"
-			}
-		]
+		"bodyPatterns": [{"contains": "familyId: 358, flowInstanceId: 185376, requestId: 83f2ba1f-8b9c-4df9-b05f-c27b40985eee"}],
+		"url": "/2281/email/batch"
 	},
 	"response": {
-		"headers": {
-			"Content-Type": "application/json"
-		},
+		"headers": {"Content-Type": "application/json"},
 		"status": 201
 	}
 }

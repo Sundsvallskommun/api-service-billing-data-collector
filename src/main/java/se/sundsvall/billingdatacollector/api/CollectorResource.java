@@ -39,7 +39,9 @@ import se.sundsvall.dept44.common.validators.annotation.ValidMunicipalityId;
 @ApiResponse(
 	responseCode = "400",
 	description = "Bad Request",
-	content = @Content(schema = @Schema(oneOf = { Problem.class, ConstraintViolationProblem.class })))
+	content = @Content(schema = @Schema(oneOf = {
+		Problem.class, ConstraintViolationProblem.class
+	})))
 @ApiResponse(
 	responseCode = "500",
 	description = "Internal Server Error",
@@ -64,7 +66,9 @@ class CollectorResource {
 				description = "Accepted",
 				useReturnTypeSchema = true)
 		})
-	@PostMapping(path = "/trigger/{flowInstanceId}", produces = { APPLICATION_JSON_VALUE, APPLICATION_PROBLEM_JSON_VALUE })
+	@PostMapping(path = "/trigger/{flowInstanceId}", produces = {
+		APPLICATION_JSON_VALUE, APPLICATION_PROBLEM_JSON_VALUE
+	})
 	ResponseEntity<Void> triggerBilling(
 		@Parameter(name = "municipalityId", description = "Municipality id", example = "2281") @ValidMunicipalityId @PathVariable final String municipalityId,
 		@Parameter(name = "flowInstanceId", description = "flowInstanceId to trigger billing for", example = "123") @NotEmpty @PathVariable("flowInstanceId") final String flowInstanceId) {
@@ -84,7 +88,9 @@ class CollectorResource {
 				description = "Accepted",
 				useReturnTypeSchema = true)
 		})
-	@PostMapping(path = "/trigger", produces = { APPLICATION_JSON_VALUE, APPLICATION_PROBLEM_JSON_VALUE })
+	@PostMapping(path = "/trigger", produces = {
+		APPLICATION_JSON_VALUE, APPLICATION_PROBLEM_JSON_VALUE
+	})
 	ResponseEntity<List<String>> triggerBilling(
 		@Parameter(name = "municipalityId", description = "Municipality id", example = "2281") @ValidMunicipalityId @PathVariable final String municipalityId,
 		@RequestParam(name = "startDate") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) @Parameter(example = "2024-01-01") final LocalDate startDate,

@@ -77,8 +77,7 @@ class KundfakturaformularMapperTest {
 				assertThat(row.getAccountInformation().getSubaccount()).isEqualTo("930110");
 				assertThat(row.getAccountInformation().getDepartment()).isEqualTo("100500");
 				assertThat(row.getAccountInformation().getCounterpart()).isEqualTo("115");
-			}
-		);
+			});
 	}
 
 	@Test
