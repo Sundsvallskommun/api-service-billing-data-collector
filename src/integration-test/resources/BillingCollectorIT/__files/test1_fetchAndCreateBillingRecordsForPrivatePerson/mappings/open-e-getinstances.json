@@ -8,7 +8,7 @@
 			"content-disposition": "inline;filename=\"flow-instances.xml\"; filename*=UTF-8''flow-instances.xml",
 			"Content-Type": "application/xml"
 		},
-		"bodyFileName": "test1_fetchAndCreateBillingRecords/response/open-e-getinstances.xml",
+		"bodyFileName": "test1_fetchAndCreateBillingRecordsForPrivatePerson/response/open-e-getinstances.xml",
 		"status": 200
 	}
 }

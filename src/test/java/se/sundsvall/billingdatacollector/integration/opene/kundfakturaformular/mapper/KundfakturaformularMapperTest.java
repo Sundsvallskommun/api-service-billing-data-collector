@@ -97,7 +97,7 @@ class KundfakturaformularMapperTest {
 		assertThat(billingRecord.getApprovedBy()).isEqualTo("E_SERVICE");
 
 		var recipient = billingRecord.getRecipient();
-		assertThat(recipient.getOrganizationName()).isEqualTo("5591628770");
+		assertThat(recipient.getOrganizationName()).isEqualTo("Väldigt långt företagsnamn indeed AB");
 
 		var addressDetails = recipient.getAddressDetails();
 		assertThat(addressDetails.getStreet()).isEqualTo("Ankeborgsvägen 123");
@@ -132,7 +132,7 @@ class KundfakturaformularMapperTest {
 
 		assertThat(billingRecordWrapper.getFamilyId()).isEqualTo("358");
 		assertThat(billingRecordWrapper.getFlowInstanceId()).isEqualTo("225965");
-		assertThat(billingRecordWrapper.getLegalId()).isEqualTo("190101011234");
+		assertThat(billingRecordWrapper.getLegalId()).isEqualTo("199001012385");
 
 		var billingRecord = billingRecordWrapper.getBillingRecord();
 		assertThat(billingRecord.getCategory()).isEqualTo("CUSTOMER_INVOICE");
@@ -150,7 +150,7 @@ class KundfakturaformularMapperTest {
 		assertThat(addressDetails.getCity()).isEqualTo("ANKEBORG");
 
 		var invoice = billingRecord.getInvoice();
-		assertThat(invoice.getCustomerId()).isEqualTo("190101011234");
+		assertThat(invoice.getCustomerId()).isEqualTo("199001012385");
 		assertThat(invoice.getDescription()).isEqualTo("Kundfaktura");
 		assertThat(invoice.getOurReference()).isEqualTo("Kalle Anka");
 		assertThat(invoice.getCustomerReference()).isEqualTo("Kajsa Anka");

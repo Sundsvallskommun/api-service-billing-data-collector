@@ -20,6 +20,7 @@ class KundfakturaformularMapper implements OpenEMapper {
 	public static final String INVOICE_DESCRIPTION = "Kundfaktura";
 	public static final String APPROVED_BY = "E_SERVICE";
 	public static final int MAX_DESCRIPTION_LENGTH = 30;
+	private static final String IS_EXTERNAL_INVOICE = "/FlowInstance/Values/BarakningarExtern1";
 
 	private final ExternalMapper externalMapper;
 	private final InternalMapper internalMapper;
@@ -44,7 +45,8 @@ class KundfakturaformularMapper implements OpenEMapper {
 		var openeCollections = listUtil.parseLists(xml);
 		BillingRecordWrapper wrapper;
 
-		if (getString(xml, "/FlowInstance/Values/BarakningarExtern1") == null) {
+		// Check what kind of invoice it is and map accordingly
+		if (getString(xml, IS_EXTERNAL_INVOICE) == null) {
 			wrapper = internalMapper.mapToInternalBillingRecord(xml, openeCollections);
 		} else {
 			wrapper = externalMapper.mapToExternalBillingRecord(xml, openeCollections);

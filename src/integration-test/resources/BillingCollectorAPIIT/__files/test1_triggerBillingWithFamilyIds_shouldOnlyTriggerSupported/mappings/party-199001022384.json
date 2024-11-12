@@ -1,7 +1,7 @@
 {
 	"request": {
 		"method": "GET",
-		"url": "/party/2281/PRIVATE/190101012345/partyId"
+		"url": "/party/2281/PRIVATE/199001022384/partyId"
 	},
 	"response": {
 		"headers": {"Content-Type": "text/plain"},

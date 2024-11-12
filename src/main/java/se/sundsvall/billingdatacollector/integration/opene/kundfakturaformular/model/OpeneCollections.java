@@ -37,7 +37,7 @@ import lombok.Setter;
 public class OpeneCollections {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(OpeneCollections.class);
-	private static final int MAX_NUMBER_OF_SIZES = 2;
+	private static final int MAX_NUMBER_OF_SIZES = 2;   // Used for checking the number of iterations in the maps
 
 	// Internal
 	private HashMap<Integer, AktivitetskontoIntern> aktivitetskontoInternMap = new HashMap<>();
@@ -93,9 +93,9 @@ public class OpeneCollections {
 
 	/**
 	 * Used to determine how many iterations there are in the maps, which is later used in
-	 * KundfakturaformularMapper to determine how many rows to loop over
-	 * Also make sure there are only two sizes, e.g. 0 and 2, any other number means we have diverging information
-	 * and will throw an exception
+	 * KundfakturaformularMapper to determine how many rows to loop over.
+	 * Also make sure there are only two sizes, e.g. 0 and 2, any other number means we have diverging information.
+	 * I.e we will miss needed information.
 	 * 
 	 * @return the number of rows in the maps
 	 */

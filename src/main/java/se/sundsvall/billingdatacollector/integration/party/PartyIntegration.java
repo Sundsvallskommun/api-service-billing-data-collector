@@ -26,10 +26,11 @@ public class PartyIntegration {
 
 	/**
 	 * Fetch partyId by first checking for enterprise, then private.
-	 * Private legalIds are checked for valid format and cleaned before being checked.
-	 * @param municipalityId The municipalityId
-	 * @param legalId The legalId
-	 * @return The partyId
+	 * Private legalIds are checked for valid format and cleaned (century digits added).
+	 *
+	 * @param  municipalityId The municipalityId
+	 * @param  legalId        The legalId
+	 * @return                The partyId
 	 */
 	public String getPartyId(final String municipalityId, final String legalId) {
 		return partyClient.getPartyId(municipalityId, ENTERPRISE, legalId)
@@ -40,12 +41,11 @@ public class PartyIntegration {
 					.build()));
 	}
 
-
 	private Optional<String> checkAndGetCorrectPersonalNumber(final String municipalityId, final String legalId) {
 		// Add century digits to legalId if they are missing
 		var cleanedLegalId = LegalIdUtil.addCenturyDigitsToLegalId(legalId);
 		if (!LegalIdUtil.isValidLegalId(cleanedLegalId)) {
-			LOG.error("Invalid legal id: {}", legalId);
+			LOG.warn("Invalid personal number: {}", cleanedLegalId);
 			return Optional.empty();
 		}
 		return partyClient.getPartyId(municipalityId, PRIVATE, cleanedLegalId);

@@ -64,8 +64,6 @@ public class ExternalMapper {
 	}
 
 	BillingRecordWrapper mapToExternalBillingRecordForOrganization(ExternFaktura result, OpeneCollections collections) {
-		LOGGER.info("All values for ExternFaktura: {}", result.organisationsInformation());
-
 		var organizationInformation = mapperHelper.getOrganizationInformation(result.organisationsInformation());
 
 		var billingRecord = new BillingRecord()
@@ -74,7 +72,7 @@ public class ExternalMapper {
 			.approvedBy(APPROVED_BY)
 			.type(Type.EXTERNAL)
 			.recipient(new Recipient()
-				.organizationName(organizationInformation.getOrganizationNumber())
+				.organizationName(organizationInformation.getName())
 				.firstName(result.fornamn())
 				.lastName(result.efternamn())
 				.addressDetails(new AddressDetails()
@@ -118,7 +116,6 @@ public class ExternalMapper {
 	Invoice createExternalInvoice(ExternFaktura externFaktura, OpeneCollections collections, String motpart, String customerId) {
 		return new Invoice()
 			.customerReference(getExternalCustomerReference(externFaktura))
-			//.customerId(externFaktura.personnummer())
 			.customerId(customerId)
 			.description(mapperHelper.truncateString(INVOICE_DESCRIPTION, MAX_DESCRIPTION_LENGTH))  // Cannot be more than 30 chars
 			.ourReference(getExternalSellerName(externFaktura))
@@ -129,7 +126,7 @@ public class ExternalMapper {
 	List<InvoiceRow> createExternalInvoiceRows(OpeneCollections collections, String motpart) {
 		List<InvoiceRow> invoiceRows = new ArrayList<>();
 
-		for (int index = 1; index < collections.getNumberOfRows() + 1; index++) {
+		for (int index = 1; index < collections.getNumberOfRows() + 1; index++) {   // OpenE-Arrays start at one...
 			LOGGER.info("Creating external invoice row for index: {}", index);
 			var invoiceRow = new InvoiceRow()
 				.descriptions(ofNullable(mapperHelper.truncateString(
