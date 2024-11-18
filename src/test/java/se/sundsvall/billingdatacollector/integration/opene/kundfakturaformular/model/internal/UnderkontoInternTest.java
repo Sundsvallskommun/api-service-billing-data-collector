@@ -29,16 +29,16 @@ class UnderkontoInternTest {
 		final var name = "name";
 		final var value = "value";
 
-		final var summeringIntern = UnderkontoIntern.builder()
+		final var underkontoIntern = UnderkontoIntern.builder()
 			.withQueryID(queryID)
 			.withName(name)
 			.withValue(value)
 			.build();
 
-		assertThat(summeringIntern).isNotNull().hasNoNullFieldsOrProperties();
-		assertThat(summeringIntern.getQueryID()).isEqualTo(queryID);
-		assertThat(summeringIntern.getName()).isEqualTo(name);
-		assertThat(summeringIntern.getValue()).isEqualTo(value);
+		assertThat(underkontoIntern).isNotNull().hasNoNullFieldsOrProperties();
+		assertThat(underkontoIntern.getQueryID()).isEqualTo(queryID);
+		assertThat(underkontoIntern.getName()).isEqualTo(name);
+		assertThat(underkontoIntern.getValue()).isEqualTo(value);
 	}
 
 	@Test

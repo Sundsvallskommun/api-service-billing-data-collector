@@ -3,6 +3,7 @@ package se.sundsvall.billingdatacollector.api;
 import static org.springframework.http.HttpHeaders.CONTENT_TYPE;
 import static org.springframework.http.MediaType.ALL_VALUE;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
+import static org.springframework.http.MediaType.APPLICATION_PROBLEM_JSON_VALUE;
 import static org.springframework.http.ResponseEntity.accepted;
 import static org.zalando.problem.Status.BAD_REQUEST;
 
@@ -36,17 +37,23 @@ import se.sundsvall.dept44.common.validators.annotation.ValidMunicipalityId;
 @ApiResponse(
 	responseCode = "400",
 	description = "Bad Request",
-	content = @Content(schema = @Schema(oneOf = {
-		Problem.class, ConstraintViolationProblem.class
-	})))
+	content = @Content(
+		mediaType = APPLICATION_PROBLEM_JSON_VALUE,
+		schema = @Schema(oneOf = {
+			Problem.class, ConstraintViolationProblem.class
+		})))
 @ApiResponse(
 	responseCode = "500",
 	description = "Internal Server Error",
-	content = @Content(schema = @Schema(implementation = Problem.class)))
+	content = @Content(
+		mediaType = APPLICATION_PROBLEM_JSON_VALUE,
+		schema = @Schema(implementation = Problem.class)))
 @ApiResponse(
 	responseCode = "502",
 	description = "Bad Gateway",
-	content = @Content(schema = @Schema(implementation = Problem.class)))
+	content = @Content(
+		mediaType = APPLICATION_PROBLEM_JSON_VALUE,
+		schema = @Schema(implementation = Problem.class)))
 class CollectorResource {
 
 	private final CollectorService collectorService;

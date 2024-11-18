@@ -46,4 +46,10 @@ class BerakningExternTest {
 		assertThat(berakningExtern.getAntalExtern()).isEqualTo(antalExtern);
 		assertThat(berakningExtern.getAPrisExtern()).isEqualTo(aPrisExtern);
 	}
+
+	@Test
+	void testNoDirtOnCreatedBean() {
+		assertThat(BerakningExtern.builder().build()).isNotNull().hasAllNullFieldsOrProperties();
+		assertThat(new BerakningExtern()).isNotNull().hasAllNullFieldsOrProperties();
+	}
 }

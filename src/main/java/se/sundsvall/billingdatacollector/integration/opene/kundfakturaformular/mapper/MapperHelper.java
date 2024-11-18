@@ -7,16 +7,12 @@ import static org.zalando.problem.Status.INTERNAL_SERVER_ERROR;
 import java.util.ArrayList;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.stereotype.Component;
 import org.zalando.problem.Problem;
-
 import se.sundsvall.billingdatacollector.integration.opene.kundfakturaformular.model.OpeneCollections;
 import se.sundsvall.billingdatacollector.integration.opene.kundfakturaformular.model.OrganizationInformation;
 
-@Component
-public class MapperHelper {
+final class MapperHelper {
 
 	private static final String DIGITS_AND_DECIMAL_SEPARATORS_REGEX = "[^0-9.,]+";
 	private static final String LEADING_DIGITS_REGEX = "^\\d+";
@@ -30,6 +26,10 @@ public class MapperHelper {
 	private static final String STRING_TO_FLOAT_ERROR = "Couldn't convert '%s' to a float";
 	private static final String PARSE_ORGANIZATION_INFORMATION_ERROR = "Could not parse organization information";
 
+	private MapperHelper() {
+		// Not meant to be instantiated
+	}
+
 	/**
 	 * Converts a string to a float.
 	 * e.g. "123,45 SEK" will be converted to Float: 123.45
@@ -37,15 +37,15 @@ public class MapperHelper {
 	 * @param  stringToConvert The string to convert to a float
 	 * @return                 The string converted to a float, or 0 if the string is null.
 	 */
-	public float convertStringToFloat(String stringToConvert) {
+	static float convertStringToFloat(String stringToConvert) {
 		return ofNullable(stringToConvert)
-			.map(this::removeCurrencyFromString)
-			.map(this::replaceCommasInCurrencyString)
+			.map(MapperHelper::removeCurrencyFromString)
+			.map(MapperHelper::replaceCommasInCurrencyString)
 			.map(string -> parseStringToFloat(string, stringToConvert))
 			.orElse(0f);
 	}
 
-	float parseStringToFloat(String stringToParse, String originalString) {
+	static float parseStringToFloat(String stringToParse, String originalString) {
 		try {
 			return Float.parseFloat(stringToParse);
 		} catch (NumberFormatException e) {
@@ -62,7 +62,7 @@ public class MapperHelper {
 	 * @param  stringToParse The string to parse
 	 * @return               The string with commas replaced with dots (if any).
 	 */
-	String replaceCommasInCurrencyString(String stringToParse) {
+	static String replaceCommasInCurrencyString(String stringToParse) {
 		return ofNullable(stringToParse)
 			.map(string -> string.replace(",", "."))
 			.orElse(null);
@@ -74,7 +74,7 @@ public class MapperHelper {
 	 * @param  stringToParse The string to parse
 	 * @return               The string with all characters that are not numbers, commas or dots removed.
 	 */
-	String removeCurrencyFromString(String stringToParse) {
+	static String removeCurrencyFromString(String stringToParse) {
 		return ofNullable(stringToParse)
 			.map(string -> string.replaceAll(DIGITS_AND_DECIMAL_SEPARATORS_REGEX, ""))
 			.orElse(null);
@@ -87,7 +87,7 @@ public class MapperHelper {
 	 * @param  stringToParse The string to parse
 	 * @return               Any leading numbers from the string
 	 */
-	public String getLeadingDigitsFromString(String stringToParse) {
+	static String getLeadingDigitsFromString(String stringToParse) {
 		return ofNullable(stringToParse)
 			.map(LEADING_DIGITS_PATTERN::matcher)
 			.filter(Matcher::find)
@@ -102,7 +102,7 @@ public class MapperHelper {
 	 * @param  stringToParse The string to parse
 	 * @return               Any trailing numbers from the string
 	 */
-	String getTrailingDigitsFromString(String stringToParse) {
+	static String getTrailingDigitsFromString(String stringToParse) {
 		return ofNullable(stringToParse)
 			.map(TRAILING_DIGITS_PATTERN::matcher)
 			.filter(Matcher::find)
@@ -116,9 +116,9 @@ public class MapperHelper {
 	 * @param  motpart The string to extract motpart numbers from
 	 * @return         The motpart numbers
 	 */
-	public String getExternalMotpartNumbers(String motpart) {
+	static String getExternalMotpartNumbers(String motpart) {
 		return ofNullable(motpart)
-			.map(this::getTrailingDigitsFromString)
+			.map(MapperHelper::getTrailingDigitsFromString)
 			.map(numbers -> StringUtils.rightPad(numbers, 8, "0"))
 			.orElse(null);
 	}
@@ -129,13 +129,13 @@ public class MapperHelper {
 	 * @param  customerId The string to extract motpart numbers from
 	 * @return            The motpart numbers
 	 */
-	public String getInternalMotpartNumbers(String customerId) {
+	static String getInternalMotpartNumbers(String customerId) {
 		return ofNullable(customerId)
 			.map(id -> "1" + id)
 			.orElse(null);
 	}
 
-	public OrganizationInformation getOrganizationInformation(String value) {
+	static OrganizationInformation getOrganizationInformation(String value) {
 		var matcher = ORGANIZATION_INFORMATION_PATTERN.matcher(value);
 
 		if (matcher.matches()) {
@@ -147,13 +147,13 @@ public class MapperHelper {
 				.withZipCode(ofNullable(matcher.group(5)).map(String::trim).orElse(null))
 				.withCity(ofNullable(matcher.group(6)).map(String::trim).orElse(null))
 				.build();
-		} else {
-			throw Problem.builder()
-				.withTitle(PARSE_ORGANIZATION_INFORMATION_ERROR)
-				.withStatus(INTERNAL_SERVER_ERROR)
-				.withDetail("Could not parse organization information from string: " + value)
-				.build();
 		}
+
+		throw Problem.builder()
+			.withTitle(PARSE_ORGANIZATION_INFORMATION_ERROR)
+			.withStatus(INTERNAL_SERVER_ERROR)
+			.withDetail("Could not parse organization information from string: " + value)
+			.build();
 	}
 
 	/**
@@ -163,14 +163,14 @@ public class MapperHelper {
 	 * @param  maxLength the maximum length of the string
 	 * @return           the string if it's less than maxLength, otherwise the string truncated to maxLength
 	 */
-	public String truncateString(String string, int maxLength) {
+	static String truncateString(String string, int maxLength) {
 		if (isNotBlank(string) && string.length() >= maxLength) {
 			return string.substring(0, maxLength);
 		}
 		return string;
 	}
 
-	public void checkForNeededFieldsForExternal(OpeneCollections collections) {
+	static void checkForNeededFieldsForExternal(OpeneCollections collections) {
 		var list = new ArrayList<String>();
 
 		if (collections.getBerakningExternMap().isEmpty()) {

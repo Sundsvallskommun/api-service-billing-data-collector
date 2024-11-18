@@ -63,6 +63,7 @@
 		<dependency>
 			<groupId>org.skyscreamer</groupId>
 			<artifactId>jsonassert</artifactId>
+			<scope>test</scope>
 		</dependency>
 
 		<!-- Other -->
@@ -94,12 +95,6 @@
 			<groupId>commons-validator</groupId>
 			<artifactId>commons-validator</artifactId>
 			<version>${commons-validator.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>dom4j</groupId>
-			<artifactId>dom4j</artifactId>
-			<version>1.1</version>
-			<scope>test</scope>
 		</dependency>
 
 	</dependencies>

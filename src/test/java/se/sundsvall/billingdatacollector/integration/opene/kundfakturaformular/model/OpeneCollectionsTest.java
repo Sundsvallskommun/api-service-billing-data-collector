@@ -4,7 +4,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 
 import org.junit.jupiter.api.Test;
-
 import se.sundsvall.billingdatacollector.integration.opene.kundfakturaformular.model.external.AktivitetskontoExtern;
 import se.sundsvall.billingdatacollector.integration.opene.kundfakturaformular.model.external.AnsvarExtern;
 import se.sundsvall.billingdatacollector.integration.opene.kundfakturaformular.model.external.BarakningarExtern;
@@ -207,5 +206,28 @@ class OpeneCollectionsTest {
 		openeCollections.add(1, VerksamhetExtern.builder().build());
 
 		assertThat(openeCollections.getVerksamhetExternMap()).hasSize(1);
+	}
+
+	@Test
+	void testNewOpenECollection_shouldOnlyHaveEmptyMaps() {
+		OpeneCollections openeCollections = new OpeneCollections();
+
+		assertThat(openeCollections.getAktivitetskontoInternMap()).isEmpty();
+		assertThat(openeCollections.getAnsvarInternMap()).isEmpty();
+		assertThat(openeCollections.getBerakningInternMap()).isEmpty();
+		assertThat(openeCollections.getProjektkontoInternMap()).isEmpty();
+		assertThat(openeCollections.getSummeringInternMap()).isEmpty();
+		assertThat(openeCollections.getUnderkontoInternMap()).isEmpty();
+		assertThat(openeCollections.getVerksamhetInternMap()).isEmpty();
+
+		assertThat(openeCollections.getAktivitetskontoExternMap()).isEmpty();
+		assertThat(openeCollections.getAnsvarExternMap()).isEmpty();
+		assertThat(openeCollections.getBerakningExternMap()).isEmpty();
+		assertThat(openeCollections.getMomssatsExternMap()).isEmpty();
+		assertThat(openeCollections.getObjektKontoExternMap()).isEmpty();
+		assertThat(openeCollections.getProjektkontoExternMap()).isEmpty();
+		assertThat(openeCollections.getSummeringExternMap()).isEmpty();
+		assertThat(openeCollections.getUnderkontoExternMap()).isEmpty();
+		assertThat(openeCollections.getVerksamhetExternMap()).isEmpty();
 	}
 }

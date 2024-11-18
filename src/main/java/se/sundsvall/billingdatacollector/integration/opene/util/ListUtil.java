@@ -6,10 +6,10 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.regex.Pattern;
-
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
-
+import lombok.ToString;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeansException;
@@ -18,10 +18,7 @@ import org.springframework.stereotype.Component;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
-
 import se.sundsvall.billingdatacollector.integration.opene.kundfakturaformular.model.OpeneCollections;
-
-import lombok.ToString;
 
 /**
  * Util class to parse XML from OpenE-"lists" into lists.
@@ -82,7 +79,7 @@ public class ListUtil {
 	private void addOpeneObject(String nodeName, Node node, OpeneCollections openeCollections) {
 		var id = nodeName.substring(nodeName.length() - 1);   // Get the id of the object, we will use this as the index in the map
 		nodeName = nodeName.replaceAll(ENDING_WITH_NUMBER_REGEX, ""); // Remove the number from the node name so we can find the bean in the context
-		final var nodeNameToUse = nodeName.substring(0, 1).toLowerCase() + nodeName.substring(1); // Make sure the first letter is lowercase
+		final var nodeNameToUse = StringUtils.uncapitalize(nodeName); // Make sure the first letter is lowercase
 
 		var beanToUse = getBean(nodeNameToUse);
 
@@ -117,7 +114,7 @@ public class ListUtil {
 	private void setProperty(Object obj, String propertyName, String propertyValue) {
 		try {
 			// Capitalize the first letter of the property name and prepend "set"
-			var setterName = "set" + propertyName.substring(0, 1).toUpperCase() + propertyName.substring(1);
+			var setterName = "set" + StringUtils.capitalize(propertyName);
 
 			// Remove any trailing numbers from the property name
 			setterName = setterName.replaceAll(ENDING_WITH_NUMBER_REGEX, "");
