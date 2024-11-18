@@ -9,6 +9,6 @@
 [![Vulnerabilities](https://sonarcloud.io/api/project_badges/measure?project=Sundsvallskommun_api-service-billing-data-collector&metric=vulnerabilities)](https://sonarcloud.io/summary/overall?id=Sundsvallskommun_api-service-billing-data-collector)
 [![Bugs](https://sonarcloud.io/api/project_badges/measure?project=Sundsvallskommun_api-service-billing-data-collector&metric=bugs)](https://sonarcloud.io/summary/overall?id=Sundsvallskommun_api-service-billing-data-collector)
 
-##
+## 
 
 Copyright (c) 2024 Sundsvalls kommun

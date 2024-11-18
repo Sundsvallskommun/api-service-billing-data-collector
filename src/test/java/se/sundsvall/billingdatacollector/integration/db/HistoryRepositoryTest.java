@@ -46,7 +46,7 @@ class HistoryRepositoryTest {
 
 	@Test
 	void testFindAllByFlowInstanceIdIn() {
-		//Only verifying that it finds the correct entities, not the content
+		// Only verifying that it finds the correct entities, not the content
 		var historyEntities = historyRepository.findAllByFlowInstanceIdIn(List.of("185375", "185377", "doesnt_exist"));
 		assertThat(historyEntities).hasSize(2);
 		historyEntities.forEach(historyEntity -> assertThat(historyEntity.getFamilyId()).isEqualTo("358"));

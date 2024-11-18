@@ -1,7 +1,7 @@
 package se.sundsvall.billingdatacollector.integration.opene;
 
 import static java.util.stream.Collectors.toMap;
-import static se.sundsvall.billingdatacollector.integration.opene.mapper.BillingRecordConstants.SUNDSVALLS_MUNICIPALITY_ID;
+import static se.sundsvall.billingdatacollector.integration.opene.kundfakturaformular.model.BillingRecordConstants.SUNDSVALLS_MUNICIPALITY_ID;
 import static se.sundsvall.billingdatacollector.integration.opene.util.XPathUtil.evaluateXPath;
 import static se.sundsvall.billingdatacollector.integration.opene.util.XPathUtil.getString;
 

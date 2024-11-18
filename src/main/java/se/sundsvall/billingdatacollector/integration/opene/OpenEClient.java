@@ -11,8 +11,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 	name = CLIENT_ID,
 	url = "${integration.open-e.base-url}",
 	configuration = OpenEIntegrationConfiguration.class,
-	dismiss404 = true
-)
+	dismiss404 = true)
 interface OpenEClient {
 
 	String TEXT_XML_CHARSET_ISO_8859_1 = "text/xml; charset=ISO-8859-1";

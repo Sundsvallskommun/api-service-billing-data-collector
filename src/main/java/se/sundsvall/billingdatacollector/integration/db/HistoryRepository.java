@@ -12,16 +12,18 @@ import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
 public interface HistoryRepository extends JpaRepository<HistoryEntity, String> {
 	/**
 	 * Check if a history entity exists by family id and flow instance id
-	 * @param familyId the family id
-	 * @param flowInstanceId the flow instance id
-	 * @return true if the history entity exists, false otherwise
+	 * 
+	 * @param  familyId       the family id
+	 * @param  flowInstanceId the flow instance id
+	 * @return                true if the history entity exists, false otherwise
 	 */
 	boolean existsByFamilyIdAndFlowInstanceId(String familyId, String flowInstanceId);
 
 	/**
 	 * Find all history entities by flow instance ids
-	 * @param flowInstanceIds the flow instance ids
-	 * @return List of history entities
+	 * 
+	 * @param  flowInstanceIds the flow instance ids
+	 * @return                 List of history entities
 	 */
 	List<HistoryEntity> findAllByFlowInstanceIdIn(List<String> flowInstanceIds);
 }

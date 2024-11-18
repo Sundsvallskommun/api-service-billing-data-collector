@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="ISO-8859-1" standalone="no"?>
+<FlowInstance xmlns="http://www.nowhere.com" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.nowhere.com schema-123.xsd">
+	<Header>
+		<Flow>
+			<FamilyID>358</FamilyID>
+			<Version>1</Version>
+			<FlowID>475</FlowID>
+			<Name><![CDATA[Kundfakturaformulär]]></Name>
+		</Flow>
+		<FlowInstanceID>6931</FlowInstanceID>
+		<Status>
+			<ID>4085</ID>
+			<Name><![CDATA[Klart]]></Name>
+		</Status>
+		<Poster>
+			<Firstname><![CDATA[Kalle]]></Firstname>
+			<Lastname><![CDATA[Anka]]></Lastname>
+			<Email><![CDATA[kalle.anka@sundsvall.se]]></Email>
+			<ID>26028</ID>
+		</Poster>
+		<Owner>
+			<Firstname><![CDATA[Kalle]]></Firstname>
+			<Lastname><![CDATA[Anka]]></Lastname>
+			<Email><![CDATA[martin.anka@sundsvall.se]]></Email>
+			<ID>26028</ID>
+		</Owner>
+		<Posted>2024-10-18T13:25:58</Posted>
+		<FirstSubmitted>2024-10-18T13:25:58</FirstSubmitted>
+		<LastSubmitted>2024-10-18T13:25:58</LastSubmitted>
+	</Header>
+	<Values>
+		<VemArKontaktperson>
+			<QueryID>16997</QueryID>
+			<Name><![CDATA[Vem är vår kontaktperson?]]></Name>
+			<Value>Jag själv</Value>
+		</VemArKontaktperson>
+		<SaljarensUppg>
+			<QueryID>16999</QueryID>
+			<Name><![CDATA[Säljarens namn]]></Name>
+			<Firstname><![CDATA[Kalle]]></Firstname>
+			<Lastname><![CDATA[Anka]]></Lastname>
+			<Phone><![CDATA[0702429049]]></Phone>
+			<Email><![CDATA[kalle.anka@sundsvall.se]]></Email>
+		</SaljarensUppg>
+		<FakturerandeForvaltning>
+			<QueryID>17000</QueryID>
+			<Name><![CDATA[Fakturerande förvaltning/verksamhet (för statistikändamål)]]></Name>
+			<Value>15 - ServiceCenter</Value>
+		</FakturerandeForvaltning>
+		<FakturanSkickasTill>
+			<QueryID>17001</QueryID>
+			<Name><![CDATA[Fakturan ska skickas till:]]></Name>
+			<Value>Externt företag (inklusive kommunalt bolag)</Value>
+		</FakturanSkickasTill>
+		<SokLaggTillForetag>
+			<QueryID>17032</QueryID>
+			<Name><![CDATA[Klicka på sök och välj företag. Om inte företaget finns i söklistan så välj lägg till företagsuppgifter]]></Name>
+			<Value>sök och välj företag</Value>
+		</SokLaggTillForetag>
+		<OrganisationsnummerExtForetagRD>
+			<QueryID>17033</QueryID>
+			<Name><![CDATA[sök och välj företag (Externt företag)]]></Name>
+			<Value>5591628770 - Väldigt långt företagsnamn indeed AB - Ankeborgsvägen 123 -   - 123 45 Ankeborg - 870</Value>
+		</OrganisationsnummerExtForetagRD>
+		<ReferensForetag>
+			<QueryID>17034</QueryID>
+			<Name><![CDATA[Kundens referens]]></Name>
+			<Value><![CDATA[Kunds referens...]]></Value>
+		</ReferensForetag>
+		<FakturaraderExtern>
+			<QueryID>17111</QueryID>
+			<Name><![CDATA[Hur många fakturarader vill du lägga till?]]></Name>
+			<Value>1</Value>
+		</FakturaraderExtern>
+		<BarakningarExtern1>
+			<QueryID>17113</QueryID>
+			<Name><![CDATA[Beräkningar (1)]]></Name>
+			<FakturatextExtern1><![CDATA[Oerhört bra fakturatext]]></FakturatextExtern1>
+			<AntalExtern1><![CDATA[1]]></AntalExtern1>
+			<APrisExtern1><![CDATA[12.34]]></APrisExtern1>
+		</BarakningarExtern1>
+		<SummeringExtern1>
+			<QueryID>17117</QueryID>
+			<Name><![CDATA[Summering (1)]]></Name>
+			<TotSummeringExtern1><![CDATA[12,34 SEK]]></TotSummeringExtern1>
+		</SummeringExtern1>
+		<MomssatsExtern1>
+			<QueryID>17118</QueryID>
+			<Name><![CDATA[Momssats i % (1)]]></Name>
+			<Value>25</Value>
+		</MomssatsExtern1>
+		<AnsvarExtern1>
+			<QueryID>17120</QueryID>
+			<Name><![CDATA[Ansvar (1)]]></Name>
+			<Value>66028000 - Servicefunktion HB</Value>
+		</AnsvarExtern1>
+		<UnderkontoExtern1>
+			<QueryID>17121</QueryID>
+			<Name><![CDATA[välj Intäktskonto 25% Moms (1)]]></Name>
+			<Value>313210 Parkeringsavgifter 25%</Value>
+		</UnderkontoExtern1>
+		<VerksamhetExtern1>
+			<QueryID>17125</QueryID>
+			<Name><![CDATA[Verksamhet (1)]]></Name>
+			<Value>315400 - Scenkonst</Value>
+		</VerksamhetExtern1>
+		<ProjektkontoExtern1>
+			<QueryID>17127</QueryID>
+			<Name><![CDATA[Projekt (1)]]></Name>
+			<Value>11231 - IT Digital mognad</Value>
+		</ProjektkontoExtern1>
+		<TotalSummeringIntern>
+			<QueryID>17197</QueryID>
+			<Name><![CDATA[Total summering]]></Name>
+			<TotalSummeringIntern><![CDATA[12,34 SEK]]></TotalSummeringIntern>
+		</TotalSummeringIntern>
+	</Values>
+</FlowInstance>

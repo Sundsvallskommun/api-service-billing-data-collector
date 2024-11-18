@@ -43,7 +43,7 @@ class FalloutShedlockTest {
 		@Primary
 		public FalloutJobHandler createMock() {
 
-			final var mockBean =  Mockito.mock(FalloutJobHandler.class);
+			final var mockBean = Mockito.mock(FalloutJobHandler.class);
 
 			// Let mock hang
 			doAnswer(invocation -> {

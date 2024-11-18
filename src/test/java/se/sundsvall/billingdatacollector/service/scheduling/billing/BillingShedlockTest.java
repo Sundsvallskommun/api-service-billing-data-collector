@@ -43,7 +43,7 @@ class BillingShedlockTest {
 		@Primary
 		public BillingJobHandler createMock() {
 
-			final var mockBean =  Mockito.mock(BillingJobHandler.class);
+			final var mockBean = Mockito.mock(BillingJobHandler.class);
 
 			// Let mock hang
 			doAnswer(invocation -> {

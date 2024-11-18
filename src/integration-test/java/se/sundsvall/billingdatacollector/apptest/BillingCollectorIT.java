@@ -50,7 +50,7 @@ class BillingCollectorIT extends AbstractAppTest {
 	private ScheduledJobRepository scheduledJobRepository;
 
 	@Test
-	void test1_fetchAndCreateBillingRecords() {
+	void test1_fetchAndCreateBillingRecordsForPrivatePerson() {
 		// Setup wiremock
 		setupCall();
 

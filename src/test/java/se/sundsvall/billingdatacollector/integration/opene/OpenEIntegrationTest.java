@@ -23,7 +23,9 @@ import se.sundsvall.billingdatacollector.service.DbService;
 import se.sundsvall.dept44.test.annotation.resource.Load;
 import se.sundsvall.dept44.test.extension.ResourceLoaderExtension;
 
-@ExtendWith({ MockitoExtension.class, ResourceLoaderExtension.class })
+@ExtendWith({
+	MockitoExtension.class, ResourceLoaderExtension.class
+})
 class OpenEIntegrationTest {
 
 	@Mock
@@ -57,7 +59,7 @@ class OpenEIntegrationTest {
 	}
 
 	@Test
-	void testGetBillingRecord(@Load("/open-e/flow-instance.internal.xml") final String xml) {
+	void testGetBillingRecord(@Load("/open-e/flow-instance.internal.organization.xml") final String xml) {
 		when(mockOpenEClient.getErrand("123456")).thenReturn(xml.getBytes(ISO_8859_1));
 		when(mockMapper.mapToBillingRecordWrapper(any(byte[].class))).thenReturn(BillingRecordWrapper.builder().build());
 
@@ -71,7 +73,7 @@ class OpenEIntegrationTest {
 	}
 
 	@Test
-	void testGetGetBillingRecordWhenNoMatchingMapperExists(@Load("/open-e/flow-instance.external.xml") final String xml) {
+	void testGetGetBillingRecordWhenNoMatchingMapperExists(@Load("/open-e/flow-instance.external.organization.xml") final String xml) {
 		when(mockOpenEClient.getErrand("123456")).thenReturn(xml.getBytes(ISO_8859_1));
 
 		assertThatExceptionOfType(ThrowableProblem.class)
@@ -79,7 +81,7 @@ class OpenEIntegrationTest {
 			.satisfies(throwableProblem -> {
 				assertThat(throwableProblem.getStatus()).isEqualTo(Status.INTERNAL_SERVER_ERROR);
 				assertThat(throwableProblem.getTitle()).isEqualTo("Couldn't map billing record from OpenE");
-				assertThat(throwableProblem.getDetail()).startsWith("Unsupported familyId: 456");
+				assertThat(throwableProblem.getDetail()).startsWith("Unsupported familyId: 358");
 			});
 
 		verify(mockOpenEClient).getErrand("123456");
@@ -88,7 +90,7 @@ class OpenEIntegrationTest {
 	}
 
 	@Test
-	void testGetBillingRecordWhenNoFamilyIdExists(@Load("/open-e/flow-instance-404.xml") final String xml) {
+	void testGetBillingRecordWhenNoFamilyIdExists(@Load("/open-e/flow-instance.404.xml") final String xml) {
 		when(mockOpenEClient.getErrand("123456")).thenReturn(xml.getBytes(ISO_8859_1));
 
 		assertThatExceptionOfType(ThrowableProblem.class)
@@ -104,7 +106,7 @@ class OpenEIntegrationTest {
 	}
 
 	@Test
-	void testGetBillingRecord_shouldSaveToFalloutTable_whenMappingFails(@Load("/open-e/flow-instance.external-faulty.xml") final String xml) {
+	void testGetBillingRecord_shouldSaveToFalloutTable_whenMappingFails(@Load("/open-e/flow-instance.external.incomplete.xml") final String xml) {
 		// Arrange
 		when(mockOpenEClient.getErrand("123456")).thenReturn(xml.getBytes(ISO_8859_1));
 

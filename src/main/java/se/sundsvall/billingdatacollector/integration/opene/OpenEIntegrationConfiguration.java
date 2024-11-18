@@ -13,14 +13,14 @@ import feign.auth.BasicAuthRequestInterceptor;
 @Import(FeignConfiguration.class)
 class OpenEIntegrationConfiguration {
 
-    static final String CLIENT_ID = "open-e";
+	static final String CLIENT_ID = "open-e";
 
-    @Bean
-    FeignBuilderCustomizer feignBuilderCustomizer(final OpenEIntegrationProperties properties) {
-        return FeignMultiCustomizer.create()
-            .withErrorDecoder(new ProblemErrorDecoder(CLIENT_ID))
-            .withRequestTimeoutsInSeconds(properties.connectTimeout(), properties.readTimeout())
-            .withRequestInterceptor(new BasicAuthRequestInterceptor(properties.username(), properties.password()))
-            .composeCustomizersToOne();
-    }
+	@Bean
+	FeignBuilderCustomizer feignBuilderCustomizer(final OpenEIntegrationProperties properties) {
+		return FeignMultiCustomizer.create()
+			.withErrorDecoder(new ProblemErrorDecoder(CLIENT_ID))
+			.withRequestTimeoutsInSeconds(properties.connectTimeout(), properties.readTimeout())
+			.withRequestInterceptor(new BasicAuthRequestInterceptor(properties.username(), properties.password()))
+			.composeCustomizersToOne();
+	}
 }
