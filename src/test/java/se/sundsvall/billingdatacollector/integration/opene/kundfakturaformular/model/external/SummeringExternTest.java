@@ -15,7 +15,7 @@ class SummeringExternTest {
 
 	@Test
 	void testBean() {
-		assertThat(BarakningarExtern.class, allOf(
+		assertThat(SummeringExtern.class, allOf(
 			hasValidBeanConstructor(),
 			hasValidGettersAndSetters(),
 			hasValidBeanHashCode(),

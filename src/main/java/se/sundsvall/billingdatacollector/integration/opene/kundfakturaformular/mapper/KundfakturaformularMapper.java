@@ -5,7 +5,6 @@ import static se.sundsvall.billingdatacollector.integration.opene.util.XPathUtil
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
-
 import se.sundsvall.billingdatacollector.integration.opene.OpenEIntegrationProperties;
 import se.sundsvall.billingdatacollector.integration.opene.OpenEMapper;
 import se.sundsvall.billingdatacollector.integration.opene.util.ListUtil;
@@ -22,14 +21,10 @@ class KundfakturaformularMapper implements OpenEMapper {
 	public static final int MAX_DESCRIPTION_LENGTH = 30;
 	private static final String IS_EXTERNAL_INVOICE = "/FlowInstance/Values/BarakningarExtern1";
 
-	private final ExternalMapper externalMapper;
-	private final InternalMapper internalMapper;
 	private final OpenEIntegrationProperties properties;
 	private final ListUtil listUtil;
 
-	KundfakturaformularMapper(ExternalMapper externalMapper, InternalMapper internalMapper, OpenEIntegrationProperties properties, ListUtil listUtil) {
-		this.externalMapper = externalMapper;
-		this.internalMapper = internalMapper;
+	KundfakturaformularMapper(OpenEIntegrationProperties properties, ListUtil listUtil) {
 		this.properties = properties;
 		this.listUtil = listUtil;
 	}
@@ -43,15 +38,12 @@ class KundfakturaformularMapper implements OpenEMapper {
 	public BillingRecordWrapper mapToBillingRecordWrapper(final byte[] xml) {
 		LOGGER.info("Mapping xml to BillingRecordWrapper");
 		var openeCollections = listUtil.parseLists(xml);
-		BillingRecordWrapper wrapper;
 
 		// Check what kind of invoice it is and map accordingly
 		if (getString(xml, IS_EXTERNAL_INVOICE) == null) {
-			wrapper = internalMapper.mapToInternalBillingRecord(xml, openeCollections);
-		} else {
-			wrapper = externalMapper.mapToExternalBillingRecord(xml, openeCollections);
+			return InternalMapper.mapToInternalBillingRecord(xml, openeCollections);
 		}
 
-		return wrapper;
+		return ExternalMapper.mapToExternalBillingRecord(xml, openeCollections);
 	}
 }

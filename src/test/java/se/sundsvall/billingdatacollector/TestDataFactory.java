@@ -4,17 +4,6 @@ import static se.sundsvall.billingdatacollector.integration.opene.kundfakturafor
 import static se.sundsvall.billingdatacollector.integration.opene.kundfakturaformular.model.BillingRecordConstants.SUNDSVALLS_MUNICIPALITY_ID;
 import static se.sundsvall.billingdatacollector.integration.opene.kundfakturaformular.model.BillingRecordConstants.SUNDSVALLS_MUNICIPALITY_ORGANIZATION_NUMBER;
 
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.time.LocalDate;
-import java.util.List;
-
-import se.sundsvall.billingdatacollector.integration.db.model.HistoryEntity;
-import se.sundsvall.billingdatacollector.integration.db.model.ScheduledJobEntity;
-import se.sundsvall.billingdatacollector.model.BillingRecordWrapper;
-
 import generated.se.sundsvall.billingpreprocessor.AccountInformation;
 import generated.se.sundsvall.billingpreprocessor.AddressDetails;
 import generated.se.sundsvall.billingpreprocessor.BillingRecord;
@@ -23,13 +12,21 @@ import generated.se.sundsvall.billingpreprocessor.InvoiceRow;
 import generated.se.sundsvall.billingpreprocessor.Recipient;
 import generated.se.sundsvall.billingpreprocessor.Status;
 import generated.se.sundsvall.billingpreprocessor.Type;
+import java.io.IOException;
+import java.time.LocalDate;
+import java.util.List;
+import se.sundsvall.billingdatacollector.integration.db.model.HistoryEntity;
+import se.sundsvall.billingdatacollector.integration.db.model.ScheduledJobEntity;
+import se.sundsvall.billingdatacollector.model.BillingRecordWrapper;
 
 public final class TestDataFactory {
 
 	public static byte[] readBytesFromOpenEFile(String fileName) {
-		Path path = Paths.get("src/test/resources/open-e/" + fileName);
-		try {
-			return Files.readAllBytes(path);
+		try (var inputStream = TestDataFactory.class.getClassLoader().getResourceAsStream("open-e/" + fileName)) {
+			if (inputStream == null) {
+				throw new RuntimeException("No such file: " + fileName);
+			}
+			return inputStream.readAllBytes();
 		} catch (IOException e) {
 			throw new RuntimeException(e);
 		}

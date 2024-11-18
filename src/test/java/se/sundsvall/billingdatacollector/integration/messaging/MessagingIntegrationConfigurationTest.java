@@ -17,7 +17,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.cloud.openfeign.FeignBuilderCustomizer;
 import org.springframework.security.oauth2.client.registration.ClientRegistration;
 import org.springframework.security.oauth2.core.AuthorizationGrantType;
-
 import se.sundsvall.billingdatacollector.integration.Oauth2;
 import se.sundsvall.dept44.configuration.feign.FeignMultiCustomizer;
 import se.sundsvall.dept44.configuration.feign.decoder.ProblemErrorDecoder;
@@ -29,7 +28,7 @@ class MessagingIntegrationConfigurationTest {
 	private ClientRegistration mockClientRegistration;
 
 	@Spy
-	private FeignMultiCustomizer feignMultiCustomizerSpy;
+	private FeignMultiCustomizer spyFeignMultiCustomizer;
 
 	@Mock
 	private FeignBuilderCustomizer mockFeignBuilderCustomizer;
@@ -58,11 +57,11 @@ class MessagingIntegrationConfigurationTest {
 		when(mockOauth2.authorizationGrantType()).thenReturn(authorizationGrantType);
 		when(mockProperties.connectTimeout()).thenReturn(54);
 		when(mockProperties.readTimeout()).thenReturn(32);
-		when(feignMultiCustomizerSpy.composeCustomizersToOne()).thenReturn(mockFeignBuilderCustomizer);
+		when(spyFeignMultiCustomizer.composeCustomizersToOne()).thenReturn(mockFeignBuilderCustomizer);
 
 		try (var mockFeignMultiCustomizer = mockStatic(FeignMultiCustomizer.class);
 			var mockStaticClientRegistration = mockStatic(ClientRegistration.class)) {
-			mockFeignMultiCustomizer.when(FeignMultiCustomizer::create).thenReturn(feignMultiCustomizerSpy);
+			mockFeignMultiCustomizer.when(FeignMultiCustomizer::create).thenReturn(spyFeignMultiCustomizer);
 
 			mockStaticClientRegistration.when(() -> ClientRegistration.withRegistrationId(CLIENT_ID))
 				.thenReturn(mockClientRegistrationBuilder);
@@ -85,10 +84,10 @@ class MessagingIntegrationConfigurationTest {
 			verify(mockOauth2).authorizationGrantType();
 			verify(mockProperties).connectTimeout();
 			verify(mockProperties).readTimeout();
-			verify(feignMultiCustomizerSpy).withErrorDecoder(errorDecoderCaptor.capture());
-			verify(feignMultiCustomizerSpy).withRetryableOAuth2InterceptorForClientRegistration(same(mockClientRegistration));
-			verify(feignMultiCustomizerSpy).withRequestTimeoutsInSeconds(54, 32);
-			verify(feignMultiCustomizerSpy).composeCustomizersToOne();
+			verify(spyFeignMultiCustomizer).withErrorDecoder(errorDecoderCaptor.capture());
+			verify(spyFeignMultiCustomizer).withRetryableOAuth2InterceptorForClientRegistration(same(mockClientRegistration));
+			verify(spyFeignMultiCustomizer).withRequestTimeoutsInSeconds(54, 32);
+			verify(spyFeignMultiCustomizer).composeCustomizersToOne();
 
 			assertThat(errorDecoderCaptor.getValue()).hasFieldOrPropertyWithValue("integrationName", CLIENT_ID);
 			assertThat(customizer).isSameAs(mockFeignBuilderCustomizer);

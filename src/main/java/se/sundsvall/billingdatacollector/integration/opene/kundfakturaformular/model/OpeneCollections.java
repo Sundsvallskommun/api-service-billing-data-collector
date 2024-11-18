@@ -1,14 +1,18 @@
 package se.sundsvall.billingdatacollector.integration.opene.kundfakturaformular.model;
 
+import static se.sundsvall.billingdatacollector.integration.opene.kundfakturaformular.mapper.OpeneCollectionsMapper.consolidateBarakningarExternWithBerakningExtern;
+import static se.sundsvall.billingdatacollector.integration.opene.kundfakturaformular.mapper.OpeneCollectionsMapper.consolidateBerakningarExternWithBerakningExtern;
+import static se.sundsvall.billingdatacollector.integration.opene.kundfakturaformular.mapper.OpeneCollectionsMapper.consolidateBerakningarWithBerakningIntern;
+
 import java.lang.reflect.Field;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
-
+import lombok.Getter;
+import lombok.Setter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import se.sundsvall.billingdatacollector.integration.opene.kundfakturaformular.model.external.AktivitetskontoExtern;
 import se.sundsvall.billingdatacollector.integration.opene.kundfakturaformular.model.external.AnsvarExtern;
 import se.sundsvall.billingdatacollector.integration.opene.kundfakturaformular.model.external.BarakningarExtern;
@@ -29,9 +33,9 @@ import se.sundsvall.billingdatacollector.integration.opene.kundfakturaformular.m
 import se.sundsvall.billingdatacollector.integration.opene.kundfakturaformular.model.internal.UnderkontoIntern;
 import se.sundsvall.billingdatacollector.integration.opene.kundfakturaformular.model.internal.VerksamhetIntern;
 
-import lombok.Getter;
-import lombok.Setter;
-
+/**
+ * A class to hold all the different collections of objects from OpenE since there are no schema for them.
+ */
 @Getter
 @Setter
 public class OpeneCollections {
@@ -65,6 +69,7 @@ public class OpeneCollections {
 			// All internal objects
 			case AktivitetskontoIntern aktivitetskontoIntern -> aktivitetskontoInternMap.put(index, aktivitetskontoIntern);
 			case AnsvarIntern ansvarIntern -> ansvarInternMap.put(index, ansvarIntern);
+
 			// Special cases, don't actually use the "BerakningarIntern", consolidate instead
 			case BerakningarIntern berakningarIntern -> berakningInternMap.put(index, consolidateBerakningarWithBerakningIntern(berakningarIntern));
 			case BerakningIntern berakningIntern -> berakningInternMap.put(index, berakningIntern);
@@ -76,8 +81,10 @@ public class OpeneCollections {
 			// All external objects
 			case AktivitetskontoExtern aktivitetskontoExtern -> aktivitetskontoExternMap.put(index, aktivitetskontoExtern);
 			case AnsvarExtern ansvarExtern -> ansvarExternMap.put(index, ansvarExtern);
+
 			// Also special, don't use BarakningarExtern, consolidate instead
 			case BarakningarExtern barakningarExtern -> berakningExternMap.put(index, consolidateBarakningarExternWithBerakningExtern(barakningarExtern));
+
 			// And consolidate here as well
 			case BerakningarExtern berakningarExtern -> berakningExternMap.put(index, consolidateBerakningarExternWithBerakningExtern(berakningarExtern));
 			case BerakningExtern berakningExtern -> berakningExternMap.put(index, berakningExtern);
@@ -87,6 +94,7 @@ public class OpeneCollections {
 			case SummeringExtern summeringExtern -> summeringExternMap.put(index, summeringExtern);
 			case UnderkontoExtern underkontoExtern -> underkontoExternMap.put(index, underkontoExtern);
 			case VerksamhetExtern verksamhetExtern -> verksamhetExternMap.put(index, verksamhetExtern);
+
 			default -> throw new IllegalArgumentException("Unsupported object type: " + object.getClass().getName());
 		}
 	}
@@ -94,7 +102,8 @@ public class OpeneCollections {
 	/**
 	 * Used to determine how many iterations there are in the maps, which is later used in
 	 * KundfakturaformularMapper to determine how many rows to loop over.
-	 * Also make sure there are only two sizes, e.g. 0 and 2, any other number means we have diverging information.
+	 * Also make sure there are only two sizes, e.g. 0 and 2, any other number means we have diverging or missing
+	 * information.
 	 * I.e we will miss needed information.
 	 * 
 	 * @return the number of rows in the maps
@@ -106,7 +115,6 @@ public class OpeneCollections {
 
 		// We only want two sizes, any more means we have missing information
 		if (sizes.size() == MAX_NUMBER_OF_SIZES) {
-			// Get the highest number of rows
 			return sizes.stream().max(Integer::compareTo).orElse(0);
 		} else {
 			LOGGER.error("Got mismatch in the number of iterations in the maps: {}", sizes);
@@ -114,60 +122,7 @@ public class OpeneCollections {
 		}
 	}
 
-	// ==============================
-	// Apparently there's a plethora of "berakningar/berakning/barakning" etc so here we consolidate all of them into one
-	// ==============================
-
-	/**
-	 * @param  berakningarExtern the object to consolidate
-	 * @return                   a BerakningExtern object
-	 */
-	private BerakningExtern consolidateBerakningarExternWithBerakningExtern(BerakningarExtern berakningarExtern) {
-		return BerakningExtern.builder()
-			.withAntalExtern(berakningarExtern.getAntalExtern())
-			.withAPrisExtern(berakningarExtern.getAPrisExtern())
-			.withFakturatextExtern(berakningarExtern.getFakturatextExtern())
-			.withName(berakningarExtern.getName())
-			.withQueryID(berakningarExtern.getQueryID())
-			.build();
-	}
-
-	/**
-	 * Special case since OpenE names the first iteration to BerakningIntern1 and the second one to BerakningarIntern[x]
-	 * Consolidate the two into one and only use the BerakningIntern name
-	 * 
-	 * @param  berakningarIntern the object to consolidate
-	 * @return                   a BerakningExtern object
-	 */
-	private BerakningIntern consolidateBerakningarWithBerakningIntern(BerakningarIntern berakningarIntern) {
-		return BerakningIntern.builder()
-			.withAntalIntern(berakningarIntern.getAntalIntern())
-			.withAPrisIntern(berakningarIntern.getAPrisIntern())
-			.withFakturatextIntern(berakningarIntern.getFakturatextIntern())
-			.withName(berakningarIntern.getName())
-			.withQueryID(berakningarIntern.getQueryID())
-			.build();
-	}
-
-	/**
-	 * Special case since OpenE names the first iteration to BerakningExtern1 and the second one to BarakningarExtern[x]
-	 * Consolidate the two into one and only use the BarakningExtern name
-	 * 
-	 * @param  barakningarExtern the object to consolidate
-	 * @return                   a BerakningExtern object
-	 */
-	private BerakningExtern consolidateBarakningarExternWithBerakningExtern(BarakningarExtern barakningarExtern) {
-		// Create a new BerakningExtern object
-		return BerakningExtern.builder()
-			.withAntalExtern(barakningarExtern.getAntalExtern())
-			.withAPrisExtern(barakningarExtern.getAPrisExtern())
-			.withFakturatextExtern(barakningarExtern.getFakturatextExtern())
-			.withName(barakningarExtern.getName())
-			.withQueryID(barakningarExtern.getQueryID())
-			.build();
-	}
-
-	public static Map<String, HashMap<?, ?>> getAllMaps(OpeneCollections openeCollections) {
+	private static Map<String, HashMap<?, ?>> getAllMaps(OpeneCollections openeCollections) {
 		Map<String, HashMap<?, ?>> maps = new HashMap<>();
 		Field[] fields = OpeneCollections.class.getDeclaredFields();
 

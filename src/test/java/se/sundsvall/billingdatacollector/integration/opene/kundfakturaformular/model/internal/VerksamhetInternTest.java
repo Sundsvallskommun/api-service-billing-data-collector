@@ -29,16 +29,16 @@ class VerksamhetInternTest {
 		final var name = "name";
 		final var value = "value";
 
-		final var summeringIntern = VerksamhetIntern.builder()
+		final var verksamhetIntern = VerksamhetIntern.builder()
 			.withQueryID(queryID)
 			.withName(name)
 			.withValue(value)
 			.build();
 
-		assertThat(summeringIntern).isNotNull().hasNoNullFieldsOrProperties();
-		assertThat(summeringIntern.getQueryID()).isEqualTo(queryID);
-		assertThat(summeringIntern.getName()).isEqualTo(name);
-		assertThat(summeringIntern.getValue()).isEqualTo(value);
+		assertThat(verksamhetIntern).isNotNull().hasNoNullFieldsOrProperties();
+		assertThat(verksamhetIntern.getQueryID()).isEqualTo(queryID);
+		assertThat(verksamhetIntern.getName()).isEqualTo(name);
+		assertThat(verksamhetIntern.getValue()).isEqualTo(value);
 	}
 
 	@Test

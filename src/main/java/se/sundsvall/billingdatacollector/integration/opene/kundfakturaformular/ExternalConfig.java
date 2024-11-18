@@ -4,7 +4,6 @@ import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Scope;
-
 import se.sundsvall.billingdatacollector.integration.opene.kundfakturaformular.model.external.AktivitetskontoExtern;
 import se.sundsvall.billingdatacollector.integration.opene.kundfakturaformular.model.external.AnsvarExtern;
 import se.sundsvall.billingdatacollector.integration.opene.kundfakturaformular.model.external.BarakningarExtern;
@@ -23,71 +22,71 @@ import se.sundsvall.billingdatacollector.integration.opene.kundfakturaformular.m
  * Each bean is of prototype scope, i.e. a new instance is created every time the bean is requested.
  */
 @Configuration
-public class ExternalConfig {
+class ExternalConfig {
 
 	@Bean
 	@Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
-	public AktivitetskontoExtern aktivitetskontoExtern() {
+	AktivitetskontoExtern aktivitetskontoExtern() {
 		return AktivitetskontoExtern.builder().build();
 	}
 
 	@Bean
 	@Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
-	public AnsvarExtern ansvarExtern() {
+	AnsvarExtern ansvarExtern() {
 		return AnsvarExtern.builder().build();
 	}
 
 	@Bean
 	@Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
-	public BarakningarExtern barakningarExtern() {
+	BarakningarExtern barakningarExtern() {
 		return BarakningarExtern.builder().build();
 	}
 
 	@Bean
 	@Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
-	public BerakningarExtern berakningarExtern() {
+	BerakningarExtern berakningarExtern() {
 		return BerakningarExtern.builder().build();
 	}
 
 	@Bean
 	@Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
-	public BerakningExtern berakningExtern() {
+	BerakningExtern berakningExtern() {
 		return BerakningExtern.builder().build();
 	}
 
 	@Bean
 	@Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
-	public MomssatsExtern momssatsExtern() {
+	MomssatsExtern momssatsExtern() {
 		return MomssatsExtern.builder().build();
 	}
 
 	@Bean
 	@Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
-	public ObjektkontoExtern objektkontoExtern() {
+	ObjektkontoExtern objektkontoExtern() {
 		return ObjektkontoExtern.builder().build();
 	}
 
 	@Bean
 	@Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
-	public ProjektkontoExtern projektkontoExtern() {
+	ProjektkontoExtern projektkontoExtern() {
 		return ProjektkontoExtern.builder().build();
 	}
 
 	@Bean
 	@Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
-	public SummeringExtern summeringExtern() {
+	SummeringExtern summeringExtern() {
 		return SummeringExtern.builder().build();
 	}
 
 	@Bean
 	@Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
-	public UnderkontoExtern underkontoExtern() {
+	UnderkontoExtern underkontoExtern() {
 		return UnderkontoExtern.builder().build();
 	}
 
 	@Bean
 	@Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
-	public VerksamhetExtern verksamhetExtern() {
+	VerksamhetExtern verksamhetExtern() {
 		return VerksamhetExtern.builder().build();
 	}
 }

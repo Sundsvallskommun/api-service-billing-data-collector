@@ -1,5 +1,6 @@
 {
 	"request": {
+		"headers": {"Authorization": {"equalTo": "Basic dXNlcjpwNHNzdzByZA=="}},
 		"method": "GET",
 		"urlPathPattern": "/opene/api/instanceapi/getinstances/family/([a-zA-Z0-9/-]*)"
 	},
