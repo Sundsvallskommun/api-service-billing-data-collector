@@ -6,7 +6,6 @@ import static org.zalando.problem.Status.INTERNAL_SERVER_ERROR;
 
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
-
 import org.junit.jupiter.api.Test;
 import org.zalando.problem.ThrowableProblem;
 
@@ -16,7 +15,7 @@ class MapperHelperTest {
 
 	@Test
 	void testConvertStringToFloat_shouldThrowException_whenNotParseableToFloat() {
-		var unparseable = "not a float";
+		final var unparseable = "not a float";
 
 		assertThatExceptionOfType(ThrowableProblem.class)
 			.isThrownBy(() -> mapper.convertStringToFloat(unparseable))
@@ -28,7 +27,7 @@ class MapperHelperTest {
 
 	@Test
 	void testGetLeadingDigits_shouldThrowException_whenNoDigitsFound() {
-		var noDigits = "no leading digits";
+		final var noDigits = "no leading digits";
 
 		assertThatExceptionOfType(ThrowableProblem.class)
 			.isThrownBy(() -> mapper.getLeadingDigits(noDigits))
@@ -40,7 +39,7 @@ class MapperHelperTest {
 
 	@Test
 	void testGetTrailingDigits_shouldThrowException_whenNoDigitsFound() {
-		var noDigits = "no trailing digits";
+		final var noDigits = "no trailing digits";
 
 		assertThatExceptionOfType(ThrowableProblem.class)
 			.isThrownBy(() -> mapper.getTrailingDigitsFromString(noDigits))
