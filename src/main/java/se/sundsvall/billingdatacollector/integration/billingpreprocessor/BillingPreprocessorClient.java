@@ -2,13 +2,12 @@ package se.sundsvall.billingdatacollector.integration.billingpreprocessor;
 
 import static se.sundsvall.billingdatacollector.integration.billingpreprocessor.BillingPreprocessorIntegrationConfiguration.CLIENT_ID;
 
+import generated.se.sundsvall.billingpreprocessor.BillingRecord;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-
-import generated.se.sundsvall.billingpreprocessor.BillingRecord;
 
 @FeignClient(
 	name = CLIENT_ID,

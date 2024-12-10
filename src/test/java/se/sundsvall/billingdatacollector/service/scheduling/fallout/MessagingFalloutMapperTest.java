@@ -2,15 +2,13 @@ package se.sundsvall.billingdatacollector.service.scheduling.fallout;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import generated.se.sundsvall.messaging.Party;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
-
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-
-import generated.se.sundsvall.messaging.Party;
 import se.sundsvall.billingdatacollector.Application;
 import se.sundsvall.billingdatacollector.model.Fallout;
 import se.sundsvall.billingdatacollector.support.annotation.UnitTest;

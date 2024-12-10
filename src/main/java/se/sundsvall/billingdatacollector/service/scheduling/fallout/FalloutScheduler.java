@@ -1,13 +1,11 @@
 package se.sundsvall.billingdatacollector.service.scheduling.fallout;
 
+import net.javacrumbs.shedlock.spring.annotation.SchedulerLock;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
-
 import se.sundsvall.dept44.requestid.RequestId;
-
-import net.javacrumbs.shedlock.spring.annotation.SchedulerLock;
 
 @Service
 public class FalloutScheduler {

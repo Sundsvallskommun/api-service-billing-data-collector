@@ -1,11 +1,5 @@
 package se.sundsvall.billingdatacollector.integration.db.model;
 
-import java.time.LocalDate;
-import java.util.Objects;
-
-import org.hibernate.Length;
-import org.hibernate.annotations.UuidGenerator;
-
 import jakarta.persistence.Column;
 import jakarta.persistence.Convert;
 import jakarta.persistence.Entity;
@@ -13,11 +7,15 @@ import jakarta.persistence.Id;
 import jakarta.persistence.Index;
 import jakarta.persistence.PrePersist;
 import jakarta.persistence.Table;
+import java.time.LocalDate;
+import java.util.Objects;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.Length;
+import org.hibernate.annotations.UuidGenerator;
 import se.sundsvall.billingdatacollector.integration.db.converter.BillingRecordWrapperConverter;
 import se.sundsvall.billingdatacollector.model.BillingRecordWrapper;
 
