@@ -40,7 +40,7 @@ class FalloutShedlockTest {
 		@Primary
 		public FalloutJobHandler createMock() {
 
-			final var mockBean = Mockito.mock(FalloutJobHandler.class);
+			final var mockFalloutJobHandler = Mockito.mock(FalloutJobHandler.class);
 
 			// Let mock hang
 			doAnswer(invocation -> {
@@ -48,9 +48,9 @@ class FalloutShedlockTest {
 				await().forever()
 					.until(() -> false);
 				return null;
-			}).when(mockBean).handleFallout();
+			}).when(mockFalloutJobHandler).handleFallout();
 
-			return mockBean;
+			return mockFalloutJobHandler;
 		}
 	}
 

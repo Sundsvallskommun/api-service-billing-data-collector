@@ -40,7 +40,7 @@ class BillingShedlockTest {
 		@Primary
 		public BillingJobHandler createMock() {
 
-			final var mockBean = Mockito.mock(BillingJobHandler.class);
+			final var mockBillingJobHandler = Mockito.mock(BillingJobHandler.class);
 
 			// Let mock hang
 			doAnswer(invocation -> {
@@ -48,9 +48,9 @@ class BillingShedlockTest {
 				await().forever()
 					.until(() -> false);
 				return null;
-			}).when(mockBean).performBilling();
+			}).when(mockBillingJobHandler).performBilling();
 
-			return mockBean;
+			return mockBillingJobHandler;
 		}
 	}
 
