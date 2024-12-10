@@ -11,14 +11,12 @@ import java.time.LocalDate;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
-
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
-
 import se.sundsvall.billingdatacollector.service.CollectorService;
 import se.sundsvall.billingdatacollector.service.DbService;
 
@@ -47,7 +45,7 @@ class BillingJobHandlerTest {
 
 		// Assert
 		verify(mockDbService).getLatestJob();
-		//We want to make sure that the job fetches with a startDate == 3 days ago, and endDate == yesterday
+		// We want to make sure that the job fetches with a startDate == 3 days ago, and endDate == yesterday
 		verify(mockDbService).saveScheduledJob(LocalDate.now().minusDays(3), LocalDate.now().minusDays(1));
 		verify(mockCollectorService).triggerBillingBetweenDates(LocalDate.now().minusDays(3), LocalDate.now().minusDays(1), Collections.emptySet());
 		verifyNoMoreInteractions(mockDbService, mockCollectorService);

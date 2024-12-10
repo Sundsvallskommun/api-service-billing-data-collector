@@ -3,15 +3,13 @@ package se.sundsvall.billingdatacollector.service.scheduling.fallout;
 import static org.apache.commons.lang3.StringUtils.isBlank;
 import static org.springframework.util.CollectionUtils.isEmpty;
 
+import jakarta.transaction.Transactional;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
-
-import jakarta.transaction.Transactional;
 import se.sundsvall.billingdatacollector.integration.messaging.FalloutMessageProperties;
 import se.sundsvall.billingdatacollector.integration.messaging.MessagingClient;
 import se.sundsvall.billingdatacollector.model.Fallout;

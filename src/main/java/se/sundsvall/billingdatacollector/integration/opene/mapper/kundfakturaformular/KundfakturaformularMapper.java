@@ -5,15 +5,6 @@ import static se.sundsvall.billingdatacollector.integration.opene.mapper.Billing
 import static se.sundsvall.billingdatacollector.integration.opene.util.XPathUtil.extractValue;
 import static se.sundsvall.billingdatacollector.integration.opene.util.XPathUtil.getString;
 
-import java.util.List;
-
-import org.springframework.stereotype.Component;
-
-import se.sundsvall.billingdatacollector.integration.opene.OpenEIntegrationProperties;
-import se.sundsvall.billingdatacollector.integration.opene.OpenEMapper;
-import se.sundsvall.billingdatacollector.integration.opene.mapper.MapperHelper;
-import se.sundsvall.billingdatacollector.model.BillingRecordWrapper;
-
 import generated.se.sundsvall.billingpreprocessor.AccountInformation;
 import generated.se.sundsvall.billingpreprocessor.AddressDetails;
 import generated.se.sundsvall.billingpreprocessor.BillingRecord;
@@ -22,6 +13,12 @@ import generated.se.sundsvall.billingpreprocessor.InvoiceRow;
 import generated.se.sundsvall.billingpreprocessor.Recipient;
 import generated.se.sundsvall.billingpreprocessor.Status;
 import generated.se.sundsvall.billingpreprocessor.Type;
+import java.util.List;
+import org.springframework.stereotype.Component;
+import se.sundsvall.billingdatacollector.integration.opene.OpenEIntegrationProperties;
+import se.sundsvall.billingdatacollector.integration.opene.OpenEMapper;
+import se.sundsvall.billingdatacollector.integration.opene.mapper.MapperHelper;
+import se.sundsvall.billingdatacollector.model.BillingRecordWrapper;
 
 @Component
 class KundfakturaformularMapper implements OpenEMapper {

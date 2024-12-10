@@ -18,7 +18,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
-
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -28,7 +27,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.ResponseEntity;
 import org.zalando.problem.Status;
 import org.zalando.problem.ThrowableProblem;
-
 import se.sundsvall.billingdatacollector.TestDataFactory;
 import se.sundsvall.billingdatacollector.integration.billingpreprocessor.BillingPreprocessorClient;
 import se.sundsvall.billingdatacollector.integration.opene.OpenEIntegration;

@@ -11,12 +11,13 @@ import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
-
 import se.sundsvall.billingdatacollector.integration.opene.util.annotation.XPath;
 import se.sundsvall.dept44.test.annotation.resource.Load;
 import se.sundsvall.dept44.test.extension.ResourceLoaderExtension;
 
-@ExtendWith({ MockitoExtension.class, ResourceLoaderExtension.class })
+@ExtendWith({
+	MockitoExtension.class, ResourceLoaderExtension.class
+})
 class XPathUtilTests {
 
 	private byte[] xml;

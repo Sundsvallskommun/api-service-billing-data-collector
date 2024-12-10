@@ -11,14 +11,12 @@ import static org.zalando.problem.Status.INTERNAL_SERVER_ERROR;
 
 import java.util.Optional;
 import java.util.UUID;
-
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.zalando.problem.ThrowableProblem;
-
 import se.sundsvall.billingdatacollector.TestDataFactory;
 import se.sundsvall.billingdatacollector.integration.opene.OpenEIntegrationProperties;
 import se.sundsvall.billingdatacollector.integration.party.PartyIntegration;

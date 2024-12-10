@@ -7,17 +7,15 @@ import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 
+import generated.se.sundsvall.messaging.EmailBatchRequest;
+import generated.se.sundsvall.messaging.MessageBatchResult;
 import java.util.List;
-
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
-
-import generated.se.sundsvall.messaging.EmailBatchRequest;
-import generated.se.sundsvall.messaging.MessageBatchResult;
 import se.sundsvall.billingdatacollector.integration.db.model.FalloutEntity;
 import se.sundsvall.billingdatacollector.integration.messaging.FalloutMessageProperties;
 import se.sundsvall.billingdatacollector.integration.messaging.MessagingClient;
