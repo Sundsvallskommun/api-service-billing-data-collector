@@ -2,10 +2,9 @@ package se.sundsvall.billingdatacollector.service.decorator;
 
 import static org.zalando.problem.Status.INTERNAL_SERVER_ERROR;
 
+import generated.se.sundsvall.billingpreprocessor.Type;
 import org.springframework.stereotype.Component;
 import org.zalando.problem.Problem;
-
-import generated.se.sundsvall.billingpreprocessor.Type;
 import se.sundsvall.billingdatacollector.integration.opene.OpenEIntegrationProperties;
 import se.sundsvall.billingdatacollector.integration.party.PartyIntegration;
 import se.sundsvall.billingdatacollector.model.BillingRecordWrapper;

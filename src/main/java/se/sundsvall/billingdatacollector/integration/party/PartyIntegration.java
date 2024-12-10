@@ -3,7 +3,6 @@ package se.sundsvall.billingdatacollector.integration.party;
 import static generated.se.sundsvall.party.PartyType.PRIVATE;
 
 import java.util.Optional;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;

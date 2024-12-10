@@ -13,10 +13,8 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import java.time.OffsetDateTime;
 import java.util.Random;
 import java.util.UUID;
-
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
-
 import se.sundsvall.billingdatacollector.model.BillingRecordWrapper;
 
 class FalloutEntityTest {

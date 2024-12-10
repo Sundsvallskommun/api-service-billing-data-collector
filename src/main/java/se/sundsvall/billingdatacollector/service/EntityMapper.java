@@ -2,7 +2,6 @@ package se.sundsvall.billingdatacollector.service;
 
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
-
 import se.sundsvall.billingdatacollector.integration.db.model.FalloutEntity;
 import se.sundsvall.billingdatacollector.integration.db.model.HistoryEntity;
 import se.sundsvall.billingdatacollector.integration.db.model.ScheduledJobEntity;

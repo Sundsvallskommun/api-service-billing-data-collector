@@ -4,9 +4,6 @@ import static se.sundsvall.billingdatacollector.integration.opene.mapper.Billing
 import static se.sundsvall.billingdatacollector.integration.opene.mapper.BillingRecordConstants.SUNDSVALLS_MUNICIPALITY_ID;
 import static se.sundsvall.billingdatacollector.integration.opene.mapper.BillingRecordConstants.SUNSVALLS_MUNICIPALITY_ORGANIZATION_NUMBER;
 
-import java.time.LocalDate;
-import java.util.List;
-
 import generated.se.sundsvall.billingpreprocessor.AccountInformation;
 import generated.se.sundsvall.billingpreprocessor.AddressDetails;
 import generated.se.sundsvall.billingpreprocessor.BillingRecord;
@@ -15,6 +12,8 @@ import generated.se.sundsvall.billingpreprocessor.InvoiceRow;
 import generated.se.sundsvall.billingpreprocessor.Recipient;
 import generated.se.sundsvall.billingpreprocessor.Status;
 import generated.se.sundsvall.billingpreprocessor.Type;
+import java.time.LocalDate;
+import java.util.List;
 import se.sundsvall.billingdatacollector.integration.db.model.HistoryEntity;
 import se.sundsvall.billingdatacollector.integration.db.model.ScheduledJobEntity;
 import se.sundsvall.billingdatacollector.model.BillingRecordWrapper;

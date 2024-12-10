@@ -8,11 +8,11 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 
+import generated.se.sundsvall.billingpreprocessor.BillingRecord;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Stream;
-
 import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -27,8 +27,6 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
-
-import generated.se.sundsvall.billingpreprocessor.BillingRecord;
 import se.sundsvall.billingdatacollector.integration.db.FalloutRepository;
 import se.sundsvall.billingdatacollector.integration.db.HistoryRepository;
 import se.sundsvall.billingdatacollector.integration.db.ScheduledJobRepository;

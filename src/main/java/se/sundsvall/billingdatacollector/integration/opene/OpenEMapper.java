@@ -4,7 +4,7 @@ import se.sundsvall.billingdatacollector.model.BillingRecordWrapper;
 
 public interface OpenEMapper {
 
-    String getSupportedFamilyId();
+	String getSupportedFamilyId();
 
-    BillingRecordWrapper mapToBillingRecordWrapper(byte[] xml);
+	BillingRecordWrapper mapToBillingRecordWrapper(byte[] xml);
 }

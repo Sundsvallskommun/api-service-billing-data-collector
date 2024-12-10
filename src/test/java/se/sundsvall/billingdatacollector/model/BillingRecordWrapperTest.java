@@ -9,9 +9,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.CoreMatchers.allOf;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-import org.junit.jupiter.api.Test;
-
 import generated.se.sundsvall.billingpreprocessor.BillingRecord;
+import org.junit.jupiter.api.Test;
 
 class BillingRecordWrapperTest {
 
