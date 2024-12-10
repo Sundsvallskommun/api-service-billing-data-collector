@@ -12,10 +12,8 @@ import static org.mockito.Mockito.verifyNoMoreInteractions;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.util.Map;
-
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,7 +22,6 @@ import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Primary;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
-
 import se.sundsvall.billingdatacollector.support.annotation.UnitTest;
 
 @SpringBootTest(properties = {
@@ -43,7 +40,7 @@ class FalloutShedlockTest {
 		@Primary
 		public FalloutJobHandler createMock() {
 
-			final var mockBean =  Mockito.mock(FalloutJobHandler.class);
+			final var mockFalloutJobHandler = Mockito.mock(FalloutJobHandler.class);
 
 			// Let mock hang
 			doAnswer(invocation -> {
@@ -51,9 +48,9 @@ class FalloutShedlockTest {
 				await().forever()
 					.until(() -> false);
 				return null;
-			}).when(mockBean).handleFallout();
+			}).when(mockFalloutJobHandler).handleFallout();
 
-			return mockBean;
+			return mockFalloutJobHandler;
 		}
 	}
 
@@ -88,7 +85,7 @@ class FalloutShedlockTest {
 
 	private LocalDateTime mapTimestamp(final ResultSet rs) throws SQLException {
 		if (rs.next()) {
-			return LocalDateTime.parse(rs.getString("locked_at"), DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SSS"));
+			return rs.getTimestamp("locked_at").toLocalDateTime();
 		}
 		return null;
 	}

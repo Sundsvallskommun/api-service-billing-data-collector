@@ -1,7 +1,6 @@
 package se.sundsvall.billingdatacollector.integration.messaging;
 
 import java.util.List;
-
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
 @ConfigurationProperties("falloutreport")

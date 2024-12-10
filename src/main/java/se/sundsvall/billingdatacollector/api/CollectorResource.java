@@ -7,10 +7,16 @@ import static org.springframework.http.MediaType.APPLICATION_PROBLEM_JSON_VALUE;
 import static org.springframework.http.ResponseEntity.accepted;
 import static org.zalando.problem.Status.BAD_REQUEST;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.constraints.NotEmpty;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Set;
-
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
@@ -21,14 +27,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.zalando.problem.Problem;
 import org.zalando.problem.violations.ConstraintViolationProblem;
-
-import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.Parameter;
-import io.swagger.v3.oas.annotations.media.Content;
-import io.swagger.v3.oas.annotations.media.Schema;
-import io.swagger.v3.oas.annotations.responses.ApiResponse;
-import io.swagger.v3.oas.annotations.tags.Tag;
-import jakarta.validation.constraints.NotEmpty;
 import se.sundsvall.billingdatacollector.service.CollectorService;
 import se.sundsvall.dept44.common.validators.annotation.ValidMunicipalityId;
 
@@ -39,7 +37,9 @@ import se.sundsvall.dept44.common.validators.annotation.ValidMunicipalityId;
 @ApiResponse(
 	responseCode = "400",
 	description = "Bad Request",
-	content = @Content(schema = @Schema(oneOf = { Problem.class, ConstraintViolationProblem.class })))
+	content = @Content(schema = @Schema(oneOf = {
+		Problem.class, ConstraintViolationProblem.class
+	})))
 @ApiResponse(
 	responseCode = "500",
 	description = "Internal Server Error",
@@ -64,7 +64,9 @@ class CollectorResource {
 				description = "Accepted",
 				useReturnTypeSchema = true)
 		})
-	@PostMapping(path = "/trigger/{flowInstanceId}", produces = { APPLICATION_JSON_VALUE, APPLICATION_PROBLEM_JSON_VALUE })
+	@PostMapping(path = "/trigger/{flowInstanceId}", produces = {
+		APPLICATION_JSON_VALUE, APPLICATION_PROBLEM_JSON_VALUE
+	})
 	ResponseEntity<Void> triggerBilling(
 		@Parameter(name = "municipalityId", description = "Municipality id", example = "2281") @ValidMunicipalityId @PathVariable final String municipalityId,
 		@Parameter(name = "flowInstanceId", description = "flowInstanceId to trigger billing for", example = "123") @NotEmpty @PathVariable("flowInstanceId") final String flowInstanceId) {
@@ -84,7 +86,9 @@ class CollectorResource {
 				description = "Accepted",
 				useReturnTypeSchema = true)
 		})
-	@PostMapping(path = "/trigger", produces = { APPLICATION_JSON_VALUE, APPLICATION_PROBLEM_JSON_VALUE })
+	@PostMapping(path = "/trigger", produces = {
+		APPLICATION_JSON_VALUE, APPLICATION_PROBLEM_JSON_VALUE
+	})
 	ResponseEntity<List<String>> triggerBilling(
 		@Parameter(name = "municipalityId", description = "Municipality id", example = "2281") @ValidMunicipalityId @PathVariable final String municipalityId,
 		@RequestParam(name = "startDate") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) @Parameter(example = "2024-01-01") final LocalDate startDate,
