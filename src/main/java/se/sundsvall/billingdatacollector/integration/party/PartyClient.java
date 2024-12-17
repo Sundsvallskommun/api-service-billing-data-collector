@@ -5,6 +5,7 @@ import static org.springframework.http.MediaType.TEXT_PLAIN_VALUE;
 import static se.sundsvall.billingdatacollector.integration.party.PartyIntegrationConfiguration.CLIENT_ID;
 
 import generated.se.sundsvall.party.PartyType;
+import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
 import java.util.Optional;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.cloud.openfeign.FeignClient;
@@ -16,6 +17,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 	configuration = PartyIntegrationConfiguration.class,
 	url = "${integration.party.base-url}",
 	dismiss404 = true)
+@CircuitBreaker(name = CLIENT_ID)
 interface PartyClient {
 
 	@GetMapping(

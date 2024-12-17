@@ -6,6 +6,7 @@ import static se.sundsvall.billingdatacollector.integration.messaging.MessagingI
 
 import generated.se.sundsvall.messaging.EmailBatchRequest;
 import generated.se.sundsvall.messaging.MessageBatchResult;
+import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -15,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 	name = CLIENT_ID,
 	configuration = MessagingIntegrationConfiguration.class,
 	url = "${integration.messaging.base-url}")
+@CircuitBreaker(name = CLIENT_ID)
 public interface MessagingClient {
 
 	@PostMapping(

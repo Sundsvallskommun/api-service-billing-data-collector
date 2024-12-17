@@ -2,6 +2,7 @@ package se.sundsvall.billingdatacollector.integration.opene;
 
 import static se.sundsvall.billingdatacollector.integration.opene.OpenEIntegrationConfiguration.CLIENT_ID;
 
+import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -12,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 	url = "${integration.open-e.base-url}",
 	configuration = OpenEIntegrationConfiguration.class,
 	dismiss404 = true)
+@CircuitBreaker(name = CLIENT_ID)
 interface OpenEClient {
 
 	String TEXT_XML_CHARSET_ISO_8859_1 = "text/xml; charset=ISO-8859-1";
