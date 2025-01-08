@@ -3,7 +3,6 @@ package se.sundsvall.billingdatacollector.api;
 import static org.springframework.http.HttpHeaders.CONTENT_TYPE;
 import static org.springframework.http.MediaType.ALL_VALUE;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
-import static org.springframework.http.MediaType.APPLICATION_PROBLEM_JSON_VALUE;
 import static org.springframework.http.ResponseEntity.accepted;
 import static org.zalando.problem.Status.BAD_REQUEST;
 
@@ -64,9 +63,7 @@ class CollectorResource {
 				description = "Accepted",
 				useReturnTypeSchema = true)
 		})
-	@PostMapping(path = "/trigger/{flowInstanceId}", produces = {
-		APPLICATION_JSON_VALUE, APPLICATION_PROBLEM_JSON_VALUE
-	})
+	@PostMapping(path = "/trigger/{flowInstanceId}", produces = ALL_VALUE)
 	ResponseEntity<Void> triggerBilling(
 		@Parameter(name = "municipalityId", description = "Municipality id", example = "2281") @ValidMunicipalityId @PathVariable final String municipalityId,
 		@Parameter(name = "flowInstanceId", description = "flowInstanceId to trigger billing for", example = "123") @NotEmpty @PathVariable("flowInstanceId") final String flowInstanceId) {
@@ -86,9 +83,7 @@ class CollectorResource {
 				description = "Accepted",
 				useReturnTypeSchema = true)
 		})
-	@PostMapping(path = "/trigger", produces = {
-		APPLICATION_JSON_VALUE, APPLICATION_PROBLEM_JSON_VALUE
-	})
+	@PostMapping(path = "/trigger", produces = APPLICATION_JSON_VALUE)
 	ResponseEntity<List<String>> triggerBilling(
 		@Parameter(name = "municipalityId", description = "Municipality id", example = "2281") @ValidMunicipalityId @PathVariable final String municipalityId,
 		@RequestParam(name = "startDate") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) @Parameter(example = "2024-01-01") final LocalDate startDate,
