@@ -20,11 +20,13 @@ scheduler:
       expression: '0 0 3 * * *'
     name: opene
     lock-at-most-for: PT5M
+    maximum-execution-time: PT5M
   fallout:
     cron:
       expression: '0 0 4 * * *'
     name: fallout
     lock-at-most-for: PT5M
+    maximum-execution-time: PT5M
 falloutreport:
   recipients:
     - dummy@sundsvall.se

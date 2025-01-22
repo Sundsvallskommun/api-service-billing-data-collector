@@ -12,15 +12,11 @@
 	<artifactId>api-service-billing-data-collector</artifactId>
 	<version>1.0</version>
 	<name>api-service-billing-data-collector</name>
-
 	<properties>
-		<shedlock.version>6.2.0</shedlock.version>
 		<xsoup.version>0.3.7</xsoup.version>
-
 		<generated-sources-path>${project.build.directory}/generated-sources</generated-sources-path>
 		<generated-sources-java-path>src/main/java</generated-sources-java-path>
 	</properties>
-
 	<dependencies>
 		<!-- Test -->
 		<dependency>
@@ -33,11 +29,14 @@
 			<artifactId>mariadb</artifactId>
 			<scope>test</scope>
 		</dependency>
-
 		<!-- Framework -->
 		<dependency>
 			<groupId>se.sundsvall.dept44</groupId>
 			<artifactId>dept44-starter-feign</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>se.sundsvall.dept44</groupId>
+			<artifactId>dept44-starter-scheduler</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>se.sundsvall.dept44</groupId>
@@ -47,7 +46,6 @@
 			<groupId>org.flywaydb</groupId>
 			<artifactId>flyway-mysql</artifactId>
 		</dependency>
-
 		<!-- Database-->
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
@@ -58,7 +56,6 @@
 			<artifactId>mariadb-java-client</artifactId>
 			<scope>runtime</scope>
 		</dependency>
-
 		<!-- Other -->
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
@@ -77,16 +74,6 @@
 			<scope>provided</scope>
 		</dependency>
 		<dependency>
-			<groupId>net.javacrumbs.shedlock</groupId>
-			<artifactId>shedlock-spring</artifactId>
-			<version>${shedlock.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>net.javacrumbs.shedlock</groupId>
-			<artifactId>shedlock-provider-jdbc-template</artifactId>
-			<version>${shedlock.version}</version>
-		</dependency>
-		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-cache</artifactId>
 		</dependency>
@@ -94,9 +81,7 @@
 			<groupId>com.github.ben-manes.caffeine</groupId>
 			<artifactId>caffeine</artifactId>
 		</dependency>
-
 	</dependencies>
-
 	<build>
 		<plugins>
 			<plugin>
@@ -108,7 +93,6 @@
 					</nonFilteredFileExtensions>
 				</configuration>
 			</plugin>
-
 			<plugin>
 				<groupId>org.jacoco</groupId>
 				<artifactId>jacoco-maven-plugin</artifactId>
@@ -121,7 +105,6 @@
 					</excludes>
 				</configuration>
 			</plugin>
-
 			<plugin>
 				<groupId>org.openapitools</groupId>
 				<artifactId>openapi-generator-maven-plugin</artifactId>
@@ -186,7 +169,6 @@
 					</execution>
 				</executions>
 			</plugin>
-
 			<plugin>
 				<groupId>org.codehaus.mojo</groupId>
 				<artifactId>build-helper-maven-plugin</artifactId>
