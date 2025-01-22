@@ -1,11 +1,9 @@
 package se.sundsvall.billingdatacollector.service.scheduling.billing;
 
-import net.javacrumbs.shedlock.spring.annotation.SchedulerLock;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
-import se.sundsvall.dept44.requestid.RequestId;
+import se.sundsvall.dept44.scheduling.Dept44Scheduled;
 
 @Service
 public class BillingScheduler {
@@ -14,15 +12,16 @@ public class BillingScheduler {
 
 	private final BillingJobHandler billingJobHandler;
 
-	public BillingScheduler(BillingJobHandler billingJobHandler) {
+	public BillingScheduler(final BillingJobHandler billingJobHandler) {
 		this.billingJobHandler = billingJobHandler;
 	}
 
-	@Scheduled(cron = "${scheduler.opene.cron.expression}")
-	@SchedulerLock(name = "${scheduler.opene.name}", lockAtMostFor = "${scheduler.opene.lock-at-most-for}")
+	@Dept44Scheduled(
+		cron = "${scheduler.opene.cron.expression}",
+		name = "${scheduler.opene.name}",
+		lockAtMostFor = "${scheduler.opene.lock-at-most-for}",
+		maximumExecutionTime = "${scheduler.opene.maximum-execution-time}")
 	public void runBillingJob() {
-		LOG.info("Scheduled task is starting billing job.");
-		RequestId.init();
 		billingJobHandler.performBilling();
 	}
 }
