@@ -5,6 +5,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import generated.se.sundsvall.messaging.Party;
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Base64;
 import java.util.List;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,9 +17,6 @@ import se.sundsvall.billingdatacollector.support.annotation.UnitTest;
 @SpringBootTest(classes = Application.class, webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @UnitTest
 class MessagingFalloutMapperTest {
-
-	@Autowired
-	private MessagingFalloutMapper mapper;
 
 	private static final String HTML_MESSAGE = """
 		<!DOCTYPE html>
@@ -40,6 +38,8 @@ class MessagingFalloutMapperTest {
 		              </p>
 		          </body>
 		      </html>""";
+	@Autowired
+	private MessagingFalloutMapper mapper;
 
 	@Test
 	void testComposeFalloutEmail() {
@@ -63,8 +63,10 @@ class MessagingFalloutMapperTest {
 		assertThat(emailBatchRequest.getParties()).containsExactlyInAnyOrder(
 			new Party().emailAddress("test@nowhere.com"),
 			new Party().emailAddress("test2@nowhere.com"));
+		// Decode fromBASE64
+		final var decodedHTMLMessage = new String(Base64.getDecoder().decode(emailBatchRequest.getHtmlMessage()));
 		// Replace all spaces and compare
 		assertThat(
-			emailBatchRequest.getHtmlMessage().replaceAll("\\s+", "")).isEqualTo(HTML_MESSAGE.formatted(LocalDate.now()).replaceAll("\\s+", ""));
+			decodedHTMLMessage.replaceAll("\\s+", "")).isEqualTo(HTML_MESSAGE.formatted(LocalDate.now()).replaceAll("\\s+", ""));
 	}
 }
