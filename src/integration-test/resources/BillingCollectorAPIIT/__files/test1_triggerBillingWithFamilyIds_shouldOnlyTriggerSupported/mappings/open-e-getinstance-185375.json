@@ -1,6 +1,10 @@
 {
 	"request": {
-		"headers": {"Authorization": {"equalTo": "Basic dXNlcjpwNHNzdzByZA=="}},
+		"headers": {
+			"Authorization": {
+				"equalTo": "Basic dXNlcjpwNHNzdzByZA=="
+			}
+		},
 		"method": "GET",
 		"urlPathPattern": "/opene/api/instanceapi/getinstance/185375/xml"
 	},

@@ -32,7 +32,6 @@ import se.sundsvall.billingdatacollector.integration.billingpreprocessor.Billing
 import se.sundsvall.billingdatacollector.integration.opene.OpenEIntegration;
 import se.sundsvall.billingdatacollector.model.BillingRecordWrapper;
 import se.sundsvall.billingdatacollector.service.decorator.BillingRecordDecorator;
-
 import wiremock.com.google.common.collect.Sets;
 
 @ExtendWith(MockitoExtension.class)

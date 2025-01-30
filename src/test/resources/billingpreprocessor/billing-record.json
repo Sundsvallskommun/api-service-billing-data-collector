@@ -27,24 +27,28 @@
 			"dueDate": null,
 			"customerId": null,
 			"description": null,
-			"invoiceRows": [{
-				"totalAmount": 2100,
-				"quantity": 3,
-				"accountInformation": {
-					"activity": "4165",
-					"costCenter": "43200000",
-					"subaccount": "345000",
-					"counterpart": "86000000",
-					"project": null,
-					"department": "315310",
-					"article": "3452000 - ANKEBORG",
-					"accuralKey": null
-				},
-				"detailedDescriptions": [],
-				"descriptions": ["Julmarknad Ankeborg. 3 marknadsplatser"],
-				"vatCode": "00",
-				"costPerUnit": 700
-			}],
+			"invoiceRows": [
+				{
+					"totalAmount": 2100,
+					"quantity": 3,
+					"accountInformation": {
+						"activity": "4165",
+						"costCenter": "43200000",
+						"subaccount": "345000",
+						"counterpart": "86000000",
+						"project": null,
+						"department": "315310",
+						"article": "3452000 - ANKEBORG",
+						"accuralKey": null
+					},
+					"detailedDescriptions": [],
+					"descriptions": [
+						"Julmarknad Ankeborg. 3 marknadsplatser"
+					],
+					"vatCode": "00",
+					"costPerUnit": 700
+				}
+			],
 			"referenceId": null
 		},
 		"category": "KUNDFAKTURA",

@@ -1,12 +1,10 @@
 package se.sundsvall.billingdatacollector.service.decorator;
 
+import generated.se.sundsvall.billingpreprocessor.Type;
 import org.springframework.stereotype.Component;
-
 import se.sundsvall.billingdatacollector.integration.opene.OpenEIntegrationProperties;
 import se.sundsvall.billingdatacollector.integration.party.PartyIntegration;
 import se.sundsvall.billingdatacollector.model.BillingRecordWrapper;
-
-import generated.se.sundsvall.billingpreprocessor.Type;
 
 @Component
 public class KundfakturaformularBillingRecordDecorator implements BillingRecordDecorator {

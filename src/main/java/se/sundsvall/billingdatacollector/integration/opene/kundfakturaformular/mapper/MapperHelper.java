@@ -16,7 +16,7 @@ final class MapperHelper {
 
 	private static final String DIGITS_AND_DECIMAL_SEPARATORS_REGEX = "[^0-9.,]+";
 	private static final String LEADING_DIGITS_REGEX = "^\\d+";
-	private static final String ORGANIZATION_INFORMATION_REGEX = "(\\d+)\\s-\\s(.*)\\s-\\s(.*)\\s-\\s(.*)\\s-\\s(\\d{3}\\s\\d{2})(.*)\\s-\\s(\\d+)";
+	private static final String ORGANIZATION_INFORMATION_REGEX = "(\\d+)\\s\\|\\s(.*)\\s\\|\\s(.*)\\s\\|\\s(.*)\\s\\|\\s(\\d{3}\\s\\d{2})\\s(.*)\\s\\|\\s(\\d+)";
 	private static final String TRAILING_DIGITS_REGEX = "\\d+$";
 
 	private static final Pattern LEADING_DIGITS_PATTERN = Pattern.compile(LEADING_DIGITS_REGEX);

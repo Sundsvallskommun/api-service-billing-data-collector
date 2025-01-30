@@ -1,12 +1,37 @@
 {
 	"request": {
-		"headers": {"Authorization": {"equalTo": "Bearer MTQ0NjJkZmQ5OTM2NDE1ZTZjNGZmZjI3"}},
+		"headers": {
+			"Authorization": {
+				"equalTo": "Bearer MTQ0NjJkZmQ5OTM2NDE1ZTZjNGZmZjI3"
+			}
+		},
 		"method": "POST",
-		"bodyPatterns": [{"contains": "familyId: 358, flowInstanceId: 185376, requestId: 83f2ba1f-8b9c-4df9-b05f-c27b40985eee"}],
+		"bodyPatterns": [
+			{
+				"matchesJsonPath": "$.parties[?(@.emailAddress == 'test@nowhere.com')]"
+			},
+			{
+				"matchesJsonPath": "$.parties[?(@.emailAddress == 'test2@nowhere.com')]"
+			},
+			{
+				"matchesJsonPath": "$[?(@.subject == 'Fel vid hämtning/skapande av faktura-poster')]"
+			},
+			{
+				"matchesJsonPath": "$[?(@.htmlMessage == 'PCFET0NUWVBFIGh0bWw+IDxodG1sIGxhbmc9ImVuIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMTk5OS94aHRtbCI+PGJvZHk+CjxiPkbDtmxqYW5kZSBwcm9ibGVtIGhhciBpbnRyw6RmZmF0IHZpZCBnZW5lcmVyaW5nIGF2IGZha3R1cmEtcG9zdGVyICgyMDI1LTAxLTMwKTwvYj4gPHA+CjxpPjEgc3QuIGZlbDo8L2k+PHVsPjxsaT4gZmFtaWx5SWQ6IDM1OCwgZmxvd0luc3RhbmNlSWQ6IDE4NTM3NiwgcmVxdWVzdElkOiA4M2YyYmExZi04YjljLTRkZjktYjA1Zi1jMjdiNDA5ODVlZWU8L2xpPgo8L3VsPjxwPgogIDxiPk1lZCB2w6RubGlnIGjDpGxzbmluZyA8YnIvPgogIDxhIGhyZWY9Im1haWx0bzpkdW1teUBzdW5kc3ZhbGwuc2UiPkJpbGxpbmcgRGF0YSBDb2xsZWN0b3I8L2E+PC9iPgo8L3A+CjwvYm9keT48L2h0bWw+')]"
+			},
+			{
+				"matchesJsonPath": "$.sender[?(@.name == 'Billing Data Collector')]"
+			},
+			{
+				"matchesJsonPath": "$.sender[?(@.address == 'dummy@sundsvall.se')]"
+			}
+		],
 		"url": "/2281/email/batch"
 	},
 	"response": {
-		"headers": {"Content-Type": "application/json"},
+		"headers": {
+			"Content-Type": "application/json"
+		},
 		"status": 201
 	}
 }
