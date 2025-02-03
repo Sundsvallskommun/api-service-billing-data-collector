@@ -129,7 +129,7 @@ final class ExternalMapper {
 				.costPerUnit(MapperHelper.convertStringToFloat(
 					ofNullable(collections.getBerakningExternMap().get(index)).map(BerakningExtern::getAPrisExtern).orElse(null)))
 				.vatCode(ofNullable(collections.getMomssatsExternMap().get(index)).map(MomssatsExtern::getValue).orElse(null))
-				.accountInformation(new AccountInformation()
+				.accountInformation(List.of(new AccountInformation()
 					.activity(MapperHelper.getLeadingDigitsFromString(
 						ofNullable(collections.getAktivitetskontoExternMap().get(index)).map(AktivitetskontoExtern::getValue).orElse(null)))
 					.article(ofNullable(collections.getObjektKontoExternMap().get(index)).map(ObjektkontoExtern::getValue).orElse(null))
@@ -139,7 +139,7 @@ final class ExternalMapper {
 					.department(MapperHelper.getLeadingDigitsFromString(
 						ofNullable(collections.getVerksamhetExternMap().get(index)).map(VerksamhetExtern::getValue).orElse(null)))
 					.subaccount(MapperHelper.getLeadingDigitsFromString(
-						ofNullable(collections.getUnderkontoExternMap().get(index)).map(UnderkontoExtern::getValue).orElse(null))));
+						ofNullable(collections.getUnderkontoExternMap().get(index)).map(UnderkontoExtern::getValue).orElse(null)))));
 			invoiceRows.add(invoiceRow);
 		}
 

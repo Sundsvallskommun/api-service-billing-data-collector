@@ -69,18 +69,6 @@ class OpeneCollectionsTest {
 	}
 
 	@Test
-	void testGetNumberOfRows_shouldThrowException_whenDiverging() {
-		OpeneCollections openeCollections = new OpeneCollections();
-		openeCollections.add(1, AktivitetskontoIntern.builder().build());
-		openeCollections.add(1, BerakningarIntern.builder().build());
-		openeCollections.add(2, BerakningarIntern.builder().build());
-
-		assertThatExceptionOfType(IllegalStateException.class)
-			.isThrownBy(() -> openeCollections.getNumberOfRows())
-			.satisfies(exception -> assertThat(exception).hasMessage("Mismatch in the number of iterations in the maps: [0, 1, 2]"));
-	}
-
-	@Test
 	void testAddAktivitetskontoIntern() {
 		OpeneCollections openeCollections = new OpeneCollections();
 		openeCollections.add(1, AktivitetskontoIntern.builder().build());

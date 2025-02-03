@@ -63,19 +63,19 @@ class KundfakturaformularMapperTest {
 				assertThat(row.getDescriptions()).containsExactly("Bra fakturatext1");
 				assertThat(row.getCostPerUnit()).isEqualTo(Float.parseFloat("567.89"));
 				assertThat(row.getQuantity()).isEqualTo(Float.parseFloat("3.0"));
-				assertThat(row.getAccountInformation().getCostCenter()).isEqualTo("15810100");
-				assertThat(row.getAccountInformation().getSubaccount()).isEqualTo("931311");
-				assertThat(row.getAccountInformation().getDepartment()).isEqualTo("510410");
-				assertThat(row.getAccountInformation().getCounterpart()).isEqualTo("115");
+				assertThat(row.getAccountInformation().getFirst().getCostCenter()).isEqualTo("15810100");
+				assertThat(row.getAccountInformation().getFirst().getSubaccount()).isEqualTo("931311");
+				assertThat(row.getAccountInformation().getFirst().getDepartment()).isEqualTo("510410");
+				assertThat(row.getAccountInformation().getFirst().getCounterpart()).isEqualTo("115");
 			},
 			row -> {
 				assertThat(row.getDescriptions()).containsExactly("Bra fakturatext2");
 				assertThat(row.getCostPerUnit()).isEqualTo(Float.parseFloat("234.56"));
 				assertThat(row.getQuantity()).isEqualTo(Float.parseFloat("1.0"));
-				assertThat(row.getAccountInformation().getCostCenter()).isEqualTo("11200100");
-				assertThat(row.getAccountInformation().getSubaccount()).isEqualTo("930110");
-				assertThat(row.getAccountInformation().getDepartment()).isEqualTo("100500");
-				assertThat(row.getAccountInformation().getCounterpart()).isEqualTo("115");
+				assertThat(row.getAccountInformation().getFirst().getCostCenter()).isEqualTo("11200100");
+				assertThat(row.getAccountInformation().getFirst().getSubaccount()).isEqualTo("930110");
+				assertThat(row.getAccountInformation().getFirst().getDepartment()).isEqualTo("100500");
+				assertThat(row.getAccountInformation().getFirst().getCounterpart()).isEqualTo("115");
 			});
 	}
 
@@ -118,10 +118,10 @@ class KundfakturaformularMapperTest {
 		assertThat(invoiceRow.getQuantity()).isEqualTo(1.0f);
 
 		var accountInformation = invoiceRow.getAccountInformation();
-		assertThat(accountInformation.getCostCenter()).isEqualTo("66028000");
-		assertThat(accountInformation.getSubaccount()).isEqualTo("313210");
-		assertThat(accountInformation.getDepartment()).isEqualTo("315400");
-		assertThat(accountInformation.getCounterpart()).isEqualTo("87000000");
+		assertThat(accountInformation.getFirst().getCostCenter()).isEqualTo("66028000");
+		assertThat(accountInformation.getFirst().getSubaccount()).isEqualTo("313210");
+		assertThat(accountInformation.getFirst().getDepartment()).isEqualTo("315400");
+		assertThat(accountInformation.getFirst().getCounterpart()).isEqualTo("87000000");
 	}
 
 	@Test
@@ -165,11 +165,11 @@ class KundfakturaformularMapperTest {
 		assertThat(invoiceRow.getQuantity()).isEqualTo(1.0f);
 
 		var accountInformation = invoiceRow.getAccountInformation();
-		assertThat(accountInformation.getCostCenter()).isEqualTo("66050000");
-		assertThat(accountInformation.getSubaccount()).isEqualTo("301100");
-		assertThat(accountInformation.getDepartment()).isEqualTo("450220");
-		assertThat(accountInformation.getActivity()).isEqualTo("6200");
-		assertThat(accountInformation.getCounterpart()).isEqualTo("86000000");
+		assertThat(accountInformation.getFirst().getCostCenter()).isEqualTo("66050000");
+		assertThat(accountInformation.getFirst().getSubaccount()).isEqualTo("301100");
+		assertThat(accountInformation.getFirst().getDepartment()).isEqualTo("450220");
+		assertThat(accountInformation.getFirst().getActivity()).isEqualTo("6200");
+		assertThat(accountInformation.getFirst().getCounterpart()).isEqualTo("86000000");
 	}
 
 	@Test

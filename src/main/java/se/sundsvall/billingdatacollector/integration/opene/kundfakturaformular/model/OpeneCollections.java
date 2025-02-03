@@ -13,6 +13,8 @@ import lombok.Getter;
 import lombok.Setter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.zalando.problem.Problem;
+import org.zalando.problem.Status;
 import se.sundsvall.billingdatacollector.integration.opene.kundfakturaformular.model.external.AktivitetskontoExtern;
 import se.sundsvall.billingdatacollector.integration.opene.kundfakturaformular.model.external.AnsvarExtern;
 import se.sundsvall.billingdatacollector.integration.opene.kundfakturaformular.model.external.BarakningarExtern;
@@ -102,9 +104,6 @@ public class OpeneCollections {
 	/**
 	 * Used to determine how many iterations there are in the maps, which is later used in
 	 * KundfakturaformularMapper to determine how many rows to loop over.
-	 * Also make sure there are only two sizes, e.g. 0 and 2, any other number means we have diverging or missing
-	 * information.
-	 * I.e we will miss needed information.
 	 * 
 	 * @return the number of rows in the maps
 	 */
@@ -113,13 +112,20 @@ public class OpeneCollections {
 
 		getAllMaps(this).forEach((key, value) -> sizes.add(value.size()));
 
-		// We only want two sizes, any more means we have missing information
-		if (sizes.size() == MAX_NUMBER_OF_SIZES) {
-			return sizes.stream().max(Integer::compareTo).orElse(0);
-		} else {
-			LOGGER.error("Got mismatch in the number of iterations in the maps: {}", sizes);
-			throw new IllegalStateException("Mismatch in the number of iterations in the maps: " + sizes);
+		// If there are nothing to map, i.e. no mapped data, throw an exception
+		int rows = sizes.stream()
+			.max(Integer::compareTo)
+			.orElse(0);
+
+		if (rows == 0) {
+			throw Problem.builder()
+				.withStatus(Status.INTERNAL_SERVER_ERROR)
+				.withTitle("No data from OpenE")
+				.build();
 		}
+
+		return rows;
+
 	}
 
 	private static Map<String, HashMap<?, ?>> getAllMaps(OpeneCollections openeCollections) {

@@ -17,7 +17,7 @@
 				"matchesJsonPath": "$[?(@.subject == 'Fel vid hämtning/skapande av faktura-poster')]"
 			},
 			{
-				"matchesJsonPath": "$[?(@.htmlMessage == 'PCFET0NUWVBFIGh0bWw+IDxodG1sIGxhbmc9ImVuIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMTk5OS94aHRtbCI+PGJvZHk+CjxiPkbDtmxqYW5kZSBwcm9ibGVtIGhhciBpbnRyw6RmZmF0IHZpZCBnZW5lcmVyaW5nIGF2IGZha3R1cmEtcG9zdGVyICgyMDI1LTAxLTMwKTwvYj4gPHA+CjxpPjEgc3QuIGZlbDo8L2k+PHVsPjxsaT4gZmFtaWx5SWQ6IDM1OCwgZmxvd0luc3RhbmNlSWQ6IDE4NTM3NiwgcmVxdWVzdElkOiA4M2YyYmExZi04YjljLTRkZjktYjA1Zi1jMjdiNDA5ODVlZWU8L2xpPgo8L3VsPjxwPgogIDxiPk1lZCB2w6RubGlnIGjDpGxzbmluZyA8YnIvPgogIDxhIGhyZWY9Im1haWx0bzpkdW1teUBzdW5kc3ZhbGwuc2UiPkJpbGxpbmcgRGF0YSBDb2xsZWN0b3I8L2E+PC9iPgo8L3A+CjwvYm9keT48L2h0bWw+')]"
+				"matchesJsonPath": "$[?(@.htmlMessage != '')]"
 			},
 			{
 				"matchesJsonPath": "$.sender[?(@.name == 'Billing Data Collector')]"

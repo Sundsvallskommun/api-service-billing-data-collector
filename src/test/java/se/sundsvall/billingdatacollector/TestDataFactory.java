@@ -63,12 +63,12 @@ public final class TestDataFactory {
 					.quantity(2f)
 					.costPerUnit(150f)
 					.totalAmount(300f)
-					.accountInformation(new AccountInformation()
+					.accountInformation(List.of(new AccountInformation()
 						.costCenter("16300000")
 						.subaccount("936100")
 						.department("910300")
 						.activity("5247")
-						.counterpart("170")))));
+						.counterpart("170"))))));
 	}
 
 	public static BillingRecord createExternalBillingRecord() {
@@ -90,13 +90,13 @@ public final class TestDataFactory {
 					.costPerUnit(100f)
 					.vatCode("00")
 					.totalAmount(300f)
-					.accountInformation(new AccountInformation()
+					.accountInformation(List.of(new AccountInformation()
 						.costCenter("43200000")
 						.subaccount("345000")
 						.department("315310")
 						.activity("4165")
 						.article("3452000 - GULLGÅRDEN")
-						.counterpart("86000000")))));
+						.counterpart("86000000"))))));
 	}
 
 	public static HistoryEntity createHistoryEntity(String flowInstanceId) {

@@ -88,7 +88,7 @@ final class InternalMapper {
 					ofNullable(collections.getBerakningInternMap().get(index)).map(BerakningIntern::getAntalIntern).orElse(null)))
 				.costPerUnit(MapperHelper.convertStringToFloat(
 					ofNullable(collections.getBerakningInternMap().get(index)).map(BerakningIntern::getAPrisIntern).orElse(null)))
-				.accountInformation(new AccountInformation()
+				.accountInformation(List.of(new AccountInformation()
 					.costCenter(MapperHelper.getLeadingDigitsFromString(
 						ofNullable(collections.getAnsvarInternMap().get(index)).map(AnsvarIntern::getValue).orElse(null)))
 					.subaccount(MapperHelper.getLeadingDigitsFromString(
@@ -97,7 +97,7 @@ final class InternalMapper {
 						ofNullable(collections.getVerksamhetInternMap().get(index)).map(VerksamhetIntern::getValue).orElse(null)))
 					.activity(MapperHelper.getLeadingDigitsFromString(
 						ofNullable(collections.getAktivitetskontoInternMap().get(index)).map(AktivitetskontoIntern::getValue).orElse(null)))
-					.counterpart(MapperHelper.getInternalMotpartNumbers(customerId)));
+					.counterpart(MapperHelper.getInternalMotpartNumbers(customerId))));
 
 			invoiceRows.add(invoiceRow);
 		}
