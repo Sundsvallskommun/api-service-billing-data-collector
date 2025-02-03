@@ -43,7 +43,6 @@ import se.sundsvall.billingdatacollector.integration.opene.kundfakturaformular.m
 public class OpeneCollections {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(OpeneCollections.class);
-	private static final int MAX_NUMBER_OF_SIZES = 2;   // Used for checking the number of iterations in the maps
 
 	// Internal
 	private HashMap<Integer, AktivitetskontoIntern> aktivitetskontoInternMap = new HashMap<>();

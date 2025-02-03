@@ -4,12 +4,10 @@ import static java.util.Optional.ofNullable;
 import static org.apache.commons.lang3.StringUtils.isNotBlank;
 import static org.zalando.problem.Status.INTERNAL_SERVER_ERROR;
 
-import java.util.ArrayList;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import org.apache.commons.lang3.StringUtils;
 import org.zalando.problem.Problem;
-import se.sundsvall.billingdatacollector.integration.opene.kundfakturaformular.model.OpeneCollections;
 import se.sundsvall.billingdatacollector.integration.opene.kundfakturaformular.model.OrganizationInformation;
 
 final class MapperHelper {
@@ -168,36 +166,5 @@ final class MapperHelper {
 			return string.substring(0, maxLength);
 		}
 		return string;
-	}
-
-	static void checkForNeededFieldsForExternal(OpeneCollections collections) {
-		var list = new ArrayList<String>();
-
-		if (collections.getBerakningExternMap().isEmpty()) {
-			list.add("BerakningExtern");
-		}
-		if (collections.getMomssatsExternMap().isEmpty()) {
-			list.add("MomssatsExtern");
-		}
-		if (collections.getMomssatsExternMap().isEmpty()) {
-			list.add("MomssatsExtern");
-		}
-		if (collections.getAnsvarExternMap().isEmpty()) {
-			list.add("AnsvarExtern");
-		}
-		if (collections.getVerksamhetExternMap().isEmpty()) {
-			list.add("VerksamhetExtern");
-		}
-		if (collections.getUnderkontoExternMap().isEmpty()) {
-			list.add("UnderkontoExtern");
-		}
-
-		if (!list.isEmpty()) {
-			throw Problem.builder()
-				.withTitle("Missing information from OpenE")
-				.withStatus(INTERNAL_SERVER_ERROR)
-				.withDetail("Missing the following fields: " + list)
-				.build();
-		}
 	}
 }

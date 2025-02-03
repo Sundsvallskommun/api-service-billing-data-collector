@@ -44,8 +44,6 @@ final class ExternalMapper {
 		LOGGER.info("Mapping to external billing record");
 		var result = extractValue(xml, ExternFaktura.class);
 
-		MapperHelper.checkForNeededFieldsForExternal(collections);
-
 		// Check if it's an external person or organization
 		if (isBlank(result.referenceOrganization())) {
 			LOGGER.info("Mapping to external billing record for a person");

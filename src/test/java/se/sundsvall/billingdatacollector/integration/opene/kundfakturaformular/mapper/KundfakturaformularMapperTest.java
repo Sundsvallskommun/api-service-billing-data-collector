@@ -10,7 +10,6 @@ import static se.sundsvall.billingdatacollector.TestDataFactory.readBytesFromOpe
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.zalando.problem.ThrowableProblem;
 import se.sundsvall.billingdatacollector.Application;
 import se.sundsvall.billingdatacollector.TestDataFactory;
 import se.sundsvall.billingdatacollector.support.annotation.UnitTest;
@@ -170,16 +169,6 @@ class KundfakturaformularMapperTest {
 		assertThat(accountInformation.getFirst().getDepartment()).isEqualTo("450220");
 		assertThat(accountInformation.getFirst().getActivity()).isEqualTo("6200");
 		assertThat(accountInformation.getFirst().getCounterpart()).isEqualTo("86000000");
-	}
-
-	@Test
-	void testCheckForValidBillingRecords_shouldThrowException_whenIncompleteInvoiceRows() {
-		var openEFile = readBytesFromOpenEFile("flow-instance.external.incomplete.xml");
-		assertThatExceptionOfType(ThrowableProblem.class).isThrownBy(() -> mapper.mapToBillingRecordWrapper(openEFile))
-			.satisfies(throwableProblem -> {
-				assertThat(throwableProblem.getTitle()).isEqualTo("Missing information from OpenE");
-				assertThat(throwableProblem.getDetail()).isEqualTo("Missing the following fields: [MomssatsExtern, MomssatsExtern, AnsvarExtern, VerksamhetExtern, UnderkontoExtern]");
-			});
 	}
 
 	@Test
