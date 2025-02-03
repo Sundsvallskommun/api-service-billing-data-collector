@@ -28,6 +28,7 @@ import se.sundsvall.billingdatacollector.integration.opene.kundfakturaformular.m
 import se.sundsvall.billingdatacollector.integration.opene.kundfakturaformular.model.external.BerakningExtern;
 import se.sundsvall.billingdatacollector.integration.opene.kundfakturaformular.model.external.MomssatsExtern;
 import se.sundsvall.billingdatacollector.integration.opene.kundfakturaformular.model.external.ObjektkontoExtern;
+import se.sundsvall.billingdatacollector.integration.opene.kundfakturaformular.model.external.SummeringExtern;
 import se.sundsvall.billingdatacollector.integration.opene.kundfakturaformular.model.external.UnderkontoExtern;
 import se.sundsvall.billingdatacollector.integration.opene.kundfakturaformular.model.external.VerksamhetExtern;
 import se.sundsvall.billingdatacollector.model.BillingRecordWrapper;
@@ -137,7 +138,9 @@ final class ExternalMapper {
 					.department(MapperHelper.getLeadingDigitsFromString(
 						ofNullable(collections.getVerksamhetExternMap().get(index)).map(VerksamhetExtern::getValue).orElse(null)))
 					.subaccount(MapperHelper.getLeadingDigitsFromString(
-						ofNullable(collections.getUnderkontoExternMap().get(index)).map(UnderkontoExtern::getValue).orElse(null)))));
+						ofNullable(collections.getUnderkontoExternMap().get(index)).map(UnderkontoExtern::getValue).orElse(null)))
+					.amount(MapperHelper.convertStringToFloat(
+						ofNullable(collections.getSummeringExternMap().get(index)).map(SummeringExtern::getTotSummeringExtern).orElse(null)))));
 			invoiceRows.add(invoiceRow);
 		}
 

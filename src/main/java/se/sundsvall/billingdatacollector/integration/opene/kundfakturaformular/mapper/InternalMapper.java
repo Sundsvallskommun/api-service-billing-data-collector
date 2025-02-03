@@ -26,6 +26,7 @@ import se.sundsvall.billingdatacollector.integration.opene.kundfakturaformular.m
 import se.sundsvall.billingdatacollector.integration.opene.kundfakturaformular.model.internal.AktivitetskontoIntern;
 import se.sundsvall.billingdatacollector.integration.opene.kundfakturaformular.model.internal.AnsvarIntern;
 import se.sundsvall.billingdatacollector.integration.opene.kundfakturaformular.model.internal.BerakningIntern;
+import se.sundsvall.billingdatacollector.integration.opene.kundfakturaformular.model.internal.SummeringIntern;
 import se.sundsvall.billingdatacollector.integration.opene.kundfakturaformular.model.internal.UnderkontoIntern;
 import se.sundsvall.billingdatacollector.integration.opene.kundfakturaformular.model.internal.VerksamhetIntern;
 import se.sundsvall.billingdatacollector.model.BillingRecordWrapper;
@@ -97,7 +98,9 @@ final class InternalMapper {
 						ofNullable(collections.getVerksamhetInternMap().get(index)).map(VerksamhetIntern::getValue).orElse(null)))
 					.activity(MapperHelper.getLeadingDigitsFromString(
 						ofNullable(collections.getAktivitetskontoInternMap().get(index)).map(AktivitetskontoIntern::getValue).orElse(null)))
-					.counterpart(MapperHelper.getInternalMotpartNumbers(customerId))));
+					.counterpart(MapperHelper.getInternalMotpartNumbers(customerId))
+					.amount(MapperHelper.convertStringToFloat(
+						ofNullable(collections.getSummeringInternMap().get(index)).map(SummeringIntern::getTotSummeringIntern).orElse(null)))));
 
 			invoiceRows.add(invoiceRow);
 		}
