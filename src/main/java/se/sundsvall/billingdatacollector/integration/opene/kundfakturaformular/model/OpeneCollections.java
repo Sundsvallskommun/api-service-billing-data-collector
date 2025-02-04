@@ -6,9 +6,7 @@ import static se.sundsvall.billingdatacollector.integration.opene.kundfakturafor
 
 import java.lang.reflect.Field;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
-import java.util.Set;
 import lombok.Getter;
 import lombok.Setter;
 import org.slf4j.Logger;
@@ -103,17 +101,15 @@ public class OpeneCollections {
 	/**
 	 * Used to determine how many iterations there are in the maps, which is later used in
 	 * KundfakturaformularMapper to determine how many rows to loop over.
+	 * If no rows are found, an exception is thrown.
 	 * 
-	 * @return the number of rows in the maps
+	 * @return The number of rows in the maps
 	 */
 	public int getNumberOfRows() {
-		Set<Integer> sizes = new HashSet<>();
-
-		getAllMaps(this).forEach((key, value) -> sizes.add(value.size()));
-
-		// If there are nothing to map, i.e. no mapped data, throw an exception
-		int rows = sizes.stream()
-			.max(Integer::compareTo)
+		// Get the number of iterations, if none, return 0
+		int rows = getAllMaps(this).values().stream()
+			.mapToInt(Map::size)
+			.max()
 			.orElse(0);
 
 		if (rows == 0) {

@@ -7,7 +7,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.Index;
 import jakarta.persistence.PrePersist;
 import jakarta.persistence.Table;
-import java.time.LocalDate;
+import java.time.OffsetDateTime;
 import java.util.Objects;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -56,14 +56,14 @@ public class HistoryEntity {
 	private String flowInstanceId;
 
 	@Column(name = "created")
-	private LocalDate created;
+	private OffsetDateTime created;
 
 	@Column(name = "location")
 	private String location;
 
 	@PrePersist
 	public void prePersist() {
-		created = LocalDate.now();
+		created = OffsetDateTime.now();
 	}
 
 	@Override

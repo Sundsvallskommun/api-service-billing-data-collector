@@ -23,9 +23,19 @@ class ExternFakturaTest {
 		var sellerInformationLastName = "sellerInformationLastName";
 		var organizationInformation = "1234567890";
 		var referenceOrganization = "referenceOrganization";
+		var sendInvoiceTo = "sendInvoiceTo";
+		var manualOrgInfoOrganizationNumber = "manualOrgInfoOrganizationNumber";
+		var manualOrgInfoName = "manualOrgInfoName";
+		var manualOrgInfoAddress = "manualOrgInfoAddress";
+		var manualOrgInfoCo = "manualOrgInfoCo";
+		var manualOrgInfoZipCode = "manualOrgInfoZipCode";
+		var manualOrgInfoCity = "manualOrgInfoCity";
+		var manualOrgInfoReference = "manualOrgInfoReference";
+		var manualOrgInfoMotpart = "manualOrgInfoMotpart";
 
 		var externFaktura = new ExternFaktura(familyId, flowInstanceId, posted, privatePersonFirstName, privatePersonLastName, privatePersonAddress, privatePersonZipCode, privatePersonPostalAddress,
-			socialSecurityNumber, counterpartPrivatePersonName, sellerInformationFirstName, sellerInformationLastName, organizationInformation, referenceOrganization);
+			socialSecurityNumber, counterpartPrivatePersonName, sellerInformationFirstName, sellerInformationLastName, organizationInformation, referenceOrganization, sendInvoiceTo,
+			manualOrgInfoOrganizationNumber, manualOrgInfoName, manualOrgInfoAddress, manualOrgInfoCo, manualOrgInfoZipCode, manualOrgInfoCity, manualOrgInfoReference, manualOrgInfoMotpart);
 
 		assertThat(externFaktura.familyId()).isEqualTo(familyId);
 		assertThat(externFaktura.flowInstanceId()).isEqualTo(flowInstanceId);
@@ -41,5 +51,14 @@ class ExternFakturaTest {
 		assertThat(externFaktura.sellerInformationLastName()).isEqualTo(sellerInformationLastName);
 		assertThat(externFaktura.organizationInformation()).isEqualTo(organizationInformation);
 		assertThat(externFaktura.referenceOrganization()).isEqualTo(referenceOrganization);
+		assertThat(externFaktura.sendInvoiceTo()).isEqualTo(sendInvoiceTo);
+		assertThat(externFaktura.manualOrgInfoOrganizationNumber()).isEqualTo(manualOrgInfoOrganizationNumber);
+		assertThat(externFaktura.manualOrgInfoName()).isEqualTo(manualOrgInfoName);
+		assertThat(externFaktura.manualOrgInfoAddress()).isEqualTo(manualOrgInfoAddress);
+		assertThat(externFaktura.manualOrgInfoCo()).isEqualTo(manualOrgInfoCo);
+		assertThat(externFaktura.manualOrgInfoZipCode()).isEqualTo(manualOrgInfoZipCode);
+		assertThat(externFaktura.manualOrgInfoCity()).isEqualTo(manualOrgInfoCity);
+		assertThat(externFaktura.manualOrgInfoReference()).isEqualTo(manualOrgInfoReference);
+		assertThat(externFaktura.manualOrgInfoMotpart()).isEqualTo(manualOrgInfoMotpart);
 	}
 }

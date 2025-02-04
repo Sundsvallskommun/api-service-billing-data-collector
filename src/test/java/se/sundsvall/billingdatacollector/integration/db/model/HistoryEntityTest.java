@@ -10,7 +10,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.within;
 import static org.hamcrest.CoreMatchers.allOf;
 
-import java.time.LocalDate;
+import java.time.OffsetDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.Random;
 import java.util.UUID;
@@ -23,7 +23,7 @@ class HistoryEntityTest {
 
 	@BeforeAll
 	static void setup() {
-		registerValueGenerator(() -> LocalDate.now().plusDays(new Random().nextInt()), LocalDate.class);
+		registerValueGenerator(() -> OffsetDateTime.now().plusDays(new Random().nextInt()), OffsetDateTime.class);
 	}
 
 	@Test
@@ -45,7 +45,7 @@ class HistoryEntityTest {
 		final var billingRecordWrapper = new BillingRecordWrapper();
 		final var familyId = "familyId";
 		final var flowInstanceId = "flowInstanceId";
-		final var created = LocalDate.now();
+		final var created = OffsetDateTime.now();
 		final var location = "location";
 
 		final var historyEntity = HistoryEntity.builder()
@@ -80,8 +80,7 @@ class HistoryEntityTest {
 	void testPrepersist() {
 		final var historyEntity = new HistoryEntity();
 		historyEntity.prePersist();
-		assertThat(historyEntity.getCreated()).isCloseTo(LocalDate.now(), within(0, ChronoUnit.DAYS));
+		assertThat(historyEntity.getCreated()).isCloseTo(OffsetDateTime.now(), within(0, ChronoUnit.DAYS));
 		assertThat(historyEntity).hasAllNullFieldsOrPropertiesExcept("created");
 	}
-
 }

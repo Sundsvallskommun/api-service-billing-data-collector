@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 
 import org.junit.jupiter.api.Test;
+import org.zalando.problem.ThrowableProblem;
 import se.sundsvall.billingdatacollector.integration.opene.kundfakturaformular.model.external.AktivitetskontoExtern;
 import se.sundsvall.billingdatacollector.integration.opene.kundfakturaformular.model.external.AnsvarExtern;
 import se.sundsvall.billingdatacollector.integration.opene.kundfakturaformular.model.external.BarakningarExtern;
@@ -59,8 +60,15 @@ class OpeneCollectionsTest {
 	}
 
 	@Test
-	void testGetNumberOfRows() {
+	void testNoRowsToMap_shouldThrowException() {
+		OpeneCollections openeCollections = new OpeneCollections();
+		assertThatExceptionOfType(ThrowableProblem.class)
+			.isThrownBy(openeCollections::getNumberOfRows)
+			.satisfies(exception -> assertThat(exception).hasMessage("No data from OpenE"));
+	}
 
+	@Test
+	void testGetNumberOfRows() {
 		OpeneCollections openeCollections = new OpeneCollections();
 		openeCollections.add(1, AktivitetskontoIntern.builder().build());
 		openeCollections.add(1, BerakningarIntern.builder().build());

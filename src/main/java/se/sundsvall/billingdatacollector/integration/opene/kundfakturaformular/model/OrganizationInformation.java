@@ -16,4 +16,5 @@ public class OrganizationInformation {
 	private String zipCode;
 	private String city;
 	private String careOf;
+	private String motpart;
 }

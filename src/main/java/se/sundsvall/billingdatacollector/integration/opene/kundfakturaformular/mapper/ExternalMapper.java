@@ -1,7 +1,6 @@
 package se.sundsvall.billingdatacollector.integration.opene.kundfakturaformular.mapper;
 
 import static java.util.Optional.ofNullable;
-import static org.apache.commons.lang3.StringUtils.isBlank;
 import static se.sundsvall.billingdatacollector.integration.opene.kundfakturaformular.mapper.KundfakturaformularMapper.APPROVED_BY;
 import static se.sundsvall.billingdatacollector.integration.opene.kundfakturaformular.mapper.KundfakturaformularMapper.CATEGORY;
 import static se.sundsvall.billingdatacollector.integration.opene.kundfakturaformular.mapper.KundfakturaformularMapper.INVOICE_DESCRIPTION;
@@ -36,6 +35,7 @@ import se.sundsvall.billingdatacollector.model.BillingRecordWrapper;
 final class ExternalMapper {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(ExternalMapper.class);
+	private static final String PRIVATE_PERSON = "Privat";
 
 	private ExternalMapper() {
 		// Not meant to be instantiated
@@ -45,8 +45,8 @@ final class ExternalMapper {
 		LOGGER.info("Mapping to external billing record");
 		var result = extractValue(xml, ExternFaktura.class);
 
-		// Check if it's an external person or organization
-		if (isBlank(result.referenceOrganization())) {
+		// Check if it's a private person or organization
+		if (result.sendInvoiceTo().contains(PRIVATE_PERSON)) {
 			LOGGER.info("Mapping to external billing record for a person");
 			return mapToExternalBillingRecordForPerson(result, collections);
 		}
@@ -56,7 +56,7 @@ final class ExternalMapper {
 	}
 
 	static BillingRecordWrapper mapToExternalBillingRecordForOrganization(ExternFaktura result, OpeneCollections collections) {
-		var organizationInformation = MapperHelper.getOrganizationInformation(result.organizationInformation());
+		var organizationInformation = MapperHelper.getOrganizationInformation(result);
 
 		var billingRecord = new BillingRecord()
 			.category(CATEGORY)
@@ -70,7 +70,7 @@ final class ExternalMapper {
 					.street(organizationInformation.getStreetAddress())
 					.postalCode(organizationInformation.getZipCode())
 					.city(organizationInformation.getCity())))
-			.invoice(createExternalInvoice(result, collections, MapperHelper.getExternalMotpartNumbers(result.organizationInformation()), organizationInformation.getOrganizationNumber()));
+			.invoice(createExternalInvoice(result, collections, organizationInformation.getMotpart(), organizationInformation.getOrganizationNumber()));
 
 		return BillingRecordWrapper.builder()
 			.withBillingRecord(billingRecord)
@@ -107,6 +107,7 @@ final class ExternalMapper {
 		return new Invoice()
 			.customerReference(getExternalCustomerReference(externFaktura))
 			.customerId(customerId)
+			// General description
 			.description(MapperHelper.truncateString(INVOICE_DESCRIPTION, MAX_DESCRIPTION_LENGTH))  // Cannot be more than 30 chars
 			.ourReference(getExternalSellerName(externFaktura))
 			.referenceId(externFaktura.flowInstanceId())

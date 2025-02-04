@@ -8,17 +8,20 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import org.apache.commons.lang3.StringUtils;
 import org.zalando.problem.Problem;
+import se.sundsvall.billingdatacollector.integration.opene.kundfakturaformular.model.ExternFaktura;
 import se.sundsvall.billingdatacollector.integration.opene.kundfakturaformular.model.OrganizationInformation;
 
 final class MapperHelper {
 
 	private static final String DIGITS_AND_DECIMAL_SEPARATORS_REGEX = "[^0-9.,]+";
 	private static final String LEADING_DIGITS_REGEX = "^\\d+";
-	private static final String ORGANIZATION_INFORMATION_REGEX = "(\\d+)\\s\\|\\s(.*)\\s\\|\\s(.*)\\s\\|\\s(.*)\\s\\|\\s(\\d{3}\\s\\d{2})\\s(.*)\\s\\|\\s(\\d+)";
+	private static final String ORGANIZATION_INFORMATION_PIPE_REGEX = "(\\d+)\\s\\|\\s(.*)\\s\\|\\s(.*)\\s\\|\\s(.*)\\s\\|\\s(\\d{3}\\s\\d{2})\\s(.*)\\s\\|\\s(\\d+)";
+	private static final String ORGANIZATION_INFORMATION_DASH_REGEX = "(\\d+)\\s-\\s(.*)\\s-\\s(.*)\\s-\\s(.*)\\s-\\s(\\d{3}\\s\\d{2})(.*)\\s-\\s(\\d+)";
 	private static final String TRAILING_DIGITS_REGEX = "\\d+$";
 
 	private static final Pattern LEADING_DIGITS_PATTERN = Pattern.compile(LEADING_DIGITS_REGEX);
-	private static final Pattern ORGANIZATION_INFORMATION_PATTERN = Pattern.compile(ORGANIZATION_INFORMATION_REGEX);
+	private static final Pattern ORGANIZATION_INFORMATION_PIPE_PATTERN = Pattern.compile(ORGANIZATION_INFORMATION_PIPE_REGEX);
+	private static final Pattern ORGANIZATION_INFORMATION_DASH_PATTERN = Pattern.compile(ORGANIZATION_INFORMATION_DASH_REGEX);
 	private static final Pattern TRAILING_DIGITS_PATTERN = Pattern.compile(TRAILING_DIGITS_REGEX);
 
 	private static final String STRING_TO_FLOAT_ERROR = "Couldn't convert '%s' to a float";
@@ -133,25 +136,72 @@ final class MapperHelper {
 			.orElse(null);
 	}
 
-	static OrganizationInformation getOrganizationInformation(String value) {
-		var matcher = ORGANIZATION_INFORMATION_PATTERN.matcher(value);
+	/**
+	 * Extracts organization information. If it has been generated from the organization number the
+	 * "organizationInformation" field will be present.
+	 * If it has been entered manually the "organizationInformation" field will be empty and we will have to look at
+	 * KundensOrgUppgExterntForetag to extract all information.
+	 *
+	 * @param  externFaktura Pbject to extract organization information from
+	 * @return               The organization information
+	 */
+	static OrganizationInformation getOrganizationInformation(ExternFaktura externFaktura) {
+		// Check if information has been entered manually or "automatically".
+		if (StringUtils.isNotBlank(externFaktura.manualOrgInfoOrganizationNumber())) {
+			return getOrganizationInformationFromAutomaticEntry(externFaktura);
+		}
 
-		if (matcher.matches()) {
-			return OrganizationInformation.builder()
-				.withOrganizationNumber(ofNullable(matcher.group(1)).map(String::trim).orElse(null))
-				.withName(ofNullable(matcher.group(2)).map(String::trim).orElse(null))
-				.withStreetAddress(ofNullable(matcher.group(3)).map(String::trim).orElse(null))
-				.withCareOf(ofNullable(matcher.group(4)).map(String::trim).orElse(null))
-				.withZipCode(ofNullable(matcher.group(5)).map(String::trim).orElse(null))
-				.withCity(ofNullable(matcher.group(6)).map(String::trim).orElse(null))
-				.build();
+		return getOrganizationInformationFromManualEntry(externFaktura);
+	}
+
+	private static OrganizationInformation getOrganizationInformationFromManualEntry(ExternFaktura externFaktura) {
+		var pipeMatcher = ORGANIZATION_INFORMATION_PIPE_PATTERN.matcher(externFaktura.organizationInformation());
+		var dashMatcher = ORGANIZATION_INFORMATION_DASH_PATTERN.matcher(externFaktura.organizationInformation());
+
+		if (pipeMatcher.matches()) {
+			return extractOrganizationInformationFromMatcher(pipeMatcher);
+		} else if (dashMatcher.matches()) {
+			return extractOrganizationInformationFromMatcher(dashMatcher);
 		}
 
 		throw Problem.builder()
 			.withTitle(PARSE_ORGANIZATION_INFORMATION_ERROR)
 			.withStatus(INTERNAL_SERVER_ERROR)
-			.withDetail("Could not parse organization information from string: " + value)
+			.withDetail("Could not parse organization information from string: " + externFaktura.organizationInformation())
 			.build();
+	}
+
+	private static OrganizationInformation getOrganizationInformationFromAutomaticEntry(ExternFaktura externFaktura) {
+		var motpart = getExternalMotpartNumbers(getLeadingDigitsFromString(externFaktura.manualOrgInfoMotpart()));
+
+		return OrganizationInformation.builder()
+			.withOrganizationNumber(cleanOrganizationNumber(externFaktura.manualOrgInfoOrganizationNumber()))
+			.withName(ofNullable(externFaktura.manualOrgInfoName()).map(String::trim).orElse(null))
+			.withStreetAddress(ofNullable(externFaktura.manualOrgInfoAddress()).map(String::trim).orElse(null))
+			.withCareOf(ofNullable(externFaktura.manualOrgInfoCo()).map(String::trim).orElse(null))
+			.withZipCode(ofNullable(externFaktura.manualOrgInfoZipCode()).map(String::trim).orElse(null))
+			.withCity(ofNullable(externFaktura.manualOrgInfoCity()).map(String::trim).orElse(null))
+			.withMotpart(ofNullable(motpart).map(String::trim).orElse(null))  // Set motpart here
+			.build();
+	}
+
+	private static OrganizationInformation extractOrganizationInformationFromMatcher(Matcher pipeMatcher) {
+		return OrganizationInformation.builder()
+			.withOrganizationNumber(ofNullable(pipeMatcher.group(1)).map(String::trim).orElse(null))
+			.withName(ofNullable(pipeMatcher.group(2)).map(String::trim).orElse(null))
+			.withStreetAddress(ofNullable(pipeMatcher.group(3)).map(String::trim).orElse(null))
+			.withCareOf(ofNullable(pipeMatcher.group(4)).map(String::trim).orElse(null))
+			.withZipCode(ofNullable(pipeMatcher.group(5)).map(String::trim).orElse(null))
+			.withCity(ofNullable(pipeMatcher.group(6)).map(String::trim).orElse(null))
+			.withMotpart(ofNullable(getExternalMotpartNumbers(pipeMatcher.group(7))).map(String::trim).orElse(null))
+			.build();
+	}
+
+	private static String cleanOrganizationNumber(String organizationNumber) {
+		return ofNullable(organizationNumber)
+			.map(number -> number.replace("-", "")) // Remove dashes in case of "123456-1234"
+			.map(number -> number.replace(" ", "")) // Remove spaces in case of "123456 1234"
+			.orElse(organizationNumber);
 	}
 
 	/**
@@ -162,8 +212,8 @@ final class MapperHelper {
 	 * @return           the string if it's less than maxLength, otherwise the string truncated to maxLength
 	 */
 	static String truncateString(String string, int maxLength) {
-		if (isNotBlank(string) && string.length() >= maxLength) {
-			return string.substring(0, maxLength);
+		if (isNotBlank(string) && string.length() > maxLength) {
+			return string.substring(0, maxLength).trim();
 		}
 		return string;
 	}

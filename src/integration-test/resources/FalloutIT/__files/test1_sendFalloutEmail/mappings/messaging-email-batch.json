@@ -8,22 +8,26 @@
 		"method": "POST",
 		"bodyPatterns": [
 			{
-				"matchesJsonPath": "$.parties[?(@.emailAddress == 'test@nowhere.com')]"
-			},
-			{
-				"matchesJsonPath": "$.parties[?(@.emailAddress == 'test2@nowhere.com')]"
-			},
-			{
-				"matchesJsonPath": "$[?(@.subject == 'Fel vid hämtning/skapande av faktura-poster')]"
-			},
-			{
-				"matchesJsonPath": "$[?(@.htmlMessage != '')]"
-			},
-			{
-				"matchesJsonPath": "$.sender[?(@.name == 'Billing Data Collector')]"
-			},
-			{
-				"matchesJsonPath": "$.sender[?(@.address == 'dummy@sundsvall.se')]"
+				"equalToJson": {
+					"parties": [
+						{
+							"emailAddress": "test@nowhere.com"
+						},
+						{
+							"emailAddress": "test2@nowhere.com"
+						}
+					],
+					"subject": "Fel vid hämtning/skapande av faktura-poster",
+					"htmlMessage": "${json-unit.any-string}",
+					"sender": {
+						"name": "Billing Data Collector",
+						"address": "dummy@sundsvall.se"
+					},
+					"attachments": [],
+					"headers": {}
+				},
+				"ignoreArrayOrder": true,
+				"contains": ""
 			}
 		],
 		"url": "/2281/email/batch"
