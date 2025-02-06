@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="ISO-8859-1" standalone="no"?>
+<FlowInstances>
+    <FlowInstance>
+        <flowInstanceID>12346</flowInstanceID>
+        <added>2025-02-05 10:03</added>
+        <firstSubmitted>2025-02-05 10:03</firstSubmitted>
+        <fullyPopulated>true</fullyPopulated>
+        <stepID>4452</stepID>
+        <lastStatusChange>2024-05-31 10:03</lastStatusChange>
+        <profileID>1</profileID>
+        <remote>false</remote>
+        <addedInMilliseconds>1685520223000</addedInMilliseconds>
+        <firstSubmittedInMilliseconds>1685520223000</firstSubmittedInMilliseconds>
+        <lastStatusChangeInMilliseconds>1685520223000</lastStatusChangeInMilliseconds>
+        <poster>
+            <user>
+                <userID>9999</userID>
+                <username>KAKA</username>
+                <firstname>Kalle</firstname>
+                <lastname>Karlssonberg</lastname>
+                <email>kalle.karlssonberg@sundsvall.se</email>
+                <admin>false</admin>
+                <enabled>true</enabled>
+                <lastLogin>2024-05-31 07:20</lastLogin>
+                <lastLoginInMilliseconds>1685510435000</lastLoginInMilliseconds>
+                <added>2015-04-20 14:17</added>
+                <isMutable>true</isMutable>
+                <hasFormProvider>true</hasFormProvider>
+            </user>
+        </poster>
+    </FlowInstance>
+</FlowInstances>

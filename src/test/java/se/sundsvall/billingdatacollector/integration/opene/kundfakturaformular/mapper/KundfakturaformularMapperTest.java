@@ -180,7 +180,7 @@ class KundfakturaformularMapperTest {
 	}
 
 	@Test
-	void test() {
+	void test404FromOpenE_shouldThrowException() {
 		// We should have bailed out before this, maybe corrupt xml could cause this exception though
 		var openEFile = TestDataFactory.readBytesFromOpenEFile("flow-instance.404.xml");
 		assertThatExceptionOfType(IllegalStateException.class).isThrownBy(() -> mapper.mapToBillingRecordWrapper(openEFile))

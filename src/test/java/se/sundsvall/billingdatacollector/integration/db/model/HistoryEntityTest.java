@@ -80,7 +80,7 @@ class HistoryEntityTest {
 	void testPrepersist() {
 		final var historyEntity = new HistoryEntity();
 		historyEntity.prePersist();
-		assertThat(historyEntity.getCreated()).isCloseTo(OffsetDateTime.now(), within(0, ChronoUnit.DAYS));
+		assertThat(historyEntity.getCreated()).isCloseTo(OffsetDateTime.now(), within(5, ChronoUnit.SECONDS));
 		assertThat(historyEntity).hasAllNullFieldsOrPropertiesExcept("created");
 	}
 }

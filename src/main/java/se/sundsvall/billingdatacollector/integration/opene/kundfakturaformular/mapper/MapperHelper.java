@@ -148,13 +148,23 @@ final class MapperHelper {
 	static OrganizationInformation getOrganizationInformation(ExternFaktura externFaktura) {
 		// Check if information has been entered manually or "automatically".
 		if (StringUtils.isNotBlank(externFaktura.manualOrgInfoOrganizationNumber())) {
-			return getOrganizationInformationFromAutomaticEntry(externFaktura);
+			return getOrganizationInformationFromManualEntry(externFaktura);
 		}
 
-		return getOrganizationInformationFromManualEntry(externFaktura);
+		return getOrganizationInformationFromAutomaticEntry(externFaktura);
 	}
 
-	private static OrganizationInformation getOrganizationInformationFromManualEntry(ExternFaktura externFaktura) {
+	/**
+	 * There exists two variants for parsing. One legacy that uses dashes to separate the fields and one new that uses
+	 * pipes.
+	 * If it's an automatic entry the organization information will be in the "organizationInformation" field.
+	 * If the organization information has been added manually, the information will be in the "manualOrgInfo*" fields.
+	 * Should none of the regexes match, an exception will be thrown.
+	 * 
+	 * @param  externFaktura The external invoice to parse from
+	 * @return               The organization information
+	 */
+	private static OrganizationInformation getOrganizationInformationFromAutomaticEntry(ExternFaktura externFaktura) {
 		var pipeMatcher = ORGANIZATION_INFORMATION_PIPE_PATTERN.matcher(externFaktura.organizationInformation());
 		var dashMatcher = ORGANIZATION_INFORMATION_DASH_PATTERN.matcher(externFaktura.organizationInformation());
 
@@ -171,7 +181,7 @@ final class MapperHelper {
 			.build();
 	}
 
-	private static OrganizationInformation getOrganizationInformationFromAutomaticEntry(ExternFaktura externFaktura) {
+	private static OrganizationInformation getOrganizationInformationFromManualEntry(ExternFaktura externFaktura) {
 		var motpart = getExternalMotpartNumbers(getLeadingDigitsFromString(externFaktura.manualOrgInfoMotpart()));
 
 		return OrganizationInformation.builder()

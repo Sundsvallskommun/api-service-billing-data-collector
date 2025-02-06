@@ -1,0 +1,18 @@
+{
+	"request": {
+		"headers": {
+			"Authorization": {
+				"equalTo": "Bearer MTQ0NjJkZmQ5OTM2NDE1ZTZjNGZmZjI3"
+			}
+		},
+		"method": "GET",
+		"url": "/party/2281/ENTERPRISE/5591628136/partyId"
+	},
+	"response": {
+		"headers": {
+			"Content-Type": "text/plain"
+		},
+		"body": "f48625f4-8229-4bb7-af7e-ebaa63279573",
+		"status": 200
+	}
+}
