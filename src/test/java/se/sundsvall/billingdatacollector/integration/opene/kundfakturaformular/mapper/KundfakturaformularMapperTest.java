@@ -7,6 +7,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static se.sundsvall.billingdatacollector.TestDataFactory.readBytesFromOpenEFile;
 
+import java.math.BigDecimal;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -60,8 +61,8 @@ class KundfakturaformularMapperTest {
 		assertThat(invoiceRows).satisfiesExactlyInAnyOrder(
 			row -> {
 				assertThat(row.getDescriptions()).containsExactly("Bra fakturatext1");
-				assertThat(row.getCostPerUnit()).isEqualTo(Float.parseFloat("567.89"));
-				assertThat(row.getQuantity()).isEqualTo(Float.parseFloat("3.0"));
+				assertThat(row.getCostPerUnit()).isEqualTo(BigDecimal.valueOf(567.89));
+				assertThat(row.getQuantity()).isEqualTo(BigDecimal.valueOf(3));
 				assertThat(row.getAccountInformation().getFirst().getCostCenter()).isEqualTo("15810100");
 				assertThat(row.getAccountInformation().getFirst().getSubaccount()).isEqualTo("931311");
 				assertThat(row.getAccountInformation().getFirst().getDepartment()).isEqualTo("510410");
@@ -69,8 +70,8 @@ class KundfakturaformularMapperTest {
 			},
 			row -> {
 				assertThat(row.getDescriptions()).containsExactly("Bra fakturatext2");
-				assertThat(row.getCostPerUnit()).isEqualTo(Float.parseFloat("234.56"));
-				assertThat(row.getQuantity()).isEqualTo(Float.parseFloat("1.0"));
+				assertThat(row.getCostPerUnit()).isEqualTo(BigDecimal.valueOf(234.56));
+				assertThat(row.getQuantity()).isEqualTo(BigDecimal.valueOf(1));
 				assertThat(row.getAccountInformation().getFirst().getCostCenter()).isEqualTo("11200100");
 				assertThat(row.getAccountInformation().getFirst().getSubaccount()).isEqualTo("930110");
 				assertThat(row.getAccountInformation().getFirst().getDepartment()).isEqualTo("100500");
@@ -113,8 +114,8 @@ class KundfakturaformularMapperTest {
 		var invoiceRow = invoiceRows.getFirst();
 		assertThat(invoiceRow.getDescriptions()).containsExactly("Oerhört bra fakturatext");
 		assertThat(invoiceRow.getVatCode()).isEqualTo("25");
-		assertThat(invoiceRow.getCostPerUnit()).isEqualTo(12.34f);
-		assertThat(invoiceRow.getQuantity()).isEqualTo(1.0f);
+		assertThat(invoiceRow.getCostPerUnit()).isEqualTo(BigDecimal.valueOf(12.34));
+		assertThat(invoiceRow.getQuantity()).isEqualTo(BigDecimal.valueOf(1));
 
 		var accountInformation = invoiceRow.getAccountInformation();
 		assertThat(accountInformation.getFirst().getCostCenter()).isEqualTo("66028000");
@@ -160,8 +161,8 @@ class KundfakturaformularMapperTest {
 		var invoiceRow = invoiceRows.getFirst();
 		assertThat(invoiceRow.getDescriptions()).containsExactly("Slutfaktura 1st. pengavalv");
 		assertThat(invoiceRow.getVatCode()).isEqualTo("25");
-		assertThat(invoiceRow.getCostPerUnit()).isEqualTo(24000.0f);
-		assertThat(invoiceRow.getQuantity()).isEqualTo(1.0f);
+		assertThat(invoiceRow.getCostPerUnit()).isEqualTo(new BigDecimal("24000.00")); // It doesn't like two zeroes when using "valueOf()".
+		assertThat(invoiceRow.getQuantity()).isEqualTo(BigDecimal.valueOf(1));
 
 		var accountInformation = invoiceRow.getAccountInformation();
 		assertThat(accountInformation.getFirst().getCostCenter()).isEqualTo("66050000");

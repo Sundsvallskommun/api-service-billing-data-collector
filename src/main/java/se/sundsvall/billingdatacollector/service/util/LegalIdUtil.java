@@ -36,10 +36,7 @@ public final class LegalIdUtil {
 
 			// Add the century digits if they're missing
 			if (legalIdWithDigitsOnly.length() == 10) {
-				var thisYear = LocalDate.now().getYear() % 2000;
-				var legalIdYear = Integer.parseInt(legalId.substring(0, 2));
-
-				legalIdWithDigitsOnly = (legalIdYear <= thisYear ? "20" : "19") + legalIdWithDigitsOnly;
+				legalIdWithDigitsOnly = addCenturyDigitsToLegalId(legalIdWithDigitsOnly);
 			}
 
 			// At this point, we should have a legal id with 12 digits

@@ -31,7 +31,7 @@ public final class OpeneCollectionsMapper {
 	 * Consolidate the two into one and only use the BerakningIntern name
 	 *
 	 * @param  berakningarIntern the object to consolidate
-	 * @return                   a BerakningExtern object
+	 * @return                   a BerakningIntern object
 	 */
 	public static BerakningIntern consolidateBerakningarWithBerakningIntern(BerakningarIntern berakningarIntern) {
 		return BerakningIntern.builder()

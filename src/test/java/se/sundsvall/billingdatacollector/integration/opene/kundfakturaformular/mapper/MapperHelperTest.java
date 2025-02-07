@@ -5,6 +5,7 @@ import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.mockito.Mockito.when;
 import static org.zalando.problem.Status.INTERNAL_SERVER_ERROR;
 
+import java.math.BigDecimal;
 import java.util.stream.Stream;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -25,7 +26,7 @@ class MapperHelperTest {
 	private static final String ORG_STRING = "5591628136 | Tennisbanan!@#$%^&*()-_=+\\[]{};:/?.>< AB | Ankeborgsvägen 22 | Some Care of address | 123 45 Ankeborg | 789";
 
 	@Mock
-	ExternFaktura mockExternFaktura;
+	private ExternFaktura mockExternFaktura;
 
 	@Test
 	void testConvertStringToFloat_shouldThrowException_whenNotParseableToFloat() {
@@ -174,5 +175,24 @@ class MapperHelperTest {
 			Arguments.of("abcd", "abcd", 5),
 			Arguments.of("abcde", "abcde", 5),
 			Arguments.of("abcdef", "abcde", 5));
+	}
+
+	@MethodSource("provideStringToBigDecimal")
+	@ParameterizedTest
+	void testConvertStringToBigDecimal(String input, BigDecimal wanted) {
+		assertThat(MapperHelper.convertStringToBigDecimal(input)).isEqualTo(wanted);
+	}
+
+	private static Stream<Arguments> provideStringToBigDecimal() {
+		return Stream.of(
+			// (input, wanted)
+			Arguments.of(null, BigDecimal.ZERO),
+			Arguments.of("", BigDecimal.ZERO),
+			Arguments.of(" ", BigDecimal.ZERO),
+			Arguments.of("123", BigDecimal.valueOf(123)),
+			Arguments.of("123.45", BigDecimal.valueOf(123.45)),
+			Arguments.of("234,56", BigDecimal.valueOf(234.56)),
+			Arguments.of("456.78 SEK", BigDecimal.valueOf(456.78)),
+			Arguments.of("567,89 SEK", BigDecimal.valueOf(567.89)));
 	}
 }

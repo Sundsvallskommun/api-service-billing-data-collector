@@ -12,6 +12,7 @@ import generated.se.sundsvall.billingpreprocessor.Recipient;
 import generated.se.sundsvall.billingpreprocessor.Status;
 import generated.se.sundsvall.billingpreprocessor.Type;
 import jakarta.persistence.PersistenceException;
+import java.math.BigDecimal;
 import java.util.List;
 import org.json.JSONException;
 import org.junit.jupiter.api.Test;
@@ -43,10 +44,10 @@ class BillingRecordWrapperConverterTest {
 		assertThat(invoiceRow.getAccountInformation().getFirst().getCounterpart()).isEqualTo("86000000");
 		assertThat(invoiceRow.getAccountInformation().getFirst().getDepartment()).isEqualTo("315310");
 		assertThat(invoiceRow.getAccountInformation().getFirst().getSubaccount()).isEqualTo("345000");
-		assertThat(invoiceRow.getCostPerUnit()).isEqualTo(700.0f);
+		assertThat(invoiceRow.getCostPerUnit()).isEqualTo(BigDecimal.valueOf(700));
 		assertThat(invoiceRow.getDescriptions().getFirst()).isEqualTo("Julmarknad Ankeborg. 3 marknadsplatser");
-		assertThat(invoiceRow.getQuantity()).isEqualTo(3);
-		assertThat(invoiceRow.getTotalAmount()).isEqualTo(2100.0f);
+		assertThat(invoiceRow.getQuantity()).isEqualTo(BigDecimal.valueOf(3));
+		assertThat(invoiceRow.getTotalAmount()).isEqualTo(BigDecimal.valueOf(2100));
 		assertThat(invoiceRow.getVatCode()).isEqualTo("00");
 		assertThat(wrapper.getBillingRecord().getRecipient().getAddressDetails().getCity()).isEqualTo("ANKEBORG");
 		assertThat(wrapper.getBillingRecord().getRecipient().getAddressDetails().getPostalCode()).isEqualTo("862 96");
@@ -76,10 +77,10 @@ class BillingRecordWrapperConverterTest {
 							.counterpart("86000000")
 							.department("315310")
 							.subaccount("345000")))
-						.costPerUnit(700.0f)
+						.costPerUnit(BigDecimal.valueOf(700))
 						.descriptions(List.of("Julmarknad Ankeborg. 3 marknadsplatser"))
-						.quantity(3f)
-						.totalAmount(2100.0f)
+						.quantity(BigDecimal.valueOf(3))
+						.totalAmount(BigDecimal.valueOf(2100))
 						.vatCode("00"))))
 				.recipient(new Recipient()
 					.addressDetails(new AddressDetails()
