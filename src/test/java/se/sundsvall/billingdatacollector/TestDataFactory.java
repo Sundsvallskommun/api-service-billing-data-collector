@@ -13,9 +13,9 @@ import generated.se.sundsvall.billingpreprocessor.Recipient;
 import generated.se.sundsvall.billingpreprocessor.Status;
 import generated.se.sundsvall.billingpreprocessor.Type;
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
-import se.sundsvall.billingdatacollector.integration.db.model.HistoryEntity;
 import se.sundsvall.billingdatacollector.integration.db.model.ScheduledJobEntity;
 import se.sundsvall.billingdatacollector.model.BillingRecordWrapper;
 
@@ -60,9 +60,9 @@ public final class TestDataFactory {
 				.customerId("customerId")
 				.invoiceRows(List.of(new InvoiceRow()
 					.descriptions(List.of("Invoice text"))
-					.quantity(2f)
-					.costPerUnit(150f)
-					.totalAmount(300f)
+					.quantity(BigDecimal.valueOf(2))
+					.costPerUnit(BigDecimal.valueOf(150))
+					.totalAmount(BigDecimal.valueOf(300))
 					.accountInformation(List.of(new AccountInformation()
 						.costCenter("16300000")
 						.subaccount("936100")
@@ -86,10 +86,10 @@ public final class TestDataFactory {
 			.invoice(new Invoice()
 				.invoiceRows(List.of(new InvoiceRow()
 					.descriptions(List.of("Invoice text"))
-					.quantity(3f)
-					.costPerUnit(100f)
+					.quantity(BigDecimal.valueOf(3))
+					.costPerUnit(BigDecimal.valueOf(100))
 					.vatCode("00")
-					.totalAmount(300f)
+					.totalAmount(BigDecimal.valueOf(300))
 					.accountInformation(List.of(new AccountInformation()
 						.costCenter("43200000")
 						.subaccount("345000")
@@ -97,12 +97,6 @@ public final class TestDataFactory {
 						.activity("4165")
 						.article("3452000 - GULLGÅRDEN")
 						.counterpart("86000000"))))));
-	}
-
-	public static HistoryEntity createHistoryEntity(String flowInstanceId) {
-		final HistoryEntity historyEntity = new HistoryEntity();
-		historyEntity.setFlowInstanceId(flowInstanceId);
-		return historyEntity;
 	}
 
 	public static ScheduledJobEntity createScheduledJobEntity() {

@@ -124,9 +124,9 @@ final class ExternalMapper {
 					ofNullable(collections.getBerakningExternMap().get(index)).map(BerakningExtern::getFakturatextExtern).orElse(null), MAX_DESCRIPTION_LENGTH))
 					.map(List::of)
 					.orElseGet(Collections::emptyList))
-				.quantity(MapperHelper.convertStringToFloat(
+				.quantity(MapperHelper.convertStringToBigDecimal(
 					ofNullable(collections.getBerakningExternMap().get(index)).map(BerakningExtern::getAntalExtern).orElse(null)))
-				.costPerUnit(MapperHelper.convertStringToFloat(
+				.costPerUnit(MapperHelper.convertStringToBigDecimal(
 					ofNullable(collections.getBerakningExternMap().get(index)).map(BerakningExtern::getAPrisExtern).orElse(null)))
 				.vatCode(ofNullable(collections.getMomssatsExternMap().get(index)).map(MomssatsExtern::getValue).orElse(null))
 				.accountInformation(List.of(new AccountInformation()
@@ -140,7 +140,7 @@ final class ExternalMapper {
 						ofNullable(collections.getVerksamhetExternMap().get(index)).map(VerksamhetExtern::getValue).orElse(null)))
 					.subaccount(MapperHelper.getLeadingDigitsFromString(
 						ofNullable(collections.getUnderkontoExternMap().get(index)).map(UnderkontoExtern::getValue).orElse(null)))
-					.amount(MapperHelper.convertStringToFloat(
+					.amount(MapperHelper.convertStringToBigDecimal(
 						ofNullable(collections.getSummeringExternMap().get(index)).map(SummeringExtern::getTotSummeringExtern).orElse(null)))));
 			invoiceRows.add(invoiceRow);
 		}

@@ -641,7 +641,6 @@ components:
         amount:
           type: number
           description: Amount
-          format: float
           example: 1399.95
       description: Account information model
     AddressDetails:
@@ -766,7 +765,6 @@ components:
         totalAmount:
           type: number
           description: Total sum of all invoice rows
-          format: float
           readOnly: true
           example: 1399.95
         invoiceRows:
@@ -794,7 +792,6 @@ components:
         totalAmount:
           type: number
           description: Total sum of invoice row
-          format: float
           readOnly: true
           example: 1399.95
         vatCode:
@@ -805,12 +802,10 @@ components:
         costPerUnit:
           type: number
           description: Cost per unit
-          format: float
           example: 155.55
         quantity:
           type: number
           description: Total amount of units
-          format: float
           example: 9.0
         accountInformation:
           type: array
@@ -871,12 +866,12 @@ components:
     PageBillingRecord:
       type: object
       properties:
-        totalElements:
-          type: integer
-          format: int64
         totalPages:
           type: integer
           format: int32
+        totalElements:
+          type: integer
+          format: int64
         pageable:
           $ref: "#/components/schemas/PageableObject"
         size:
@@ -903,7 +898,7 @@ components:
     PageableObject:
       type: object
       properties:
-        paged:
+        unpaged:
           type: boolean
         pageNumber:
           type: integer
@@ -911,20 +906,20 @@ components:
         pageSize:
           type: integer
           format: int32
+        paged:
+          type: boolean
         offset:
           type: integer
           format: int64
         sort:
           $ref: "#/components/schemas/SortObject"
-        unpaged:
-          type: boolean
     SortObject:
       type: object
       properties:
-        unsorted:
-          type: boolean
         empty:
           type: boolean
         sorted:
+          type: boolean
+        unsorted:
           type: boolean
   securitySchemes: {}

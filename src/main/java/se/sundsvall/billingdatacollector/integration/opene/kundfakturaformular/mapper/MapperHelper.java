@@ -4,6 +4,8 @@ import static java.util.Optional.ofNullable;
 import static org.apache.commons.lang3.StringUtils.isNotBlank;
 import static org.zalando.problem.Status.INTERNAL_SERVER_ERROR;
 
+import java.math.BigDecimal;
+import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import org.apache.commons.lang3.StringUtils;
@@ -29,6 +31,21 @@ final class MapperHelper {
 
 	private MapperHelper() {
 		// Not meant to be instantiated
+	}
+
+	/**
+	 * Converts a string to a BigDecimal.
+	 * 
+	 * @param  stringToConvert The string to convert to a BigDecimal
+	 * @return                 The string converted to a BigDecimal, or 0 if the string is blank.
+	 */
+	static BigDecimal convertStringToBigDecimal(String stringToConvert) {
+		return Optional.ofNullable(stringToConvert)
+			.filter(StringUtils::isNotBlank)
+			.map(MapperHelper::removeCurrencyFromString)
+			.map(MapperHelper::replaceCommasInCurrencyString)
+			.map(BigDecimal::new)
+			.orElse(BigDecimal.ZERO);
 	}
 
 	/**
@@ -195,15 +212,15 @@ final class MapperHelper {
 			.build();
 	}
 
-	private static OrganizationInformation extractOrganizationInformationFromMatcher(Matcher pipeMatcher) {
+	private static OrganizationInformation extractOrganizationInformationFromMatcher(Matcher matcher) {
 		return OrganizationInformation.builder()
-			.withOrganizationNumber(ofNullable(pipeMatcher.group(1)).map(String::trim).orElse(null))
-			.withName(ofNullable(pipeMatcher.group(2)).map(String::trim).orElse(null))
-			.withStreetAddress(ofNullable(pipeMatcher.group(3)).map(String::trim).orElse(null))
-			.withCareOf(ofNullable(pipeMatcher.group(4)).map(String::trim).orElse(null))
-			.withZipCode(ofNullable(pipeMatcher.group(5)).map(String::trim).orElse(null))
-			.withCity(ofNullable(pipeMatcher.group(6)).map(String::trim).orElse(null))
-			.withMotpart(ofNullable(getExternalMotpartNumbers(pipeMatcher.group(7))).map(String::trim).orElse(null))
+			.withOrganizationNumber(ofNullable(matcher.group(1)).map(String::trim).orElse(null))
+			.withName(ofNullable(matcher.group(2)).map(String::trim).orElse(null))
+			.withStreetAddress(ofNullable(matcher.group(3)).map(String::trim).orElse(null))
+			.withCareOf(ofNullable(matcher.group(4)).map(String::trim).orElse(null))
+			.withZipCode(ofNullable(matcher.group(5)).map(String::trim).orElse(null))
+			.withCity(ofNullable(matcher.group(6)).map(String::trim).orElse(null))
+			.withMotpart(ofNullable(getExternalMotpartNumbers(matcher.group(7))).map(String::trim).orElse(null))
 			.build();
 	}
 
