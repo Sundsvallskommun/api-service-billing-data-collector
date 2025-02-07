@@ -18,28 +18,29 @@ import se.sundsvall.billingdatacollector.support.annotation.UnitTest;
 @UnitTest
 class MessagingFalloutMapperTest {
 
-	private static final String HTML_MESSAGE = """
-		<!DOCTYPE html>
-		      <html lang="en" xmlns="http://www.w3.org/1999/xhtml">
-		          <body>
-		              <b>Följande problem har inträffat vid generering av faktura-poster (%s)</b>
-		              <p>
-		                  <i>3 st. fel:</i>
-		                  <ul>
-		                      <li> familyId: 123, flowInstanceId: 12345, requestId: abc123</li>
-		                      <li> familyId: 123, flowInstanceId: 23456, requestId: abc234</li>
-		                      <li> familyId: 234, flowInstanceId: 34567, requestId: abc345</li>
-		                  </ul>
-		                  <p>
-		                      <b>Med vänlig hälsning
-		                      <br/>
-		                      <a href="mailto:dummy@sundsvall.se">Billing Data Collector</a>
-		                  </b>
-		              </p>
-		          </body>
-		      </html>""";
 	@Autowired
 	private MessagingFalloutMapper mapper;
+
+	private static final String HTML_MESSAGE = """
+		<!DOCTYPE html>
+			<html lang="en" xmlns="http://www.w3.org/1999/xhtml">
+				<body>
+					<b>Följande problem har inträffat vid generering av faktura-poster (%s)</b>
+					<p>
+						<i>3 st. fel:</i>
+						<ul>
+							<li> familyId: 123, flowInstanceId: 12345, requestId: abc123</li>
+							<li> familyId: 123, flowInstanceId: 23456, requestId: abc234</li>
+							<li> familyId: 234, flowInstanceId: 34567, requestId: abc345</li>
+						</ul>
+						<p>
+							<b>Med vänlig hälsning
+							<br/>
+							<a href="mailto:dummy@sundsvall.se">Billing Data Collector</a>
+						</b>
+					</p>
+				</body>
+			</html>""";
 
 	@Test
 	void testComposeFalloutEmail() {

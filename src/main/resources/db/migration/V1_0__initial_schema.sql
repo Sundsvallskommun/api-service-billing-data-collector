@@ -7,6 +7,7 @@ create table fallout
     flow_instance_id       varchar(255),
     id                     varchar(36) not null,
     modified               datetime(6),
+    municipality_id        varchar(4)  not null,
     opene_instance         text,
     reported               boolean default false,
     request_id             varchar(36),
@@ -16,21 +17,23 @@ create table fallout
 create table history
 (
     billing_record_wrapper text,
-    created                date,
+    created                datetime(6),
     family_id              varchar(255),
     flow_instance_id       varchar(255),
     id                     varchar(36) not null,
     location               varchar(255),
+    municipality_id        varchar(4)  not null,
     request_id             varchar(36),
     primary key (id)
 ) engine = InnoDB;
 
 create table scheduled_job_log
 (
-    fetched_end_date   date         not null,
-    fetched_start_date date         not null,
-    processed          datetime(6)  not null,
+    fetched_end_date   date        not null,
+    fetched_start_date date        not null,
+    processed          datetime(6) not null,
     id                 varchar(36) not null,
+    municipality_id    varchar(4)  not null,
     primary key (id)
 ) engine = InnoDB;
 
@@ -49,8 +52,17 @@ create index idx_family_id
 create index idx_flow_instance_id
     on fallout (flow_instance_id);
 
+create index idx_municipality_id
+    on fallout (municipality_id);
+
 create index idx_family_id
     on history (family_id);
 
 create index idx_flow_instance_id
     on history (flow_instance_id);
+
+create index idx_municipality_id
+    on history (municipality_id);
+
+create index idx_municipality_id
+    on scheduled_job_log (municipality_id);

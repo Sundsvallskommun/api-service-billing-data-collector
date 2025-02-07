@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="ISO-8859-1" standalone="no"?>
+<FlowInstance xmlns="http://www.oeplatform.org/version/2.0/schemas/flowinstance" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.oeplatform.org/version/2.0/schemas/flowinstance schema-2295.xsd">
+    <Header>
+        <Flow>
+            <FamilyID>358</FamilyID>
+            <Version>32</Version>
+            <FlowID>2295</FlowID>
+            <Name><![CDATA[Kundfakturaformulär]]></Name>
+        </Flow>
+        <FlowInstanceID>12346</FlowInstanceID>
+        <Status>
+            <ID>16703</ID>
+            <Name><![CDATA[Klart]]></Name>
+        </Status>
+        <Poster>
+            <Firstname><![CDATA[Janne]]></Firstname>
+            <Lastname><![CDATA[Långben]]></Lastname>
+            <Email><![CDATA[janne.langben@sundsvall.se]]></Email>
+            <ID>31245</ID>
+        </Poster>
+        <Owner>
+            <Firstname><![CDATA[Janne]]></Firstname>
+            <Lastname><![CDATA[Långben]]></Lastname>
+            <Email><![CDATA[janne.langben@sundsvall.se]]></Email>
+            <ID>31245</ID>
+        </Owner>
+        <Posted>2025-02-03T12:28:30</Posted>
+        <FirstSubmitted>2025-02-03T12:28:30</FirstSubmitted>
+        <LastSubmitted>2025-02-03T12:28:30</LastSubmitted>
+    </Header>
+    <Values>
+        <VemArKontaktperson>
+            <QueryID>63498</QueryID>
+            <Name><![CDATA[Vem är vår kontaktperson?]]></Name>
+            <Value>Jag själv</Value>
+        </VemArKontaktperson>
+        <SaljarensUppg>
+            <QueryID>63500</QueryID>
+            <Name><![CDATA[Säljarens namn]]></Name>
+            <Firstname><![CDATA[Janne]]></Firstname>
+            <Lastname><![CDATA[Långben]]></Lastname>
+            <Phone><![CDATA[060-999999]]></Phone>
+            <Email><![CDATA[janne.langben@sundsvall.se]]></Email>
+        </SaljarensUppg>
+        <FakturerandeForvaltning>
+            <QueryID>63501</QueryID>
+            <Name><![CDATA[Fakturerande förvaltning/verksamhet (för statistikändamål)]]></Name>
+            <Value>20 - Individ- och arbetsmarknadsf?rv</Value>
+        </FakturerandeForvaltning>
+        <FakturanSkickasTill>
+            <QueryID>63502</QueryID>
+            <Name><![CDATA[Fakturan ska skickas till:]]></Name>
+            <Value>Externt företag (inklusive kommunalt bolag)</Value>
+        </FakturanSkickasTill>
+        <SokLaggTillForetag>
+            <QueryID>63533</QueryID>
+            <Name><![CDATA[Klicka på sök och Välj företag. Om inte företaget finns i söklistan så Välj lägg till företagsuppgifter]]></Name>
+            <Value>Lägg till företagsuppgifter</Value>
+        </SokLaggTillForetag>
+        <KundensOrgUppgExterntForetag>
+            <QueryID>63536</QueryID>
+            <Name><![CDATA[Kundens organisationsuppgifter (Externt företag)]]></Name>
+            <Organisationsnummer><![CDATA[559162-8136]]></Organisationsnummer>
+        </KundensOrgUppgExterntForetag>
+        <KundensOrgUppgExterntForetag2>
+            <QueryID>63537</QueryID>
+            <Name><![CDATA[Kundens organisationsuppgifter (Externt företag)]]></Name>
+            <Foretagets_namn><![CDATA[Kalle Anka AB]]></Foretagets_namn>
+            <Adress><![CDATA[Fnatteenheten]]></Adress>
+            <CO><![CDATA[Region Ankeborg]]></CO>
+            <Postnummer><![CDATA[123 45]]></Postnummer>
+            <Postadress><![CDATA[Ankeborg]]></Postadress>
+            <Kundens_referens><![CDATA[0]]></Kundens_referens>
+        </KundensOrgUppgExterntForetag2>
+        <MotpartListaExterntForetag>
+            <QueryID>63538</QueryID>
+            <Name><![CDATA[Välj motpart (Externt företag)]]></Name>
+            <Value>829 Övriga kommuner</Value>
+        </MotpartListaExterntForetag>
+        <FakturaraderExtern>
+            <QueryID>63612</QueryID>
+            <Name><![CDATA[Hur många fakturarader vill du lägga till?]]></Name>
+            <Value>1</Value>
+        </FakturaraderExtern>
+        <BarakningarExtern1>
+            <QueryID>63614</QueryID>
+            <Name><![CDATA[Beräkningar (1)]]></Name>
+            <FakturatextExtern1><![CDATA[Kreditering tidigare faktura]]></FakturatextExtern1>
+            <AntalExtern1><![CDATA[-1]]></AntalExtern1>
+            <APrisExtern1><![CDATA[7560.00]]></APrisExtern1>
+        </BarakningarExtern1>
+        <SummeringExtern1>
+            <QueryID>63618</QueryID>
+            <Name><![CDATA[Summering (1)]]></Name>
+            <TotSummeringExtern1><![CDATA[-7560,00 SEK]]></TotSummeringExtern1>
+        </SummeringExtern1>
+        <MomssatsExtern1>
+            <QueryID>63619</QueryID>
+            <Name><![CDATA[Momssats i % (1)]]></Name>
+            <Value>00</Value>
+        </MomssatsExtern1>
+        <AnsvarExtern1>
+            <QueryID>63621</QueryID>
+            <Name><![CDATA[Ansvar (1)]]></Name>
+            <Value>23630000 - Janne Långben</Value>
+        </AnsvarExtern1>
+        <UnderkontoExtern1>
+            <QueryID>63625</QueryID>
+            <Name><![CDATA[Välj Intäktskonto 0% Moms (1)]]></Name>
+            <Value>313100 övriga taxor och avgifter 0%</Value>
+        </UnderkontoExtern1>
+        <VerksamhetExtern1>
+            <QueryID>63626</QueryID>
+            <Name><![CDATA[Verksamhet (1)]]></Name>
+            <Value>472000 - Vuxenutbildnnig samt</Value>
+        </VerksamhetExtern1>
+        <TotalSummeringIntern>
+            <QueryID>63698</QueryID>
+            <Name><![CDATA[Total summering]]></Name>
+            <TotalSummeringIntern><![CDATA[-7560,00 SEK]]></TotalSummeringIntern>
+        </TotalSummeringIntern>
+    </Values>
+</FlowInstance>

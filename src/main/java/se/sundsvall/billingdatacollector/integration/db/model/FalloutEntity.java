@@ -43,7 +43,7 @@ public class FalloutEntity {
 	@Column(name = "id")
 	private String id;
 
-	@Column(name = "municipality_id")
+	@Column(name = "municipality_id", nullable = false, length = 4)
 	private String municipalityId;
 
 	@Column(name = "request_id", length = 36)

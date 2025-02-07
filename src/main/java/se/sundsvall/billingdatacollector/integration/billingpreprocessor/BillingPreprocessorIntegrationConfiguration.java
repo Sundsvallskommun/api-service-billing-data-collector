@@ -18,7 +18,8 @@ class BillingPreprocessorIntegrationConfiguration {
 	FeignBuilderCustomizer feignBuilderCustomizer(final BillingPreprocessorIntegrationProperties properties) {
 		return FeignMultiCustomizer.create()
 			.withErrorDecoder(new ProblemErrorDecoder(CLIENT_ID))
-			.withRetryableOAuth2InterceptorForClientRegistration(ClientRegistration.withRegistrationId(CLIENT_ID)
+			.withRetryableOAuth2InterceptorForClientRegistration(ClientRegistration
+				.withRegistrationId(CLIENT_ID)
 				.tokenUri(properties.oauth2().tokenUrl())
 				.clientId(properties.oauth2().clientId())
 				.clientSecret(properties.oauth2().clientSecret())

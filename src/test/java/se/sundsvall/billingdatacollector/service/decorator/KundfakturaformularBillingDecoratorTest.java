@@ -9,13 +9,13 @@ import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 import static org.zalando.problem.Status.INTERNAL_SERVER_ERROR;
 
-import java.util.Optional;
 import java.util.UUID;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.zalando.problem.Problem;
 import org.zalando.problem.ThrowableProblem;
 import se.sundsvall.billingdatacollector.TestDataFactory;
 import se.sundsvall.billingdatacollector.integration.opene.OpenEIntegrationProperties;
@@ -38,7 +38,7 @@ class KundfakturaformularBillingDecoratorTest {
 		// Arrange
 		final var wrapper = TestDataFactory.createKundfakturaBillingRecordWrapper(false);
 		final var uuid = UUID.randomUUID().toString();
-		when(mockPartyIntegration.getPartyId(anyString(), anyString())).thenReturn(Optional.of(uuid));
+		when(mockPartyIntegration.getPartyId(anyString(), anyString())).thenReturn(uuid);
 
 		// Act
 		kundfakturaformularDecorator.decorate(wrapper);
@@ -66,12 +66,12 @@ class KundfakturaformularBillingDecoratorTest {
 	void testDecorateCannotFindPartyId_shouldThrowException() {
 		// Arrange
 		final var wrapper = TestDataFactory.createKundfakturaBillingRecordWrapper(false);
-		when(mockPartyIntegration.getPartyId(anyString(), anyString())).thenReturn(Optional.empty());
+		when(mockPartyIntegration.getPartyId(anyString(), anyString())).thenThrow(Problem.valueOf(INTERNAL_SERVER_ERROR, "Couldn't find partyId for legalId: " + wrapper.getLegalId()));
 
 		// Act & Assert
 		assertThatExceptionOfType(ThrowableProblem.class).isThrownBy(() -> kundfakturaformularDecorator.decorate(wrapper))
 			.satisfies(throwableProblem -> {
-				assertThat(throwableProblem.getTitle()).isEqualTo("Couldn't find partyId for legalId " + wrapper.getLegalId());
+				assertThat(throwableProblem.getDetail()).isEqualTo("Couldn't find partyId for legalId: 1234567890");
 				assertThat(throwableProblem.getStatus()).isEqualTo(INTERNAL_SERVER_ERROR);
 			});
 

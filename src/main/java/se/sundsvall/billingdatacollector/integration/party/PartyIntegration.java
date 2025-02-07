@@ -1,11 +1,15 @@
 package se.sundsvall.billingdatacollector.integration.party;
 
+import static generated.se.sundsvall.party.PartyType.ENTERPRISE;
 import static generated.se.sundsvall.party.PartyType.PRIVATE;
+import static org.zalando.problem.Status.INTERNAL_SERVER_ERROR;
 
 import java.util.Optional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
+import org.zalando.problem.Problem;
+import se.sundsvall.billingdatacollector.service.util.LegalIdUtil;
 
 @Component
 public class PartyIntegration {
@@ -18,13 +22,30 @@ public class PartyIntegration {
 		this.partyClient = partyClient;
 	}
 
-	public Optional<String> getPartyId(final String municipalityId, final String legalId) {
-		try {
-			return partyClient.getPartyId(municipalityId, PRIVATE, legalId);
-		} catch (final Exception e) {
-			LOG.info("Unable to get party id for municipalityId {} and legal id {}: {}", municipalityId, legalId, e.getMessage());
+	/**
+	 * Fetch partyId by first checking for enterprise, then private.
+	 * Private legalIds are checked for valid format and cleaned (century digits added).
+	 *
+	 * @param  municipalityId The municipalityId
+	 * @param  legalId        The legalId
+	 * @return                The partyId
+	 */
+	public String getPartyId(final String municipalityId, final String legalId) {
+		return partyClient.getPartyId(municipalityId, ENTERPRISE, legalId)
+			.orElseGet(() -> checkAndGetCorrectPersonalNumber(municipalityId, legalId)
+				.orElseThrow(() -> Problem.builder()
+					.withTitle("Couldn't find partyId for legalId " + legalId)
+					.withStatus(INTERNAL_SERVER_ERROR)
+					.build()));
+	}
 
+	private Optional<String> checkAndGetCorrectPersonalNumber(final String municipalityId, final String legalId) {
+		// Add century digits to legalId if they are missing
+		var cleanedLegalId = LegalIdUtil.addCenturyDigitsToLegalId(legalId);
+		if (!LegalIdUtil.isValidLegalId(cleanedLegalId)) {
+			LOG.warn("Invalid personal number: {}", cleanedLegalId);
 			return Optional.empty();
 		}
+		return partyClient.getPartyId(municipalityId, PRIVATE, cleanedLegalId);
 	}
 }

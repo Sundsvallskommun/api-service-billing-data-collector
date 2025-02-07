@@ -124,7 +124,7 @@ public final class XPathUtil {
 		return ofNullable(evaluateXPath(xml, path))
 			.filter(not(Elements::isEmpty))
 			.map(Elements::getFirst)
-			.map(Element::text);
+			.map(Element::wholeText);   // Don't trim spaces, get it all.
 	}
 
 	public static Document parseXmlDocument(final byte[] xml) {

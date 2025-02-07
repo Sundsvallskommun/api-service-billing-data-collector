@@ -18,6 +18,6 @@ public class CommonStubs {
 		stubFor(post(url)
 			.willReturn(aResponse()
 				.withHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
-				.withBody("{\"access_token\":\"abc123\",\"not-before-policy\":0,\"session_state\":\"88bbf486\",\"token_type\": \"bearer\"}")));
+				.withBody("{\"access_token\":\"MTQ0NjJkZmQ5OTM2NDE1ZTZjNGZmZjI3\",\"not-before-policy\":0,\"session_state\":\"88bbf486\",\"token_type\": \"bearer\"}")));
 	}
 }

@@ -37,7 +37,7 @@ public class ScheduledJobEntity {
 	@UuidGenerator
 	private String id;
 
-	@Column(name = "municipality_id")
+	@Column(name = "municipality_id", nullable = false, length = 4)
 	private String municipalityId;
 
 	/**

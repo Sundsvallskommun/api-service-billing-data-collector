@@ -13,8 +13,10 @@ import generated.se.sundsvall.billingpreprocessor.Status;
 import generated.se.sundsvall.billingpreprocessor.Type;
 import jakarta.persistence.PersistenceException;
 import java.util.List;
+import org.json.JSONException;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.skyscreamer.jsonassert.JSONAssert;
 import se.sundsvall.billingdatacollector.model.BillingRecordWrapper;
 import se.sundsvall.dept44.test.annotation.resource.Load;
 import se.sundsvall.dept44.test.extension.ResourceLoaderExtension;
@@ -35,12 +37,12 @@ class BillingRecordWrapperConverterTest {
 
 		final var invoiceRow = wrapper.getBillingRecord().getInvoice().getInvoiceRows().getFirst();
 
-		assertThat(invoiceRow.getAccountInformation().getActivity()).isEqualTo("4165");
-		assertThat(invoiceRow.getAccountInformation().getArticle()).isEqualTo("3452000 - ANKEBORG");
-		assertThat(invoiceRow.getAccountInformation().getCostCenter()).isEqualTo("43200000");
-		assertThat(invoiceRow.getAccountInformation().getCounterpart()).isEqualTo("86000000");
-		assertThat(invoiceRow.getAccountInformation().getDepartment()).isEqualTo("315310");
-		assertThat(invoiceRow.getAccountInformation().getSubaccount()).isEqualTo("345000");
+		assertThat(invoiceRow.getAccountInformation().getFirst().getActivity()).isEqualTo("4165");
+		assertThat(invoiceRow.getAccountInformation().getFirst().getArticle()).isEqualTo("3452000 - ANKEBORG");
+		assertThat(invoiceRow.getAccountInformation().getFirst().getCostCenter()).isEqualTo("43200000");
+		assertThat(invoiceRow.getAccountInformation().getFirst().getCounterpart()).isEqualTo("86000000");
+		assertThat(invoiceRow.getAccountInformation().getFirst().getDepartment()).isEqualTo("315310");
+		assertThat(invoiceRow.getAccountInformation().getFirst().getSubaccount()).isEqualTo("345000");
 		assertThat(invoiceRow.getCostPerUnit()).isEqualTo(700.0f);
 		assertThat(invoiceRow.getDescriptions().getFirst()).isEqualTo("Julmarknad Ankeborg. 3 marknadsplatser");
 		assertThat(invoiceRow.getQuantity()).isEqualTo(3);
@@ -57,7 +59,7 @@ class BillingRecordWrapperConverterTest {
 	}
 
 	@Test
-	void convertToEntityAttribute(@Load("/billingpreprocessor/billing-record.json") String recordAsJson) {
+	void convertToEntityAttribute(@Load("/billingpreprocessor/billing-record.json") String recordAsJson) throws JSONException {
 		final var wrapper = BillingRecordWrapper.builder()
 			.withMunicipalityId("2281")
 			.withFamilyId("358")
@@ -67,13 +69,13 @@ class BillingRecordWrapperConverterTest {
 				.category("KUNDFAKTURA")
 				.invoice(new Invoice()
 					.invoiceRows(List.of(new InvoiceRow()
-						.accountInformation(new AccountInformation()
+						.accountInformation(List.of(new AccountInformation()
 							.activity("4165")
 							.article("3452000 - ANKEBORG")
 							.costCenter("43200000")
 							.counterpart("86000000")
 							.department("315310")
-							.subaccount("345000"))
+							.subaccount("345000")))
 						.costPerUnit(700.0f)
 						.descriptions(List.of("Julmarknad Ankeborg. 3 marknadsplatser"))
 						.quantity(3f)
@@ -92,7 +94,8 @@ class BillingRecordWrapperConverterTest {
 			.build();
 
 		final var json = converter.convertToDatabaseColumn(wrapper);
-		assertThat(json).isEqualToIgnoringWhitespace(recordAsJson);
+
+		JSONAssert.assertEquals(recordAsJson, json, true);
 	}
 
 	@Test

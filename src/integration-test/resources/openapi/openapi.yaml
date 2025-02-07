@@ -1,13 +1,13 @@
 openapi: 3.0.1
 info:
   title: api-billing-data-collector
-  contact: { }
+  contact: {}
   license:
     name: MIT License
     url: https://opensource.org/licenses/MIT
   version: "1.0"
 servers:
-  - url: http://localhost:62684
+  - url: http://127.0.0.1:8080
     description: Generated server url
 tags:
   - name: Billing Data Collector
@@ -64,26 +64,26 @@ paths:
                 type: array
                 items:
                   type: string
-        "400":
-          description: Bad Request
-          content:
-            application/json:
-              schema:
-                oneOf:
-                  - $ref: "#/components/schemas/Problem"
-                  - $ref: "#/components/schemas/ConstraintViolationProblem"
         "500":
           description: Internal Server Error
           content:
-            application/json:
+            application/problem+json:
               schema:
                 $ref: "#/components/schemas/Problem"
         "502":
           description: Bad Gateway
           content:
-            application/json:
+            application/problem+json:
               schema:
                 $ref: "#/components/schemas/Problem"
+        "400":
+          description: Bad Request
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                  - $ref: "#/components/schemas/Problem"
+                  - $ref: "#/components/schemas/ConstraintViolationProblem"
   /{municipalityId}/trigger/{flowInstanceId}:
     post:
       tags:
@@ -108,26 +108,26 @@ paths:
       responses:
         "202":
           description: Accepted
-        "400":
-          description: Bad Request
-          content:
-            '*/*':
-              schema:
-                oneOf:
-                  - $ref: "#/components/schemas/Problem"
-                  - $ref: "#/components/schemas/ConstraintViolationProblem"
         "500":
           description: Internal Server Error
           content:
-            '*/*':
+            application/problem+json:
               schema:
                 $ref: "#/components/schemas/Problem"
         "502":
           description: Bad Gateway
           content:
-            '*/*':
+            application/problem+json:
               schema:
                 $ref: "#/components/schemas/Problem"
+        "400":
+          description: Bad Request
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                  - $ref: "#/components/schemas/Problem"
+                  - $ref: "#/components/schemas/ConstraintViolationProblem"
   /api-docs:
     get:
       tags:
@@ -340,4 +340,4 @@ components:
           type: string
         message:
           type: string
-  securitySchemes: { }
+  securitySchemes: {}

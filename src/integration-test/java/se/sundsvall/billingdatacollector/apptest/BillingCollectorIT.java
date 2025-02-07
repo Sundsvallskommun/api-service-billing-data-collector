@@ -50,7 +50,7 @@ class BillingCollectorIT extends AbstractAppTest {
 	private ScheduledJobRepository scheduledJobRepository;
 
 	@Test
-	void test1_fetchAndCreateBillingRecords() {
+	void test1_fetchAndCreateBillingRecordsForPrivatePerson() {
 		// Setup wiremock
 		setupCall();
 
@@ -145,5 +145,69 @@ class BillingCollectorIT extends AbstractAppTest {
 		assertThat(jobEntity.getFirst().getFetchedEndDate()).isEqualTo(LocalDate.now().minusDays(1));
 		assertThat(jobEntity.getFirst().getFetchedStartDate()).isEqualTo(LocalDate.now().minusDays(1));
 		assertThat(jobEntity.getFirst().getProcessed()).isCloseTo(OffsetDateTime.now(), within(5, ChronoUnit.SECONDS));
+	}
+	
+	@Test
+	void test4_fetchAndCreateBillingRecordsForCompanyCustomer() {
+		// Setup wiremock
+		setupCall();
+
+		// Trigger the "scheduled" job
+		billingJobHandler.performBilling();
+		await()
+			.atMost(5, SECONDS)
+			.until(() -> historyRepository.count() > 0);
+
+		var historyEntities = historyRepository.findAll();
+
+		//Check that we have one record in the database and that it's the one we want.
+		// We won't assert everything, that's done in the unit tests.
+		assertThat(historyEntities).hasSize(1);
+		historyEntities.forEach(entity -> {
+			assertThat(entity.getFamilyId()).isEqualTo(FAMILY_ID);
+			assertThat(entity.getFlowInstanceId()).isIn("12345");
+		});
+
+		// Check that the scheduled job has been saved in the database
+		var jobEntity = scheduledJobRepository.findAll();
+		assertThat(jobEntity).hasSize(1);
+		assertThat(jobEntity.getFirst().getFetchedEndDate()).isEqualTo(LocalDate.now().minusDays(1));
+		assertThat(jobEntity.getFirst().getFetchedStartDate()).isEqualTo(LocalDate.now().minusDays(1));
+		assertThat(jobEntity.getFirst().getProcessed()).isCloseTo(OffsetDateTime.now(), within(5, ChronoUnit.SECONDS));
+
+		// And check that we have no fallouts
+		assertThat(falloutRepository.count()).isZero();
+	}
+	
+	@Test
+	void test5_fetchAndCreateBillingRecordsForManuallyEnteredCompanyCustomer() {
+		// Setup wiremock
+		setupCall();
+
+		// Trigger the "scheduled" job
+		billingJobHandler.performBilling();
+		await()
+			.atMost(5, SECONDS)
+			.until(() -> historyRepository.count() > 0);
+
+		var historyEntities = historyRepository.findAll();
+
+		//Check that we have one record in the database and that it's the one we want.
+		// We won't assert everything, that's done in the unit tests.
+		assertThat(historyEntities).hasSize(1);
+		historyEntities.forEach(entity -> {
+			assertThat(entity.getFamilyId()).isEqualTo(FAMILY_ID);
+			assertThat(entity.getFlowInstanceId()).isIn("12346");
+		});
+
+		// Check that the scheduled job has been saved in the database
+		var jobEntity = scheduledJobRepository.findAll();
+		assertThat(jobEntity).hasSize(1);
+		assertThat(jobEntity.getFirst().getFetchedEndDate()).isEqualTo(LocalDate.now().minusDays(1));
+		assertThat(jobEntity.getFirst().getFetchedStartDate()).isEqualTo(LocalDate.now().minusDays(1));
+		assertThat(jobEntity.getFirst().getProcessed()).isCloseTo(OffsetDateTime.now(), within(5, ChronoUnit.SECONDS));
+
+		// And check that we have no fallouts
+		assertThat(falloutRepository.count()).isZero();
 	}
 }

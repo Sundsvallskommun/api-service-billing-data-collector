@@ -20,7 +20,7 @@ import se.sundsvall.dept44.configuration.feign.decoder.ProblemErrorDecoder;
 class OpenEIntegrationConfigurationTest {
 
 	@Spy
-	private FeignMultiCustomizer feignMultiCustomizerSpy;
+	private FeignMultiCustomizer spyFeignMultiCustomizer;
 
 	@Mock
 	private FeignBuilderCustomizer mockFeignBuilderCustomizer;
@@ -34,21 +34,21 @@ class OpenEIntegrationConfigurationTest {
 		when(mockProperties.password()).thenReturn("somePassword");
 		when(mockProperties.connectTimeout()).thenReturn(12);
 		when(mockProperties.readTimeout()).thenReturn(34);
-		when(feignMultiCustomizerSpy.composeCustomizersToOne()).thenReturn(mockFeignBuilderCustomizer);
+		when(spyFeignMultiCustomizer.composeCustomizersToOne()).thenReturn(mockFeignBuilderCustomizer);
 
 		try (var mockFeignMultiCustomizer = mockStatic(FeignMultiCustomizer.class)) {
-			mockFeignMultiCustomizer.when(FeignMultiCustomizer::create).thenReturn(feignMultiCustomizerSpy);
+			mockFeignMultiCustomizer.when(FeignMultiCustomizer::create).thenReturn(spyFeignMultiCustomizer);
 
 			var customizer = new OpenEIntegrationConfiguration().feignBuilderCustomizer(mockProperties);
 			var errorDecoderCaptor = ArgumentCaptor.forClass(ProblemErrorDecoder.class);
 
-			verify(feignMultiCustomizerSpy).withErrorDecoder(errorDecoderCaptor.capture());
+			verify(spyFeignMultiCustomizer).withErrorDecoder(errorDecoderCaptor.capture());
 			verify(mockProperties).username();
 			verify(mockProperties).password();
 			verify(mockProperties).connectTimeout();
 			verify(mockProperties).readTimeout();
-			verify(feignMultiCustomizerSpy).withRequestTimeoutsInSeconds(12, 34);
-			verify(feignMultiCustomizerSpy).composeCustomizersToOne();
+			verify(spyFeignMultiCustomizer).withRequestTimeoutsInSeconds(12, 34);
+			verify(spyFeignMultiCustomizer).composeCustomizersToOne();
 
 			assertThat(errorDecoderCaptor.getValue()).hasFieldOrPropertyWithValue("integrationName", CLIENT_ID);
 			assertThat(customizer).isSameAs(mockFeignBuilderCustomizer);

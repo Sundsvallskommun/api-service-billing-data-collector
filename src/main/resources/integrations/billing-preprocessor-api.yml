@@ -5,9 +5,10 @@ info:
   license:
     name: MIT License
     url: https://opensource.org/licenses/MIT
-  version: "2.0"
+  version: "3.0"
 servers:
-  - url: https://api.sundsvall.se/billingpreprocessor/2.0
+  - url: http://localhost:8080
+    description: Generated server url
 tags:
   - name: BillingRecord
     description: Billing record operations
@@ -37,6 +38,20 @@ paths:
             type: string
           example: b82bd8ac-1507-4d9a-958d-369261eecc15
       responses:
+        "200":
+          description: Successful Operation
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BillingRecord"
+        "400":
+          description: Bad Request
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                  - $ref: "#/components/schemas/Problem"
+                  - $ref: "#/components/schemas/ConstraintViolationProblem"
         "404":
           description: Not Found
           content:
@@ -49,23 +64,6 @@ paths:
             application/problem+json:
               schema:
                 $ref: "#/components/schemas/Problem"
-        "200":
-          description: Successful Operation
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/BillingRecord"
-            application/problem+json:
-              schema:
-                $ref: "#/components/schemas/BillingRecord"
-        "400":
-          description: Bad Request
-          content:
-            application/problem+json:
-              schema:
-                oneOf:
-                  - $ref: "#/components/schemas/Problem"
-                  - $ref: "#/components/schemas/ConstraintViolationProblem"
     put:
       tags:
         - BillingRecord
@@ -101,15 +99,6 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/BillingRecord"
-            application/problem+json:
-              schema:
-                $ref: "#/components/schemas/BillingRecord"
-        "404":
-          description: Not found
-          content:
-            application/problem+json:
-              schema:
-                $ref: "#/components/schemas/Problem"
         "400":
           description: Bad request
           content:
@@ -118,6 +107,12 @@ paths:
                 oneOf:
                   - $ref: "#/components/schemas/Problem"
                   - $ref: "#/components/schemas/ConstraintViolationProblem"
+        "404":
+          description: Not found
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Problem"
         "500":
           description: Internal Server error
           content:
@@ -147,6 +142,16 @@ paths:
             type: string
           example: b82bd8ac-1507-4d9a-958d-369261eecc15
       responses:
+        "204":
+          description: Successful operation
+        "400":
+          description: Bad request
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                  - $ref: "#/components/schemas/Problem"
+                  - $ref: "#/components/schemas/ConstraintViolationProblem"
         "404":
           description: Not Found
           content:
@@ -159,16 +164,6 @@ paths:
             application/problem+json:
               schema:
                 $ref: "#/components/schemas/Problem"
-        "204":
-          description: Successful operation
-        "400":
-          description: Bad request
-          content:
-            application/problem+json:
-              schema:
-                oneOf:
-                  - $ref: "#/components/schemas/Problem"
-                  - $ref: "#/components/schemas/ConstraintViolationProblem"
         "500":
           description: Internal Server error
           content:
@@ -191,6 +186,8 @@ paths:
             type: string
           example: 2281
       responses:
+        "202":
+          description: Successful Operation
         "404":
           description: Not Found
           content:
@@ -203,8 +200,6 @@ paths:
             application/problem+json:
               schema:
                 $ref: "#/components/schemas/Problem"
-        "202":
-          description: Successful Operation
   /{municipalityId}/jobs/filecreator:
     post:
       tags:
@@ -220,6 +215,8 @@ paths:
             type: string
           example: 2281
       responses:
+        "202":
+          description: Successful Operation
         "404":
           description: Not Found
           content:
@@ -232,8 +229,6 @@ paths:
             application/problem+json:
               schema:
                 $ref: "#/components/schemas/Problem"
-        "202":
-          description: Successful Operation
   /{municipalityId}/billingrecords:
     get:
       tags:
@@ -283,19 +278,10 @@ paths:
             items:
               type: string
       responses:
-        "500":
-          description: Internal Server Error
-          content:
-            application/problem+json:
-              schema:
-                $ref: "#/components/schemas/Problem"
         "200":
           description: Successful Operation
           content:
             application/json:
-              schema:
-                $ref: "#/components/schemas/PageBillingRecord"
-            application/problem+json:
               schema:
                 $ref: "#/components/schemas/PageBillingRecord"
         "400":
@@ -306,6 +292,12 @@ paths:
                 oneOf:
                   - $ref: "#/components/schemas/Problem"
                   - $ref: "#/components/schemas/ConstraintViolationProblem"
+        "500":
+          description: Internal Server Error
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Problem"
     post:
       tags:
         - BillingRecord
@@ -380,12 +372,7 @@ paths:
               schema:
                 type: string
           content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  type: string
-            application/problem+json:
+            '*/*':
               schema:
                 type: array
                 items:
@@ -422,250 +409,6 @@ paths:
       x-wso2-mutual-ssl: Optional
 components:
   schemas:
-    AccountInformation:
-      type: object
-      properties:
-        costCenter:
-          type: string
-          description: Cost center
-          example: "15800100"
-        subaccount:
-          type: string
-          description: Subaccount
-          example: "936300"
-        department:
-          type: string
-          description: Department
-          example: "920360"
-        accuralKey:
-          type: string
-          description: Accural key
-          example: "5647"
-        activity:
-          type: string
-          description: Activity
-          example: "5756"
-        article:
-          type: string
-          description: Article
-          example: Electric bicycle
-        project:
-          type: string
-          description: Project
-          example: "11041"
-        counterpart:
-          type: string
-          description: Counterpart
-          example: "11830000"
-      description: Account information model
-    AddressDetails:
-      type: object
-      properties:
-        street:
-          type: string
-          description: Street name and number. Mandatory for EXTERNAL billing record.
-          example: Sesame Street 7
-        careOf:
-          type: string
-          description: Care of name
-          example: Abby Cadabby
-        postalCode:
-          type: string
-          description: Postal code. Mandatory for EXTERNAL billing record.
-          example: "12345"
-        city:
-          type: string
-          description: City. Mandatory for EXTERNAL billing record.
-          example: Grouchytown
-      description: Address details model
-    BillingRecord:
-      required:
-        - category
-        - invoice
-        - status
-        - type
-      type: object
-      properties:
-        id:
-          type: string
-          description: Unique id for the billing record
-          readOnly: true
-          example: 71258e7d-5285-46ce-b9b2-877f8cad8edd
-        category:
-          pattern: ACCESS_CARD|SALARY_AND_PENSION|ISYCASE
-          type: string
-          description: Billing category
-        type:
-          $ref: "#/components/schemas/Type"
-        status:
-          $ref: "#/components/schemas/Status"
-        approvedBy:
-          type: string
-          description: Information regarding the person that has approved the billing
-            record
-          example: Big Bird
-        approved:
-          type: string
-          description: Timestamp when the billing record got approved status
-          format: date-time
-          readOnly: true
-          example: 2022-11-21T16:57:13.988+02:00
-        recipient:
-          $ref: "#/components/schemas/Recipient"
-        invoice:
-          $ref: "#/components/schemas/Invoice"
-        created:
-          type: string
-          description: Timestamp when the billing record was created
-          format: date-time
-          readOnly: true
-          example: 2022-10-31T14:30:00.001+02:00
-        modified:
-          type: string
-          description: Timestamp when the billing record was last modified
-          format: date-time
-          readOnly: true
-          example: 2022-11-14T08:57:42.358+02:00
-      description: Billing record model
-    Invoice:
-      required:
-        - customerId
-        - description
-        - invoiceRows
-      type: object
-      properties:
-        customerId:
-          type: string
-          description: Customer number in Raindance
-          example: "16"
-        description:
-          type: string
-          description: Description of the invoice
-          example: "Errand number: 2113-01784"
-        ourReference:
-          type: string
-          description: Our reference
-          example: Harvey Kneeslapper
-        customerReference:
-          type: string
-          description: Customer reference
-          example: Alice Snuffleupagus
-        referenceId:
-          type: string
-          description: Reference id. Mandatory for INTERNAL billing record.
-          example: 19-ALI22SNU
-        date:
-          type: string
-          description: Date for the invoice
-          format: date
-          example: 2022-12-24
-        dueDate:
-          type: string
-          description: Due date for the invoice
-          format: date
-          example: 2022-12-24
-        totalAmount:
-          type: number
-          description: Total sum of all invoice rows
-          format: float
-          readOnly: true
-          example: 1399.95
-        invoiceRows:
-          type: array
-          items:
-            $ref: "#/components/schemas/InvoiceRow"
-      description: Invoice model
-    InvoiceRow:
-      type: object
-      properties:
-        descriptions:
-          type: array
-          items:
-            maxLength: 30
-            minLength: 1
-            type: string
-            description: Description of row
-            example: Row with description
-        detailedDescriptions:
-          type: array
-          items:
-            type: string
-            description: Detailed description of row
-            example: Row with detailed description
-        totalAmount:
-          type: number
-          description: Total sum of invoice row
-          format: float
-          readOnly: true
-          example: 1399.95
-        vatCode:
-          pattern: 00|06|12|25
-          type: string
-          description: VAT code for invoice row
-          example: "25"
-        costPerUnit:
-          type: number
-          description: Cost per unit
-          format: float
-          example: 155.55
-        quantity:
-          type: number
-          description: Total amount of units
-          format: float
-          example: 9.0
-        accountInformation:
-          $ref: "#/components/schemas/AccountInformation"
-      description: Invoice row model
-    Recipient:
-      required:
-        - addressDetails
-      type: object
-      properties:
-        partyId:
-          type: string
-          description: Unique id for the person issuing the billing record. Mandatory
-            for EXTERNAL billing record if legalId is null.
-          example: f0882f1d-06bc-47fd-b017-1d8307f5ce95
-        legalId:
-          type: string
-          description: LegalId for the organization issuing the billing record. Mandatory
-            for EXTERNAL billing record if partyId is null.
-          example: "3456789123"
-        organizationName:
-          type: string
-          description: Name of issuing organization of the billing record if the recipient
-            is an organization
-          example: Sesame Merc AB
-        firstName:
-          type: string
-          description: First name of the billing record recipient
-          example: Alice
-        lastName:
-          type: string
-          description: Last name of the billing record recipient
-          example: Snuffleupagus
-        userId:
-          type: string
-          description: User id of the billing record recipient
-          example: ALI22SNU
-        addressDetails:
-          $ref: "#/components/schemas/AddressDetails"
-      description: Billing recipient model
-    Status:
-      type: string
-      description: Billing status model
-      example: APPROVED
-      enum:
-        - NEW
-        - APPROVED
-        - INVOICED
-        - REJECTED
-    Type:
-      type: string
-      description: Billing type model
-      enum:
-        - EXTERNAL
-        - INTERNAL
     Problem:
       type: object
       properties:
@@ -860,15 +603,280 @@ components:
           type: string
         message:
           type: string
+    AccountInformation:
+      type: object
+      properties:
+        costCenter:
+          type: string
+          description: Cost center
+          example: "15800100"
+        subaccount:
+          type: string
+          description: Subaccount
+          example: "936300"
+        department:
+          type: string
+          description: Department
+          example: "920360"
+        accuralKey:
+          type: string
+          description: Accural key
+          example: "5647"
+        activity:
+          type: string
+          description: Activity
+          example: "5756"
+        article:
+          type: string
+          description: Article
+          example: Electric bicycle
+        project:
+          type: string
+          description: Project
+          example: "11041"
+        counterpart:
+          type: string
+          description: Counterpart
+          example: "11830000"
+        amount:
+          type: number
+          description: Amount
+          format: float
+          example: 1399.95
+      description: Account information model
+    AddressDetails:
+      type: object
+      properties:
+        street:
+          type: string
+          description: Street name and number. Mandatory for EXTERNAL billing record.
+          example: Sesame Street 7
+        careOf:
+          type: string
+          description: Care of name
+          example: Abby Cadabby
+        postalCode:
+          type: string
+          description: Postal code. Mandatory for EXTERNAL billing record.
+          example: "12345"
+        city:
+          type: string
+          description: City. Mandatory for EXTERNAL billing record.
+          example: Grouchytown
+      description: Address details model
+    BillingRecord:
+      required:
+        - category
+        - invoice
+        - status
+        - type
+      type: object
+      properties:
+        id:
+          type: string
+          description: Unique id for the billing record
+          readOnly: true
+          example: 71258e7d-5285-46ce-b9b2-877f8cad8edd
+        category:
+          pattern: ACCESS_CARD|CUSTOMER_INVOICE|SALARY_AND_PENSION|ISYCASE
+          type: string
+          description: Billing category
+        type:
+          $ref: "#/components/schemas/Type"
+        status:
+          $ref: "#/components/schemas/Status"
+        approvedBy:
+          type: string
+          description: Information regarding the person that has approved the billing
+            record
+          example: Big Bird
+        approved:
+          type: string
+          description: Timestamp when the billing record got approved status
+          format: date-time
+          readOnly: true
+          example: 2022-11-21T16:57:13.988+02:00
+        recipient:
+          $ref: "#/components/schemas/Recipient"
+        invoice:
+          $ref: "#/components/schemas/Invoice"
+        created:
+          type: string
+          description: Timestamp when the billing record was created
+          format: date-time
+          readOnly: true
+          example: 2022-10-31T14:30:00.001+02:00
+        modified:
+          type: string
+          description: Timestamp when the billing record was last modified
+          format: date-time
+          readOnly: true
+          example: 2022-11-14T08:57:42.358+02:00
+        extraParameters:
+          type: object
+          additionalProperties:
+            type: string
+            description: A map of extra parameters for custom values on the billing
+              record
+            example: "{\"caseId\":\"abc123\",\"uuid\":\"82a400cf-eb02-4a18-962d-fde55440868f\"\
+              }"
+          description: A map of extra parameters for custom values on the billing
+            record
+          example:
+            caseId: abc123
+            uuid: 82a400cf-eb02-4a18-962d-fde55440868f
+      description: Billing record model
+    Invoice:
+      required:
+        - customerId
+        - description
+        - invoiceRows
+      type: object
+      properties:
+        customerId:
+          type: string
+          description: Customer number in Raindance
+          example: "16"
+        description:
+          type: string
+          description: Description of the invoice
+          example: "Errand number: 2113-01784"
+        ourReference:
+          type: string
+          description: Our reference
+          example: Harvey Kneeslapper
+        customerReference:
+          type: string
+          description: Customer reference
+          example: Alice Snuffleupagus
+        referenceId:
+          type: string
+          description: Reference id. Mandatory for INTERNAL billing record.
+          example: 19-ALI22SNU
+        date:
+          type: string
+          description: Date for the invoice
+          format: date
+          example: 2022-12-24
+        dueDate:
+          type: string
+          description: Due date for the invoice
+          format: date
+          example: 2022-12-24
+        totalAmount:
+          type: number
+          description: Total sum of all invoice rows
+          format: float
+          readOnly: true
+          example: 1399.95
+        invoiceRows:
+          type: array
+          items:
+            $ref: "#/components/schemas/InvoiceRow"
+      description: Invoice model
+    InvoiceRow:
+      type: object
+      properties:
+        descriptions:
+          type: array
+          items:
+            maxLength: 30
+            minLength: 1
+            type: string
+            description: Description of row
+            example: Row with description
+        detailedDescriptions:
+          type: array
+          items:
+            type: string
+            description: Detailed description of row
+            example: Row with detailed description
+        totalAmount:
+          type: number
+          description: Total sum of invoice row
+          format: float
+          readOnly: true
+          example: 1399.95
+        vatCode:
+          pattern: 00|06|12|25
+          type: string
+          description: VAT code for invoice row
+          example: "25"
+        costPerUnit:
+          type: number
+          description: Cost per unit
+          format: float
+          example: 155.55
+        quantity:
+          type: number
+          description: Total amount of units
+          format: float
+          example: 9.0
+        accountInformation:
+          type: array
+          description: Account information
+          items:
+            $ref: "#/components/schemas/AccountInformation"
+      description: Invoice row model
+    Recipient:
+      required:
+        - addressDetails
+      type: object
+      properties:
+        partyId:
+          type: string
+          description: Unique id for the person issuing the billing record. Mandatory
+            for EXTERNAL billing record if legalId is null.
+          example: f0882f1d-06bc-47fd-b017-1d8307f5ce95
+        legalId:
+          type: string
+          description: LegalId for the organization issuing the billing record. Mandatory
+            for EXTERNAL billing record if partyId is null.
+          example: "3456789123"
+        organizationName:
+          type: string
+          description: Name of issuing organization of the billing record if the recipient
+            is an organization
+          example: Sesame Merc AB
+        firstName:
+          type: string
+          description: First name of the billing record recipient
+          example: Alice
+        lastName:
+          type: string
+          description: Last name of the billing record recipient
+          example: Snuffleupagus
+        userId:
+          type: string
+          description: User id of the billing record recipient
+          example: ALI22SNU
+        addressDetails:
+          $ref: "#/components/schemas/AddressDetails"
+      description: Billing recipient model
+    Status:
+      type: string
+      description: Billing status model
+      example: APPROVED
+      enum:
+        - NEW
+        - APPROVED
+        - INVOICED
+        - REJECTED
+    Type:
+      type: string
+      description: Billing type model
+      enum:
+        - EXTERNAL
+        - INTERNAL
     PageBillingRecord:
       type: object
       properties:
-        totalPages:
-          type: integer
-          format: int32
         totalElements:
           type: integer
           format: int64
+        totalPages:
+          type: integer
+          format: int32
         pageable:
           $ref: "#/components/schemas/PageableObject"
         size:
@@ -882,49 +890,41 @@ components:
           type: integer
           format: int32
         sort:
-          type: array
-          items:
-            $ref: "#/components/schemas/SortObject"
-        numberOfElements:
-          type: integer
-          format: int32
+          $ref: "#/components/schemas/SortObject"
         first:
           type: boolean
         last:
           type: boolean
+        numberOfElements:
+          type: integer
+          format: int32
         empty:
           type: boolean
     PageableObject:
       type: object
       properties:
+        paged:
+          type: boolean
         pageNumber:
           type: integer
           format: int32
         pageSize:
           type: integer
           format: int32
-        paged:
-          type: boolean
         offset:
           type: integer
           format: int64
         sort:
-          type: array
-          items:
-            $ref: "#/components/schemas/SortObject"
+          $ref: "#/components/schemas/SortObject"
         unpaged:
           type: boolean
     SortObject:
       type: object
       properties:
-        direction:
-          type: string
-        nullHandling:
-          type: string
-        ascending:
+        unsorted:
           type: boolean
-        property:
-          type: string
-        ignoreCase:
+        empty:
+          type: boolean
+        sorted:
           type: boolean
   securitySchemes: {}
