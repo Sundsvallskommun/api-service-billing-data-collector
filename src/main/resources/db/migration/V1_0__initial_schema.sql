@@ -7,7 +7,7 @@ create table fallout
     flow_instance_id       varchar(255),
     id                     varchar(36) not null,
     modified               datetime(6),
-    municipality_id        varchar(4),
+    municipality_id        varchar(4)  not null,
     opene_instance         text,
     reported               boolean default false,
     request_id             varchar(36),
@@ -22,18 +22,18 @@ create table history
     flow_instance_id       varchar(255),
     id                     varchar(36) not null,
     location               varchar(255),
-    municipality_id        varchar(4),
+    municipality_id        varchar(4)  not null,
     request_id             varchar(36),
     primary key (id)
 ) engine = InnoDB;
 
 create table scheduled_job_log
 (
-    fetched_end_date   date         not null,
-    fetched_start_date date         not null,
-    processed          datetime(6)  not null,
+    fetched_end_date   date        not null,
+    fetched_start_date date        not null,
+    processed          datetime(6) not null,
     id                 varchar(36) not null,
-    municipality_id    varchar(4),
+    municipality_id    varchar(4)  not null,
     primary key (id)
 ) engine = InnoDB;
 

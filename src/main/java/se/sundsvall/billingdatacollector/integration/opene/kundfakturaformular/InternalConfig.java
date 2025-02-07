@@ -19,53 +19,53 @@ import se.sundsvall.billingdatacollector.integration.opene.kundfakturaformular.m
  * Each bean is of prototype scope, i.e. a new instance is created every time the bean is requested.
  */
 @Configuration
-public class InternalConfig {
+class InternalConfig {
 
 	@Bean
 	@Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
-	public AktivitetskontoIntern aktivitetskontoIntern() {
+	AktivitetskontoIntern aktivitetskontoIntern() {
 		return AktivitetskontoIntern.builder().build();
 	}
 
 	@Bean
 	@Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
-	public AnsvarIntern ansvarIntern() {
+	AnsvarIntern ansvarIntern() {
 		return AnsvarIntern.builder().build();
 	}
 
 	@Bean
 	@Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
-	public BerakningarIntern berakningarIntern() {
+	BerakningarIntern berakningarIntern() {
 		return BerakningarIntern.builder().build();
 	}
 
 	@Bean
 	@Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
-	public BerakningIntern berakningIntern() {
+	BerakningIntern berakningIntern() {
 		return BerakningIntern.builder().build();
 	}
 
 	@Bean
 	@Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
-	public ProjektkontoIntern projektkontoIntern() {
+	ProjektkontoIntern projektkontoIntern() {
 		return ProjektkontoIntern.builder().build();
 	}
 
 	@Bean
 	@Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
-	public SummeringIntern summeringIntern() {
+	SummeringIntern summeringIntern() {
 		return SummeringIntern.builder().build();
 	}
 
 	@Bean
 	@Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
-	public UnderkontoIntern underkontoIntern() {
+	UnderkontoIntern underkontoIntern() {
 		return UnderkontoIntern.builder().build();
 	}
 
 	@Bean
 	@Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
-	public VerksamhetIntern verksamhetIntern() {
+	VerksamhetIntern verksamhetIntern() {
 		return VerksamhetIntern.builder().build();
 	}
 }

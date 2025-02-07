@@ -1,7 +1,7 @@
 package se.sundsvall.billingdatacollector.integration.billingpreprocessor;
 
+import static org.springframework.http.MediaType.ALL_VALUE;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
-import static org.springframework.http.MediaType.APPLICATION_PROBLEM_JSON_VALUE;
 import static se.sundsvall.billingdatacollector.integration.billingpreprocessor.BillingPreprocessorIntegrationConfiguration.CLIENT_ID;
 
 import generated.se.sundsvall.billingpreprocessor.BillingRecord;
@@ -22,6 +22,6 @@ public interface BillingPreprocessorClient {
 	@PostMapping(
 		path = "/{municipalityId}/billingrecords",
 		consumes = APPLICATION_JSON_VALUE,
-		produces = APPLICATION_PROBLEM_JSON_VALUE)
+		produces = ALL_VALUE)
 	ResponseEntity<Void> createBillingRecord(@PathVariable("municipalityId") String municipalityId, @RequestBody BillingRecord billingRecord);
 }

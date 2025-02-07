@@ -5,6 +5,7 @@ import java.time.LocalDate;
 import se.sundsvall.billingdatacollector.integration.db.model.FalloutEntity;
 import se.sundsvall.billingdatacollector.integration.db.model.HistoryEntity;
 import se.sundsvall.billingdatacollector.integration.db.model.ScheduledJobEntity;
+import se.sundsvall.billingdatacollector.integration.opene.kundfakturaformular.model.BillingRecordConstants;
 import se.sundsvall.billingdatacollector.model.BillingRecordWrapper;
 import se.sundsvall.dept44.requestid.RequestId;
 
@@ -47,6 +48,7 @@ final class EntityMapper {
 
 	public static ScheduledJobEntity mapToScheduledJobEntity(LocalDate startDate, LocalDate endDate) {
 		return ScheduledJobEntity.builder()
+			.withMunicipalityId(BillingRecordConstants.SUNDSVALLS_MUNICIPALITY_ID)
 			.withFetchedStartDate(startDate)
 			.withFetchedEndDate(endDate)
 			.build();
