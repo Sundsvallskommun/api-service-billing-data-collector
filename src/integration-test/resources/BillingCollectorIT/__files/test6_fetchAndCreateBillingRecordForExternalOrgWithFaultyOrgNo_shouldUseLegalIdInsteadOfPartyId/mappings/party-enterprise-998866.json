@@ -1,0 +1,18 @@
+{
+	"request": {
+		"headers": {
+			"Authorization": {
+				"equalTo": "Bearer MTQ0NjJkZmQ5OTM2NDE1ZTZjNGZmZjI3"
+			}
+		},
+		"method": "GET",
+		"url": "/party/2281/ENTERPRISE/998866/partyId"
+	},
+	"response": {
+		"headers": {
+			"Content-Type": "application/problem+json"
+		},
+		"bodyFileName": "test6_fetchAndCreateBillingRecordForExternalOrgWithFaultyOrgNo_shouldUseLegalIdInsteadOfPartyId/response/party-enterprise-998866.json",
+		"status": 400
+	}
+}

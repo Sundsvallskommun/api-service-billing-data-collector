@@ -111,7 +111,7 @@ class MapperHelperTest {
 		assertThat(organizationInformation.getStreetAddress()).isEqualTo("Ankeborgsvägen 22");
 		assertThat(organizationInformation.getZipCode()).isEqualTo("123 45");
 		assertThat(organizationInformation.getCity()).isEqualTo("Ankeborg");
-		assertThat(organizationInformation.getMotpart()).isEqualTo("78900000");
+		assertThat(organizationInformation.getMotpart()).isEqualTo("789");
 		assertThat(organizationInformation.getCareOf()).isEmpty();
 	}
 
@@ -124,7 +124,7 @@ class MapperHelperTest {
 		assertThat(organizationInformation.getStreetAddress()).isEqualTo("Ankeborgsvägen 22");
 		assertThat(organizationInformation.getZipCode()).isEqualTo("123 45");
 		assertThat(organizationInformation.getCity()).isEqualTo("Ankeborg");
-		assertThat(organizationInformation.getMotpart()).isEqualTo("78900000");
+		assertThat(organizationInformation.getMotpart()).isEqualTo("789");
 		assertThat(organizationInformation.getCareOf()).isEqualTo("Some Care of address");
 	}
 
@@ -157,7 +157,7 @@ class MapperHelperTest {
 		assertThat(organizationInformation.getCareOf()).isEqualTo("Some Care of address");
 		assertThat(organizationInformation.getZipCode()).isEqualTo("123 45");
 		assertThat(organizationInformation.getCity()).isEqualTo("Ankeborg");
-		assertThat(organizationInformation.getMotpart()).isEqualTo("78900000");
+		assertThat(organizationInformation.getMotpart()).isEqualTo("789");
 	}
 
 	@MethodSource("provideStringsForTruncation")

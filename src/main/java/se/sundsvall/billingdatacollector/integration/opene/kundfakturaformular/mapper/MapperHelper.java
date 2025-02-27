@@ -129,6 +129,19 @@ final class MapperHelper {
 	}
 
 	/**
+	 * Extracts the customer id from a counterpart string.
+	 * 
+	 * @param  counterPart The counterpart string to extract the customer id from, e.g. "Motpart privatperson 860
+	 *                     from which we'll extract the last digits.
+	 * @return             The customer id, e.g. 860
+	 */
+	static String getCustomerIdFromCounterPart(String counterPart) {
+		return ofNullable(counterPart)
+			.map(MapperHelper::getTrailingDigitsFromString)
+			.orElse(null);
+	}
+
+	/**
 	 * Extracts the motpart/counterpart numbers from a string and fill with 0's up to 8 characters
 	 * 
 	 * @param  motpart The string to extract motpart numbers from
@@ -199,8 +212,6 @@ final class MapperHelper {
 	}
 
 	private static OrganizationInformation getOrganizationInformationFromManualEntry(ExternFaktura externFaktura) {
-		var motpart = getExternalMotpartNumbers(getLeadingDigitsFromString(externFaktura.manualOrgInfoMotpart()));
-
 		return OrganizationInformation.builder()
 			.withOrganizationNumber(cleanOrganizationNumber(externFaktura.manualOrgInfoOrganizationNumber()))
 			.withName(ofNullable(externFaktura.manualOrgInfoName()).map(String::trim).orElse(null))
@@ -208,7 +219,7 @@ final class MapperHelper {
 			.withCareOf(ofNullable(externFaktura.manualOrgInfoCo()).map(String::trim).orElse(null))
 			.withZipCode(ofNullable(externFaktura.manualOrgInfoZipCode()).map(String::trim).orElse(null))
 			.withCity(ofNullable(externFaktura.manualOrgInfoCity()).map(String::trim).orElse(null))
-			.withMotpart(ofNullable(motpart).map(String::trim).orElse(null))  // Set motpart here
+			.withMotpart(ofNullable(getLeadingDigitsFromString(externFaktura.manualOrgInfoMotpart())).map(String::trim).orElse(null))  // Set motpart here
 			.build();
 	}
 
@@ -220,7 +231,7 @@ final class MapperHelper {
 			.withCareOf(ofNullable(matcher.group(4)).map(String::trim).orElse(null))
 			.withZipCode(ofNullable(matcher.group(5)).map(String::trim).orElse(null))
 			.withCity(ofNullable(matcher.group(6)).map(String::trim).orElse(null))
-			.withMotpart(ofNullable(getExternalMotpartNumbers(matcher.group(7))).map(String::trim).orElse(null))
+			.withMotpart(ofNullable(matcher.group(7)).map(String::trim).orElse(null))
 			.build();
 	}
 

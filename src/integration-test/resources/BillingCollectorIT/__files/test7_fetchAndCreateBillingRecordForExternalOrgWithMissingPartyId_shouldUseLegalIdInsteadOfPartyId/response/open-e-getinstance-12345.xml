@@ -1,0 +1,145 @@
+<?xml version="1.0" encoding="ISO-8859-1" standalone="no"?>
+<FlowInstance xmlns="http://www.oeplatform.org/version/2.0/schemas/flowinstance" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.oeplatform.org/version/2.0/schemas/flowinstance schema-531.xsd">
+    <Header>
+        <Flow>
+            <FamilyID>358</FamilyID>
+            <Version>3</Version>
+            <FlowID>531</FlowID>
+            <Name><![CDATA[Kundfakturaformul?r]]></Name>
+        </Flow>
+        <FlowInstanceID>12345</FlowInstanceID>
+        <Status>
+            <ID>4427</ID>
+            <Name><![CDATA[Klart]]></Name>
+        </Status>
+        <Poster>
+            <Firstname><![CDATA[Kalle]]></Firstname>
+            <Lastname><![CDATA[Anka]]></Lastname>
+            <Email><![CDATA[kalle.anka@sundsvall.se]]></Email>
+            <ID>26028</ID>
+        </Poster>
+        <Owner>
+            <Firstname><![CDATA[Kalle]]></Firstname>
+            <Lastname><![CDATA[Anka]]></Lastname>
+            <Email><![CDATA[kalle.anka@sundsvall.se]]></Email>
+            <ID>26028</ID>
+        </Owner>
+        <Posted>2025-01-30T14:56:05</Posted>
+        <FirstSubmitted>2025-01-30T14:56:05</FirstSubmitted>
+        <LastSubmitted>2025-01-30T14:56:05</LastSubmitted>
+    </Header>
+    <Values>
+        <VemArKontaktperson>
+            <QueryID>19036</QueryID>
+            <Name><![CDATA[Vem är vår kontaktperson?]]></Name>
+            <Value>Jag själv</Value>
+        </VemArKontaktperson>
+        <SaljarensUppg>
+            <QueryID>19038</QueryID>
+            <Name><![CDATA[Säljarens namn]]></Name>
+            <Firstname><![CDATA[Kalle]]></Firstname>
+            <Lastname><![CDATA[Anka]]></Lastname>
+            <Phone><![CDATA[0701234567]]></Phone>
+            <Email><![CDATA[kalle.anka@sundsvall.se]]></Email>
+        </SaljarensUppg>
+        <FakturerandeForvaltning>
+            <QueryID>19039</QueryID>
+            <Name><![CDATA[Fakturerande förvaltning/verksamhet (för statistikändamål)]]></Name>
+            <Value>40 - Kultur &amp; Fritid</Value>
+        </FakturerandeForvaltning>
+        <FakturanSkickasTill>
+            <QueryID>19040</QueryID>
+            <Name><![CDATA[Fakturan ska skickas till:]]></Name>
+            <Value>Externt företag (inklusive kommunalt bolag)</Value>
+        </FakturanSkickasTill>
+        <SokLaggTillForetag>
+            <QueryID>19071</QueryID>
+            <Name><![CDATA[Klicka och sök och välj företag. Om inte företaget finns i söklistan så välj lägg till företagsuppgifter]]></Name>
+            <Value>Sök och välj företag</Value>
+        </SokLaggTillForetag>
+        <OrganisationsnummerExtForetagRD>
+            <QueryID>19072</QueryID>
+            <Name><![CDATA[Sök och välj företag (Externt företag)]]></Name>
+            <Value>5591628136 | Ankeborgs Salsa AB | Ankeborgsvägen 20 | c/o Kajsa Anka | 123 45 ANKEBORG | 870</Value>
+        </OrganisationsnummerExtForetagRD>
+        <ReferensForetag>
+            <QueryID>19076</QueryID>
+            <Name><![CDATA[Kundens referens]]></Name>
+            <Value><![CDATA[Mycket bra referens]]></Value>
+        </ReferensForetag>
+        <FakturaraderExtern>
+            <QueryID>19154</QueryID>
+            <Name><![CDATA[Hur många fakturarader vill du lägga till?]]></Name>
+            <Value>2</Value>
+        </FakturaraderExtern>
+        <BarakningarExtern1>
+            <QueryID>19157</QueryID>
+            <Name><![CDATA[Beräkningar (1)]]></Name>
+            <FakturatextExtern1><![CDATA[Tacos]]></FakturatextExtern1>
+            <AntalExtern1><![CDATA[2]]></AntalExtern1>
+            <APrisExtern1><![CDATA[123,00]]></APrisExtern1>
+        </BarakningarExtern1>
+        <SummeringExtern1>
+            <QueryID>19161</QueryID>
+            <Name><![CDATA[Summering (1)]]></Name>
+            <TotSummeringExtern1><![CDATA[246,00 SEK]]></TotSummeringExtern1>
+        </SummeringExtern1>
+        <MomssatsExtern1>
+            <QueryID>19162</QueryID>
+            <Name><![CDATA[Momssats i % (1)]]></Name>
+            <Value>12</Value>
+        </MomssatsExtern1>
+        <AnsvarExtern1>
+            <QueryID>19164</QueryID>
+            <Name><![CDATA[Ansvar (1)]]></Name>
+            <Value>00100172 - En ansvarig person</Value>
+        </AnsvarExtern1>
+        <UnderkontoExtern1>
+            <QueryID>19166</QueryID>
+            <Name><![CDATA[välj Intäktskonto 12% Moms (1)]]></Name>
+            <Value>301212 Salsa-konto</Value>
+        </UnderkontoExtern1>
+        <VerksamhetExtern1>
+            <QueryID>19169</QueryID>
+            <Name><![CDATA[Verksamhet (1)]]></Name>
+            <Value>100140 - En verksamhet</Value>
+        </VerksamhetExtern1>
+        <BerakningarExtern2>
+            <QueryID>19174</QueryID>
+            <Name><![CDATA[Beräkningar (2)]]></Name>
+            <FakturatextExtern2><![CDATA[Salsa]]></FakturatextExtern2>
+            <AntalExtern2><![CDATA[10]]></AntalExtern2>
+            <APrisExtern2><![CDATA[120,00]]></APrisExtern2>
+        </BerakningarExtern2>
+        <SummeringExtern2>
+            <QueryID>19178</QueryID>
+            <Name><![CDATA[Summering (2)]]></Name>
+            <TotSummeringExtern2><![CDATA[1200,00 SEK]]></TotSummeringExtern2>
+        </SummeringExtern2>
+        <MomssatsExtern2>
+            <QueryID>19179</QueryID>
+            <Name><![CDATA[Momssats i % (2)]]></Name>
+            <Value>12</Value>
+        </MomssatsExtern2>
+        <AnsvarExtern2>
+            <QueryID>19181</QueryID>
+            <Name><![CDATA[Ansvar (2)]]></Name>
+            <Value>00100172 - Annan ansvarig</Value>
+        </AnsvarExtern2>
+        <UnderkontoExtern2>
+            <QueryID>19183</QueryID>
+            <Name><![CDATA[välj Intäktskonto 12% Moms (2)]]></Name>
+            <Value>301212 Salsa-konto</Value>
+        </UnderkontoExtern2>
+        <VerksamhetExtern2>
+            <QueryID>19186</QueryID>
+            <Name><![CDATA[Verksamhet (2)]]></Name>
+            <Value>100400 - En annan verksamhet</Value>
+        </VerksamhetExtern2>
+        <TotalSummeringIntern>
+            <QueryID>19241</QueryID>
+            <Name><![CDATA[Total summering]]></Name>
+            <TotalSummeringIntern><![CDATA[1446,00 SEK]]></TotalSummeringIntern>
+        </TotalSummeringIntern>
+    </Values>
+</FlowInstance>

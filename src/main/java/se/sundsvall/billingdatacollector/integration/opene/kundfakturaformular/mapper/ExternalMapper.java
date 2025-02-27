@@ -5,6 +5,8 @@ import static se.sundsvall.billingdatacollector.integration.opene.kundfakturafor
 import static se.sundsvall.billingdatacollector.integration.opene.kundfakturaformular.mapper.KundfakturaformularMapper.CATEGORY;
 import static se.sundsvall.billingdatacollector.integration.opene.kundfakturaformular.mapper.KundfakturaformularMapper.INVOICE_DESCRIPTION;
 import static se.sundsvall.billingdatacollector.integration.opene.kundfakturaformular.mapper.KundfakturaformularMapper.MAX_DESCRIPTION_LENGTH;
+import static se.sundsvall.billingdatacollector.integration.opene.kundfakturaformular.mapper.MapperHelper.getCustomerIdFromCounterPart;
+import static se.sundsvall.billingdatacollector.integration.opene.kundfakturaformular.mapper.MapperHelper.getExternalMotpartNumbers;
 import static se.sundsvall.billingdatacollector.integration.opene.util.XPathUtil.extractValue;
 
 import generated.se.sundsvall.billingpreprocessor.AccountInformation;
@@ -57,6 +59,8 @@ final class ExternalMapper {
 
 	static BillingRecordWrapper mapToExternalBillingRecordForOrganization(ExternFaktura result, OpeneCollections collections) {
 		var organizationInformation = MapperHelper.getOrganizationInformation(result);
+		var motpart = getExternalMotpartNumbers(organizationInformation.getMotpart());
+		var customerId = organizationInformation.getMotpart();
 
 		var billingRecord = new BillingRecord()
 			.category(CATEGORY)
@@ -70,7 +74,7 @@ final class ExternalMapper {
 					.street(organizationInformation.getStreetAddress())
 					.postalCode(organizationInformation.getZipCode())
 					.city(organizationInformation.getCity())))
-			.invoice(createExternalInvoice(result, collections, organizationInformation.getMotpart(), organizationInformation.getOrganizationNumber()));
+			.invoice(createExternalInvoice(result, collections, motpart, customerId));
 
 		return BillingRecordWrapper.builder()
 			.withBillingRecord(billingRecord)
@@ -81,6 +85,9 @@ final class ExternalMapper {
 	}
 
 	static BillingRecordWrapper mapToExternalBillingRecordForPerson(ExternFaktura result, OpeneCollections collections) {
+		var motpart = getExternalMotpartNumbers(result.counterpartPrivatePersonName());
+		var customerId = getCustomerIdFromCounterPart(result.counterpartPrivatePersonName());
+
 		var billingRecord = new BillingRecord()
 			.category(CATEGORY)
 			.status(Status.APPROVED)
@@ -93,13 +100,14 @@ final class ExternalMapper {
 					.street(result.privatePersonAddress())
 					.postalCode(result.privatePersonZipCode())
 					.city(result.privatePersonPostalAddress())))
-			.invoice(createExternalInvoice(result, collections, MapperHelper.getExternalMotpartNumbers(result.counterpartPrivatePersonName()), result.socialSecurityNumber()));
+			.invoice(createExternalInvoice(result, collections, motpart, customerId));
 
 		return BillingRecordWrapper.builder()
 			.withBillingRecord(billingRecord)
 			.withLegalId(result.socialSecurityNumber())
 			.withFamilyId(result.familyId())
 			.withFlowInstanceId(result.flowInstanceId())
+			.withIsRecipientPrivatePerson(true)  // Important since we use this to make sure we don't send the social security number in plain text to BPP
 			.build();
 	}
 

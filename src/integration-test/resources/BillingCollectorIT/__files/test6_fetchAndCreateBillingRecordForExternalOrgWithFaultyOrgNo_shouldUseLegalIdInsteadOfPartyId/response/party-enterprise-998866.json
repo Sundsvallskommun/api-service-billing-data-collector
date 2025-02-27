@@ -1,0 +1,11 @@
+{
+	"type": "https://zalando.github.io/problem/constraint-violation",
+	"status": 400,
+	"violations": [
+		{
+			"field": "getPartyIdByLegalId.legalId",
+			"message": "must match the regular expression ^([1235789][\\d][2-9]\\d{7})$ or ^(19|20)[0-9]{10}$"
+		}
+	],
+	"title": "Constraint Violation"
+}

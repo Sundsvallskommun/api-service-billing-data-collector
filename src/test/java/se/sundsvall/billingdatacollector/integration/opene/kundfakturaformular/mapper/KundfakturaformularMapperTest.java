@@ -149,7 +149,7 @@ class KundfakturaformularMapperTest {
 		assertThat(addressDetails.getCity()).isEqualTo("ANKEBORG");
 
 		var invoice = billingRecord.getInvoice();
-		assertThat(invoice.getCustomerId()).isEqualTo("199001012385");
+		assertThat(invoice.getCustomerId()).isEqualTo("860");
 		assertThat(invoice.getDescription()).isEqualTo("Kundfaktura");
 		assertThat(invoice.getOurReference()).isEqualTo("Kalle Anka");
 		assertThat(invoice.getCustomerReference()).isEqualTo("Kajsa Anka");

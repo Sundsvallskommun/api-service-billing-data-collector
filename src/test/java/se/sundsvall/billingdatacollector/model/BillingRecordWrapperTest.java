@@ -31,6 +31,7 @@ class BillingRecordWrapperTest {
 		final var familyId = "123";
 		final var flowInstanceId = "4657";
 		final var municipalityId = "2281";
+		final var isRecipientPrivatePerson = true;
 
 		final var wrapper = BillingRecordWrapper.builder()
 			.withBillingRecord(billingRecord)
@@ -38,6 +39,7 @@ class BillingRecordWrapperTest {
 			.withFamilyId(familyId)
 			.withFlowInstanceId(flowInstanceId)
 			.withMunicipalityId(municipalityId)
+			.withIsRecipientPrivatePerson(isRecipientPrivatePerson)
 			.build();
 
 		assertThat(wrapper).isNotNull().hasNoNullFieldsOrProperties();
@@ -46,10 +48,11 @@ class BillingRecordWrapperTest {
 		assertThat(wrapper.getFamilyId()).isEqualTo(familyId);
 		assertThat(wrapper.getFlowInstanceId()).isEqualTo(flowInstanceId);
 		assertThat(wrapper.getMunicipalityId()).isEqualTo(municipalityId);
+		assertThat(wrapper.isRecipientPrivatePerson()).isEqualTo(isRecipientPrivatePerson);
 	}
 
 	@Test
 	void testNoDirtOnCreatedBean() {
-		assertThat(BillingRecordWrapper.builder().build()).isNotNull().hasAllNullFieldsOrProperties();
+		assertThat(BillingRecordWrapper.builder().build()).isNotNull().hasAllNullFieldsOrPropertiesExcept("isRecipientPrivatePerson");
 	}
 }
