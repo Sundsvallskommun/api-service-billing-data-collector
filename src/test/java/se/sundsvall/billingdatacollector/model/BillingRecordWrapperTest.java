@@ -53,6 +53,6 @@ class BillingRecordWrapperTest {
 
 	@Test
 	void testNoDirtOnCreatedBean() {
-		assertThat(BillingRecordWrapper.builder().build()).isNotNull().hasAllNullFieldsOrPropertiesExcept("isRecipientPrivatePerson");
+		assertThat(BillingRecordWrapper.builder().build()).isNotNull().hasFieldOrPropertyWithValue("isRecipientPrivatePerson", false).hasAllNullFieldsOrPropertiesExcept("isRecipientPrivatePerson");
 	}
 }

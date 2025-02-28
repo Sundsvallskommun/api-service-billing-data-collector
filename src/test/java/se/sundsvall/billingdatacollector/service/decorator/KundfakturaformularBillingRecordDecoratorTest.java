@@ -75,6 +75,7 @@ class KundfakturaformularBillingRecordDecoratorTest {
 				assertThat(problem.getStatus()).isEqualTo(Status.INTERNAL_SERVER_ERROR);
 				assertThat(problem.getMessage()).contains("Couldn't find partyId for legalId legalId");
 			});
+		verify(mockPartyIntegration).getPartyId(MUNICIPALITY_ID, LEGAL_ID);
 		verifyNoMoreInteractions(mockPartyIntegration);
 	}
 
