@@ -173,6 +173,19 @@ class KundfakturaformularMapperTest {
 	}
 
 	@Test
+	void mapToExternalBillingRecord_withFlippedCareOfAndAddress() {
+		var openEFile = readBytesFromOpenEFile("flow-instance.external.person.xml");
+		var billingRecordWrapper = mapper.mapToBillingRecordWrapper(openEFile);
+
+		var addressInformation = billingRecordWrapper.getBillingRecord().getRecipient().getAddressDetails();
+		// Only make sure that the address details are flipped
+		assertThat(addressInformation.getStreet()).isEqualTo("Sundsvall 222");
+		assertThat(addressInformation.getPostalCode()).isEqualTo("123 45");
+		assertThat(addressInformation.getCity()).isEqualTo("ANKEBORG");
+		assertThat(addressInformation.getCareOf()).isNull();
+	}
+
+	@Test
 	void testParseList_faultyNamespace_shouldThrowException() {
 		var openEFile = TestDataFactory.readBytesFromOpenEFile("flow-instance.faulty.namespace.xml");
 

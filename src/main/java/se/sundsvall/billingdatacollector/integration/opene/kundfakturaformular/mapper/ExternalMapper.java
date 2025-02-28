@@ -1,6 +1,8 @@
 package se.sundsvall.billingdatacollector.integration.opene.kundfakturaformular.mapper;
 
 import static java.util.Optional.ofNullable;
+import static org.apache.commons.lang3.StringUtils.isBlank;
+import static org.apache.commons.lang3.StringUtils.isNotBlank;
 import static se.sundsvall.billingdatacollector.integration.opene.kundfakturaformular.mapper.KundfakturaformularMapper.APPROVED_BY;
 import static se.sundsvall.billingdatacollector.integration.opene.kundfakturaformular.mapper.KundfakturaformularMapper.CATEGORY;
 import static se.sundsvall.billingdatacollector.integration.opene.kundfakturaformular.mapper.KundfakturaformularMapper.INVOICE_DESCRIPTION;
@@ -24,6 +26,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import se.sundsvall.billingdatacollector.integration.opene.kundfakturaformular.model.ExternFaktura;
 import se.sundsvall.billingdatacollector.integration.opene.kundfakturaformular.model.OpeneCollections;
+import se.sundsvall.billingdatacollector.integration.opene.kundfakturaformular.model.OrganizationInformation;
 import se.sundsvall.billingdatacollector.integration.opene.kundfakturaformular.model.external.AktivitetskontoExtern;
 import se.sundsvall.billingdatacollector.integration.opene.kundfakturaformular.model.external.AnsvarExtern;
 import se.sundsvall.billingdatacollector.integration.opene.kundfakturaformular.model.external.BerakningExtern;
@@ -57,7 +60,7 @@ final class ExternalMapper {
 		return mapToExternalBillingRecordForOrganization(result, collections);
 	}
 
-	static BillingRecordWrapper mapToExternalBillingRecordForOrganization(ExternFaktura result, OpeneCollections collections) {
+	private static BillingRecordWrapper mapToExternalBillingRecordForOrganization(ExternFaktura result, OpeneCollections collections) {
 		var organizationInformation = MapperHelper.getOrganizationInformation(result);
 		var counterpart = getExternalCounterPartNumbers(organizationInformation.getCounterPart());
 		var customerId = organizationInformation.getCounterPart();
@@ -69,11 +72,7 @@ final class ExternalMapper {
 			.type(Type.EXTERNAL)
 			.recipient(new Recipient()
 				.organizationName(organizationInformation.getName())
-				.addressDetails(new AddressDetails()
-					.careOf(organizationInformation.getCareOf())
-					.street(organizationInformation.getStreetAddress())
-					.postalCode(organizationInformation.getZipCode())
-					.city(organizationInformation.getCity())))
+				.addressDetails(getAddressDetailsForOrganization(organizationInformation)))
 			.invoice(createExternalInvoice(result, collections, counterpart, customerId));
 
 		return BillingRecordWrapper.builder()
@@ -84,7 +83,28 @@ final class ExternalMapper {
 			.build();
 	}
 
-	static BillingRecordWrapper mapToExternalBillingRecordForPerson(ExternFaktura result, OpeneCollections collections) {
+	private static AddressDetails getAddressDetailsForOrganization(OrganizationInformation organizationInformation) {
+		var addressDetails = new AddressDetails()
+			.postalCode(organizationInformation.getZipCode())
+			.careOf(organizationInformation.getCareOf())
+			.city(organizationInformation.getCity());
+
+		var street = organizationInformation.getStreetAddress();
+		var careOf = organizationInformation.getCareOf();
+
+		// In quite a lot of cases the address is set in the careOf field, and the streetAddress field is empty
+		// This will result in a bad request towards bpp, flip them.
+		if (isBlank(street) && isNotBlank(careOf)) {
+			LOGGER.info("careOf and streetAddress seems to be flipped, setting street: {} to careOf: {}", street, careOf);
+			addressDetails.setStreet(careOf);
+		} else {
+			addressDetails.setStreet(street);
+		}
+
+		return addressDetails;
+	}
+
+	private static BillingRecordWrapper mapToExternalBillingRecordForPerson(ExternFaktura result, OpeneCollections collections) {
 		var counterPart = getExternalCounterPartNumbers(result.counterpartPrivatePersonName());
 		var customerId = getCustomerIdFromCounterPart(result.counterpartPrivatePersonName());
 
@@ -111,7 +131,7 @@ final class ExternalMapper {
 			.build();
 	}
 
-	static Invoice createExternalInvoice(ExternFaktura externFaktura, OpeneCollections collections, String counterPart, String customerId) {
+	private static Invoice createExternalInvoice(ExternFaktura externFaktura, OpeneCollections collections, String counterPart, String customerId) {
 		return new Invoice()
 			.customerReference(getExternalCustomerReference(externFaktura))
 			.customerId(customerId)
@@ -122,7 +142,7 @@ final class ExternalMapper {
 			.invoiceRows(createExternalInvoiceRows(collections, counterPart));
 	}
 
-	static List<InvoiceRow> createExternalInvoiceRows(OpeneCollections collections, String counterPart) {
+	private static List<InvoiceRow> createExternalInvoiceRows(OpeneCollections collections, String counterPart) {
 		List<InvoiceRow> invoiceRows = new ArrayList<>();
 
 		for (int index = 1; index < collections.getNumberOfRows() + 1; index++) {   // OpenE-Arrays start at one...
@@ -156,12 +176,11 @@ final class ExternalMapper {
 		return invoiceRows;
 	}
 
-	static String getExternalSellerName(ExternFaktura externFaktura) {
+	private static String getExternalSellerName(ExternFaktura externFaktura) {
 		return externFaktura.sellerInformationFirstName() + " " + externFaktura.sellerInformationLastName();
 	}
 
-	static String getExternalCustomerReference(ExternFaktura externFaktura) {
+	private static String getExternalCustomerReference(ExternFaktura externFaktura) {
 		return externFaktura.privatePersonFirstName() + " " + externFaktura.privatePersonLastName();
 	}
-
 }
