@@ -149,7 +149,7 @@ class KundfakturaformularMapperTest {
 		assertThat(addressDetails.getCity()).isEqualTo("ANKEBORG");
 
 		var invoice = billingRecord.getInvoice();
-		assertThat(invoice.getCustomerId()).isEqualTo("199001012385");
+		assertThat(invoice.getCustomerId()).isEqualTo("860");
 		assertThat(invoice.getDescription()).isEqualTo("Kundfaktura");
 		assertThat(invoice.getOurReference()).isEqualTo("Kalle Anka");
 		assertThat(invoice.getCustomerReference()).isEqualTo("Kajsa Anka");
@@ -170,6 +170,19 @@ class KundfakturaformularMapperTest {
 		assertThat(accountInformation.getFirst().getDepartment()).isEqualTo("450220");
 		assertThat(accountInformation.getFirst().getActivity()).isEqualTo("6200");
 		assertThat(accountInformation.getFirst().getCounterpart()).isEqualTo("86000000");
+	}
+
+	@Test
+	void mapToExternalBillingRecord_withFlippedCareOfAndAddress() {
+		var openEFile = readBytesFromOpenEFile("flow-instance.external.person.xml");
+		var billingRecordWrapper = mapper.mapToBillingRecordWrapper(openEFile);
+
+		var addressInformation = billingRecordWrapper.getBillingRecord().getRecipient().getAddressDetails();
+		// Only make sure that the address details are flipped
+		assertThat(addressInformation.getStreet()).isEqualTo("Sundsvall 222");
+		assertThat(addressInformation.getPostalCode()).isEqualTo("123 45");
+		assertThat(addressInformation.getCity()).isEqualTo("ANKEBORG");
+		assertThat(addressInformation.getCareOf()).isNull();
 	}
 
 	@Test

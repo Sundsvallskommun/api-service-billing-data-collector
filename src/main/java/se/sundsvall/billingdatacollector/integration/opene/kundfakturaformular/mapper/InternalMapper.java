@@ -98,7 +98,7 @@ final class InternalMapper {
 						ofNullable(collections.getVerksamhetInternMap().get(index)).map(VerksamhetIntern::getValue).orElse(null)))
 					.activity(MapperHelper.getLeadingDigitsFromString(
 						ofNullable(collections.getAktivitetskontoInternMap().get(index)).map(AktivitetskontoIntern::getValue).orElse(null)))
-					.counterpart(MapperHelper.getInternalMotpartNumbers(customerId))
+					.counterpart(MapperHelper.getInternalCounterPartNumbers(customerId))
 					.amount(MapperHelper.convertStringToBigDecimal(
 						ofNullable(collections.getSummeringInternMap().get(index)).map(SummeringIntern::getTotSummeringIntern).orElse(null)))));
 

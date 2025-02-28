@@ -1,6 +1,7 @@
 package se.sundsvall.billingdatacollector.service.decorator;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
@@ -14,6 +15,8 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.zalando.problem.Status;
+import org.zalando.problem.ThrowableProblem;
 import se.sundsvall.billingdatacollector.integration.opene.OpenEIntegrationProperties;
 import se.sundsvall.billingdatacollector.integration.party.PartyIntegration;
 import se.sundsvall.billingdatacollector.model.BillingRecordWrapper;
@@ -43,6 +46,35 @@ class KundfakturaformularBillingRecordDecoratorTest {
 		decorator.decorate(billingRecordWrapper);
 
 		assertThat(billingRecordWrapper.getBillingRecord().getRecipient().getPartyId()).isEqualTo(PARTY_ID);
+		verify(mockPartyIntegration).getPartyId(MUNICIPALITY_ID, LEGAL_ID);
+		verifyNoMoreInteractions(mockPartyIntegration);
+	}
+
+	@Test
+	void testDecorateExternalBillingRecord_withFaultyOrgNo_shouldSetLegalFromWrapper() {
+		when(mockPartyIntegration.getPartyId(MUNICIPALITY_ID, LEGAL_ID)).thenThrow(new RuntimeException());
+		var billingRecordWrapper = createBillingRecordWrapper(Type.EXTERNAL);
+
+		decorator.decorate(billingRecordWrapper);
+
+		assertThat(billingRecordWrapper.getBillingRecord().getRecipient().getPartyId()).isNull();
+		assertThat(billingRecordWrapper.getBillingRecord().getRecipient().getLegalId()).isEqualTo(LEGAL_ID);
+		verify(mockPartyIntegration).getPartyId(MUNICIPALITY_ID, LEGAL_ID);
+		verifyNoMoreInteractions(mockPartyIntegration);
+	}
+
+	@Test
+	void testDecorateExternalBillingRecord_withPrivatePerson_shouldNotSetLegalId_shouldthrowException() {
+		when(mockPartyIntegration.getPartyId(MUNICIPALITY_ID, LEGAL_ID)).thenThrow(new RuntimeException());
+		var billingRecordWrapper = createBillingRecordWrapper(Type.EXTERNAL);
+		billingRecordWrapper.setRecipientPrivatePerson(true);   // Make it a private person
+
+		assertThatExceptionOfType(ThrowableProblem.class)
+			.isThrownBy(() -> decorator.decorate(billingRecordWrapper))
+			.satisfies(problem -> {
+				assertThat(problem.getStatus()).isEqualTo(Status.INTERNAL_SERVER_ERROR);
+				assertThat(problem.getMessage()).contains("Couldn't find partyId for legalId legalId");
+			});
 		verify(mockPartyIntegration).getPartyId(MUNICIPALITY_ID, LEGAL_ID);
 		verifyNoMoreInteractions(mockPartyIntegration);
 	}

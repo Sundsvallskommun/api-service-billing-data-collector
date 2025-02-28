@@ -1,0 +1,19 @@
+{
+	"request": {
+		"headers": {
+			"Authorization": {
+				"equalTo": "Basic dXNlcjpwNHNzdzByZA=="
+			}
+		},
+		"method": "GET",
+		"urlPathPattern": "/opene/api/instanceapi/getinstances/family/([a-zA-Z0-9/-]*)"
+	},
+	"response": {
+		"headers": {
+			"content-disposition": "inline;filename=\"flow-instances.xml\"; filename*=UTF-8''flow-instances.xml",
+			"Content-Type": "application/xml"
+		},
+		"bodyFileName": "test6_fetchAndCreateBillingRecordForExternalOrgWithFaultyOrgNo_shouldUseLegalIdInsteadOfPartyId/response/open-e-getinstances.xml",
+		"status": 200
+	}
+}

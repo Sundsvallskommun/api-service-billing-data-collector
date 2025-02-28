@@ -26,7 +26,7 @@
 			"totalAmount": null,
 			"customerReference": null,
 			"dueDate": null,
-			"customerId": null,
+			"customerId": "870",
 			"description": null,
 			"invoiceRows": [
 				{
@@ -62,5 +62,6 @@
 	"familyId": "358",
 	"municipalityId": "2281",
 	"legalId": "1234567890",
-	"flowInstanceId": "12345"
+	"flowInstanceId": "12345",
+	"recipientPrivatePerson": true
 }

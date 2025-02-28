@@ -51,6 +51,6 @@ public record ExternFaktura(
 
 	@XPath("/FlowInstance/Values/KundensOrgUppgExterntForetag2/Kundens_referens") String manualOrgInfoReference,
 
-	@XPath("/FlowInstance/Values/MotpartListaExterntForetag/Value") String manualOrgInfoMotpart
+	@XPath("/FlowInstance/Values/MotpartListaExterntForetag/Value") String manualOrgInfoCounterPart
 
 ) {}

@@ -5,6 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 
 @Data
 @NoArgsConstructor
@@ -17,4 +18,7 @@ public class BillingRecordWrapper {
 	private String flowInstanceId;
 	private String legalId;
 	private String municipalityId;
+
+	@ToString.Include(name = "recipientPrivatePerson")  // Makes hasValidBeanToString pass
+	private boolean isRecipientPrivatePerson = false;
 }

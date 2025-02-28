@@ -9,12 +9,10 @@ import java.time.LocalDate;
 import java.time.OffsetDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
-
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.jdbc.Sql;
-
 import se.sundsvall.billingdatacollector.Application;
 import se.sundsvall.billingdatacollector.integration.db.FalloutRepository;
 import se.sundsvall.billingdatacollector.integration.db.HistoryRepository;
@@ -198,6 +196,72 @@ class BillingCollectorIT extends AbstractAppTest {
 		historyEntities.forEach(entity -> {
 			assertThat(entity.getFamilyId()).isEqualTo(FAMILY_ID);
 			assertThat(entity.getFlowInstanceId()).isIn("12346");
+		});
+
+		// Check that the scheduled job has been saved in the database
+		var jobEntity = scheduledJobRepository.findAll();
+		assertThat(jobEntity).hasSize(1);
+		assertThat(jobEntity.getFirst().getFetchedEndDate()).isEqualTo(LocalDate.now().minusDays(1));
+		assertThat(jobEntity.getFirst().getFetchedStartDate()).isEqualTo(LocalDate.now().minusDays(1));
+		assertThat(jobEntity.getFirst().getProcessed()).isCloseTo(OffsetDateTime.now(), within(5, ChronoUnit.SECONDS));
+
+		// And check that we have no fallouts
+		assertThat(falloutRepository.count()).isZero();
+	}
+	
+	// Check that we can handle a 400 from Party
+	@Test
+	void test6_fetchAndCreateBillingRecordForExternalOrgWithFaultyOrgNo_shouldUseLegalIdInsteadOfPartyId() {
+		// Setup wiremock
+		setupCall();
+
+		// Trigger the "scheduled" job
+		billingJobHandler.performBilling();
+		await()
+			.atMost(5, SECONDS)
+			.until(() -> historyRepository.count() > 0);
+
+		var historyEntities = historyRepository.findAll();
+
+		//Check that we have one record in the database and that it's the one we want.
+		// We won't assert everything, that's done in the unit tests.
+		assertThat(historyEntities).hasSize(1);
+		historyEntities.forEach(entity -> {
+			assertThat(entity.getFamilyId()).isEqualTo(FAMILY_ID);
+			assertThat(entity.getFlowInstanceId()).isIn("12345");
+		});
+
+		// Check that the scheduled job has been saved in the database
+		var jobEntity = scheduledJobRepository.findAll();
+		assertThat(jobEntity).hasSize(1);
+		assertThat(jobEntity.getFirst().getFetchedEndDate()).isEqualTo(LocalDate.now().minusDays(1));
+		assertThat(jobEntity.getFirst().getFetchedStartDate()).isEqualTo(LocalDate.now().minusDays(1));
+		assertThat(jobEntity.getFirst().getProcessed()).isCloseTo(OffsetDateTime.now(), within(5, ChronoUnit.SECONDS));
+
+		// And check that we have no fallouts
+		assertThat(falloutRepository.count()).isZero();
+	}
+	
+	// Check that we can handle 404 from Party
+	@Test
+	void test7_fetchAndCreateBillingRecordForExternalOrgWithMissingPartyId_shouldUseLegalIdInsteadOfPartyId() {
+		// Setup wiremock
+		setupCall();
+
+		// Trigger the "scheduled" job
+		billingJobHandler.performBilling();
+		await()
+			.atMost(5, SECONDS)
+			.until(() -> historyRepository.count() > 0);
+
+		var historyEntities = historyRepository.findAll();
+
+		//Check that we have one record in the database and that it's the one we want.
+		// We won't assert everything, that's done in the unit tests.
+		assertThat(historyEntities).hasSize(1);
+		historyEntities.forEach(entity -> {
+			assertThat(entity.getFamilyId()).isEqualTo(FAMILY_ID);
+			assertThat(entity.getFlowInstanceId()).isIn("12345");
 		});
 
 		// Check that the scheduled job has been saved in the database

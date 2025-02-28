@@ -1,0 +1,19 @@
+{
+	"request": {
+		"headers": {
+			"Authorization": {
+				"equalTo": "Basic dXNlcjpwNHNzdzByZA=="
+			}
+		},
+		"method": "GET",
+		"urlPathPattern": "/opene/api/instanceapi/getinstance/12345/xml"
+	},
+	"response": {
+		"headers": {
+			"content-disposition": "inline;filename=\"flowinstance-12345-event-787422.xml\"; filename*=UTF-8''flowinstance-12345-event-787422.xml",
+			"Content-Type": "application/xml"
+		},
+		"bodyFileName": "test7_fetchAndCreateBillingRecordForExternalOrgWithMissingPartyId_shouldUseLegalIdInsteadOfPartyId/response/open-e-getinstance-12345.xml",
+		"status": 200
+	}
+}

@@ -31,7 +31,7 @@ class ExternFakturaTest {
 		var manualOrgInfoZipCode = "manualOrgInfoZipCode";
 		var manualOrgInfoCity = "manualOrgInfoCity";
 		var manualOrgInfoReference = "manualOrgInfoReference";
-		var manualOrgInfoMotpart = "manualOrgInfoMotpart";
+		var manualOrgInfoMotpart = "manualOrgInfoCounterPart";
 
 		var externFaktura = new ExternFaktura(familyId, flowInstanceId, posted, privatePersonFirstName, privatePersonLastName, privatePersonAddress, privatePersonZipCode, privatePersonPostalAddress,
 			socialSecurityNumber, counterpartPrivatePersonName, sellerInformationFirstName, sellerInformationLastName, organizationInformation, referenceOrganization, sendInvoiceTo,
@@ -59,6 +59,6 @@ class ExternFakturaTest {
 		assertThat(externFaktura.manualOrgInfoZipCode()).isEqualTo(manualOrgInfoZipCode);
 		assertThat(externFaktura.manualOrgInfoCity()).isEqualTo(manualOrgInfoCity);
 		assertThat(externFaktura.manualOrgInfoReference()).isEqualTo(manualOrgInfoReference);
-		assertThat(externFaktura.manualOrgInfoMotpart()).isEqualTo(manualOrgInfoMotpart);
+		assertThat(externFaktura.manualOrgInfoCounterPart()).isEqualTo(manualOrgInfoMotpart);
 	}
 }

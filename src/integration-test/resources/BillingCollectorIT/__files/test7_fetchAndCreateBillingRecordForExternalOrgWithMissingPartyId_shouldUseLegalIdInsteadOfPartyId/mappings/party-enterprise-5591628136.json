@@ -1,0 +1,18 @@
+{
+	"request": {
+		"headers": {
+			"Authorization": {
+				"equalTo": "Bearer MTQ0NjJkZmQ5OTM2NDE1ZTZjNGZmZjI3"
+			}
+		},
+		"method": "GET",
+		"url": "/party/2281/ENTERPRISE/5591628136/partyId"
+	},
+	"response": {
+		"headers": {
+			"Content-Type": "application/problem+json"
+		},
+		"bodyFileName": "test7_fetchAndCreateBillingRecordForExternalOrgWithMissingPartyId_shouldUseLegalIdInsteadOfPartyId/response/party-enterprise-5591628136.json",
+		"status": 404
+	}
+}
