@@ -57,17 +57,17 @@ class MapperHelperTest {
 
 	@Test
 	void testGetInternalMotpartNumbers_shouldReturnNull_whenCustomerIdIsNull() {
-		assertThat(MapperHelper.getInternalMotpartNumbers(null)).isNull();
+		assertThat(MapperHelper.getInternalCounterPartNumbers(null)).isNull();
 	}
 
 	@Test
-	void testGetExternalMotpartNumbers() {
-		assertThat(MapperHelper.getExternalMotpartNumbers("123 - 456")).isEqualTo("45600000");
+	void testGetExternalCounterPartNumbers() {
+		assertThat(MapperHelper.getExternalCounterPartNumbers("123 - 456")).isEqualTo("45600000");
 	}
 
 	@Test
-	void testGetExternalMotpartNumbers_shouldReturnNull_whenCustomerIdIsNull() {
-		assertThat(MapperHelper.getExternalMotpartNumbers(null)).isNull();
+	void testGetExternalCounterPartNumbers_shouldReturnNull_whenCustomerIdIsNull() {
+		assertThat(MapperHelper.getExternalCounterPartNumbers(null)).isNull();
 	}
 
 	@Test
@@ -111,7 +111,7 @@ class MapperHelperTest {
 		assertThat(organizationInformation.getStreetAddress()).isEqualTo("Ankeborgsvägen 22");
 		assertThat(organizationInformation.getZipCode()).isEqualTo("123 45");
 		assertThat(organizationInformation.getCity()).isEqualTo("Ankeborg");
-		assertThat(organizationInformation.getMotpart()).isEqualTo("789");
+		assertThat(organizationInformation.getCounterPart()).isEqualTo("789");
 		assertThat(organizationInformation.getCareOf()).isEmpty();
 	}
 
@@ -124,7 +124,7 @@ class MapperHelperTest {
 		assertThat(organizationInformation.getStreetAddress()).isEqualTo("Ankeborgsvägen 22");
 		assertThat(organizationInformation.getZipCode()).isEqualTo("123 45");
 		assertThat(organizationInformation.getCity()).isEqualTo("Ankeborg");
-		assertThat(organizationInformation.getMotpart()).isEqualTo("789");
+		assertThat(organizationInformation.getCounterPart()).isEqualTo("789");
 		assertThat(organizationInformation.getCareOf()).isEqualTo("Some Care of address");
 	}
 
@@ -148,7 +148,7 @@ class MapperHelperTest {
 		when(mockExternFaktura.manualOrgInfoCo()).thenReturn("Some Care of address");
 		when(mockExternFaktura.manualOrgInfoZipCode()).thenReturn("123 45");
 		when(mockExternFaktura.manualOrgInfoCity()).thenReturn("Ankeborg");
-		when(mockExternFaktura.manualOrgInfoMotpart()).thenReturn("789 Something something");
+		when(mockExternFaktura.manualOrgInfoCounterPart()).thenReturn("789 Something something");
 
 		var organizationInformation = MapperHelper.getOrganizationInformation(mockExternFaktura);
 		assertThat(organizationInformation.getOrganizationNumber()).isEqualTo("5591628136");
@@ -157,7 +157,7 @@ class MapperHelperTest {
 		assertThat(organizationInformation.getCareOf()).isEqualTo("Some Care of address");
 		assertThat(organizationInformation.getZipCode()).isEqualTo("123 45");
 		assertThat(organizationInformation.getCity()).isEqualTo("Ankeborg");
-		assertThat(organizationInformation.getMotpart()).isEqualTo("789");
+		assertThat(organizationInformation.getCounterPart()).isEqualTo("789");
 	}
 
 	@MethodSource("provideStringsForTruncation")

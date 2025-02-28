@@ -6,7 +6,7 @@ import static se.sundsvall.billingdatacollector.integration.opene.kundfakturafor
 import static se.sundsvall.billingdatacollector.integration.opene.kundfakturaformular.mapper.KundfakturaformularMapper.INVOICE_DESCRIPTION;
 import static se.sundsvall.billingdatacollector.integration.opene.kundfakturaformular.mapper.KundfakturaformularMapper.MAX_DESCRIPTION_LENGTH;
 import static se.sundsvall.billingdatacollector.integration.opene.kundfakturaformular.mapper.MapperHelper.getCustomerIdFromCounterPart;
-import static se.sundsvall.billingdatacollector.integration.opene.kundfakturaformular.mapper.MapperHelper.getExternalMotpartNumbers;
+import static se.sundsvall.billingdatacollector.integration.opene.kundfakturaformular.mapper.MapperHelper.getExternalCounterPartNumbers;
 import static se.sundsvall.billingdatacollector.integration.opene.util.XPathUtil.extractValue;
 
 import generated.se.sundsvall.billingpreprocessor.AccountInformation;
@@ -59,8 +59,8 @@ final class ExternalMapper {
 
 	static BillingRecordWrapper mapToExternalBillingRecordForOrganization(ExternFaktura result, OpeneCollections collections) {
 		var organizationInformation = MapperHelper.getOrganizationInformation(result);
-		var motpart = getExternalMotpartNumbers(organizationInformation.getMotpart());
-		var customerId = organizationInformation.getMotpart();
+		var counterpart = getExternalCounterPartNumbers(organizationInformation.getCounterPart());
+		var customerId = organizationInformation.getCounterPart();
 
 		var billingRecord = new BillingRecord()
 			.category(CATEGORY)
@@ -74,7 +74,7 @@ final class ExternalMapper {
 					.street(organizationInformation.getStreetAddress())
 					.postalCode(organizationInformation.getZipCode())
 					.city(organizationInformation.getCity())))
-			.invoice(createExternalInvoice(result, collections, motpart, customerId));
+			.invoice(createExternalInvoice(result, collections, counterpart, customerId));
 
 		return BillingRecordWrapper.builder()
 			.withBillingRecord(billingRecord)
@@ -85,7 +85,7 @@ final class ExternalMapper {
 	}
 
 	static BillingRecordWrapper mapToExternalBillingRecordForPerson(ExternFaktura result, OpeneCollections collections) {
-		var motpart = getExternalMotpartNumbers(result.counterpartPrivatePersonName());
+		var counterPart = getExternalCounterPartNumbers(result.counterpartPrivatePersonName());
 		var customerId = getCustomerIdFromCounterPart(result.counterpartPrivatePersonName());
 
 		var billingRecord = new BillingRecord()
@@ -100,7 +100,7 @@ final class ExternalMapper {
 					.street(result.privatePersonAddress())
 					.postalCode(result.privatePersonZipCode())
 					.city(result.privatePersonPostalAddress())))
-			.invoice(createExternalInvoice(result, collections, motpart, customerId));
+			.invoice(createExternalInvoice(result, collections, counterPart, customerId));
 
 		return BillingRecordWrapper.builder()
 			.withBillingRecord(billingRecord)
@@ -111,7 +111,7 @@ final class ExternalMapper {
 			.build();
 	}
 
-	static Invoice createExternalInvoice(ExternFaktura externFaktura, OpeneCollections collections, String motpart, String customerId) {
+	static Invoice createExternalInvoice(ExternFaktura externFaktura, OpeneCollections collections, String counterPart, String customerId) {
 		return new Invoice()
 			.customerReference(getExternalCustomerReference(externFaktura))
 			.customerId(customerId)
@@ -119,10 +119,10 @@ final class ExternalMapper {
 			.description(MapperHelper.truncateString(INVOICE_DESCRIPTION, MAX_DESCRIPTION_LENGTH))  // Cannot be more than 30 chars
 			.ourReference(getExternalSellerName(externFaktura))
 			.referenceId(externFaktura.flowInstanceId())
-			.invoiceRows(createExternalInvoiceRows(collections, motpart));
+			.invoiceRows(createExternalInvoiceRows(collections, counterPart));
 	}
 
-	static List<InvoiceRow> createExternalInvoiceRows(OpeneCollections collections, String motpart) {
+	static List<InvoiceRow> createExternalInvoiceRows(OpeneCollections collections, String counterPart) {
 		List<InvoiceRow> invoiceRows = new ArrayList<>();
 
 		for (int index = 1; index < collections.getNumberOfRows() + 1; index++) {   // OpenE-Arrays start at one...
@@ -143,7 +143,7 @@ final class ExternalMapper {
 					.article(ofNullable(collections.getObjektKontoExternMap().get(index)).map(ObjektkontoExtern::getValue).orElse(null))
 					.costCenter(MapperHelper.getLeadingDigitsFromString(
 						ofNullable(collections.getAnsvarExternMap().get(index)).map(AnsvarExtern::getValue).orElse(null)))
-					.counterpart(motpart)
+					.counterpart(counterPart)
 					.department(MapperHelper.getLeadingDigitsFromString(
 						ofNullable(collections.getVerksamhetExternMap().get(index)).map(VerksamhetExtern::getValue).orElse(null)))
 					.subaccount(MapperHelper.getLeadingDigitsFromString(

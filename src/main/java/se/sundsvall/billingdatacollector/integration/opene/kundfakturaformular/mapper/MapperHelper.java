@@ -142,25 +142,25 @@ final class MapperHelper {
 	}
 
 	/**
-	 * Extracts the motpart/counterpart numbers from a string and fill with 0's up to 8 characters
+	 * Extracts the counterpart (motpart) numbers from a string and fill with 0's up to 8 characters
 	 * 
-	 * @param  motpart The string to extract motpart numbers from
-	 * @return         The motpart numbers
+	 * @param  counterPart The string to extract counterpart numbers from
+	 * @return             The counterpart numbers
 	 */
-	static String getExternalMotpartNumbers(String motpart) {
-		return ofNullable(motpart)
+	static String getExternalCounterPartNumbers(String counterPart) {
+		return ofNullable(counterPart)
 			.map(MapperHelper::getTrailingDigitsFromString)
 			.map(numbers -> StringUtils.rightPad(numbers, 8, "0"))
 			.orElse(null);
 	}
 
 	/**
-	 * Extracts the internal motpart/counterpart numbers from a string and add a "1" in front of it
+	 * Extracts the internal counterpart (motpart) numbers from a string and add a "1" in front of it
 	 * 
-	 * @param  customerId The string to extract motpart numbers from
-	 * @return            The motpart numbers
+	 * @param  customerId The string to extract counterpart numbers from
+	 * @return            The counterpart numbers
 	 */
-	static String getInternalMotpartNumbers(String customerId) {
+	static String getInternalCounterPartNumbers(String customerId) {
 		return ofNullable(customerId)
 			.map(id -> "1" + id)
 			.orElse(null);
@@ -219,7 +219,7 @@ final class MapperHelper {
 			.withCareOf(ofNullable(externFaktura.manualOrgInfoCo()).map(String::trim).orElse(null))
 			.withZipCode(ofNullable(externFaktura.manualOrgInfoZipCode()).map(String::trim).orElse(null))
 			.withCity(ofNullable(externFaktura.manualOrgInfoCity()).map(String::trim).orElse(null))
-			.withMotpart(ofNullable(getLeadingDigitsFromString(externFaktura.manualOrgInfoMotpart())).map(String::trim).orElse(null))  // Set motpart here
+			.withCounterPart(ofNullable(getLeadingDigitsFromString(externFaktura.manualOrgInfoCounterPart())).map(String::trim).orElse(null))  // Set counterPart here
 			.build();
 	}
 
@@ -231,7 +231,7 @@ final class MapperHelper {
 			.withCareOf(ofNullable(matcher.group(4)).map(String::trim).orElse(null))
 			.withZipCode(ofNullable(matcher.group(5)).map(String::trim).orElse(null))
 			.withCity(ofNullable(matcher.group(6)).map(String::trim).orElse(null))
-			.withMotpart(ofNullable(matcher.group(7)).map(String::trim).orElse(null))
+			.withCounterPart(ofNullable(matcher.group(7)).map(String::trim).orElse(null))
 			.build();
 	}
 
