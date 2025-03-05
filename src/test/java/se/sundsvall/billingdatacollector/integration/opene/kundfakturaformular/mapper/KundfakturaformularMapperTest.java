@@ -54,7 +54,6 @@ class KundfakturaformularMapperTest {
 		assertThat(invoice.getDescription()).isEqualTo("Kundfaktura");
 		assertThat(invoice.getOurReference()).isEqualTo("Kalle Anka");
 		assertThat(invoice.getCustomerReference()).isEqualTo("1JAN16LAN");
-		assertThat(invoice.getReferenceId()).isEqualTo("6859");
 
 		var invoiceRows = invoice.getInvoiceRows();
 
@@ -106,7 +105,6 @@ class KundfakturaformularMapperTest {
 		var invoice = billingRecord.getInvoice();
 		assertThat(invoice.getDescription()).isEqualTo("Kundfaktura");
 		assertThat(invoice.getOurReference()).isEqualTo("Kalle Anka");
-		assertThat(invoice.getReferenceId()).isEqualTo("6931");
 
 		var invoiceRows = invoice.getInvoiceRows();
 		assertThat(invoiceRows).hasSize(1);
@@ -153,7 +151,6 @@ class KundfakturaformularMapperTest {
 		assertThat(invoice.getDescription()).isEqualTo("Kundfaktura");
 		assertThat(invoice.getOurReference()).isEqualTo("Kalle Anka");
 		assertThat(invoice.getCustomerReference()).isEqualTo("Kajsa Anka");
-		assertThat(invoice.getReferenceId()).isEqualTo("225965");
 
 		var invoiceRows = invoice.getInvoiceRows();
 		assertThat(invoiceRows).hasSize(1);

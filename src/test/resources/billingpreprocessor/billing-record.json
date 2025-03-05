@@ -52,8 +52,7 @@
 					"vatCode": "00",
 					"costPerUnit": 700
 				}
-			],
-			"referenceId": null
+			]
 		},
 		"category": "KUNDFAKTURA",
 		"type": "EXTERNAL",

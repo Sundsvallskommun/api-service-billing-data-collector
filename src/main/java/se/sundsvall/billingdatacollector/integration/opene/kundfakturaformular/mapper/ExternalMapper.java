@@ -138,7 +138,6 @@ final class ExternalMapper {
 			// General description
 			.description(MapperHelper.truncateString(INVOICE_DESCRIPTION, MAX_DESCRIPTION_LENGTH))  // Cannot be more than 30 chars
 			.ourReference(getExternalSellerName(externFaktura))
-			.referenceId(externFaktura.flowInstanceId())
 			.invoiceRows(createExternalInvoiceRows(collections, counterPart));
 	}
 
