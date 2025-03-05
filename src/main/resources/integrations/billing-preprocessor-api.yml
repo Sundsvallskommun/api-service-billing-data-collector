@@ -5,7 +5,7 @@ info:
   license:
     name: MIT License
     url: https://opensource.org/licenses/MIT
-  version: "3.0"
+  version: "4.0"
 servers:
   - url: http://localhost:8080
     description: Generated server url
@@ -728,6 +728,7 @@ components:
     Invoice:
       required:
         - customerId
+        - customerReference
         - description
         - invoiceRows
       type: object
@@ -748,10 +749,6 @@ components:
           type: string
           description: Customer reference
           example: Alice Snuffleupagus
-        referenceId:
-          type: string
-          description: Reference id. Mandatory for INTERNAL billing record.
-          example: 19-ALI22SNU
         date:
           type: string
           description: Date for the invoice
@@ -866,14 +863,16 @@ components:
     PageBillingRecord:
       type: object
       properties:
-        totalPages:
-          type: integer
-          format: int32
         totalElements:
           type: integer
           format: int64
-        pageable:
-          $ref: "#/components/schemas/PageableObject"
+        totalPages:
+          type: integer
+          format: int32
+        first:
+          type: boolean
+        last:
+          type: boolean
         size:
           type: integer
           format: int32
@@ -886,19 +885,22 @@ components:
           format: int32
         sort:
           $ref: "#/components/schemas/SortObject"
-        first:
-          type: boolean
-        last:
-          type: boolean
         numberOfElements:
           type: integer
           format: int32
+        pageable:
+          $ref: "#/components/schemas/PageableObject"
         empty:
           type: boolean
     PageableObject:
       type: object
       properties:
-        unpaged:
+        offset:
+          type: integer
+          format: int64
+        sort:
+          $ref: "#/components/schemas/SortObject"
+        paged:
           type: boolean
         pageNumber:
           type: integer
@@ -906,13 +908,8 @@ components:
         pageSize:
           type: integer
           format: int32
-        paged:
+        unpaged:
           type: boolean
-        offset:
-          type: integer
-          format: int64
-        sort:
-          $ref: "#/components/schemas/SortObject"
     SortObject:
       type: object
       properties:

@@ -70,7 +70,6 @@ final class InternalMapper {
 			.customerReference(getTruncatedInternalReference(internFaktura.referenceSundsvallsMunicipality()))
 			.description(MapperHelper.truncateString(INVOICE_DESCRIPTION, MAX_DESCRIPTION_LENGTH))  // Cannot be more than 30 chars
 			.ourReference(getInternalSellerName(internFaktura))
-			.referenceId(internFaktura.flowInstanceId())
 			.invoiceRows(createInternalInvoiceRows(collections, customerId));
 	}
 
