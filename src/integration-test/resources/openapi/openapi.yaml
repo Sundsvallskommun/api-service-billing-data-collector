@@ -7,54 +7,54 @@ info:
     url: https://opensource.org/licenses/MIT
   version: "1.0"
 servers:
-  - url: http://127.0.0.1:8080
-    description: Generated server url
+- url: http://localhost:8080
+  description: Generated server url
 tags:
-  - name: Billing Data Collector
-    description: Billing Data Collector resources
+- name: Billing Data Collector
+  description: Billing Data Collector resources
 paths:
   /{municipalityId}/trigger:
     post:
       tags:
-        - Billing Data Collector
+      - Billing Data Collector
       summary: Trigger billing for all flowInstanceId:s between two specific dates.
         Will return a list of all triggered flowInstanceId:s
       operationId: triggerBilling
       parameters:
-        - name: municipalityId
-          in: path
-          description: Municipality id
-          required: true
-          schema:
-            type: string
-          example: 2281
-        - name: startDate
-          in: query
-          required: true
-          schema:
-            type: string
-            format: date
-          example: 2024-01-01
-        - name: endDate
-          in: query
-          required: true
-          schema:
-            type: string
-            format: date
-          example: 2024-02-01
-        - name: familyIds
-          in: query
-          description: "FamilyIds to trigger billing for. If not provided, billing will\
+      - name: municipalityId
+        in: path
+        description: Municipality id
+        required: true
+        schema:
+          type: string
+        example: 2281
+      - name: startDate
+        in: query
+        required: true
+        schema:
+          type: string
+          format: date
+        example: 2024-01-01
+      - name: endDate
+        in: query
+        required: true
+        schema:
+          type: string
+          format: date
+        example: 2024-02-01
+      - name: familyIds
+        in: query
+        description: "FamilyIds to trigger billing for. If not provided, billing will\
           \ be triggered for all supported familyIds"
-          required: false
-          schema:
-            uniqueItems: true
-            type: array
-            items:
-              type: string
-          example:
-            - "123"
-            - "456"
+        required: false
+        schema:
+          uniqueItems: true
+          type: array
+          items:
+            type: string
+        example:
+        - "123"
+        - "456"
       responses:
         "202":
           description: Accepted
@@ -64,6 +64,14 @@ paths:
                 type: array
                 items:
                   type: string
+        "400":
+          description: Bad Request
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: "#/components/schemas/Problem"
+                - $ref: "#/components/schemas/ConstraintViolationProblem"
         "500":
           description: Internal Server Error
           content:
@@ -76,38 +84,38 @@ paths:
             application/problem+json:
               schema:
                 $ref: "#/components/schemas/Problem"
-        "400":
-          description: Bad Request
-          content:
-            application/problem+json:
-              schema:
-                oneOf:
-                  - $ref: "#/components/schemas/Problem"
-                  - $ref: "#/components/schemas/ConstraintViolationProblem"
   /{municipalityId}/trigger/{flowInstanceId}:
     post:
       tags:
-        - Billing Data Collector
+      - Billing Data Collector
       summary: Trigger billing for a flowInstanceId
       operationId: triggerBilling_1
       parameters:
-        - name: municipalityId
-          in: path
-          description: Municipality id
-          required: true
-          schema:
-            type: string
-          example: 2281
-        - name: flowInstanceId
-          in: path
-          description: flowInstanceId to trigger billing for
-          required: true
-          schema:
-            type: string
-          example: 123
+      - name: municipalityId
+        in: path
+        description: Municipality id
+        required: true
+        schema:
+          type: string
+        example: 2281
+      - name: flowInstanceId
+        in: path
+        description: flowInstanceId to trigger billing for
+        required: true
+        schema:
+          type: string
+        example: 123
       responses:
         "202":
           description: Accepted
+        "400":
+          description: Bad Request
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: "#/components/schemas/Problem"
+                - $ref: "#/components/schemas/ConstraintViolationProblem"
         "500":
           description: Internal Server Error
           content:
@@ -120,18 +128,10 @@ paths:
             application/problem+json:
               schema:
                 $ref: "#/components/schemas/Problem"
-        "400":
-          description: Bad Request
-          content:
-            application/problem+json:
-              schema:
-                oneOf:
-                  - $ref: "#/components/schemas/Problem"
-                  - $ref: "#/components/schemas/ConstraintViolationProblem"
   /api-docs:
     get:
       tags:
-        - API
+      - API
       summary: OpenAPI
       operationId: getApiDocs
       responses:
