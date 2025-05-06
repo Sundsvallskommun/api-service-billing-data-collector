@@ -12,7 +12,6 @@
 	<artifactId>api-service-billing-data-collector</artifactId>
 	<version>1.0</version>
 	<name>api-service-billing-data-collector</name>
-
 	<properties>
 		<commons-validator.version>1.9.0</commons-validator.version>
 		<xsoup.version>0.3.7</xsoup.version>
@@ -58,7 +57,6 @@
 			<artifactId>mariadb-java-client</artifactId>
 			<scope>runtime</scope>
 		</dependency>
-
 		<!-- Other -->
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
@@ -89,7 +87,6 @@
 			<artifactId>commons-validator</artifactId>
 			<version>${commons-validator.version}</version>
 		</dependency>
-
 	</dependencies>
 	<build>
 		<plugins>
@@ -121,6 +118,7 @@
 					<output>${generated-sources-path}</output>
 					<generatorName>spring</generatorName>
 					<generateApis>false</generateApis>
+					<generateSupportingFiles>false</generateSupportingFiles>
 					<configOptions>
 						<sourceFolder>${generated-sources-java-path}</sourceFolder>
 						<generateSupportingFiles>false</generateSupportingFiles>
