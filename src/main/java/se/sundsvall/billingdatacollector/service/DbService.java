@@ -1,6 +1,5 @@
 package se.sundsvall.billingdatacollector.service;
 
-import jakarta.transaction.Transactional;
 import java.net.URI;
 import java.time.LocalDate;
 import java.util.List;
@@ -10,6 +9,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import se.sundsvall.billingdatacollector.integration.db.FalloutRepository;
 import se.sundsvall.billingdatacollector.integration.db.HistoryRepository;
 import se.sundsvall.billingdatacollector.integration.db.ScheduledJobRepository;
