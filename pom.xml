@@ -13,7 +13,7 @@
 	<version>1.0</version>
 	<name>api-service-billing-data-collector</name>
 	<properties>
-		<commons-validator.version>1.9.0</commons-validator.version>
+		<commons-validator.version>1.10.0</commons-validator.version>
 		<xsoup.version>0.3.7</xsoup.version>
 		<generated-sources-path>${project.build.directory}/generated-sources</generated-sources-path>
 		<generated-sources-java-path>src/main/java</generated-sources-java-path>
