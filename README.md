@@ -118,54 +118,54 @@ spring:
     oauth2:
       client:
         registration:
-		  messaging:
-		    client-id: <client-id>
-		    client-secret: <client-secret>
-		    authorization-grant-type: client_credentials
-		  billing-preprocessor:
-		    client-id: <client-id>
-		    client-secret: <client-secret>
-		    authorization-grant-type: client_credentials
-		  party:
-		    client-id: <client-id>
-		    client-secret: <client-secret>
-		    authorization-grant-type: client_credentials
-		provider:
-		  messaging:
-		  	token-uri: <token-uri>
-		  billing-preprocessor:
-		    token-uri: <token-uri>
-		  party:
-		  	token-uri: <token-uri>
+          messaging:
+            client-id: <client-id>
+            client-secret: <client-secret>
+            authorization-grant-type: client_credentials
+          billing-preprocessor:
+            client-id: <client-id>
+            client-secret: <client-secret>
+            authorization-grant-type: client_credentials
+          party:
+            client-id: <client-id>
+            client-secret: <client-secret>
+            authorization-grant-type: client_credentials
+        provider:
+          messaging:
+            token-uri: <token-uri>
+          billing-preprocessor:
+            token-uri: <token-uri>
+          party:
+            token-uri: <token-uri>
 integration:
   messaging:
   	base-url: <messaging-url>
   	connect-timeout: 5000
   	read-timeout: 30000
   	oauth2:
-	  token-url: <token-url>
-	  authorization-grant-type: <authorization-grant-type>
+      token-url: <token-url>
+      authorization-grant-type: <authorization-grant-type>
   party:
-  	base-url: <party-url>
-  	connect-timeout: 5000
-  	read-timeout: 30000
-  	oauth2:
+    base-url: <party-url>
+    connect-timeout: 5000
+    read-timeout: 30000
+    oauth2:
       token-url: <token-url>
       authorization-grant-type: <authorization-grant-type>
   billing-preprocessor:
-  	base-url: <billing-preprocessor-url>
-  	connect-timeout: 5000
-  	read-timeout: 30000
-  	oauth2:
+    base-url: <billing-preprocessor-url>
+    connect-timeout: 5000
+    read-timeout: 30000
+    oauth2:
       token-url: <token-url>
       authorization-grant-type: <authorization-grant-type>
   opene:
-  	username: <opene-username>
-  	password: <opene-password>
-  	base-url: <opene-url>
-  	connect-timeout: 5000
-  	read-timeout: 30000
-  	oauth2:
+    username: <opene-username>
+    password: <opene-password>
+    base-url: <opene-url>
+    connect-timeout: 5000
+    read-timeout: 30000
+    oauth2:
       token-url: <token-url>
       authorization-grant-type: <authorization-grant-type>
 ```
@@ -185,14 +185,14 @@ falloutreport:
   sender: <sender-email-address>
   sender-name: <sender-name>
   fallout-mail-template:
-  	subject: <email-subject>
-  	html-prefix: <html-prefix>
-  	body-prefix: <body-prefix>
-  	list-prefix: <html-suffix>
-  	list-item: <html-list-item>
-  	list-suffix: <html-list-suffix>
-  	body-suffix: <body-suffix>
-  	html-suffix: <html-suffix>
+    subject: <email-subject>
+    html-prefix: <html-prefix>
+    body-prefix: <body-prefix>
+    list-prefix: <html-suffix>
+    list-item: <html-list-item>
+    list-suffix: <html-list-suffix>
+    body-suffix: <body-suffix>
+    html-suffix: <html-suffix>
 ```
 
 ### Database Initialization
