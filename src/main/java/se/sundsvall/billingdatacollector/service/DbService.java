@@ -1,5 +1,7 @@
 package se.sundsvall.billingdatacollector.service;
 
+import static se.sundsvall.dept44.util.LogUtils.sanitizeForLogging;
+
 import java.net.URI;
 import java.time.LocalDate;
 import java.util.List;
@@ -45,10 +47,10 @@ public class DbService {
 
 	public void saveFailedFlowInstance(byte[] bytes, String flowInstanceId, String familyId, String municipalityId, String message) {
 		if (!falloutRepository.existsByFamilyIdAndFlowInstanceIdAndOpenEInstanceIsNotNull(familyId, flowInstanceId)) {
-			LOG.info("Saving fallout billing record for OpenE with familyId: {} and flowInstanceId: {}", familyId, flowInstanceId);
+			LOG.info("Saving fallout billing record for OpenE with familyId: {} and flowInstanceId: {}", familyId, sanitizeForLogging(flowInstanceId));
 			falloutRepository.saveAndFlush(EntityMapper.mapToOpenEFalloutEntity(bytes, flowInstanceId, familyId, municipalityId, message));
 		} else {
-			LOG.info("Fallout instance for OpenE already exists for familyId: {} and flowInstanceId: {}", familyId, flowInstanceId);
+			LOG.info("Fallout instance for OpenE already exists for familyId: {} and flowInstanceId: {}", familyId, sanitizeForLogging(flowInstanceId));
 		}
 	}
 

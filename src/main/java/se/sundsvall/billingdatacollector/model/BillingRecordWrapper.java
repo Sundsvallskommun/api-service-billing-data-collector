@@ -20,5 +20,5 @@ public class BillingRecordWrapper {
 	private String municipalityId;
 
 	@ToString.Include(name = "recipientPrivatePerson")  // Makes hasValidBeanToString pass
-	private boolean isRecipientPrivatePerson = false;
+	private boolean isRecipientPrivatePerson;
 }

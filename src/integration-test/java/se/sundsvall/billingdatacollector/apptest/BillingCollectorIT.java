@@ -31,7 +31,7 @@ class BillingCollectorIT extends AbstractAppTest {
 	private static final List<String> FLOW_INSTANCE_IDS = List.of("185375", "185376");
 
 	@BeforeEach
-	public void setup() {
+	void setup() {
 		CommonStubs.stubAccessToken();
 	}
 
@@ -60,7 +60,7 @@ class BillingCollectorIT extends AbstractAppTest {
 
 		var historyEntities = historyRepository.findAll();
 
-		//Check that we have two records in the database and that they're the ones we want.
+		// Check that we have two records in the database and that they're the ones we want.
 		// We won't assert everything, that's done in the unit tests.
 		assertThat(historyEntities).hasSize(2);
 		historyEntities.forEach(entity -> {
@@ -93,7 +93,7 @@ class BillingCollectorIT extends AbstractAppTest {
 
 		var historyEntities = historyRepository.findAll();
 
-		//Check that we have no history
+		// Check that we have no history
 		assertThat(historyEntities).isEmpty();
 
 		// And check that we have a fallout, not verifying mapping, only that we have the correct one.
@@ -126,7 +126,7 @@ class BillingCollectorIT extends AbstractAppTest {
 
 		var historyEntities = historyRepository.findAll();
 
-		//Check that we have no history
+		// Check that we have no history
 		assertThat(historyEntities).isEmpty();
 
 		// And check that we have a fallout, not verifying mapping, only that we have the correct one.
@@ -144,7 +144,7 @@ class BillingCollectorIT extends AbstractAppTest {
 		assertThat(jobEntity.getFirst().getFetchedStartDate()).isEqualTo(LocalDate.now().minusDays(1));
 		assertThat(jobEntity.getFirst().getProcessed()).isCloseTo(OffsetDateTime.now(), within(5, ChronoUnit.SECONDS));
 	}
-	
+
 	@Test
 	void test4_fetchAndCreateBillingRecordsForCompanyCustomer() {
 		// Setup wiremock
@@ -158,7 +158,7 @@ class BillingCollectorIT extends AbstractAppTest {
 
 		var historyEntities = historyRepository.findAll();
 
-		//Check that we have one record in the database and that it's the one we want.
+		// Check that we have one record in the database and that it's the one we want.
 		// We won't assert everything, that's done in the unit tests.
 		assertThat(historyEntities).hasSize(1);
 		historyEntities.forEach(entity -> {
@@ -176,7 +176,7 @@ class BillingCollectorIT extends AbstractAppTest {
 		// And check that we have no fallouts
 		assertThat(falloutRepository.count()).isZero();
 	}
-	
+
 	@Test
 	void test5_fetchAndCreateBillingRecordsForManuallyEnteredCompanyCustomer() {
 		// Setup wiremock
@@ -190,7 +190,7 @@ class BillingCollectorIT extends AbstractAppTest {
 
 		var historyEntities = historyRepository.findAll();
 
-		//Check that we have one record in the database and that it's the one we want.
+		// Check that we have one record in the database and that it's the one we want.
 		// We won't assert everything, that's done in the unit tests.
 		assertThat(historyEntities).hasSize(1);
 		historyEntities.forEach(entity -> {
@@ -208,7 +208,7 @@ class BillingCollectorIT extends AbstractAppTest {
 		// And check that we have no fallouts
 		assertThat(falloutRepository.count()).isZero();
 	}
-	
+
 	// Check that we can handle a 400 from Party
 	@Test
 	void test6_fetchAndCreateBillingRecordForExternalOrgWithFaultyOrgNo_shouldUseLegalIdInsteadOfPartyId() {
@@ -223,7 +223,7 @@ class BillingCollectorIT extends AbstractAppTest {
 
 		var historyEntities = historyRepository.findAll();
 
-		//Check that we have one record in the database and that it's the one we want.
+		// Check that we have one record in the database and that it's the one we want.
 		// We won't assert everything, that's done in the unit tests.
 		assertThat(historyEntities).hasSize(1);
 		historyEntities.forEach(entity -> {
@@ -241,7 +241,7 @@ class BillingCollectorIT extends AbstractAppTest {
 		// And check that we have no fallouts
 		assertThat(falloutRepository.count()).isZero();
 	}
-	
+
 	// Check that we can handle 404 from Party
 	@Test
 	void test7_fetchAndCreateBillingRecordForExternalOrgWithMissingPartyId_shouldUseLegalIdInsteadOfPartyId() {
@@ -256,7 +256,7 @@ class BillingCollectorIT extends AbstractAppTest {
 
 		var historyEntities = historyRepository.findAll();
 
-		//Check that we have one record in the database and that it's the one we want.
+		// Check that we have one record in the database and that it's the one we want.
 		// We won't assert everything, that's done in the unit tests.
 		assertThat(historyEntities).hasSize(1);
 		historyEntities.forEach(entity -> {
