@@ -1,5 +1,8 @@
 package se.sundsvall.billingdatacollector.service;
 
+import static java.util.stream.Collectors.toSet;
+import static se.sundsvall.dept44.util.LogUtils.sanitizeForLogging;
+
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -18,6 +21,7 @@ import se.sundsvall.billingdatacollector.integration.billingpreprocessor.Billing
 import se.sundsvall.billingdatacollector.integration.opene.OpenEIntegration;
 import se.sundsvall.billingdatacollector.model.BillingRecordWrapper;
 import se.sundsvall.billingdatacollector.service.decorator.BillingRecordDecorator;
+import se.sundsvall.dept44.util.LogUtils;
 
 @Service
 public class CollectorService {
@@ -44,14 +48,15 @@ public class CollectorService {
 	 * @param flowInstanceId The flowInstanceId to trigger billing for
 	 */
 	public void triggerBilling(String flowInstanceId) {
-		LOG.info("Triggering billing for flowInstanceId: {}", flowInstanceId);
+
+		LOG.info("Triggering billing for flowInstanceId: {}", sanitizeForLogging(flowInstanceId));
 
 		final var possibleWrapper = openEIntegration.getBillingRecord(flowInstanceId);
 
 		// If we have a BillingRecordWrapper, decorate it and send it to the preprocessor
 		possibleWrapper.ifPresentOrElse(
 			this::createBillingRecord,
-			() -> LOG.warn("No record found for flowInstanceId: {}", flowInstanceId));
+			() -> LOG.warn("No record found for flowInstanceId: {}", sanitizeForLogging(flowInstanceId)));
 	}
 
 	private void createBillingRecord(BillingRecordWrapper billingRecordWrapper) {
@@ -123,6 +128,8 @@ public class CollectorService {
 	 * @return                 A Set of supported familyIds
 	 */
 	private Set<String> getSupportedFamilyIds(Set<String> wantedFamilyIds) {
+		wantedFamilyIds = wantedFamilyIds.stream().map(LogUtils::sanitizeForLogging).collect(toSet());
+
 		final var supportedFamilyIds = openEIntegration.getSupportedFamilyIds();
 		LOG.info("Wanted familyIds: {}. Supported familyIds: {}", wantedFamilyIds, supportedFamilyIds);
 

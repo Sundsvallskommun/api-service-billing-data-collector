@@ -6,7 +6,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.jdbc.Sql;
-
 import se.sundsvall.billingdatacollector.Application;
 import se.sundsvall.billingdatacollector.integration.db.FalloutRepository;
 import se.sundsvall.billingdatacollector.service.scheduling.fallout.FalloutJobHandler;
@@ -24,7 +23,7 @@ class FalloutIT extends AbstractAppTest {
 	private static final String FLOW_INSTANCE_ID = "185376";
 
 	@BeforeEach
-	public void setup() {
+	void setup() {
 		CommonStubs.stubAccessToken();
 	}
 
