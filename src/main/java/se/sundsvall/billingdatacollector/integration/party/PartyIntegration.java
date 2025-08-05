@@ -7,6 +7,7 @@ import static org.zalando.problem.Status.INTERNAL_SERVER_ERROR;
 import java.util.Optional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Component;
 import org.zalando.problem.Problem;
 import se.sundsvall.billingdatacollector.service.util.LegalIdUtil;
@@ -30,6 +31,7 @@ public class PartyIntegration {
 	 * @param  legalId        The legalId
 	 * @return                The partyId
 	 */
+	@Cacheable("partyId")
 	public String getPartyId(final String municipalityId, final String legalId) {
 		return partyClient.getPartyId(municipalityId, ENTERPRISE, legalId)
 			.orElseGet(() -> checkAndGetCorrectPersonalNumber(municipalityId, legalId)
