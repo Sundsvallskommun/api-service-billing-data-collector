@@ -7,7 +7,6 @@ import static se.sundsvall.billingdatacollector.integration.party.PartyIntegrati
 import generated.se.sundsvall.party.PartyType;
 import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
 import java.util.Optional;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -25,6 +24,5 @@ interface PartyClient {
 		produces = {
 			TEXT_PLAIN_VALUE, APPLICATION_PROBLEM_JSON_VALUE
 		})
-	@Cacheable("partyId")
 	Optional<String> getPartyId(@PathVariable("municipalityId") String municipalityId, @PathVariable("type") PartyType partyType, @PathVariable("legalId") String legalId);
 }
