@@ -1,10 +1,14 @@
 package se.sundsvall.billingdatacollector.apptest.openapi;
 
+import static java.nio.file.Files.writeString;
 import static net.javacrumbs.jsonunit.assertj.JsonAssertions.assertThatJson;
 import static net.javacrumbs.jsonunit.core.Option.IGNORING_ARRAY_ORDER;
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT;
 import static org.springframework.web.util.UriComponentsBuilder.fromPath;
 import static se.sundsvall.dept44.util.ResourceUtils.asString;
+
+import java.io.IOException;
+import java.nio.file.Path;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.dataformat.yaml.YAMLMapper;
@@ -42,9 +46,11 @@ class OpenApiSpecificationIT {
 	private TestRestTemplate restTemplate;
 
 	@Test
-	void compareOpenApiSpecifications() {
+	void compareOpenApiSpecifications() throws IOException {
 		final var existingOpenApiSpecification = asString(openApiResource);
 		final var currentOpenApiSpecification = getCurrentOpenApiSpecification();
+
+		writeString(Path.of("target/openapi.yml"), currentOpenApiSpecification);
 
 		assertThatJson(toJson(currentOpenApiSpecification))
 			.withOptions(IGNORING_ARRAY_ORDER)

@@ -1,60 +1,60 @@
-openapi: 3.0.1
+openapi: 3.1.0
 info:
   title: api-billing-data-collector
-  contact: {}
+  contact: { }
   license:
     name: MIT License
     url: https://opensource.org/licenses/MIT
   version: "1.0"
 servers:
-- url: http://localhost:8080
-  description: Generated server url
+  - url: http://localhost:65220
+    description: Generated server url
 tags:
-- name: Billing Data Collector
-  description: Billing Data Collector resources
+  - name: Billing Data Collector
+    description: Billing Data Collector resources
 paths:
   /{municipalityId}/trigger:
     post:
       tags:
-      - Billing Data Collector
+        - Billing Data Collector
       summary: Trigger billing for all flowInstanceId:s between two specific dates.
         Will return a list of all triggered flowInstanceId:s
       operationId: triggerBilling
       parameters:
-      - name: municipalityId
-        in: path
-        description: Municipality id
-        required: true
-        schema:
-          type: string
-        example: 2281
-      - name: startDate
-        in: query
-        required: true
-        schema:
-          type: string
-          format: date
-        example: 2024-01-01
-      - name: endDate
-        in: query
-        required: true
-        schema:
-          type: string
-          format: date
-        example: 2024-02-01
-      - name: familyIds
-        in: query
-        description: "FamilyIds to trigger billing for. If not provided, billing will\
-          \ be triggered for all supported familyIds"
-        required: false
-        schema:
-          uniqueItems: true
-          type: array
-          items:
+        - name: municipalityId
+          in: path
+          description: Municipality id
+          required: true
+          schema:
             type: string
-        example:
-        - "123"
-        - "456"
+          example: 2281
+        - name: startDate
+          in: query
+          required: true
+          schema:
+            type: string
+            format: date
+          example: 2024-01-01
+        - name: endDate
+          in: query
+          required: true
+          schema:
+            type: string
+            format: date
+          example: 2024-02-01
+        - name: familyIds
+          in: query
+          description: "FamilyIds to trigger billing for. If not provided, billing will\
+          \ be triggered for all supported familyIds"
+          required: false
+          schema:
+            type: array
+            items:
+              type: string
+            uniqueItems: true
+          example:
+            - "123"
+            - "456"
       responses:
         "202":
           description: Accepted
@@ -70,8 +70,8 @@ paths:
             application/problem+json:
               schema:
                 oneOf:
-                - $ref: "#/components/schemas/Problem"
-                - $ref: "#/components/schemas/ConstraintViolationProblem"
+                  - $ref: "#/components/schemas/Problem"
+                  - $ref: "#/components/schemas/ConstraintViolationProblem"
         "500":
           description: Internal Server Error
           content:
@@ -87,25 +87,25 @@ paths:
   /{municipalityId}/trigger/{flowInstanceId}:
     post:
       tags:
-      - Billing Data Collector
+        - Billing Data Collector
       summary: Trigger billing for a flowInstanceId
       operationId: triggerBilling_1
       parameters:
-      - name: municipalityId
-        in: path
-        description: Municipality id
-        required: true
-        schema:
-          type: string
-        example: 2281
-      - name: flowInstanceId
-        in: path
-        description: flowInstanceId to trigger billing for
-        required: true
-        schema:
-          minLength: 1
-          type: string
-        example: 123
+        - name: municipalityId
+          in: path
+          description: Municipality id
+          required: true
+          schema:
+            type: string
+          example: 2281
+        - name: flowInstanceId
+          in: path
+          description: flowInstanceId to trigger billing for
+          required: true
+          schema:
+            type: string
+            minLength: 1
+          example: 123
       responses:
         "202":
           description: Accepted
@@ -115,8 +115,8 @@ paths:
             application/problem+json:
               schema:
                 oneOf:
-                - $ref: "#/components/schemas/Problem"
-                - $ref: "#/components/schemas/ConstraintViolationProblem"
+                  - $ref: "#/components/schemas/Problem"
+                  - $ref: "#/components/schemas/ConstraintViolationProblem"
         "500":
           description: Internal Server Error
           content:
@@ -132,7 +132,7 @@ paths:
   /api-docs:
     get:
       tags:
-      - API
+        - API
       summary: OpenAPI
       operationId: getApiDocs
       responses:
@@ -150,6 +150,12 @@ components:
     Problem:
       type: object
       properties:
+        status:
+          $ref: "#/components/schemas/StatusType"
+        title:
+          type: string
+        detail:
+          type: string
         instance:
           type: string
           format: uri
@@ -158,14 +164,7 @@ components:
           format: uri
         parameters:
           type: object
-          additionalProperties:
-            type: object
-        status:
-          $ref: "#/components/schemas/StatusType"
-        detail:
-          type: string
-        title:
-          type: string
+          additionalProperties: { }
     StatusType:
       type: object
       properties:
@@ -214,15 +213,14 @@ components:
           type: string
         message:
           type: string
+        detail:
+          type: string
         instance:
           type: string
           format: uri
         parameters:
           type: object
-          additionalProperties:
-            type: object
-        detail:
-          type: string
+          additionalProperties: { }
         suppressed:
           type: array
           items:
@@ -259,8 +257,7 @@ components:
     ThrowableProblem:
       type: object
       properties:
-        cause:
-          $ref: "#/components/schemas/ThrowableProblem"
+        cause: { }
         stackTrace:
           type: array
           items:
@@ -285,6 +282,12 @@ components:
                 type: boolean
         message:
           type: string
+        status:
+          $ref: "#/components/schemas/StatusType"
+        title:
+          type: string
+        detail:
+          type: string
         instance:
           type: string
           format: uri
@@ -293,14 +296,7 @@ components:
           format: uri
         parameters:
           type: object
-          additionalProperties:
-            type: object
-        status:
-          $ref: "#/components/schemas/StatusType"
-        detail:
-          type: string
-        title:
-          type: string
+          additionalProperties: { }
         suppressed:
           type: array
           items:
@@ -341,4 +337,4 @@ components:
           type: string
         message:
           type: string
-  securitySchemes: {}
+  securitySchemes: { }
