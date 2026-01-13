@@ -37,11 +37,11 @@ public class ScheduledBilling {
 	@Schema(description = "Day of month when billing should be scheduled. On short months, highest possible date will be used if value is bigger than number of days in month", example = "1", minimum = "1", maximum = "31", requiredMode = REQUIRED)
 	@Min(1)
 	@Max(31)
-	private Integer invoicingDate;
+	private Integer billingDayOfMonth;
 
 	@ArraySchema(schema = @Schema(implementation = Integer.class, description = "Which months billing should be scheduled", example = "1", minimum = "1", maximum = "12", requiredMode = REQUIRED))
 	@NotNull
-	private Set<@Min(1) @Max(12) Integer> invoicingMonths;
+	private Set<@Min(1) @Max(12) Integer> billingMonths;
 
 	@Schema(description = "Timestamp when of last successful billing", example = "2000-10-31T01:30:00.000+02:00", accessMode = READ_ONLY)
 	private OffsetDateTime lastBilled;

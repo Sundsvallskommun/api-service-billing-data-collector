@@ -7,7 +7,7 @@ info:
     url: https://opensource.org/licenses/MIT
   version: "1.1"
 servers:
-  - url: http://localhost:33413
+  - url: http://localhost:45853
     description: Generated server url
 tags:
   - name: Billing Data Collector
@@ -521,7 +521,7 @@ components:
           enum:
             - CONTRACT
           example: CONTRACT
-        invoicingDate:
+        billingDayOfMonth:
           type: integer
           format: int32
           description: "Day of month when billing should be scheduled. On short months,\
@@ -530,7 +530,7 @@ components:
           example: 1
           maximum: 31
           minimum: 1
-        invoicingMonths:
+        billingMonths:
           type: array
           items:
             type: integer
@@ -553,9 +553,9 @@ components:
           example: 2001-05-15
           readOnly: true
       required:
+        - billingDayOfMonth
+        - billingMonths
         - externalId
-        - invoicingDate
-        - invoicingMonths
         - source
     ConstraintViolationProblem:
       type: object
@@ -746,11 +746,11 @@ components:
           type: boolean
         last:
           type: boolean
+        sort:
+          $ref: "#/components/schemas/SortObject"
         numberOfElements:
           type: integer
           format: int32
-        sort:
-          $ref: "#/components/schemas/SortObject"
         empty:
           type: boolean
     PageableObject:
@@ -759,18 +759,18 @@ components:
         offset:
           type: integer
           format: int64
-        paged:
-          type: boolean
         pageNumber:
           type: integer
           format: int32
         pageSize:
           type: integer
           format: int32
-        unpaged:
+        paged:
           type: boolean
         sort:
           $ref: "#/components/schemas/SortObject"
+        unpaged:
+          type: boolean
     SortObject:
       type: object
       properties:
