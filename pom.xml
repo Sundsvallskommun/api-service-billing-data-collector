@@ -10,7 +10,7 @@
 	</parent>
 	<groupId>se.sundsvall</groupId>
 	<artifactId>api-service-billing-data-collector</artifactId>
-	<version>1.0</version>
+	<version>1.1</version>
 	<name>api-service-billing-data-collector</name>
 	<properties>
 		<commons-validator.version>1.10.1</commons-validator.version>
@@ -106,6 +106,8 @@
 					<excludes>
 						<exclude>**/se/sundsvall/billingdatacollector/Application*</exclude>
 						<exclude>**/se/sundsvall/billingdatacollector/**/BillingRecordConstants*</exclude>
+						<!-- TODO Remove when implemented -->
+						<exclude>**/se/sundsvall/billingdatacollector/**/CollectorResource*</exclude>
 						<!-- They are tested though -->
 						<exclude>**/generated/**/*</exclude>
 					</excludes>
