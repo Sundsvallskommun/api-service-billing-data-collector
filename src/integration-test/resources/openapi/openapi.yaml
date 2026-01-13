@@ -7,7 +7,7 @@ info:
     url: https://opensource.org/licenses/MIT
   version: "1.1"
 servers:
-  - url: http://localhost:45853
+  - url: http://localhost:36097
     description: Generated server url
 tags:
   - name: Billing Data Collector
@@ -28,7 +28,7 @@ paths:
             type: string
           example: 2281
         - name: id
-          in: query
+          in: path
           description: id of scheduled billing
           required: true
           schema:
@@ -81,7 +81,7 @@ paths:
             type: string
           example: 2281
         - name: id
-          in: query
+          in: path
           description: id of scheduled billing
           required: true
           schema:
@@ -140,7 +140,7 @@ paths:
             type: string
           example: 2281
         - name: id
-          in: query
+          in: path
           description: id of scheduled billing
           required: true
           schema:
@@ -418,7 +418,7 @@ paths:
             type: string
           example: 2281
         - name: externalId
-          in: query
+          in: path
           description: externalId of scheduled billing
           required: true
           schema:
@@ -520,16 +520,21 @@ components:
           description: Source system where billing data is collected
           enum:
             - CONTRACT
+            - OPENE
           example: CONTRACT
-        billingDayOfMonth:
-          type: integer
-          format: int32
-          description: "Day of month when billing should be scheduled. On short months,\
-            \ highest possible date will be used if value is bigger than number of\
-            \ days in month"
-          example: 1
-          maximum: 31
-          minimum: 1
+        billingDaysOfMonth:
+          type: array
+          items:
+            type: integer
+            format: int32
+            description: "Days of month when billing should be scheduled. On short\
+              \ months, highest possible date will be used if value is bigger than\
+              \ number of days in month"
+            example: 1
+            maximum: 31
+            minimum: 1
+          minItems: 1
+          uniqueItems: true
         billingMonths:
           type: array
           items:
@@ -539,6 +544,7 @@ components:
             example: 1
             maximum: 12
             minimum: 1
+          minItems: 1
           uniqueItems: true
         lastBilled:
           type: string
@@ -552,8 +558,13 @@ components:
           description: Date of next scheduled billing if still active
           example: 2001-05-15
           readOnly: true
+        paused:
+          type: boolean
+          default: false
+          description: "If set to true, scheduled billing will not be triggered"
+          example: false
       required:
-        - billingDayOfMonth
+        - billingDaysOfMonth
         - billingMonths
         - externalId
         - source
@@ -759,14 +770,14 @@ components:
         offset:
           type: integer
           format: int64
+        paged:
+          type: boolean
         pageNumber:
           type: integer
           format: int32
         pageSize:
           type: integer
           format: int32
-        paged:
-          type: boolean
         sort:
           $ref: "#/components/schemas/SortObject"
         unpaged:

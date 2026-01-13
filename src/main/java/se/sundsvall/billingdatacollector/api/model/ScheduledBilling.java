@@ -7,6 +7,7 @@ import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import java.time.LocalDate;
 import java.time.OffsetDateTime;
@@ -34,13 +35,19 @@ public class ScheduledBilling {
 	@NotNull
 	private BillingSource source;
 
-	@Schema(description = "Day of month when billing should be scheduled. On short months, highest possible date will be used if value is bigger than number of days in month", example = "1", minimum = "1", maximum = "31", requiredMode = REQUIRED)
-	@Min(1)
-	@Max(31)
-	private Integer billingDayOfMonth;
+	@ArraySchema(schema = @Schema(implementation = Integer.class,
+		description = "Days of month when billing should be scheduled. On short months, highest possible date will be used if value is bigger than number of days in month",
+		example = "1",
+		minimum = "1",
+		maximum = "31",
+		requiredMode = REQUIRED))
+	@NotNull
+	@NotEmpty
+	private Set<@Min(1) @Max(31) Integer> billingDaysOfMonth;
 
 	@ArraySchema(schema = @Schema(implementation = Integer.class, description = "Which months billing should be scheduled", example = "1", minimum = "1", maximum = "12", requiredMode = REQUIRED))
 	@NotNull
+	@NotEmpty
 	private Set<@Min(1) @Max(12) Integer> billingMonths;
 
 	@Schema(description = "Timestamp when of last successful billing", example = "2000-10-31T01:30:00.000+02:00", accessMode = READ_ONLY)
@@ -48,4 +55,7 @@ public class ScheduledBilling {
 
 	@Schema(description = "Date of next scheduled billing if still active", example = "2001-05-15", accessMode = READ_ONLY)
 	private LocalDate nextScheduledBilling;
+
+	@Schema(description = "If set to true, scheduled billing will not be triggered", example = "false", defaultValue = "false")
+	private Boolean paused;
 }

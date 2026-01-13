@@ -131,7 +131,7 @@ class CollectorResource {
 	})
 	ResponseEntity<ScheduledBilling> updateScheduledBilling(
 		@Parameter(name = "municipalityId", description = "Municipality id", example = "2281") @ValidMunicipalityId @PathVariable final String municipalityId,
-		@Parameter(name = "id", description = "id of scheduled billing", example = "b82bd8ac-1507-4d9a-958d-369261eecc14") final String id,
+		@Parameter(name = "id", description = "id of scheduled billing", example = "b82bd8ac-1507-4d9a-958d-369261eecc14") @PathVariable final String id,
 		@Valid @NotNull @RequestBody ScheduledBilling scheduledBilling) {
 		return null;
 	}
@@ -153,7 +153,7 @@ class CollectorResource {
 	})
 	ResponseEntity<ScheduledBilling> getScheduledBilling(
 		@Parameter(name = "municipalityId", description = "Municipality id", example = "2281") @ValidMunicipalityId @PathVariable final String municipalityId,
-		@Parameter(name = "id", description = "id of scheduled billing", example = "b82bd8ac-1507-4d9a-958d-369261eecc14") final String id) {
+		@Parameter(name = "id", description = "id of scheduled billing", example = "b82bd8ac-1507-4d9a-958d-369261eecc14") @PathVariable final String id) {
 		return null;
 	}
 
@@ -164,7 +164,7 @@ class CollectorResource {
 	})
 	ResponseEntity<Void> deleteScheduledBilling(
 		@Parameter(name = "municipalityId", description = "Municipality id", example = "2281") @ValidMunicipalityId @PathVariable final String municipalityId,
-		@Parameter(name = "id", description = "id of scheduled billing", example = "b82bd8ac-1507-4d9a-958d-369261eecc14") final String id) {
+		@Parameter(name = "id", description = "id of scheduled billing", example = "b82bd8ac-1507-4d9a-958d-369261eecc14") @PathVariable final String id) {
 		return null;
 	}
 
@@ -175,7 +175,7 @@ class CollectorResource {
 	})
 	ResponseEntity<ScheduledBilling> getScheduledBillingExternalId(
 		@Parameter(name = "municipalityId", description = "Municipality id", example = "2281") @ValidMunicipalityId @PathVariable final String municipalityId,
-		@Parameter(name = "externalId", description = "externalId of scheduled billing", example = "b82bd8ac-1507-4d9a-958d-369261eecc14") final String externalId) {
+		@Parameter(name = "externalId", description = "externalId of scheduled billing", example = "b82bd8ac-1507-4d9a-958d-369261eecc14") @PathVariable final String externalId) {
 		return null;
 	}
 
