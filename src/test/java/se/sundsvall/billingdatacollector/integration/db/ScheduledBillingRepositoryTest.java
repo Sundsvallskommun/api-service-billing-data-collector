@@ -35,9 +35,11 @@ class ScheduledBillingRepositoryTest {
 
 		final var result = repository.findAllByPausedFalseAndNextScheduledBillingLessThanEqual(today);
 
-		assertThat(result).isNotNull();
-		assertThat(result).allMatch(entity -> !entity.isPaused());
-		assertThat(result).allMatch(entity -> entity.getNextScheduledBilling().isBefore(today));
+		assertThat(result)
+			.isNotNull()
+			.isNotEmpty()
+			.allMatch(entity -> !entity.isPaused())
+			.allMatch(entity -> entity.getNextScheduledBilling().isBefore(today));
 	}
 
 	@Test

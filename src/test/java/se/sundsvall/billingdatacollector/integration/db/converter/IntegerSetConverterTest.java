@@ -52,8 +52,9 @@ class IntegerSetConverterTest {
 		final var result = converter.convertToEntityAttribute(dbData);
 
 		// Assert
-		assertThat(result).isNotNull();
-		assertThat(result).isEmpty();
+		assertThat(result)
+			.isNotNull()
+			.isEmpty();
 	}
 
 	@Test

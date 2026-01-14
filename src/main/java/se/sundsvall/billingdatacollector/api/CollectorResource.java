@@ -176,7 +176,7 @@ class CollectorResource {
 	})
 	ResponseEntity<ScheduledBilling> getScheduledBillingExternalId(
 		@Parameter(name = "municipalityId", description = "Municipality id", example = "2281") @ValidMunicipalityId @PathVariable final String municipalityId,
-		@Parameter(name = "source", description = "Source system where data is collected", example = "CONTRACT") @PathVariable final BillingSource billingSource,
+		@Parameter(name = "source", description = "Source system where data is collected", example = "CONTRACT") @PathVariable("source") final BillingSource source,
 		@Parameter(name = "externalId", description = "externalId of scheduled billing", example = "b82bd8ac-1507-4d9a-958d-369261eecc14") @PathVariable final String externalId) {
 		return null;
 	}
