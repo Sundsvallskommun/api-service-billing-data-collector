@@ -23,3 +23,6 @@ VALUES ('2024-06-25', '2024-06-25', '2024-06-26 10:19:17.025118', 'ff298e4b-f14f
        ('2024-06-24', '2024-06-24', '2024-06-26 10:19:17.025118', 'ff298e4b-f14f-4494-8f3a-9da8b00207bc', '2281'),
        ('2024-06-23', '2024-06-23', '2024-06-26 10:19:17.025118', 'ff298e4b-f14f-4494-8f3a-9da8b00207bd', '2281'),
        ('2024-06-22', '2024-06-22', '2024-06-26 10:19:17.025118', 'ff298e4b-f14f-4494-8f3a-9da8b00207be', '2281');
+
+INSERT INTO scheduled_billing (id, municipality_id, external_id, source, billing_days_of_month, billing_months, next_scheduled_billing, paused)
+VALUES ('f0882f1d-06bc-47fd-b017-1d8307f5ce95', '2281', '66c57446-72e7-4cc5-af7c-053919ce904b', 'CONTRACT', '1,15', '1,4,7,10', '2020-01-01', false);
