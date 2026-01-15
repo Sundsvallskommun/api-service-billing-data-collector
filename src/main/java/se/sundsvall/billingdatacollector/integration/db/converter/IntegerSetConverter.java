@@ -20,7 +20,7 @@ public class IntegerSetConverter implements AttributeConverter<Set<Integer>, Str
 
 	@Override
 	public Set<Integer> convertToEntityAttribute(String dbData) {
-		if (dbData == null || dbData.isEmpty())
+		if (dbData == null || dbData.isBlank())
 			return new HashSet<>();
 		return Arrays.stream(dbData.split(","))
 			.map(Integer::parseInt)

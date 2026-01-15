@@ -9,7 +9,7 @@ import se.sundsvall.billingdatacollector.integration.db.model.ScheduledBillingEn
 
 public interface ScheduledBillingRepository extends JpaRepository<ScheduledBillingEntity, String> {
 
-	boolean existsByExternalIdAndMunicipalityIdAndSource(String externalId, String municipalityId, BillingSource source);
+	boolean existsByMunicipalityIdAndExternalIdAndSource(String municipalityId, String externalId, BillingSource source);
 
 	Optional<ScheduledBillingEntity> findByMunicipalityIdAndExternalIdAndSource(String municipalityId, String externalId, BillingSource source);
 

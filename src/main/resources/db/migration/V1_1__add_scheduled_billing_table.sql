@@ -12,8 +12,8 @@ CREATE TABLE scheduled_billing (
     CONSTRAINT uq_external_id_municipality_source UNIQUE (external_id, municipality_id, source)
 ) ENGINE=InnoDB;
 
-CREATE INDEX idx_municipality_id_external_id
-    ON scheduled_billing (municipality_id, external_id);
+CREATE INDEX idx_municipality_id_external_id_source
+    ON scheduled_billing (municipality_id, external_id, source);
 
 CREATE INDEX idx_next_scheduled_billing_paused
     ON scheduled_billing (next_scheduled_billing, paused);

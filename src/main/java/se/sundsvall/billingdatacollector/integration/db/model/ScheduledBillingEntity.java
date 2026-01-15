@@ -28,7 +28,7 @@ import se.sundsvall.billingdatacollector.integration.db.converter.IntegerSetConv
 @Table(
 	name = "scheduled_billing",
 	indexes = {
-		@Index(name = "idx_municipality_id_external_id", columnList = "municipality_id,external_id"),
+		@Index(name = "idx_municipality_id_external_id_source", columnList = "municipality_id,external_id,source"),
 		@Index(name = "idx_next_scheduled_billing_paused", columnList = "next_scheduled_billing,paused")
 	},
 	uniqueConstraints = {

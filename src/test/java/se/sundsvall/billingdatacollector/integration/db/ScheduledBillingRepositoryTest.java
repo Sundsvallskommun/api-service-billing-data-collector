@@ -43,19 +43,19 @@ class ScheduledBillingRepositoryTest {
 	}
 
 	@Test
-	void existsByExternalIdAndMunicipalityIdAndSource() {
+	void existsByMunicipalityIdAndExternalIdAndSource() {
 		final var externalId = "66c57446-72e7-4cc5-af7c-053919ce904b";
 		final var municipalityId = "2281";
 		final var source = BillingSource.CONTRACT;
 
-		final var exists = repository.existsByExternalIdAndMunicipalityIdAndSource(externalId, municipalityId, source);
+		final var exists = repository.existsByMunicipalityIdAndExternalIdAndSource(municipalityId, externalId, source);
 
 		assertThat(exists).isTrue();
 	}
 
 	@Test
-	void existsByExternalIdAndMunicipalityIdAndSource_notFound() {
-		final var exists = repository.existsByExternalIdAndMunicipalityIdAndSource("non-existing", "0000", BillingSource.CONTRACT);
+	void existsByMunicipalityIdAndExternalIdAndSource_notFound() {
+		final var exists = repository.existsByMunicipalityIdAndExternalIdAndSource("0000", "non-existing", BillingSource.CONTRACT);
 
 		assertThat(exists).isFalse();
 	}

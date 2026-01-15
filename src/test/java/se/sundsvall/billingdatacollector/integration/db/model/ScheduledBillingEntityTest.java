@@ -75,7 +75,11 @@ class ScheduledBillingEntityTest {
 
 	@Test
 	void testNoDirt() {
-		assertThat(ScheduledBillingEntity.builder().build()).hasAllNullFieldsOrPropertiesExcept("paused");
-		assertThat(new ScheduledBillingEntity()).hasAllNullFieldsOrPropertiesExcept("paused");
+		assertThat(ScheduledBillingEntity.builder().build())
+			.hasAllNullFieldsOrPropertiesExcept("paused")
+			.extracting("paused").isEqualTo(false);
+		assertThat(new ScheduledBillingEntity())
+			.hasAllNullFieldsOrPropertiesExcept("paused")
+			.extracting("paused").isEqualTo(false);
 	}
 }

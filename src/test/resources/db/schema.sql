@@ -65,8 +65,8 @@ create table fallout (
     create index idx_municipality_id 
        on history (municipality_id);
 
-    create index idx_municipality_id_external_id 
-       on scheduled_billing (municipality_id, external_id);
+    create index idx_municipality_id_external_id_source
+       on scheduled_billing (municipality_id, external_id, source);
 
     create index idx_next_scheduled_billing_paused 
        on scheduled_billing (next_scheduled_billing, paused);
