@@ -7,7 +7,7 @@ info:
     url: https://opensource.org/licenses/MIT
   version: "1.1"
 servers:
-  - url: http://localhost:36097
+  - url: http://localhost:33015
     description: Generated server url
 tags:
   - name: Billing Data Collector
@@ -403,7 +403,7 @@ paths:
             application/problem+json:
               schema:
                 $ref: "#/components/schemas/Problem"
-  /{municipalityId}/scheduled-billing/external/{externalId}:
+  /{municipalityId}/scheduled-billing/external/{source}/{externalId}:
     get:
       tags:
         - Billing Data Collector
@@ -417,6 +417,16 @@ paths:
           schema:
             type: string
           example: 2281
+        - name: source
+          in: path
+          description: Source system where data is collected
+          required: true
+          schema:
+            type: string
+            enum:
+              - CONTRACT
+              - OPENE
+          example: CONTRACT
         - name: externalId
           in: path
           description: externalId of scheduled billing
@@ -515,6 +525,8 @@ components:
           type: string
           description: External id in source system
           example: 66c57446-72e7-4cc5-af7c-053919ce904b
+          maxLength: 64
+          minLength: 0
         source:
           type: string
           description: Source system where billing data is collected
@@ -735,12 +747,12 @@ components:
     PageScheduledBilling:
       type: object
       properties:
-        totalPages:
-          type: integer
-          format: int32
         totalElements:
           type: integer
           format: int64
+        totalPages:
+          type: integer
+          format: int32
         size:
           type: integer
           format: int32
@@ -753,12 +765,12 @@ components:
           format: int32
         pageable:
           $ref: "#/components/schemas/PageableObject"
+        sort:
+          $ref: "#/components/schemas/SortObject"
         first:
           type: boolean
         last:
           type: boolean
-        sort:
-          $ref: "#/components/schemas/SortObject"
         numberOfElements:
           type: integer
           format: int32

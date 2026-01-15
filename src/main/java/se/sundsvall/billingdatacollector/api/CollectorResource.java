@@ -36,6 +36,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.zalando.problem.Problem;
 import org.zalando.problem.violations.ConstraintViolationProblem;
+import se.sundsvall.billingdatacollector.api.model.BillingSource;
 import se.sundsvall.billingdatacollector.api.model.ScheduledBilling;
 import se.sundsvall.billingdatacollector.service.CollectorService;
 import se.sundsvall.dept44.common.validators.annotation.ValidMunicipalityId;
@@ -168,13 +169,14 @@ class CollectorResource {
 		return null;
 	}
 
-	@GetMapping(path = "/scheduled-billing/external/{externalId}", produces = APPLICATION_JSON_VALUE)
+	@GetMapping(path = "/scheduled-billing/external/{source}/{externalId}", produces = APPLICATION_JSON_VALUE)
 	@Operation(summary = "Get scheduled billing by external id", responses = {
 		@ApiResponse(responseCode = "200", description = "Successful", useReturnTypeSchema = true),
 		@ApiResponse(responseCode = "404", description = "Not Found", useReturnTypeSchema = true, content = @Content(mediaType = APPLICATION_PROBLEM_JSON_VALUE, schema = @Schema(implementation = Problem.class)))
 	})
 	ResponseEntity<ScheduledBilling> getScheduledBillingExternalId(
 		@Parameter(name = "municipalityId", description = "Municipality id", example = "2281") @ValidMunicipalityId @PathVariable final String municipalityId,
+		@Parameter(name = "source", description = "Source system where data is collected", example = "CONTRACT") @PathVariable("source") final BillingSource source,
 		@Parameter(name = "externalId", description = "externalId of scheduled billing", example = "b82bd8ac-1507-4d9a-958d-369261eecc14") @PathVariable final String externalId) {
 		return null;
 	}

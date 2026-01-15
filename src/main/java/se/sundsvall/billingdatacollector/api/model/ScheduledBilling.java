@@ -7,8 +7,10 @@ import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 import java.time.LocalDate;
 import java.time.OffsetDateTime;
 import java.util.Set;
@@ -27,8 +29,9 @@ public class ScheduledBilling {
 	@Schema(description = "Unique id for scheduled billing", examples = "f0882f1d-06bc-47fd-b017-1d8307f5ce95", accessMode = READ_ONLY)
 	private String id;
 
-	@Schema(description = "External id in source system", example = "66c57446-72e7-4cc5-af7c-053919ce904b", requiredMode = REQUIRED)
-	@NotNull
+	@Schema(description = "External id in source system", example = "66c57446-72e7-4cc5-af7c-053919ce904b", maxLength = 64, requiredMode = REQUIRED)
+	@NotBlank
+	@Size(max = 64)
 	private String externalId;
 
 	@Schema(description = "Source system where billing data is collected", example = "CONTRACT", requiredMode = REQUIRED)
