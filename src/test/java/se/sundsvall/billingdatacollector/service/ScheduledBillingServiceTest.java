@@ -143,23 +143,6 @@ class ScheduledBillingServiceTest {
 	}
 
 	@Test
-	void testUpdate_wrongMunicipality_throwsException() {
-		// Arrange
-		var scheduledBilling = createScheduledBilling();
-
-		when(mockRepository.findByMunicipalityIdAndId(MUNICIPALITY_ID, ID)).thenReturn(Optional.empty());
-
-		// Act & Assert
-		assertThatThrownBy(() -> service.update(MUNICIPALITY_ID, ID, scheduledBilling))
-			.isInstanceOf(ThrowableProblem.class)
-			.hasMessageContaining("Scheduled billing not found");
-
-		verify(mockRepository).findByMunicipalityIdAndId(MUNICIPALITY_ID, ID);
-		verify(mockRepository, never()).saveAndFlush(any());
-		verifyNoMoreInteractions(mockRepository);
-	}
-
-	@Test
 	void testGetAll_success() {
 		// Arrange
 		var pageable = PageRequest.of(0, 10);

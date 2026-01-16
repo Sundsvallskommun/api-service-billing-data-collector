@@ -222,7 +222,7 @@ class CollectorResourceTest {
 		var request = createScheduledBillingRequest();
 		var response = createScheduledBillingResponse();
 
-		when(mockScheduledBillingService.create(eq(MUNICIPALITY_ID), eq(request))).thenReturn(response);
+		when(mockScheduledBillingService.create(MUNICIPALITY_ID, request)).thenReturn(response);
 
 		// Act
 		var result = webTestClient.post()
