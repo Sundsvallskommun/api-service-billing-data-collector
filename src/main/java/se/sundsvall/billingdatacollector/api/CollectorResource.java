@@ -5,6 +5,10 @@ import static org.springframework.http.MediaType.ALL_VALUE;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 import static org.springframework.http.MediaType.APPLICATION_PROBLEM_JSON_VALUE;
 import static org.springframework.http.ResponseEntity.accepted;
+import static org.springframework.http.ResponseEntity.created;
+import static org.springframework.http.ResponseEntity.noContent;
+import static org.springframework.http.ResponseEntity.ok;
+import static org.springframework.web.util.UriComponentsBuilder.fromPath;
 import static org.zalando.problem.Status.BAD_REQUEST;
 
 import io.swagger.v3.oas.annotations.Operation;
@@ -39,6 +43,7 @@ import org.zalando.problem.violations.ConstraintViolationProblem;
 import se.sundsvall.billingdatacollector.api.model.BillingSource;
 import se.sundsvall.billingdatacollector.api.model.ScheduledBilling;
 import se.sundsvall.billingdatacollector.service.CollectorService;
+import se.sundsvall.billingdatacollector.service.ScheduledBillingService;
 import se.sundsvall.dept44.common.validators.annotation.ValidMunicipalityId;
 
 @RestController
@@ -68,9 +73,11 @@ import se.sundsvall.dept44.common.validators.annotation.ValidMunicipalityId;
 class CollectorResource {
 
 	private final CollectorService collectorService;
+	private final ScheduledBillingService scheduledBillingService;
 
-	CollectorResource(CollectorService collectorService) {
+	CollectorResource(CollectorService collectorService, ScheduledBillingService scheduledBillingService) {
 		this.collectorService = collectorService;
+		this.scheduledBillingService = scheduledBillingService;
 	}
 
 	@Operation(
@@ -122,7 +129,8 @@ class CollectorResource {
 	ResponseEntity<ScheduledBilling> addScheduledBilling(
 		@Parameter(name = "municipalityId", description = "Municipality id", example = "2281") @ValidMunicipalityId @PathVariable final String municipalityId,
 		@Valid @NotNull @RequestBody ScheduledBilling scheduledBilling) {
-		return null;
+		var result = scheduledBillingService.create(municipalityId, scheduledBilling);
+		return created(fromPath("/{municipalityId}/scheduled-billing/{id}").buildAndExpand(municipalityId, result.getId()).toUri()).body(result);
 	}
 
 	@PutMapping(path = "/scheduled-billing/{id}", consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_JSON_VALUE)
@@ -134,7 +142,7 @@ class CollectorResource {
 		@Parameter(name = "municipalityId", description = "Municipality id", example = "2281") @ValidMunicipalityId @PathVariable final String municipalityId,
 		@Parameter(name = "id", description = "id of scheduled billing", example = "b82bd8ac-1507-4d9a-958d-369261eecc14") @PathVariable final String id,
 		@Valid @NotNull @RequestBody ScheduledBilling scheduledBilling) {
-		return null;
+		return ok(scheduledBillingService.update(municipalityId, id, scheduledBilling));
 	}
 
 	@GetMapping(path = "/scheduled-billing", produces = APPLICATION_JSON_VALUE)
@@ -144,7 +152,7 @@ class CollectorResource {
 	ResponseEntity<Page<ScheduledBilling>> getScheduledBillings(
 		@Parameter(name = "municipalityId", description = "Municipality id", example = "2281") @ValidMunicipalityId @PathVariable final String municipalityId,
 		@ParameterObject final Pageable pageable) {
-		return null;
+		return ok(scheduledBillingService.getAll(municipalityId, pageable));
 	}
 
 	@GetMapping(path = "/scheduled-billing/{id}", produces = APPLICATION_JSON_VALUE)
@@ -155,18 +163,19 @@ class CollectorResource {
 	ResponseEntity<ScheduledBilling> getScheduledBilling(
 		@Parameter(name = "municipalityId", description = "Municipality id", example = "2281") @ValidMunicipalityId @PathVariable final String municipalityId,
 		@Parameter(name = "id", description = "id of scheduled billing", example = "b82bd8ac-1507-4d9a-958d-369261eecc14") @PathVariable final String id) {
-		return null;
+		return ok(scheduledBillingService.getById(municipalityId, id));
 	}
 
 	@DeleteMapping(path = "/scheduled-billing/{id}", produces = ALL_VALUE)
-	@Operation(summary = "Get scheduled billing by id", responses = {
+	@Operation(summary = "Delete scheduled billing by id", responses = {
 		@ApiResponse(responseCode = "204", description = "Successful deletion", useReturnTypeSchema = true),
 		@ApiResponse(responseCode = "404", description = "Not Found", useReturnTypeSchema = true, content = @Content(mediaType = APPLICATION_PROBLEM_JSON_VALUE, schema = @Schema(implementation = Problem.class)))
 	})
 	ResponseEntity<Void> deleteScheduledBilling(
 		@Parameter(name = "municipalityId", description = "Municipality id", example = "2281") @ValidMunicipalityId @PathVariable final String municipalityId,
 		@Parameter(name = "id", description = "id of scheduled billing", example = "b82bd8ac-1507-4d9a-958d-369261eecc14") @PathVariable final String id) {
-		return null;
+		scheduledBillingService.delete(municipalityId, id);
+		return noContent().build();
 	}
 
 	@GetMapping(path = "/scheduled-billing/external/{source}/{externalId}", produces = APPLICATION_JSON_VALUE)
@@ -178,7 +187,7 @@ class CollectorResource {
 		@Parameter(name = "municipalityId", description = "Municipality id", example = "2281") @ValidMunicipalityId @PathVariable final String municipalityId,
 		@Parameter(name = "source", description = "Source system where data is collected", example = "CONTRACT") @PathVariable("source") final BillingSource source,
 		@Parameter(name = "externalId", description = "externalId of scheduled billing", example = "b82bd8ac-1507-4d9a-958d-369261eecc14") @PathVariable final String externalId) {
-		return null;
+		return ok(scheduledBillingService.getByExternalId(municipalityId, source, externalId));
 	}
 
 	// Validate that the end date is after, or equal to, the start date

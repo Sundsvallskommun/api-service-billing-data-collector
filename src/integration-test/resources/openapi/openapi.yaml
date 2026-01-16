@@ -129,7 +129,7 @@ paths:
     delete:
       tags:
         - Billing Data Collector
-      summary: Get scheduled billing by id
+      summary: Delete scheduled billing by id
       operationId: deleteScheduledBilling
       parameters:
         - name: municipalityId
