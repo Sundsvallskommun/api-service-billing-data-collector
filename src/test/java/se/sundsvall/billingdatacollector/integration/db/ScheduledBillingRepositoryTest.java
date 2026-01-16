@@ -12,6 +12,9 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.test.context.jdbc.Sql;
 import se.sundsvall.billingdatacollector.api.model.BillingSource;
 import se.sundsvall.billingdatacollector.integration.db.model.ScheduledBillingEntity;
@@ -143,5 +146,48 @@ class ScheduledBillingRepositoryTest {
 		final var result = repository.findByMunicipalityIdAndExternalIdAndSource("non-existing", "non-existing", BillingSource.CONTRACT);
 
 		assertThat(result).isEmpty();
+	}
+
+	@Test
+	void findAllByMunicipalityId() {
+		final var municipalityId = "2281";
+
+		final var result = repository.findAllByMunicipalityId(municipalityId, Pageable.unpaged());
+
+		assertThat(result).isNotNull();
+		assertThat(result.getContent())
+			.hasSize(3)
+			.allMatch(entity -> entity.getMunicipalityId().equals(municipalityId));
+	}
+
+	@Test
+	void findAllByMunicipalityId_notFound() {
+		final var result = repository.findAllByMunicipalityId("0000", Pageable.unpaged());
+
+		assertThat(result).isNotNull();
+		assertThat(result.getContent()).isEmpty();
+		assertThat(result.getTotalElements()).isZero();
+	}
+
+	@Test
+	void findAllByMunicipalityId_withPagination() {
+		final var municipalityId = "2281";
+		final var pageRequest = PageRequest.of(0, 2, Sort.by("externalId").ascending());
+
+		final var firstPage = repository.findAllByMunicipalityId(municipalityId, pageRequest);
+
+		assertThat(firstPage).isNotNull();
+		assertThat(firstPage.getContent()).hasSize(2);
+		assertThat(firstPage.getTotalElements()).isEqualTo(3);
+		assertThat(firstPage.getTotalPages()).isEqualTo(2);
+		assertThat(firstPage.isFirst()).isTrue();
+		assertThat(firstPage.isLast()).isFalse();
+
+		final var secondPage = repository.findAllByMunicipalityId(municipalityId, pageRequest.next());
+
+		assertThat(secondPage).isNotNull();
+		assertThat(secondPage.getContent()).hasSize(1);
+		assertThat(secondPage.isFirst()).isFalse();
+		assertThat(secondPage.isLast()).isTrue();
 	}
 }

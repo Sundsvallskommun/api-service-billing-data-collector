@@ -4,8 +4,14 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
+import java.time.OffsetDateTime;
+import java.time.ZoneOffset;
+import java.util.Set;
 import org.junit.jupiter.api.Test;
 import se.sundsvall.billingdatacollector.TestDataFactory;
+import se.sundsvall.billingdatacollector.api.model.BillingSource;
+import se.sundsvall.billingdatacollector.api.model.ScheduledBilling;
+import se.sundsvall.billingdatacollector.integration.db.model.ScheduledBillingEntity;
 
 class EntityMapperTest {
 
@@ -50,5 +56,86 @@ class EntityMapperTest {
 
 		assertThat(scheduledJobEntity.getFetchedStartDate()).isEqualTo(fromDate);
 		assertThat(scheduledJobEntity.getFetchedEndDate()).isEqualTo(toDate);
+	}
+
+	@Test
+	void testToScheduledBilling() {
+		final var id = "test-id";
+		final var externalId = "external-123";
+		final var source = BillingSource.CONTRACT;
+		final var billingDaysOfMonth = Set.of(1, 15);
+		final var billingMonths = Set.of(3, 6, 9, 12);
+		final var lastBilled = OffsetDateTime.of(2024, 6, 15, 10, 0, 0, 0, ZoneOffset.UTC);
+		final var nextScheduledBilling = LocalDate.of(2024, 9, 1);
+
+		final var entity = ScheduledBillingEntity.builder()
+			.withId(id)
+			.withExternalId(externalId)
+			.withSource(source)
+			.withBillingDaysOfMonth(billingDaysOfMonth)
+			.withBillingMonths(billingMonths)
+			.withLastBilled(lastBilled)
+			.withNextScheduledBilling(nextScheduledBilling)
+			.withPaused(true)
+			.build();
+
+		final var result = EntityMapper.toScheduledBilling(entity);
+
+		assertThat(result.getId()).isEqualTo(id);
+		assertThat(result.getExternalId()).isEqualTo(externalId);
+		assertThat(result.getSource()).isEqualTo(source);
+		assertThat(result.getBillingDaysOfMonth()).isEqualTo(billingDaysOfMonth);
+		assertThat(result.getBillingMonths()).isEqualTo(billingMonths);
+		assertThat(result.getLastBilled()).isEqualTo(lastBilled);
+		assertThat(result.getNextScheduledBilling()).isEqualTo(nextScheduledBilling);
+		assertThat(result.getPaused()).isTrue();
+	}
+
+	@Test
+	void testToScheduledBillingEntity() {
+		final var municipalityId = "2281";
+		final var externalId = "external-456";
+		final var source = BillingSource.OPENE;
+		final var billingDaysOfMonth = Set.of(5, 20);
+		final var billingMonths = Set.of(1, 7);
+		final var nextScheduledBilling = LocalDate.of(2024, 7, 5);
+
+		final var dto = ScheduledBilling.builder()
+			.withExternalId(externalId)
+			.withSource(source)
+			.withBillingDaysOfMonth(billingDaysOfMonth)
+			.withBillingMonths(billingMonths)
+			.withPaused(true)
+			.build();
+
+		final var result = EntityMapper.toScheduledBillingEntity(municipalityId, dto, nextScheduledBilling);
+
+		assertThat(result.getId()).isNull();
+		assertThat(result.getMunicipalityId()).isEqualTo(municipalityId);
+		assertThat(result.getExternalId()).isEqualTo(externalId);
+		assertThat(result.getSource()).isEqualTo(source);
+		assertThat(result.getBillingDaysOfMonth()).isEqualTo(billingDaysOfMonth);
+		assertThat(result.getBillingMonths()).isEqualTo(billingMonths);
+		assertThat(result.getNextScheduledBilling()).isEqualTo(nextScheduledBilling);
+		assertThat(result.isPaused()).isTrue();
+		assertThat(result.getLastBilled()).isNull();
+	}
+
+	@Test
+	void testToScheduledBillingEntity_withNullPaused() {
+		final var municipalityId = "2281";
+		final var nextScheduledBilling = LocalDate.of(2024, 7, 5);
+
+		final var dto = ScheduledBilling.builder()
+			.withExternalId("external-789")
+			.withSource(BillingSource.CONTRACT)
+			.withBillingDaysOfMonth(Set.of(1))
+			.withBillingMonths(Set.of(1))
+			.withPaused(null)
+			.build();
+
+		final var result = EntityMapper.toScheduledBillingEntity(municipalityId, dto, nextScheduledBilling);
+
+		assertThat(result.isPaused()).isFalse();
 	}
 }

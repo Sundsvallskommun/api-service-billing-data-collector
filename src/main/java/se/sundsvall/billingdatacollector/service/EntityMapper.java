@@ -2,8 +2,11 @@ package se.sundsvall.billingdatacollector.service;
 
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
+import java.util.Optional;
+import se.sundsvall.billingdatacollector.api.model.ScheduledBilling;
 import se.sundsvall.billingdatacollector.integration.db.model.FalloutEntity;
 import se.sundsvall.billingdatacollector.integration.db.model.HistoryEntity;
+import se.sundsvall.billingdatacollector.integration.db.model.ScheduledBillingEntity;
 import se.sundsvall.billingdatacollector.integration.db.model.ScheduledJobEntity;
 import se.sundsvall.billingdatacollector.integration.opene.kundfakturaformular.model.BillingRecordConstants;
 import se.sundsvall.billingdatacollector.model.BillingRecordWrapper;
@@ -51,6 +54,31 @@ final class EntityMapper {
 			.withMunicipalityId(BillingRecordConstants.SUNDSVALLS_MUNICIPALITY_ID)
 			.withFetchedStartDate(startDate)
 			.withFetchedEndDate(endDate)
+			.build();
+	}
+
+	public static ScheduledBilling toScheduledBilling(ScheduledBillingEntity entity) {
+		return ScheduledBilling.builder()
+			.withId(entity.getId())
+			.withExternalId(entity.getExternalId())
+			.withSource(entity.getSource())
+			.withBillingDaysOfMonth(entity.getBillingDaysOfMonth())
+			.withBillingMonths(entity.getBillingMonths())
+			.withLastBilled(entity.getLastBilled())
+			.withNextScheduledBilling(entity.getNextScheduledBilling())
+			.withPaused(entity.isPaused())
+			.build();
+	}
+
+	public static ScheduledBillingEntity toScheduledBillingEntity(String municipalityId, ScheduledBilling dto, LocalDate nextScheduledBilling) {
+		return ScheduledBillingEntity.builder()
+			.withMunicipalityId(municipalityId)
+			.withExternalId(dto.getExternalId())
+			.withSource(dto.getSource())
+			.withBillingDaysOfMonth(dto.getBillingDaysOfMonth())
+			.withBillingMonths(dto.getBillingMonths())
+			.withNextScheduledBilling(nextScheduledBilling)
+			.withPaused(Optional.ofNullable(dto.getPaused()).orElse(false))
 			.build();
 	}
 }
