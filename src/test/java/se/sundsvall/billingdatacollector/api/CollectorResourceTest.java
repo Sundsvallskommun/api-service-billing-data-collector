@@ -16,10 +16,16 @@ import static org.zalando.problem.Status.BAD_REQUEST;
 
 import java.time.LocalDate;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
+import java.util.stream.Stream;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -225,20 +231,16 @@ class CollectorResourceTest {
 		when(mockScheduledBillingService.create(MUNICIPALITY_ID, request)).thenReturn(response);
 
 		// Act
-		var result = webTestClient.post()
+		webTestClient.post()
 			.uri(uriBuilder -> uriBuilder.path("/{municipalityId}/scheduled-billing").build(MUNICIPALITY_ID))
 			.contentType(APPLICATION_JSON)
 			.bodyValue(request)
 			.exchange()
 			.expectStatus().isCreated()
 			.expectHeader().location("/" + MUNICIPALITY_ID + "/scheduled-billing/" + response.getId())
-			.expectBody(ScheduledBilling.class)
-			.returnResult()
-			.getResponseBody();
+			.expectBody().isEmpty();
 
 		// Assert
-		assertThat(result).isEqualTo(response);
-
 		verify(mockScheduledBillingService).create(MUNICIPALITY_ID, request);
 		verifyNoMoreInteractions(mockScheduledBillingService);
 	}
@@ -401,6 +403,58 @@ class CollectorResourceTest {
 
 		verify(mockScheduledBillingService).getByExternalId(MUNICIPALITY_ID, source, externalId);
 		verifyNoMoreInteractions(mockScheduledBillingService);
+	}
+
+	@ParameterizedTest
+	@MethodSource("scheduledBillingEndpointsProvider")
+	void testScheduledBillingEndpoints_withInvalidMunicipalityId(String httpMethod, String path, boolean hasRequestBody, String expectedViolationField, Map<String, String> uriVariables) {
+		// Arrange
+		var variables = new HashMap<>(uriVariables);
+		variables.put("municipalityId", "invalid");
+
+		var requestSpec = switch (httpMethod) {
+			case "POST" -> webTestClient.post().uri(path, variables);
+			case "PUT" -> webTestClient.put().uri(path, variables);
+			case "GET" -> webTestClient.get().uri(path, variables);
+			case "DELETE" -> webTestClient.delete().uri(path, variables);
+			default -> throw new IllegalArgumentException("Unsupported HTTP method: " + httpMethod);
+		};
+
+		// Add request body if needed
+		if (hasRequestBody) {
+			requestSpec = ((WebTestClient.RequestBodySpec) requestSpec)
+				.contentType(APPLICATION_JSON)
+				.bodyValue(createScheduledBillingRequest());
+		}
+
+		// Act
+		var responseBody = requestSpec
+			.exchange()
+			.expectStatus().isBadRequest()
+			.expectHeader().contentType(APPLICATION_PROBLEM_JSON)
+			.expectBody(ConstraintViolationProblem.class)
+			.returnResult()
+			.getResponseBody();
+
+		// Assert
+		assertThat(responseBody).isNotNull();
+		assertThat(responseBody.getTitle()).isEqualTo("Constraint Violation");
+		assertThat(responseBody.getStatus()).isEqualTo(BAD_REQUEST);
+		assertThat(responseBody.getViolations())
+			.extracting(Violation::getField, Violation::getMessage)
+			.containsExactlyInAnyOrder(tuple(expectedViolationField, "not a valid municipality ID"));
+
+		verifyNoInteractions(mockScheduledBillingService);
+	}
+
+	private static Stream<Arguments> scheduledBillingEndpointsProvider() {
+		return Stream.of(
+			Arguments.of("POST", "/{municipalityId}/scheduled-billing", true, "addScheduledBilling.municipalityId", Map.of()),
+			Arguments.of("GET", "/{municipalityId}/scheduled-billing", false, "getScheduledBillings.municipalityId", Map.of()),
+			Arguments.of("GET", "/{municipalityId}/scheduled-billing/{id}", false, "getScheduledBilling.municipalityId", Map.of("id", "some-id")),
+			Arguments.of("PUT", "/{municipalityId}/scheduled-billing/{id}", true, "updateScheduledBilling.municipalityId", Map.of("id", "some-id")),
+			Arguments.of("DELETE", "/{municipalityId}/scheduled-billing/{id}", false, "deleteScheduledBilling.municipalityId", Map.of("id", "some-id")),
+			Arguments.of("GET", "/{municipalityId}/scheduled-billing/external/{source}/{externalId}", false, "getScheduledBillingExternalId.municipalityId", Map.of("source", "CONTRACT", "externalId", "some-external-id")));
 	}
 
 	private ScheduledBilling createScheduledBillingRequest() {

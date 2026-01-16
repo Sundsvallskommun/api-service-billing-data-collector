@@ -2,11 +2,11 @@ package se.sundsvall.billingdatacollector.service;
 
 import static org.zalando.problem.Status.BAD_REQUEST;
 import static org.zalando.problem.Status.NOT_FOUND;
+import static se.sundsvall.billingdatacollector.service.util.ScheduledBillingUtil.calculateNextScheduledBilling;
 import static se.sundsvall.dept44.util.LogUtils.sanitizeForLogging;
 
 import java.time.LocalDate;
 import java.util.Optional;
-import java.util.Set;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
@@ -138,35 +138,5 @@ public class ScheduledBillingService {
 				.withDetail("No scheduled billing found with externalId: " + externalId +
 					" and source: " + source)
 				.build());
-	}
-
-	LocalDate calculateNextScheduledBilling(Set<Integer> billingDaysOfMonth, Set<Integer> billingMonths) {
-		if (billingDaysOfMonth == null || billingDaysOfMonth.isEmpty()) {
-			throw new IllegalArgumentException("billingDaysOfMonth must not be empty");
-		}
-		if (billingMonths == null || billingMonths.isEmpty()) {
-			throw new IllegalArgumentException("billingMonths must not be empty");
-		}
-
-		LocalDate today = LocalDate.now();
-
-		for (int monthOffset = 0; monthOffset <= 12; monthOffset++) {
-			LocalDate checkMonth = today.plusMonths(monthOffset);
-			int month = checkMonth.getMonthValue();
-
-			if (billingMonths.contains(month)) {
-				for (Integer day : billingDaysOfMonth.stream().sorted().toList()) {
-					int actualDay = Math.min(day, checkMonth.lengthOfMonth());
-					LocalDate potentialDate = LocalDate.of(checkMonth.getYear(), month, actualDay);
-
-					if (!potentialDate.isBefore(today)) {
-						return potentialDate;
-					}
-				}
-			}
-		}
-
-		// This should never be reached since we check 13 months (covers all 12 calendar months)
-		throw new IllegalStateException("Unable to calculate next scheduled billing date");
 	}
 }

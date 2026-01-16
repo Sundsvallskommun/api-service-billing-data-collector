@@ -122,15 +122,15 @@ class CollectorResource {
 		return accepted().body(processedFlowInstanceIds);
 	}
 
-	@PostMapping(path = "/scheduled-billing", consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_JSON_VALUE)
+	@PostMapping(path = "/scheduled-billing", consumes = APPLICATION_JSON_VALUE, produces = ALL_VALUE)
 	@Operation(summary = "Adds scheduled billing for source data", responses = {
 		@ApiResponse(responseCode = "201", description = "Created", useReturnTypeSchema = true)
 	})
-	ResponseEntity<ScheduledBilling> addScheduledBilling(
+	ResponseEntity<Void> addScheduledBilling(
 		@Parameter(name = "municipalityId", description = "Municipality id", example = "2281") @ValidMunicipalityId @PathVariable final String municipalityId,
 		@Valid @NotNull @RequestBody ScheduledBilling scheduledBilling) {
 		var result = scheduledBillingService.create(municipalityId, scheduledBilling);
-		return created(fromPath("/{municipalityId}/scheduled-billing/{id}").buildAndExpand(municipalityId, result.getId()).toUri()).body(result);
+		return created(fromPath("/{municipalityId}/scheduled-billing/{id}").buildAndExpand(municipalityId, result.getId()).toUri()).build();
 	}
 
 	@PutMapping(path = "/scheduled-billing/{id}", consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_JSON_VALUE)
