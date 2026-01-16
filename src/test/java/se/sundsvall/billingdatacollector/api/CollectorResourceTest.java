@@ -59,7 +59,7 @@ class CollectorResourceTest {
 	private static final LocalDate START_DATE = LocalDate.of(2023, 4, 25);
 	private static final LocalDate END_DATE = LocalDate.of(2024, 4, 25);
 	private static final Set<String> FAMILY_IDS = new HashSet<>(Arrays.asList("456", "789"));
-	private static final List<String> PROCESSED_FAMILY_IDS = List.of("456", "789");
+	private static final List<String> PROCESSED_FLOW_INSTANCE_IDS = List.of("123", "321");
 
 	@Test
 	void testTriggerBilling() {
@@ -82,7 +82,7 @@ class CollectorResourceTest {
 	@Test
 	void testTriggerBillingBetweenTwoValidDates() {
 		// Arrange
-		when(mockCollectorService.triggerBillingBetweenDates(Mockito.any(LocalDate.class), Mockito.any(LocalDate.class), isNull())).thenReturn(PROCESSED_FAMILY_IDS);
+		when(mockCollectorService.triggerBillingBetweenDates(Mockito.any(LocalDate.class), Mockito.any(LocalDate.class), isNull())).thenReturn(PROCESSED_FLOW_INSTANCE_IDS);
 
 		// Act
 		webTestClient.post()
@@ -101,7 +101,7 @@ class CollectorResourceTest {
 	@Test
 	void testTriggerBillingBetweenTwoEqualDates() {
 		// Arrange
-		when(mockCollectorService.triggerBillingBetweenDates(Mockito.any(LocalDate.class), Mockito.any(LocalDate.class), isNull())).thenReturn(PROCESSED_FAMILY_IDS);
+		when(mockCollectorService.triggerBillingBetweenDates(Mockito.any(LocalDate.class), Mockito.any(LocalDate.class), isNull())).thenReturn(PROCESSED_FLOW_INSTANCE_IDS);
 
 		// Act
 		webTestClient.post()
@@ -120,7 +120,7 @@ class CollectorResourceTest {
 	@Test
 	void testTriggerBillingWithDatesAndFamilyIds() {
 		// Arrange
-		when(mockCollectorService.triggerBillingBetweenDates(Mockito.any(LocalDate.class), Mockito.any(LocalDate.class), isNull())).thenReturn(PROCESSED_FAMILY_IDS);
+		when(mockCollectorService.triggerBillingBetweenDates(Mockito.any(LocalDate.class), Mockito.any(LocalDate.class), isNull())).thenReturn(PROCESSED_FLOW_INSTANCE_IDS);
 
 		// Act
 		webTestClient.post()
