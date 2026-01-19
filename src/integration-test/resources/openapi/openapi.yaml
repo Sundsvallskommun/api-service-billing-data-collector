@@ -129,7 +129,7 @@ paths:
     delete:
       tags:
         - Billing Data Collector
-      summary: Get scheduled billing by id
+      summary: Delete scheduled billing by id
       operationId: deleteScheduledBilling
       parameters:
         - name: municipalityId
@@ -379,10 +379,6 @@ paths:
       responses:
         "201":
           description: Created
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ScheduledBilling"
         "400":
           description: Bad Request
           content:
