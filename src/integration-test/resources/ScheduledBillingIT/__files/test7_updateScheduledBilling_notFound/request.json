@@ -1,0 +1,15 @@
+{
+	"externalId": "some-external-id",
+	"source": "CONTRACT",
+	"billingDaysOfMonth": [
+		5,
+		25
+	],
+	"billingMonths": [
+		2,
+		5,
+		8,
+		11
+	],
+	"paused": false
+}

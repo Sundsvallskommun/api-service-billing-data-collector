@@ -1,0 +1,15 @@
+{
+	"externalId": "new-external-id-12345",
+	"source": "CONTRACT",
+	"billingDaysOfMonth": [
+		1,
+		15
+	],
+	"billingMonths": [
+		1,
+		4,
+		7,
+		10
+	],
+	"paused": false
+}

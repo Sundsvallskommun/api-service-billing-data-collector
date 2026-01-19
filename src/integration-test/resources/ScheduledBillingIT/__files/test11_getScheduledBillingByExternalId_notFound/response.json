@@ -1,0 +1,5 @@
+{
+	"title": "Scheduled billing not found",
+	"status": 404,
+	"detail": "No scheduled billing found with externalId: non-existing-external-id and source: CONTRACT"
+}

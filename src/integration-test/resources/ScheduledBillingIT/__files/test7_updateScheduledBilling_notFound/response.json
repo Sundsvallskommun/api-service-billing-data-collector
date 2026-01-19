@@ -1,0 +1,5 @@
+{
+	"title": "Scheduled billing not found",
+	"status": 404,
+	"detail": "No scheduled billing found with id: 00000000-0000-0000-0000-000000000000"
+}
