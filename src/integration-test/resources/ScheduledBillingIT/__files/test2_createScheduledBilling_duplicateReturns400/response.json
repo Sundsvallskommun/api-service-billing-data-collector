@@ -1,0 +1,5 @@
+{
+	"title": "Duplicate scheduled billing",
+	"status": 400,
+	"detail": "Scheduled billing already exists for externalId: external-id-for-get-test and source: CONTRACT"
+}

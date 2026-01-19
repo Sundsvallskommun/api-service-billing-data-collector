@@ -1,0 +1,15 @@
+{
+	"externalId": "external-id-for-get-test",
+	"source": "CONTRACT",
+	"billingDaysOfMonth": [
+		10,
+		20
+	],
+	"billingMonths": [
+		3,
+		6,
+		9,
+		12
+	],
+	"paused": false
+}

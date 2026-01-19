@@ -1,0 +1,17 @@
+{
+	"id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+	"externalId": "external-id-for-get-test",
+	"source": "CONTRACT",
+	"billingDaysOfMonth": [
+		5,
+		25
+	],
+	"billingMonths": [
+		2,
+		5,
+		8,
+		11
+	],
+	"nextScheduledBilling": "${json-unit.regex}\\d{4}-\\d{2}-\\d{2}",
+	"paused": true
+}
