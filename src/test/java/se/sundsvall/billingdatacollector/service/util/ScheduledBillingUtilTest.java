@@ -94,4 +94,36 @@ class ScheduledBillingUtilTest {
 			.isInstanceOf(IllegalArgumentException.class)
 			.hasMessage("billingMonths must not be empty");
 	}
+
+	@Test
+	void testCalculateNextScheduledBilling_withStartFrom_skipsEarlierDates() {
+		// Arrange - billing configured for day 1 of every month
+		var today = LocalDate.now();
+		var startFrom = today.plusDays(1); // tomorrow
+		var daysOfMonth = Set.of(today.getDayOfMonth()); // today's day
+		var months = Set.of(today.getMonthValue()); // current month
+
+		// Act - calculate from tomorrow, so today should be skipped
+		var result = ScheduledBillingUtil.calculateNextScheduledBilling(daysOfMonth, months, startFrom);
+
+		// Assert - should return next year since today's date is skipped
+		assertThat(result).isAfter(today);
+		assertThat(result.getYear()).isEqualTo(today.getYear() + 1);
+		assertThat(result.getMonthValue()).isEqualTo(today.getMonthValue());
+		assertThat(result.getDayOfMonth()).isEqualTo(today.getDayOfMonth());
+	}
+
+	@Test
+	void testCalculateNextScheduledBilling_withStartFrom_returnsSameDayIfMatches() {
+		// Arrange
+		var startFrom = LocalDate.of(2025, 6, 15);
+		var daysOfMonth = Set.of(15);
+		var months = Set.of(6);
+
+		// Act - startFrom matches a valid billing date
+		var result = ScheduledBillingUtil.calculateNextScheduledBilling(daysOfMonth, months, startFrom);
+
+		// Assert - should return the same date since it's valid
+		assertThat(result).isEqualTo(startFrom);
+	}
 }

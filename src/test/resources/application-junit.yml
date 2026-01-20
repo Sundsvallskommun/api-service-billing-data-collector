@@ -47,6 +47,11 @@ scheduler:
   fallout:
     cron:
       expression: '-'
+  billing:
+    cron: '-'
+    name: scheduled-billing
+    shedlock-lock-at-most-for: PT5M
+    maximum-execution-time: PT5M
 falloutreport:
   recipients:
     - test@nowhere.com
