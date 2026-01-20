@@ -4,7 +4,7 @@ import org.apache.commons.lang3.NotImplementedException;
 import org.springframework.stereotype.Component;
 import se.sundsvall.billingdatacollector.service.source.BillingSourceHandler;
 
-@Component("CONTRACT")
+@Component("contract")
 public class ContractBillingHandler implements BillingSourceHandler {
 
 	@Override

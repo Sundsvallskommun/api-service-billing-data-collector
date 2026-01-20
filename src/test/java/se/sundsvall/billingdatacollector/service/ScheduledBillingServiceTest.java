@@ -279,8 +279,7 @@ class ScheduledBillingServiceTest {
 		var result = service.getDueScheduledBillings();
 
 		// Assert
-		assertThat(result).isNotNull();
-		assertThat(result).hasSize(1);
+		assertThat(result).isNotNull().hasSize(1);
 		assertThat(result.getFirst()).isSameAs(scheduledBilling);
 
 		verify(mockRepository).findAllByPausedFalseAndNextScheduledBillingLessThanEqual(localDate);
@@ -307,9 +306,10 @@ class ScheduledBillingServiceTest {
 		verify(mockRepository).saveAndFlush(captor.capture());
 		var savedEntity = captor.getValue();
 
-		assertThat(savedEntity.getNextScheduledBilling()).isNotNull();
-		assertThat(savedEntity.getNextScheduledBilling()).isNotEqualTo(originalNextBilling);
-		assertThat(savedEntity.getNextScheduledBilling()).isEqualTo(LocalDate.now().plusDays(1));
+		assertThat(savedEntity.getNextScheduledBilling())
+			.isNotNull()
+			.isNotEqualTo(originalNextBilling)
+			.isEqualTo(LocalDate.now().plusDays(1));
 
 		verifyNoMoreInteractions(mockRepository);
 	}

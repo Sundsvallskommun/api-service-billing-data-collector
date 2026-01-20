@@ -46,7 +46,7 @@ class BillingSchedulerTest {
 
 	@BeforeEach
 	void setUp() {
-		Map<String, BillingSourceHandler> handlerMap = Map.of("CONTRACT", mockContractHandler);
+		Map<String, BillingSourceHandler> handlerMap = Map.of("contract", mockContractHandler);
 		billingScheduler = new BillingScheduler(mockDept44HealthUtility, mockScheduledBillingService, handlerMap);
 		ReflectionTestUtils.setField(billingScheduler, "jobName", JOB_NAME);
 	}

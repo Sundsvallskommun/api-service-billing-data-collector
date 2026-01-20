@@ -40,7 +40,7 @@ public class BillingScheduler {
 		scheduledBillingService.getDueScheduledBillings()
 			.forEach(scheduledBillingEntity -> {
 				try {
-					var billingHandler = billingSourceHandlerMap.get(scheduledBillingEntity.getSource().name());
+					var billingHandler = billingSourceHandlerMap.get(scheduledBillingEntity.getSource().name().toLowerCase());
 					if (billingHandler != null) {
 						billingHandler.sendBillingRecords(scheduledBillingEntity.getMunicipalityId(), scheduledBillingEntity.getExternalId());
 						scheduledBillingService.updateNextScheduledBilling(scheduledBillingEntity);
