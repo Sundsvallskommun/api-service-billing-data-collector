@@ -7,7 +7,6 @@ integration:
     connect-timeout: 1000
     read-timeout: 3000
     kundfaktura-formular-family-id: 358
-
   # Party integration
   party:
     base-url: http://localhost:${wiremock.server.port}/party
@@ -18,7 +17,6 @@ integration:
       authorization-grant-type: client_credentials
     connect-timeout: 1000
     read-timeout: 3000
-
   # BillingPreprocessor integration
   billing-preprocessor:
     base-url: http://localhost:${wiremock.server.port}/bpp
@@ -29,7 +27,6 @@ integration:
       authorization-grant-type: client_credentials
     connect-timeout: 1000
     read-timeout: 3000
-
   # Messaging integration
   messaging:
     base-url: http://localhost:${wiremock.server.port}/
@@ -40,6 +37,17 @@ integration:
       authorization-grant-type: client_credentials
     connect-timeout: 1000
     read-timeout: 3000
+  # Contractintegration
+  contract:
+    base-url: http://localhost:${wiremock.server.port}/contract
+    oauth2:
+      token-url: http://localhost:${wiremock.server.port}/token
+      client-id: someClientId
+      client-secret: someClientSecret
+      authorization-grant-type: client_credentials
+    connect-timeout: 1000
+    read-timeout: 3000
+
 scheduler:
   opene:
     cron:

@@ -7,7 +7,6 @@ integration:
     connect-timeout: 12
     read-timeout: 34
     kundfaktura-formular-family-id: 198
-
   # Party integration
   party:
     base-url: http://party.nosuchhost.com
@@ -18,7 +17,6 @@ integration:
       authorization-grant-type: client_credentials
     connect-timeout: 56
     read-timeout: 78
-
   # BillingPreprocessor integration
   billing-preprocessor:
     base-url: http://bpp.nosuchhost.com
@@ -29,7 +27,6 @@ integration:
       authorization-grant-type: client_credentials
     connect-timeout: 98
     read-timeout: 76
-
   # Messaging integration
   messaging:
     base-url: http://messaging.nosuchhost.com
@@ -40,6 +37,17 @@ integration:
       authorization-grant-type: client_credentials
     connect-timeout: 54
     read-timeout: 32
+  # Contractintegration
+  contract:
+    base-url: http://contract.nosuchhost.com
+    oauth2:
+      token-url: http://token.nosuchhost.com
+      client-id: someClientId
+      client-secret: someClientSecret
+      authorization-grant-type: client_credentials
+    connect-timeout: 31
+    read-timeout: 30
+
 scheduler:
   opene:
     cron:

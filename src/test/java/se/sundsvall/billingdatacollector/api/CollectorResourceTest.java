@@ -33,6 +33,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.reactive.server.WebTestClient;
 import org.zalando.problem.ThrowableProblem;
@@ -43,10 +44,9 @@ import se.sundsvall.billingdatacollector.api.model.BillingSource;
 import se.sundsvall.billingdatacollector.api.model.ScheduledBilling;
 import se.sundsvall.billingdatacollector.service.CollectorService;
 import se.sundsvall.billingdatacollector.service.ScheduledBillingService;
-import se.sundsvall.billingdatacollector.support.annotation.UnitTest;
 
 @SpringBootTest(classes = Application.class, webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-@UnitTest
+@ActiveProfiles("junit")
 class CollectorResourceTest {
 
 	private static final String PATH = "/{municipalityId}/trigger";
@@ -225,8 +225,8 @@ class CollectorResourceTest {
 	@Test
 	void testAddScheduledBilling() {
 		// Arrange
-		var request = createScheduledBillingRequest();
-		var response = createScheduledBillingResponse();
+		final var request = createScheduledBillingRequest();
+		final var response = createScheduledBillingResponse();
 
 		when(mockScheduledBillingService.create(MUNICIPALITY_ID, request)).thenReturn(response);
 
@@ -248,10 +248,10 @@ class CollectorResourceTest {
 	@Test
 	void testAddScheduledBilling_invalidRequest_shouldThrowBadRequest() {
 		// Arrange - missing required fields
-		var request = ScheduledBilling.builder().build();
+		final var request = ScheduledBilling.builder().build();
 
 		// Act
-		var result = webTestClient.post()
+		final var result = webTestClient.post()
 			.uri(uriBuilder -> uriBuilder.path("/{municipalityId}/scheduled-billing").build(MUNICIPALITY_ID))
 			.contentType(APPLICATION_JSON)
 			.bodyValue(request)
@@ -281,14 +281,14 @@ class CollectorResourceTest {
 	@Test
 	void testUpdateScheduledBilling() {
 		// Arrange
-		var id = "f0882f1d-06bc-47fd-b017-1d8307f5ce95";
-		var request = createScheduledBillingRequest();
-		var response = createScheduledBillingResponse();
+		final var id = "f0882f1d-06bc-47fd-b017-1d8307f5ce95";
+		final var request = createScheduledBillingRequest();
+		final var response = createScheduledBillingResponse();
 
 		when(mockScheduledBillingService.update(MUNICIPALITY_ID, id, request)).thenReturn(response);
 
 		// Act
-		var result = webTestClient.put()
+		final var result = webTestClient.put()
 			.uri(uriBuilder -> uriBuilder.path("/{municipalityId}/scheduled-billing/{id}").build(MUNICIPALITY_ID, id))
 			.contentType(APPLICATION_JSON)
 			.bodyValue(request)
@@ -308,8 +308,8 @@ class CollectorResourceTest {
 	@Test
 	void testGetAllScheduledBillings() {
 		// Arrange
-		var response = createScheduledBillingResponse();
-		var page = new PageImpl<>(List.of(response), PageRequest.of(0, 20), 1);
+		final var response = createScheduledBillingResponse();
+		final var page = new PageImpl<>(List.of(response), PageRequest.of(0, 20), 1);
 
 		when(mockScheduledBillingService.getAll(eq(MUNICIPALITY_ID), any(Pageable.class))).thenReturn(page);
 
@@ -330,7 +330,7 @@ class CollectorResourceTest {
 			.jsonPath("$.totalPages").isEqualTo(1);
 
 		// Assert
-		var pageableCaptor = ArgumentCaptor.forClass(Pageable.class);
+		final var pageableCaptor = ArgumentCaptor.forClass(Pageable.class);
 		verify(mockScheduledBillingService).getAll(eq(MUNICIPALITY_ID), pageableCaptor.capture());
 		assertThat(pageableCaptor.getValue().getPageNumber()).isZero();
 		assertThat(pageableCaptor.getValue().getPageSize()).isEqualTo(20);
@@ -340,13 +340,13 @@ class CollectorResourceTest {
 	@Test
 	void testGetScheduledBillingById() {
 		// Arrange
-		var id = "f0882f1d-06bc-47fd-b017-1d8307f5ce95";
-		var response = createScheduledBillingResponse();
+		final var id = "f0882f1d-06bc-47fd-b017-1d8307f5ce95";
+		final var response = createScheduledBillingResponse();
 
 		when(mockScheduledBillingService.getById(MUNICIPALITY_ID, id)).thenReturn(response);
 
 		// Act
-		var result = webTestClient.get()
+		final var result = webTestClient.get()
 			.uri(uriBuilder -> uriBuilder.path("/{municipalityId}/scheduled-billing/{id}").build(MUNICIPALITY_ID, id))
 			.exchange()
 			.expectStatus().isOk()
@@ -364,7 +364,7 @@ class CollectorResourceTest {
 	@Test
 	void testDeleteScheduledBilling() {
 		// Arrange
-		var id = "f0882f1d-06bc-47fd-b017-1d8307f5ce95";
+		final var id = "f0882f1d-06bc-47fd-b017-1d8307f5ce95";
 
 		doNothing().when(mockScheduledBillingService).delete(MUNICIPALITY_ID, id);
 
@@ -382,14 +382,14 @@ class CollectorResourceTest {
 	@Test
 	void testGetScheduledBillingByExternalId() {
 		// Arrange
-		var externalId = "66c57446-72e7-4cc5-af7c-053919ce904b";
-		var source = BillingSource.CONTRACT;
-		var response = createScheduledBillingResponse();
+		final var externalId = "66c57446-72e7-4cc5-af7c-053919ce904b";
+		final var source = BillingSource.CONTRACT;
+		final var response = createScheduledBillingResponse();
 
 		when(mockScheduledBillingService.getByExternalId(MUNICIPALITY_ID, source, externalId)).thenReturn(response);
 
 		// Act
-		var result = webTestClient.get()
+		final var result = webTestClient.get()
 			.uri(uriBuilder -> uriBuilder.path("/{municipalityId}/scheduled-billing/external/{source}/{externalId}")
 				.build(MUNICIPALITY_ID, source, externalId))
 			.exchange()
@@ -409,7 +409,7 @@ class CollectorResourceTest {
 	@MethodSource("scheduledBillingEndpointsProvider")
 	void testScheduledBillingEndpoints_withInvalidMunicipalityId(String httpMethod, String path, boolean hasRequestBody, String expectedViolationField, Map<String, String> uriVariables) {
 		// Arrange
-		var variables = new HashMap<>(uriVariables);
+		final var variables = new HashMap<>(uriVariables);
 		variables.put("municipalityId", "invalid");
 
 		var requestSpec = switch (httpMethod) {
@@ -428,7 +428,7 @@ class CollectorResourceTest {
 		}
 
 		// Act
-		var responseBody = requestSpec
+		final var responseBody = requestSpec
 			.exchange()
 			.expectStatus().isBadRequest()
 			.expectHeader().contentType(APPLICATION_PROBLEM_JSON)

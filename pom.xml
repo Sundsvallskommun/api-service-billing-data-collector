@@ -176,6 +176,18 @@
 							</configOptions>
 						</configuration>
 					</execution>
+					<execution>
+						<id>contract-api</id>
+						<goals>
+							<goal>generate</goal>
+						</goals>
+						<configuration>
+							<inputSpec>src/main/resources/integrations/contract-api.yml</inputSpec>
+							<configOptions>
+								<modelPackage>generated.se.sundsvall.contract</modelPackage>
+							</configOptions>
+						</configuration>
+					</execution>
 				</executions>
 			</plugin>
 			<plugin>

@@ -11,12 +11,12 @@ import java.math.BigDecimal;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.ActiveProfiles;
 import se.sundsvall.billingdatacollector.Application;
 import se.sundsvall.billingdatacollector.TestDataFactory;
-import se.sundsvall.billingdatacollector.support.annotation.UnitTest;
 
 @SpringBootTest(classes = Application.class)
-@UnitTest
+@ActiveProfiles("junit")
 class KundfakturaformularMapperTest {
 
 	@Autowired
@@ -29,33 +29,33 @@ class KundfakturaformularMapperTest {
 
 	@Test
 	void mapToInternalOrganizationBillingRecord() {
-		var wrapper = mapper.mapToBillingRecordWrapper(readBytesFromOpenEFile("flow-instance.internal.organization.xml"));
+		final var wrapper = mapper.mapToBillingRecordWrapper(readBytesFromOpenEFile("flow-instance.internal.organization.xml"));
 
 		// Assert the BillingRecordWrapper fields
 		assertThat(wrapper.getFlowInstanceId()).isEqualTo("6859");
 		assertThat(wrapper.getFamilyId()).isEqualTo("123");
 		assertThat(wrapper.getLegalId()).isEqualTo("2120002411");
 
-		var billingRecord = wrapper.getBillingRecord();
+		final var billingRecord = wrapper.getBillingRecord();
 		assertThat(billingRecord).isNotNull();
 		assertThat(billingRecord.getCategory()).isEqualTo("CUSTOMER_INVOICE");
 		assertThat(billingRecord.getType()).isEqualTo(INTERNAL);
 		assertThat(billingRecord.getStatus()).isEqualTo(APPROVED);
 		assertThat(billingRecord.getApprovedBy()).isEqualTo("E_SERVICE");
 
-		var recipient = billingRecord.getRecipient();
+		final var recipient = billingRecord.getRecipient();
 		assertThat(recipient).isNotNull();
 		assertThat(recipient.getLegalId()).isEqualTo("2120002411");
 		assertThat(recipient.getOrganizationName()).isEqualTo("Sundsvalls Kommun");
 
-		var invoice = billingRecord.getInvoice();
+		final var invoice = billingRecord.getInvoice();
 		assertThat(invoice).isNotNull();
 		assertThat(invoice.getCustomerId()).isEqualTo("15");
 		assertThat(invoice.getDescription()).isEqualTo("Kundfaktura");
 		assertThat(invoice.getOurReference()).isEqualTo("Kalle Anka");
 		assertThat(invoice.getCustomerReference()).isEqualTo("1JAN16LAN");
 
-		var invoiceRows = invoice.getInvoiceRows();
+		final var invoiceRows = invoice.getInvoiceRows();
 
 		assertThat(invoiceRows).satisfiesExactlyInAnyOrder(
 			row -> {
@@ -80,42 +80,42 @@ class KundfakturaformularMapperTest {
 
 	@Test
 	void mapToExternalOrganizationBillingRecord() {
-		var openEFile = readBytesFromOpenEFile("flow-instance.external.organization.xml");
-		var billingRecordWrapper = mapper.mapToBillingRecordWrapper(openEFile);
+		final var openEFile = readBytesFromOpenEFile("flow-instance.external.organization.xml");
+		final var billingRecordWrapper = mapper.mapToBillingRecordWrapper(openEFile);
 
 		assertThat(billingRecordWrapper.getFamilyId()).isEqualTo("358");
 		assertThat(billingRecordWrapper.getFlowInstanceId()).isEqualTo("6931");
 		assertThat(billingRecordWrapper.getLegalId()).isEqualTo("5591628770");
 
-		var billingRecord = billingRecordWrapper.getBillingRecord();
+		final var billingRecord = billingRecordWrapper.getBillingRecord();
 		assertThat(billingRecord).isNotNull();
 		assertThat(billingRecord.getCategory()).isEqualTo("CUSTOMER_INVOICE");
 		assertThat(billingRecord.getType()).isEqualTo(EXTERNAL);
 		assertThat(billingRecord.getStatus()).isEqualTo(APPROVED);
 		assertThat(billingRecord.getApprovedBy()).isEqualTo("E_SERVICE");
 
-		var recipient = billingRecord.getRecipient();
+		final var recipient = billingRecord.getRecipient();
 		assertThat(recipient.getOrganizationName()).isEqualTo("Väldigt långt företagsnamn indeed AB");
 
-		var addressDetails = recipient.getAddressDetails();
+		final var addressDetails = recipient.getAddressDetails();
 		assertThat(addressDetails.getStreet()).isEqualTo("Ankeborgsvägen 123");
 		assertThat(addressDetails.getPostalCode()).isEqualTo("123 45");
 		assertThat(addressDetails.getCity()).isEqualTo("Ankeborg");
 
-		var invoice = billingRecord.getInvoice();
+		final var invoice = billingRecord.getInvoice();
 		assertThat(invoice.getDescription()).isEqualTo("Kundfaktura");
 		assertThat(invoice.getOurReference()).isEqualTo("Kalle Anka");
 
-		var invoiceRows = invoice.getInvoiceRows();
+		final var invoiceRows = invoice.getInvoiceRows();
 		assertThat(invoiceRows).hasSize(1);
 
-		var invoiceRow = invoiceRows.getFirst();
+		final var invoiceRow = invoiceRows.getFirst();
 		assertThat(invoiceRow.getDescriptions()).containsExactly("Oerhört bra fakturatext");
 		assertThat(invoiceRow.getVatCode()).isEqualTo("25");
 		assertThat(invoiceRow.getCostPerUnit()).isEqualTo(BigDecimal.valueOf(12.34));
 		assertThat(invoiceRow.getQuantity()).isEqualTo(BigDecimal.valueOf(1));
 
-		var accountInformation = invoiceRow.getAccountInformation();
+		final var accountInformation = invoiceRow.getAccountInformation();
 		assertThat(accountInformation.getFirst().getCostCenter()).isEqualTo("66028000");
 		assertThat(accountInformation.getFirst().getSubaccount()).isEqualTo("313210");
 		assertThat(accountInformation.getFirst().getDepartment()).isEqualTo("315400");
@@ -124,44 +124,44 @@ class KundfakturaformularMapperTest {
 
 	@Test
 	void mapToExternalPersonBillingRecord() {
-		var openEFile = readBytesFromOpenEFile("flow-instance.external.person.xml");
-		var billingRecordWrapper = mapper.mapToBillingRecordWrapper(openEFile);
+		final var openEFile = readBytesFromOpenEFile("flow-instance.external.person.xml");
+		final var billingRecordWrapper = mapper.mapToBillingRecordWrapper(openEFile);
 
 		assertThat(billingRecordWrapper.getFamilyId()).isEqualTo("358");
 		assertThat(billingRecordWrapper.getFlowInstanceId()).isEqualTo("225965");
 		assertThat(billingRecordWrapper.getLegalId()).isEqualTo("199001012385");
 
-		var billingRecord = billingRecordWrapper.getBillingRecord();
+		final var billingRecord = billingRecordWrapper.getBillingRecord();
 		assertThat(billingRecord.getCategory()).isEqualTo("CUSTOMER_INVOICE");
 		assertThat(billingRecord.getType()).isEqualTo(EXTERNAL);
 		assertThat(billingRecord.getStatus()).isEqualTo(APPROVED);
 		assertThat(billingRecord.getApprovedBy()).isEqualTo("E_SERVICE");
 
-		var recipient = billingRecord.getRecipient();
+		final var recipient = billingRecord.getRecipient();
 		assertThat(recipient.getFirstName()).isEqualTo("Kajsa");
 		assertThat(recipient.getLastName()).isEqualTo("Anka");
 
-		var addressDetails = recipient.getAddressDetails();
+		final var addressDetails = recipient.getAddressDetails();
 		assertThat(addressDetails.getStreet()).isEqualTo("Sundsvall 222");
 		assertThat(addressDetails.getPostalCode()).isEqualTo("123 45");
 		assertThat(addressDetails.getCity()).isEqualTo("ANKEBORG");
 
-		var invoice = billingRecord.getInvoice();
+		final var invoice = billingRecord.getInvoice();
 		assertThat(invoice.getCustomerId()).isEqualTo("860");
 		assertThat(invoice.getDescription()).isEqualTo("Kundfaktura");
 		assertThat(invoice.getOurReference()).isEqualTo("Kalle Anka");
 		assertThat(invoice.getCustomerReference()).isEqualTo("Kajsa Anka");
 
-		var invoiceRows = invoice.getInvoiceRows();
+		final var invoiceRows = invoice.getInvoiceRows();
 		assertThat(invoiceRows).hasSize(1);
 
-		var invoiceRow = invoiceRows.getFirst();
+		final var invoiceRow = invoiceRows.getFirst();
 		assertThat(invoiceRow.getDescriptions()).containsExactly("Slutfaktura 1st. pengavalv");
 		assertThat(invoiceRow.getVatCode()).isEqualTo("25");
 		assertThat(invoiceRow.getCostPerUnit()).isEqualTo(new BigDecimal("24000.00")); // It doesn't like two zeroes when using "valueOf()".
 		assertThat(invoiceRow.getQuantity()).isEqualTo(BigDecimal.valueOf(1));
 
-		var accountInformation = invoiceRow.getAccountInformation();
+		final var accountInformation = invoiceRow.getAccountInformation();
 		assertThat(accountInformation.getFirst().getCostCenter()).isEqualTo("66050000");
 		assertThat(accountInformation.getFirst().getSubaccount()).isEqualTo("301100");
 		assertThat(accountInformation.getFirst().getDepartment()).isEqualTo("450220");
@@ -171,10 +171,10 @@ class KundfakturaformularMapperTest {
 
 	@Test
 	void mapToExternalBillingRecord_withFlippedCareOfAndAddress() {
-		var openEFile = readBytesFromOpenEFile("flow-instance.external.person.xml");
-		var billingRecordWrapper = mapper.mapToBillingRecordWrapper(openEFile);
+		final var openEFile = readBytesFromOpenEFile("flow-instance.external.person.xml");
+		final var billingRecordWrapper = mapper.mapToBillingRecordWrapper(openEFile);
 
-		var addressInformation = billingRecordWrapper.getBillingRecord().getRecipient().getAddressDetails();
+		final var addressInformation = billingRecordWrapper.getBillingRecord().getRecipient().getAddressDetails();
 		// Only make sure that the address details are flipped
 		assertThat(addressInformation.getStreet()).isEqualTo("Sundsvall 222");
 		assertThat(addressInformation.getPostalCode()).isEqualTo("123 45");
@@ -184,7 +184,7 @@ class KundfakturaformularMapperTest {
 
 	@Test
 	void testParseList_faultyNamespace_shouldThrowException() {
-		var openEFile = TestDataFactory.readBytesFromOpenEFile("flow-instance.faulty.namespace.xml");
+		final var openEFile = TestDataFactory.readBytesFromOpenEFile("flow-instance.faulty.namespace.xml");
 
 		assertThatExceptionOfType(IllegalStateException.class).isThrownBy(() -> mapper.mapToBillingRecordWrapper(openEFile))
 			.satisfies(e -> assertThat(e.getMessage()).contains("Namespace mismatch: expected http://www.oeplatform.org/version/2.0/schemas/flowinstance but found http://www.nowhere.com"));
@@ -193,7 +193,7 @@ class KundfakturaformularMapperTest {
 	@Test
 	void test404FromOpenE_shouldThrowException() {
 		// We should have bailed out before this, maybe corrupt xml could cause this exception though
-		var openEFile = TestDataFactory.readBytesFromOpenEFile("flow-instance.404.xml");
+		final var openEFile = TestDataFactory.readBytesFromOpenEFile("flow-instance.404.xml");
 		assertThatExceptionOfType(IllegalStateException.class).isThrownBy(() -> mapper.mapToBillingRecordWrapper(openEFile))
 			.satisfies(e -> assertThat(e.getMessage()).contains("Error parsing xml"));
 	}

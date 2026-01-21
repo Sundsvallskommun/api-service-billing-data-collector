@@ -1,6 +1,6 @@
-package se.sundsvall.billingdatacollector.integration.billingpreprocessor;
+package se.sundsvall.billingdatacollector.integration.contract;
 
-import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,21 +10,21 @@ import se.sundsvall.billingdatacollector.Application;
 
 @SpringBootTest(classes = Application.class)
 @ActiveProfiles("junit")
-class BillingPreprocessorIntegrationPropertiesTest {
+class ContractPropertiesTest {
 
 	@Autowired
-	private BillingPreprocessorIntegrationProperties properties;
+	private ContractProperties properties;
 
 	@Test
 	void testProperties() {
-		assertThat(properties.baseUrl()).isEqualTo("http://bpp.nosuchhost.com");
+		assertThat(properties.baseUrl()).isEqualTo("http://contract.nosuchhost.com");
+		assertThat(properties.connectTimeout()).isEqualTo(31);
+		assertThat(properties.readTimeout()).isEqualTo(30);
 		assertThat(properties.oauth2()).isNotNull().satisfies(oauth2 -> {
 			assertThat(oauth2.tokenUrl()).isEqualTo("http://token.nosuchhost.com");
 			assertThat(oauth2.clientId()).isEqualTo("someClientId");
 			assertThat(oauth2.clientSecret()).isEqualTo("someClientSecret");
 			assertThat(oauth2.authorizationGrantType()).isEqualTo("client_credentials");
 		});
-		assertThat(properties.connectTimeout()).isEqualTo(98);
-		assertThat(properties.readTimeout()).isEqualTo(76);
 	}
 }
