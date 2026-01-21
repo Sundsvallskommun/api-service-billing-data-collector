@@ -9,12 +9,12 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.jdbc.Sql;
-import se.sundsvall.billingdatacollector.support.annotation.UnitTest;
 
 @DataJpaTest
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
-@UnitTest
+@ActiveProfiles("junit")
 @Sql(scripts = {
 	"/db/truncate.sql",
 	"/db/testdata.sql"
@@ -26,7 +26,7 @@ class ScheduledJobRepositoryTest {
 
 	@Test
 	void testFindFirstByOrderByFetchedEndDateDesc() {
-		var scheduledJobEntity = scheduledJobRepository.findFirstByOrderByFetchedEndDateDesc();
+		final var scheduledJobEntity = scheduledJobRepository.findFirstByOrderByFetchedEndDateDesc();
 		assertThat(scheduledJobEntity).isPresent();
 		assertThat(scheduledJobEntity.get().getFetchedStartDate()).isEqualTo(LocalDate.of(2024, 6, 25));
 		assertThat(scheduledJobEntity.get().getFetchedEndDate()).isEqualTo(LocalDate.of(2024, 6, 25));

@@ -15,14 +15,14 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.jdbc.Sql;
 import se.sundsvall.billingdatacollector.api.model.BillingSource;
 import se.sundsvall.billingdatacollector.integration.db.model.ScheduledBillingEntity;
-import se.sundsvall.billingdatacollector.support.annotation.UnitTest;
 
 @DataJpaTest
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
-@UnitTest
+@ActiveProfiles("junit")
 @Sql(scripts = {
 	"/db/truncate.sql",
 	"/db/testdata.sql"

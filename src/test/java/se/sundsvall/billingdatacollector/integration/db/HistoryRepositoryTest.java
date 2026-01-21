@@ -11,12 +11,12 @@ import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.jdbc.Sql;
-import se.sundsvall.billingdatacollector.support.annotation.UnitTest;
 
 @DataJpaTest
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
-@UnitTest
+@ActiveProfiles("junit")
 @Sql(scripts = {
 	"/db/truncate.sql",
 	"/db/testdata.sql"
@@ -29,7 +29,7 @@ class HistoryRepositoryTest {
 	@ParameterizedTest
 	@MethodSource("testValues")
 	void testExistsByFamilyIdAndFlowInstanceId(String familyId, String flowInstanceId, boolean expected) {
-		var exists = historyRepository.existsByFamilyIdAndFlowInstanceId(familyId, flowInstanceId);
+		final var exists = historyRepository.existsByFamilyIdAndFlowInstanceId(familyId, flowInstanceId);
 		assertThat(exists).isEqualTo(expected);
 	}
 
@@ -45,7 +45,7 @@ class HistoryRepositoryTest {
 	@Test
 	void testFindAllByFlowInstanceIdIn() {
 		// Only verifying that it finds the correct entities, not the content
-		var historyEntities = historyRepository.findAllByFlowInstanceIdIn(List.of("185375", "185377", "doesnt_exist"));
+		final var historyEntities = historyRepository.findAllByFlowInstanceIdIn(List.of("185375", "185377", "doesnt_exist"));
 		assertThat(historyEntities).hasSize(2);
 		historyEntities.forEach(historyEntity -> assertThat(historyEntity.getFamilyId()).isEqualTo("358"));
 		historyEntities.forEach(historyEntity -> assertThat(historyEntity.getFlowInstanceId()).isIn("185375", "185377"));

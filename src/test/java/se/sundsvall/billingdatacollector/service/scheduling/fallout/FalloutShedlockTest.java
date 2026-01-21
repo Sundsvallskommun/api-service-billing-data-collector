@@ -22,7 +22,7 @@ import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Primary;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
-import se.sundsvall.billingdatacollector.support.annotation.UnitTest;
+import org.springframework.test.context.ActiveProfiles;
 
 @SpringBootTest(properties = {
 	"scheduler.fallout.cron.expression=* * * * * *", // Setup to execute every second
@@ -31,7 +31,7 @@ import se.sundsvall.billingdatacollector.support.annotation.UnitTest;
 	"server.shutdown=immediate",
 	"spring.lifecycle.timeout-per-shutdown-phase=0s"
 })
-@UnitTest
+@ActiveProfiles("junit")
 class FalloutShedlockTest {
 
 	@TestConfiguration

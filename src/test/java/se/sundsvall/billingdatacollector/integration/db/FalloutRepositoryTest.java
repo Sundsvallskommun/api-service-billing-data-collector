@@ -9,12 +9,12 @@ import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.jdbc.Sql;
-import se.sundsvall.billingdatacollector.support.annotation.UnitTest;
 
 @DataJpaTest
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
-@UnitTest
+@ActiveProfiles("junit")
 @Sql(scripts = {
 	"/db/truncate.sql",
 	"/db/testdata.sql"
@@ -27,7 +27,7 @@ class FalloutRepositoryTest {
 	@ParameterizedTest
 	@MethodSource("testValues")
 	void testExistsByFamilyIdAndFlowInstanceId(String familyId, String flowInstanceId, boolean expected) {
-		var exists = falloutRepository.existsByFamilyIdAndFlowInstanceId(familyId, flowInstanceId);
+		final var exists = falloutRepository.existsByFamilyIdAndFlowInstanceId(familyId, flowInstanceId);
 		assertThat(exists).isEqualTo(expected);
 	}
 
