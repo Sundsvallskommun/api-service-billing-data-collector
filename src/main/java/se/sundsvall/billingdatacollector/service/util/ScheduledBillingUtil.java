@@ -8,6 +8,10 @@ public final class ScheduledBillingUtil {
 	private ScheduledBillingUtil() {}
 
 	public static LocalDate calculateNextScheduledBilling(Set<Integer> billingDaysOfMonth, Set<Integer> billingMonths) {
+		return calculateNextScheduledBilling(billingDaysOfMonth, billingMonths, LocalDate.now());
+	}
+
+	public static LocalDate calculateNextScheduledBilling(Set<Integer> billingDaysOfMonth, Set<Integer> billingMonths, LocalDate startFrom) {
 		if (billingDaysOfMonth == null || billingDaysOfMonth.isEmpty()) {
 			throw new IllegalArgumentException("billingDaysOfMonth must not be empty");
 		}
@@ -15,10 +19,8 @@ public final class ScheduledBillingUtil {
 			throw new IllegalArgumentException("billingMonths must not be empty");
 		}
 
-		LocalDate today = LocalDate.now();
-
 		for (int monthOffset = 0; monthOffset <= 12; monthOffset++) {
-			LocalDate checkMonth = today.plusMonths(monthOffset);
+			LocalDate checkMonth = startFrom.plusMonths(monthOffset);
 			int month = checkMonth.getMonthValue();
 
 			if (billingMonths.contains(month)) {
@@ -26,7 +28,7 @@ public final class ScheduledBillingUtil {
 					int actualDay = Math.min(day, checkMonth.lengthOfMonth());
 					LocalDate potentialDate = LocalDate.of(checkMonth.getYear(), month, actualDay);
 
-					if (!potentialDate.isBefore(today)) {
+					if (!potentialDate.isBefore(startFrom)) {
 						return potentialDate;
 					}
 				}

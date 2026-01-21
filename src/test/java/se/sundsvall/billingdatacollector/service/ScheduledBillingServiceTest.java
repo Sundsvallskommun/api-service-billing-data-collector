@@ -9,8 +9,11 @@ import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 
 import java.time.LocalDate;
+import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
@@ -259,6 +262,55 @@ class ScheduledBillingServiceTest {
 			.hasMessageContaining("Scheduled billing not found");
 
 		verify(mockRepository).findByMunicipalityIdAndExternalIdAndSource(MUNICIPALITY_ID, EXTERNAL_ID, BillingSource.CONTRACT);
+		verifyNoMoreInteractions(mockRepository);
+	}
+
+	@Test
+	void testGetDueScheduledBillings_success() {
+		// Arrange
+		var scheduledBilling = createScheduledBillingEntity();
+		var entities = List.of(scheduledBilling);
+		var localDate = LocalDate.now();
+
+		when(mockRepository.findAllByPausedFalseAndNextScheduledBillingLessThanEqual(localDate))
+			.thenReturn(entities);
+
+		// Act
+		var result = service.getDueScheduledBillings();
+
+		// Assert
+		assertThat(result).isNotNull().hasSize(1);
+		assertThat(result.getFirst()).isSameAs(scheduledBilling);
+
+		verify(mockRepository).findAllByPausedFalseAndNextScheduledBillingLessThanEqual(localDate);
+		verifyNoMoreInteractions(mockRepository);
+	}
+
+	@Test
+	void testUpdateNextScheduledBilling_success() {
+		// Arrange - entity with billing every day of every month
+		var entity = createScheduledBillingEntity();
+		entity.setNextScheduledBilling(LocalDate.now());
+		entity.setBillingDaysOfMonth(IntStream.rangeClosed(1, 31).boxed().collect(Collectors.toSet()));
+		entity.setBillingMonths(IntStream.rangeClosed(1, 12).boxed().collect(Collectors.toSet()));
+		var originalNextBilling = entity.getNextScheduledBilling();
+
+		when(mockRepository.saveAndFlush(any(ScheduledBillingEntity.class)))
+			.thenAnswer(invocation -> invocation.getArgument(0));
+
+		// Act
+		service.updateNextScheduledBilling(entity);
+
+		// Assert - next billing should be tomorrow (not today) to prevent multiple runs on same day
+		var captor = ArgumentCaptor.forClass(ScheduledBillingEntity.class);
+		verify(mockRepository).saveAndFlush(captor.capture());
+		var savedEntity = captor.getValue();
+
+		assertThat(savedEntity.getNextScheduledBilling())
+			.isNotNull()
+			.isNotEqualTo(originalNextBilling)
+			.isEqualTo(LocalDate.now().plusDays(1));
+
 		verifyNoMoreInteractions(mockRepository);
 	}
 
