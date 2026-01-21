@@ -6,10 +6,8 @@ import static org.mockito.Mockito.mockStatic;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-import static org.springframework.http.HttpStatus.NOT_FOUND;
 import static se.sundsvall.billingdatacollector.integration.contract.ContractConfiguration.CLIENT_ID;
 
-import java.util.List;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
@@ -92,7 +90,7 @@ class ContractConfigurationTest {
 			verify(spyFeignMultiCustomizer).composeCustomizersToOne();
 
 			assertThat(errorDecoderCaptor.getValue()).hasFieldOrPropertyWithValue("integrationName", CLIENT_ID);
-			assertThat(errorDecoderCaptor.getValue()).hasFieldOrPropertyWithValue("bypassResponseCodes", List.of(NOT_FOUND.value()));
+			assertThat(errorDecoderCaptor.getValue()).hasFieldOrPropertyWithValue("bypassResponseCodes", null);
 			assertThat(customizer).isSameAs(mockFeignBuilderCustomizer);
 		}
 	}
