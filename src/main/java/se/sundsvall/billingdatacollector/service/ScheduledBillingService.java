@@ -1,11 +1,13 @@
 package se.sundsvall.billingdatacollector.service;
 
+import static org.springframework.transaction.annotation.Propagation.REQUIRES_NEW;
 import static org.zalando.problem.Status.BAD_REQUEST;
 import static org.zalando.problem.Status.NOT_FOUND;
 import static se.sundsvall.billingdatacollector.service.util.ScheduledBillingUtil.calculateNextScheduledBilling;
 import static se.sundsvall.dept44.util.LogUtils.sanitizeForLogging;
 
 import java.time.LocalDate;
+import java.util.List;
 import java.util.Optional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -138,5 +140,16 @@ public class ScheduledBillingService {
 				.withDetail("No scheduled billing found with externalId: " + externalId +
 					" and source: " + source)
 				.build());
+	}
+
+	public List<ScheduledBillingEntity> getDueScheduledBillings() {
+		return repository.findAllByPausedFalseAndNextScheduledBillingLessThanEqual(LocalDate.now());
+	}
+
+	@Transactional(propagation = REQUIRES_NEW)
+	public void updateNextScheduledBilling(ScheduledBillingEntity scheduledBillingEntity) {
+		var tomorrow = LocalDate.now().plusDays(1);
+		scheduledBillingEntity.setNextScheduledBilling(calculateNextScheduledBilling(scheduledBillingEntity.getBillingDaysOfMonth(), scheduledBillingEntity.getBillingMonths(), tomorrow));
+		repository.saveAndFlush(scheduledBillingEntity);
 	}
 }

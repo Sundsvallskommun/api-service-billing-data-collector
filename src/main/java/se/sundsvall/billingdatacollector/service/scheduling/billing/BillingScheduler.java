@@ -3,7 +3,10 @@ package se.sundsvall.billingdatacollector.service.scheduling.billing;
 import org.springframework.stereotype.Service;
 import se.sundsvall.dept44.scheduling.Dept44Scheduled;
 
-@Service
+/**
+ * Deprecated and will be replaced
+ */
+@Service("openeScheduler")
 public class BillingScheduler {
 
 	private final BillingJobHandler billingJobHandler;

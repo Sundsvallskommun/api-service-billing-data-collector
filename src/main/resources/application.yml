@@ -27,6 +27,11 @@ scheduler:
     name: fallout
     lock-at-most-for: PT5M
     maximum-execution-time: PT5M
+  billing:
+    cron: '0 0 */2 * * *'
+    name: scheduled-billing
+    shedlock-lock-at-most-for: PT30M
+    maximum-execution-time: PT30M
 falloutreport:
   recipients:
     - dummy@sundsvall.se
