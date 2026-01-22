@@ -21,7 +21,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 @ExtendWith(MockitoExtension.class)
 class ContractMapperTest {
-	private final static String CONTRACT_ID = "contractId";
+	private static final String CONTRACT_ID = "contractId";
 
 	@Mock
 	private Contract contractMock;
