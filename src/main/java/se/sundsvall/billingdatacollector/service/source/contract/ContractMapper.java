@@ -29,17 +29,16 @@ public class ContractMapper {
 	private static final String PARAMETER_KEY_CONTRACT_ID = "contractId";
 	private static final String PARAMETER_KEY_KPI = "index";
 
-	public BillingRecord toBillingRecord(Contract nullableContract) {
-
-		return ofNullable(nullableContract)
-			.map(contract -> new BillingRecord()
+	public BillingRecord toBillingRecord(Contract contract) {
+		return ofNullable(contract)
+			.map(c -> new BillingRecord()
 				.approvedBy(APPROVED_BY)
 				.category(CATEGORY)
 				.invoice(toInvoice())
-				.recipient(toRecipient(contract))
+				.recipient(toRecipient(c))
 				.status(APPROVED)
 				.type(EXTERNAL)
-				.putExtraParametersItem(PARAMETER_KEY_CONTRACT_ID, calculateContractId(contract))
+				.putExtraParametersItem(PARAMETER_KEY_CONTRACT_ID, calculateContractId(c))
 				.putExtraParametersItem(PARAMETER_KEY_KPI, retrieveKPI()))
 			.orElse(null);
 	}
