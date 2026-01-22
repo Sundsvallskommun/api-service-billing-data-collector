@@ -29,9 +29,9 @@ public class ContractMapper {
 	private static final String PARAMETER_KEY_CONTRACT_ID = "contractId";
 	private static final String PARAMETER_KEY_KPI = "index";
 
-	public BillingRecord toBillingRecord(Contract nullablecontract) {
+	public BillingRecord toBillingRecord(Contract nullableContract) {
 
-		return ofNullable(nullablecontract)
+		return ofNullable(nullableContract)
 			.map(contract -> new BillingRecord()
 				.approvedBy(APPROVED_BY)
 				.category(CATEGORY)
