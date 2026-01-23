@@ -64,7 +64,7 @@ class AbstractHandlerTest {
 
 			// Verify
 			verify(loggerMock).isInfoEnabled();
-			verify(loggerMock, never()).info(MESSAGE);
+			verify(loggerMock, never()).info(any());
 		}
 	}
 
@@ -131,7 +131,7 @@ class AbstractHandlerTest {
 
 			// Verify
 			verify(loggerMock).isWarnEnabled();
-			verify(loggerMock, never()).warn(MESSAGE);
+			verify(loggerMock, never()).warn(any());
 		}
 	}
 
@@ -198,7 +198,7 @@ class AbstractHandlerTest {
 
 			// Verify
 			verify(loggerMock).isErrorEnabled();
-			verify(loggerMock, never()).error(MESSAGE);
+			verify(loggerMock, never()).error(any());
 		}
 	}
 
