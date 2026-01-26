@@ -55,7 +55,7 @@ class CertificateValidityHealthShedlockTest {
 	}
 
 	@Autowired
-	private CertificateValidityCheckHandler CertificateValidityCheckHandler;
+	private CertificateValidityCheckHandler certificateValidityCheckHandler;
 
 	@Autowired
 	private NamedParameterJdbcTemplate jdbcTemplate;
@@ -72,8 +72,8 @@ class CertificateValidityHealthShedlockTest {
 				.isCloseTo(LocalDateTime.now(systemUTC()), within(10, ChronoUnit.SECONDS)));
 
 		// Only one call should be made as long as handleJob() is locked and mock is waiting for first call to finish
-		verify(CertificateValidityCheckHandler).checkCertificateHealth();
-		verifyNoMoreInteractions(CertificateValidityCheckHandler);
+		verify(certificateValidityCheckHandler).checkCertificateHealth();
+		verifyNoMoreInteractions(certificateValidityCheckHandler);
 	}
 
 	private LocalDateTime getLockedAt(String name) {
