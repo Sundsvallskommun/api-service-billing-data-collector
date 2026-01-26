@@ -6,11 +6,16 @@ spring:
   application:
     name: api-billing-data-collector
   cache:
-    cache-names: partyId
+    cache-names: partyId, kpiData
     caffeine:
-      spec: maximumSize=100,expireAfterWrite=300s
+      # default setting used if no override has been defined
+      spec: maximumSize=100,expireAfterWrite=5m
+      # overriding of default setting for specific caches
+      spec-overrides: 
+        - cache-name:  kpiData
+          spec: maximumSize=100, expireAfterWrite=30d
   flyway:
-    enabled: true
+    enabled: false
   jpa:
     hibernate:
       ddl-auto: validate
@@ -32,6 +37,13 @@ scheduler:
     name: scheduled-billing
     shedlock-lock-at-most-for: PT30M
     maximum-execution-time: PT30M
+  certificate-health:
+    cron: '0 0 6 * * *'
+    name: certificate-health
+    warn-days-before-expiration: 15
+    lock-at-most-for: PT5M
+    maximum-execution-time: PT5M
+    
 falloutreport:
   recipients:
     - dummy@sundsvall.se

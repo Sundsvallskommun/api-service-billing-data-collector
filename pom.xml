@@ -188,6 +188,18 @@
 							</configOptions>
 						</configuration>
 					</execution>
+					<execution>
+						<id>scb-px-web-api-api</id>
+						<goals>
+							<goal>generate</goal>
+						</goals>
+						<configuration>
+							<inputSpec>src/main/resources/integrations/scb-px-web-api.yml</inputSpec>
+							<configOptions>
+								<modelPackage>generated.se.sundsvall.scb</modelPackage>
+							</configOptions>
+						</configuration>
+					</execution>
 				</executions>
 			</plugin>
 			<plugin>

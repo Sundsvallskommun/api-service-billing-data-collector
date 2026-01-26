@@ -47,6 +47,11 @@ integration:
       authorization-grant-type: client_credentials
     connect-timeout: 31
     read-timeout: 30
+  # SCB
+  scb:
+    base-url: http://scb.nosuchhost.com
+    connect-timeout: 29
+    read-timeout: 28
 
 scheduler:
   opene:
@@ -60,14 +65,18 @@ scheduler:
     name: scheduled-billing
     shedlock-lock-at-most-for: PT5M
     maximum-execution-time: PT5M
+
 falloutreport:
   recipients:
     - test@nowhere.com
     - test2@nowhere.com
+
 spring:
   datasource:
     driver-class-name: org.testcontainers.jdbc.ContainerDatabaseDriver
     url: jdbc:tc:mariadb:10.6.12:///
+  flyway:
+    enabled: true
   jpa:
     properties:
       jakarta:
