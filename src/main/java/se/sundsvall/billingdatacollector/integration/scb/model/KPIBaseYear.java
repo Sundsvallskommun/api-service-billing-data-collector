@@ -7,7 +7,7 @@ public enum KPIBaseYear {
 
 	private final String tableIdReference;
 
-	KPIBaseYear(String tableIdReference) {
+	private KPIBaseYear(String tableIdReference) {
 		this.tableIdReference = tableIdReference;
 	}
 

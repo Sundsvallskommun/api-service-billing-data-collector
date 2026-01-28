@@ -40,7 +40,7 @@ class ScbIntegrationTest {
 	private KPIBaseYear kpiBaseYearMock;
 
 	@Captor
-	ArgumentCaptor<VariablesSelection> variablesSelectionCaptor;
+	private ArgumentCaptor<VariablesSelection> variablesSelectionCaptor;
 
 	@InjectMocks
 	private ScbIntegration integration;

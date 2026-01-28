@@ -38,7 +38,7 @@ class CertificateValidityHealthShedlockTest {
 	public static class ShedlockTestConfiguration {
 		@Bean
 		@Primary
-		public CertificateValidityCheckHandler createMock() {
+		CertificateValidityCheckHandler createMock() {
 
 			final var mockFalloutJobHandler = Mockito.mock(CertificateValidityCheckHandler.class);
 

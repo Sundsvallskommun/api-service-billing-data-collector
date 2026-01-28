@@ -31,7 +31,7 @@ class ScbIntegrationCacheTest {
 
 	private static final BigDecimal KPI_VALUE = BigDecimal.TEN;
 
-	private ScbIntegration mock;
+	private ScbIntegration scbIntegrationMock;
 
 	@Autowired
 	private ScbIntegration scbIntegration;
@@ -42,12 +42,12 @@ class ScbIntegrationCacheTest {
 	public static class CachingTestConfig {
 
 		@Bean
-		public ScbIntegration scbintegrationMockImplementation() {
+		ScbIntegration scbintegrationMockImplementation() {
 			return mock(ScbIntegration.class);
 		}
 
 		@Bean
-		public CacheManager cacheManager() {
+		CacheManager cacheManager() {
 			return new ConcurrentMapCacheManager("kpiData");
 		}
 	}
@@ -59,12 +59,12 @@ class ScbIntegrationCacheTest {
 	void setUp() {
 		// ScbIntegration is a proxy around our mock. So, in order to use Mockito validations, we retrieve the actual mock
 		// via AopTestUtils.getTargetObject
-		mock = AopTestUtils.getTargetObject(scbIntegration);
+		scbIntegrationMock = AopTestUtils.getTargetObject(scbIntegration);
 
 		// reset(mock) is called between each test because CachingTestConfig only loads once
-		reset(mock);
+		reset(scbIntegrationMock);
 
-		when(mock.getKPI(any(), any()))
+		when(scbIntegrationMock.getKPI(any(), any()))
 			.thenReturn(KPI_VALUE) // On first call, return list
 			.thenThrow(new RuntimeException("Result should be cached!")); // If any more calls are received, throw exception
 	}
@@ -77,11 +77,11 @@ class ScbIntegrationCacheTest {
 
 		// First call should trigger logic in wrapped service class
 		final var result1 = scbIntegration.getKPI(kpiBase, yearMonth);
-		verify(mock).getKPI(kpiBase, yearMonth);
+		verify(scbIntegrationMock).getKPI(kpiBase, yearMonth);
 
 		// Second call should go directly to cache and not reach mock
 		final var result2 = scbIntegration.getKPI(kpiBase, yearMonth);
-		verifyNoMoreInteractions(mock);
+		verifyNoMoreInteractions(scbIntegrationMock);
 
 		// Verify that the result is the same
 		assertThat(result1).isSameAs(result2);

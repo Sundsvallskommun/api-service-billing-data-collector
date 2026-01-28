@@ -74,7 +74,7 @@ falloutreport:
 spring:
   datasource:
     driver-class-name: org.testcontainers.jdbc.ContainerDatabaseDriver
-    url: jdbc:tc:mariadb:10.6.12:///
+    url: jdbc:tc:mariadb:10.6:///
   flyway:
     enabled: true
   jpa:

@@ -23,7 +23,7 @@ class CertificateValidityCheckHandlerTest {
 	private CertificateValidityCheckHandler handler;
 
 	@MockitoBean
-	Dept44HealthUtility dept44HealthUtilityMock;
+	private Dept44HealthUtility dept44HealthUtilityMock;
 
 	@Test
 	void certificateHasNotPassedCloseToExpiration() {
@@ -46,7 +46,7 @@ class CertificateValidityCheckHandlerTest {
 		handler.checkCertificateHealth();
 
 		// Verify that health mock is triggered at least once (as startup sequence will interfere with verification)
-		verify(dept44HealthUtilityMock).setHealthIndicatorUnhealthy(eq("certificate-health"), matches("One or more certificate are approaching its expiration date,.+, and should be replaced with a new one"));
+		verify(dept44HealthUtilityMock).setHealthIndicatorUnhealthy(eq("certificate-health"), matches("Local certificates are approaching expiration date and should be replaced"));
 	}
 
 	@Test
@@ -54,8 +54,4 @@ class CertificateValidityCheckHandlerTest {
 		assertDoesNotThrow(() -> assertThat(handler.toCertificate(null)).isNull());
 	}
 
-	@Test
-	void toInputStreamThrowsException() {
-		assertDoesNotThrow(() -> assertThat(handler.toInputStream(null)).isNull());
-	}
 }

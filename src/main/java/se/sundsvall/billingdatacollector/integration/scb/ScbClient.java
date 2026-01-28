@@ -20,7 +20,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 @CircuitBreaker(name = CLIENT_ID)
 public interface ScbClient {
 
-	@PostMapping(path = "/tables/{id}/data", produces = APPLICATION_JSON_VALUE)
+	@PostMapping(path = "/tables/{id}/data", consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_JSON_VALUE)
 	Dataset getKPI(
 		@PathVariable final String id,
 		@RequestParam final String lang,
