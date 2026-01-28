@@ -4,7 +4,7 @@ import java.util.List;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
 @ConfigurationProperties(prefix = "spring.cache.caffeine")
-public class CacheOverrideConfigProperties {
+class CacheOverrideConfigProperties {
 
 	private List<CaffeineCache> specOverrides;
 

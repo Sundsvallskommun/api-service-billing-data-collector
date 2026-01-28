@@ -11,10 +11,10 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 @Configuration
-public class CacheOverrideConfig {
+class CacheOverrideConfig {
 
 	@Bean
-	public CacheManagerCustomizer<CaffeineCacheManager> cacheManagerCustomizer(CacheOverrideConfigProperties properties) {
+	CacheManagerCustomizer<CaffeineCacheManager> cacheManagerCustomizer(CacheOverrideConfigProperties properties) {
 		return cacheManager -> ofNullable(properties.getSpecOverrides()).orElse(Collections.emptyList())
 			.forEach(specOverride -> replaceCaffeineCache(cacheManager, specOverride));
 	}
