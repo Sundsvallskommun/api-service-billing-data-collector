@@ -47,6 +47,7 @@ public class ContractMapper {
 	private static final String PARAMETER_KEY_CONTRACT_ID = "contractId";
 	private static final String PARAMETER_KEY_KPI = "index";
 	private static final int INDEX_MONTH = OCTOBER.getValue(); // Month to use when fetching KPI is always october
+	private static final BigDecimal QUANTITY = BigDecimal.ONE; // Quantity is always one for periodical invoicing
 
 	private final ScbIntegration scbIntegration;
 	private final SettingsProvider settingsProvider;
@@ -97,13 +98,12 @@ public class ContractMapper {
 
 	private InvoiceRow mapInvoiceRow(Contract contract) {
 		final var costPerUnit = calculateCost(contract);
-		final var quantity = BigDecimal.ONE; // Quantity is always one for periodical invoicing
 
 		return new InvoiceRow()
 			.costPerUnit(costPerUnit)
-			.accountInformation(mapAccountInformation(contract, costPerUnit.multiply(quantity)))
+			.accountInformation(mapAccountInformation(contract, costPerUnit.multiply(QUANTITY)))
 			.vatCode(settingsProvider.getVatCode(contract))
-			.quantity(quantity)
+			.quantity(QUANTITY)
 			.descriptions(ofNullable(contract.getFees()).map(Fees::getAdditionalInformation).orElse(null))
 			.detailedDescriptions(ofNullable(contract.getPropertyDesignations())
 				.orElse(emptyList()).stream()
