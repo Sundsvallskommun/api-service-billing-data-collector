@@ -52,44 +52,44 @@ class CalculationUtilTest {
 	private static Stream<Arguments> calculateIndexedCostArgumentProvider() {
 		final var yearlyFee = BigDecimal.valueOf(12000);
 		final var originalKPI = 100;
-		final var indexationRate_1 = BigDecimal.valueOf(1);
-		final var indexationRate_05 = BigDecimal.valueOf(0.5);
+		final var indexationRate1 = BigDecimal.valueOf(1);
+		final var indexationRate05 = BigDecimal.valueOf(0.5);
 		final var currentYearKPIEqual = BigDecimal.valueOf(100);
 		final var currentYearKPIDouble = BigDecimal.valueOf(200);
 		final var currentYearKPIHalf = BigDecimal.valueOf(50);
 
 		return Stream.of(
-			Arguments.of("Yearly interval with current index twice of begin index and indexationRate 1", YEARLY, yearlyFee, originalKPI, indexationRate_1, currentYearKPIDouble, BigDecimal.valueOf(24000)),
-			Arguments.of("Yearly interval with same current index as begin index and indexationRate 1", YEARLY, yearlyFee, originalKPI, indexationRate_1, currentYearKPIEqual, BigDecimal.valueOf(12000)),
-			Arguments.of("Yearly interval with current index half of begin index and indexationRate 1", YEARLY, yearlyFee, originalKPI, indexationRate_1, currentYearKPIHalf, BigDecimal.valueOf(6000)),
+			Arguments.of("Yearly interval with current index twice of begin index and indexationRate 1", YEARLY, yearlyFee, originalKPI, indexationRate1, currentYearKPIDouble, BigDecimal.valueOf(24000)),
+			Arguments.of("Yearly interval with same current index as begin index and indexationRate 1", YEARLY, yearlyFee, originalKPI, indexationRate1, currentYearKPIEqual, BigDecimal.valueOf(12000)),
+			Arguments.of("Yearly interval with current index half of begin index and indexationRate 1", YEARLY, yearlyFee, originalKPI, indexationRate1, currentYearKPIHalf, BigDecimal.valueOf(6000)),
 
-			Arguments.of("Half yearly interval with current index twice of begin index and indexationRate 1", HALF_YEARLY, yearlyFee, originalKPI, indexationRate_1, currentYearKPIDouble, BigDecimal.valueOf(12000)),
-			Arguments.of("Half yearly interval with same current index as begin index and indexationRate 1", HALF_YEARLY, yearlyFee, originalKPI, indexationRate_1, currentYearKPIEqual, BigDecimal.valueOf(6000)),
-			Arguments.of("Half yearly interval with current index half of begin index and indexationRate 1", HALF_YEARLY, yearlyFee, originalKPI, indexationRate_1, currentYearKPIHalf, BigDecimal.valueOf(3000)),
+			Arguments.of("Half yearly interval with current index twice of begin index and indexationRate 1", HALF_YEARLY, yearlyFee, originalKPI, indexationRate1, currentYearKPIDouble, BigDecimal.valueOf(12000)),
+			Arguments.of("Half yearly interval with same current index as begin index and indexationRate 1", HALF_YEARLY, yearlyFee, originalKPI, indexationRate1, currentYearKPIEqual, BigDecimal.valueOf(6000)),
+			Arguments.of("Half yearly interval with current index half of begin index and indexationRate 1", HALF_YEARLY, yearlyFee, originalKPI, indexationRate1, currentYearKPIHalf, BigDecimal.valueOf(3000)),
 
-			Arguments.of("Quarterly interval with current index twice of begin index and indexationRate 1", QUARTERLY, yearlyFee, originalKPI, indexationRate_1, currentYearKPIDouble, BigDecimal.valueOf(6000)),
-			Arguments.of("Quarterly interval with same current index as begin index and indexationRate 1", QUARTERLY, yearlyFee, originalKPI, indexationRate_1, currentYearKPIEqual, BigDecimal.valueOf(3000)),
-			Arguments.of("Quarterly interval with current index half of begin index and indexationRate 1", QUARTERLY, yearlyFee, originalKPI, indexationRate_1, currentYearKPIHalf, BigDecimal.valueOf(1500)),
+			Arguments.of("Quarterly interval with current index twice of begin index and indexationRate 1", QUARTERLY, yearlyFee, originalKPI, indexationRate1, currentYearKPIDouble, BigDecimal.valueOf(6000)),
+			Arguments.of("Quarterly interval with same current index as begin index and indexationRate 1", QUARTERLY, yearlyFee, originalKPI, indexationRate1, currentYearKPIEqual, BigDecimal.valueOf(3000)),
+			Arguments.of("Quarterly interval with current index half of begin index and indexationRate 1", QUARTERLY, yearlyFee, originalKPI, indexationRate1, currentYearKPIHalf, BigDecimal.valueOf(1500)),
 
-			Arguments.of("Monthly interval with current index twice of begin index and indexationRate 1", MONTHLY, yearlyFee, originalKPI, indexationRate_1, currentYearKPIDouble, BigDecimal.valueOf(2000)),
-			Arguments.of("Monthly interval with same current index as begin index and indexationRate 1", MONTHLY, yearlyFee, originalKPI, indexationRate_1, currentYearKPIEqual, BigDecimal.valueOf(1000)),
-			Arguments.of("Monthly interval with current index half of begin index and indexationRate 1", MONTHLY, yearlyFee, originalKPI, indexationRate_1, currentYearKPIHalf, BigDecimal.valueOf(500)),
+			Arguments.of("Monthly interval with current index twice of begin index and indexationRate 1", MONTHLY, yearlyFee, originalKPI, indexationRate1, currentYearKPIDouble, BigDecimal.valueOf(2000)),
+			Arguments.of("Monthly interval with same current index as begin index and indexationRate 1", MONTHLY, yearlyFee, originalKPI, indexationRate1, currentYearKPIEqual, BigDecimal.valueOf(1000)),
+			Arguments.of("Monthly interval with current index half of begin index and indexationRate 1", MONTHLY, yearlyFee, originalKPI, indexationRate1, currentYearKPIHalf, BigDecimal.valueOf(500)),
 
-			Arguments.of("Yearly interval with current index twice of begin index and indexationRate 0.5", YEARLY, yearlyFee, originalKPI, indexationRate_05, currentYearKPIDouble, BigDecimal.valueOf(18000)),
-			Arguments.of("Yearly interval with same current index as begin index and indexationRate 0.5", YEARLY, yearlyFee, originalKPI, indexationRate_05, currentYearKPIEqual, BigDecimal.valueOf(12000)),
-			Arguments.of("Yearly interval with current index half of begin index and indexationRate 0.5", YEARLY, yearlyFee, originalKPI, indexationRate_05, currentYearKPIHalf, BigDecimal.valueOf(9000)),
+			Arguments.of("Yearly interval with current index twice of begin index and indexationRate 0.5", YEARLY, yearlyFee, originalKPI, indexationRate05, currentYearKPIDouble, BigDecimal.valueOf(18000)),
+			Arguments.of("Yearly interval with same current index as begin index and indexationRate 0.5", YEARLY, yearlyFee, originalKPI, indexationRate05, currentYearKPIEqual, BigDecimal.valueOf(12000)),
+			Arguments.of("Yearly interval with current index half of begin index and indexationRate 0.5", YEARLY, yearlyFee, originalKPI, indexationRate05, currentYearKPIHalf, BigDecimal.valueOf(9000)),
 
-			Arguments.of("Half yearly interval with current index twice of begin index and indexationRate 0.5", HALF_YEARLY, yearlyFee, originalKPI, indexationRate_05, currentYearKPIDouble, BigDecimal.valueOf(9000)),
-			Arguments.of("Half yearly interval with same current index as begin index and indexationRate 0.5", HALF_YEARLY, yearlyFee, originalKPI, indexationRate_05, currentYearKPIEqual, BigDecimal.valueOf(6000)),
-			Arguments.of("Half yearly interval with current index half of begin index and indexationRate 0.5", HALF_YEARLY, yearlyFee, originalKPI, indexationRate_05, currentYearKPIHalf, BigDecimal.valueOf(4500)),
+			Arguments.of("Half yearly interval with current index twice of begin index and indexationRate 0.5", HALF_YEARLY, yearlyFee, originalKPI, indexationRate05, currentYearKPIDouble, BigDecimal.valueOf(9000)),
+			Arguments.of("Half yearly interval with same current index as begin index and indexationRate 0.5", HALF_YEARLY, yearlyFee, originalKPI, indexationRate05, currentYearKPIEqual, BigDecimal.valueOf(6000)),
+			Arguments.of("Half yearly interval with current index half of begin index and indexationRate 0.5", HALF_YEARLY, yearlyFee, originalKPI, indexationRate05, currentYearKPIHalf, BigDecimal.valueOf(4500)),
 
-			Arguments.of("Quarterly interval with current index twice of begin index and indexationRate 0.5", QUARTERLY, yearlyFee, originalKPI, indexationRate_05, currentYearKPIDouble, BigDecimal.valueOf(4500)),
-			Arguments.of("Quarterly interval with same current index as begin index and indexationRate 0.5", QUARTERLY, yearlyFee, originalKPI, indexationRate_05, currentYearKPIEqual, BigDecimal.valueOf(3000)),
-			Arguments.of("Quarterly interval with current index half of begin index and indexationRate 0.5", QUARTERLY, yearlyFee, originalKPI, indexationRate_05, currentYearKPIHalf, BigDecimal.valueOf(2250)),
+			Arguments.of("Quarterly interval with current index twice of begin index and indexationRate 0.5", QUARTERLY, yearlyFee, originalKPI, indexationRate05, currentYearKPIDouble, BigDecimal.valueOf(4500)),
+			Arguments.of("Quarterly interval with same current index as begin index and indexationRate 0.5", QUARTERLY, yearlyFee, originalKPI, indexationRate05, currentYearKPIEqual, BigDecimal.valueOf(3000)),
+			Arguments.of("Quarterly interval with current index half of begin index and indexationRate 0.5", QUARTERLY, yearlyFee, originalKPI, indexationRate05, currentYearKPIHalf, BigDecimal.valueOf(2250)),
 
-			Arguments.of("Monthly interval with current index twice of begin index and indexationRate 0.5", MONTHLY, yearlyFee, originalKPI, indexationRate_05, currentYearKPIDouble, BigDecimal.valueOf(1500)),
-			Arguments.of("Monthly interval with same current index as begin index and indexationRate 0.5", MONTHLY, yearlyFee, originalKPI, indexationRate_05, currentYearKPIEqual, BigDecimal.valueOf(1000)),
-			Arguments.of("Monthly interval with current index half of begin index and indexationRate 0.5", MONTHLY, yearlyFee, originalKPI, indexationRate_05, currentYearKPIHalf, BigDecimal.valueOf(750)));
+			Arguments.of("Monthly interval with current index twice of begin index and indexationRate 0.5", MONTHLY, yearlyFee, originalKPI, indexationRate05, currentYearKPIDouble, BigDecimal.valueOf(1500)),
+			Arguments.of("Monthly interval with same current index as begin index and indexationRate 0.5", MONTHLY, yearlyFee, originalKPI, indexationRate05, currentYearKPIEqual, BigDecimal.valueOf(1000)),
+			Arguments.of("Monthly interval with current index half of begin index and indexationRate 0.5", MONTHLY, yearlyFee, originalKPI, indexationRate05, currentYearKPIHalf, BigDecimal.valueOf(750)));
 	}
 
 	@Test
