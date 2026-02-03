@@ -17,11 +17,11 @@ class IntervalTest {
 	}
 
 	@Test
-	void accuralKey() {
-		assertThat(MONTHLY.getAccuralKey()).isEqualTo("N_1");
-		assertThat(QUARTERLY.getAccuralKey()).isEqualTo("N_4");
-		assertThat(HALF_YEARLY.getAccuralKey()).isEqualTo("N_6");
-		assertThat(YEARLY.getAccuralKey()).isEqualTo("N_12");
+	void accrualKey() {
+		assertThat(MONTHLY.getAccrualKey()).isEqualTo("N_1");
+		assertThat(QUARTERLY.getAccrualKey()).isEqualTo("N_4");
+		assertThat(HALF_YEARLY.getAccrualKey()).isEqualTo("N_6");
+		assertThat(YEARLY.getAccrualKey()).isEqualTo("N_12");
 	}
 
 	@Test

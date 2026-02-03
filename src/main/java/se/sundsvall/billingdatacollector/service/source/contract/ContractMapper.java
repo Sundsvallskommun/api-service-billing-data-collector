@@ -9,7 +9,7 @@ import static java.util.Optional.ofNullable;
 import static org.zalando.problem.Status.INTERNAL_SERVER_ERROR;
 import static se.sundsvall.billingdatacollector.service.source.contract.util.CalculationUtil.calculateIndexedCost;
 import static se.sundsvall.billingdatacollector.service.source.contract.util.CalculationUtil.calculateNonIndexedCost;
-import static se.sundsvall.billingdatacollector.service.source.contract.util.ContractUtil.getAccuralKey;
+import static se.sundsvall.billingdatacollector.service.source.contract.util.ContractUtil.getAccrualKey;
 import static se.sundsvall.billingdatacollector.service.source.contract.util.ContractUtil.getContractId;
 import static se.sundsvall.billingdatacollector.service.source.contract.util.ContractUtil.getExtraParameter;
 import static se.sundsvall.billingdatacollector.service.source.contract.util.ContractUtil.getKPIBaseYear;
@@ -141,7 +141,7 @@ public class ContractMapper {
 	private AddressDetails toAddressDetails(Stakeholder billingParty) {
 		return ofNullable(billingParty.getAddress())
 			.map(toAddressDetails())
-			.orElseThrow(() -> Problem.valueOf(INTERNAL_SERVER_ERROR, "Manadatory address information not found for billing party with party id %s".formatted(billingParty.getPartyId())));
+			.orElseThrow(() -> Problem.valueOf(INTERNAL_SERVER_ERROR, "Mandatory address information not found for billing party with party id %s".formatted(billingParty.getPartyId())));
 	}
 
 	private Function<? super Address, ? extends AddressDetails> toAddressDetails() {
@@ -160,7 +160,7 @@ public class ContractMapper {
 	private List<AccountInformation> mapAccountInformation(Contract contract, BigDecimal amount) {
 		if (settingsProvider.isLeaseTypeSettingsPresent(contract)) {
 			return List.of(new AccountInformation()
-				.accuralKey(getAccuralKey(contract))
+				.accuralKey(getAccrualKey(contract))
 				.activity(settingsProvider.getActivity(contract))
 				.costCenter(settingsProvider.getCostCenter(contract))
 				.department(settingsProvider.getDepartment(contract))

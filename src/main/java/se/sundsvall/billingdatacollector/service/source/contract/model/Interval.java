@@ -16,16 +16,16 @@ public enum Interval {
 
 	;
 
-	private Interval(String accuralKey, int splitFactor) {
-		this.accuralKey = accuralKey;
+	private Interval(String accrualKey, int splitFactor) {
+		this.accrualKey = accrualKey;
 		this.splitFactor = splitFactor;
 	}
 
-	private final String accuralKey;
+	private final String accrualKey;
 	private final int splitFactor;
 
-	public String getAccuralKey() {
-		return accuralKey;
+	public String getAccrualKey() {
+		return accrualKey;
 	}
 
 	public int getSplitFactor() {

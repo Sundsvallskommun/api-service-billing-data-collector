@@ -174,30 +174,30 @@ class ContractUtilTest {
 	}
 
 	@Test
-	void getAccuralKeyFromNull() {
-		final var e = assertThrows(ThrowableProblem.class, () -> ContractUtil.getAccuralKey(null));
+	void getAccrualKeyFromNull() {
+		final var e = assertThrows(ThrowableProblem.class, () -> ContractUtil.getAccrualKey(null));
 		assertThat(e.getStatus()).isEqualTo(NOT_FOUND);
 		assertThat(e.getDetail()).isEqualTo("Parameter 'contract' can not be null");
 	}
 
 	@ParameterizedTest(name = "{0}")
-	@MethodSource("getAccuralKeyArgumentProvider")
-	void getAccuralKey(String description, Invoicing invoicing, String expectedValue) {
+	@MethodSource("getAccrualKeyArgumentProvider")
+	void getAccrualKey(String description, Invoicing invoicing, String expectedValue) {
 		when(contractMock.getInvoicing()).thenReturn(invoicing);
 
-		assertThat(ContractUtil.getAccuralKey(contractMock)).isEqualTo(expectedValue);
+		assertThat(ContractUtil.getAccrualKey(contractMock)).isEqualTo(expectedValue);
 	}
 
-	private static Stream<Arguments> getAccuralKeyArgumentProvider() {
+	private static Stream<Arguments> getAccrualKeyArgumentProvider() {
 		return Stream.of(
 			Arguments.of("Invoicing is null", null, null),
 			Arguments.of("Invoicing present but invoiced is null", new Invoicing(), null),
 			Arguments.of("Invoicing present but invoiced in does not match ADVANCE", new Invoicing().invoicedIn(InvoicedIn.ARREARS), null),
 			Arguments.of("Invoicing present and invoiced match but no invoice interval is present", new Invoicing().invoicedIn(InvoicedIn.ADVANCE), null),
 			Arguments.of("Invoicing present and invoiced match with monthly invoice interval", new Invoicing().invoicedIn(InvoicedIn.ADVANCE).invoiceInterval(IntervalType.MONTHLY), "N_1"),
-			Arguments.of("Invoicing present and invoiced match with monthly invoice interval", new Invoicing().invoicedIn(InvoicedIn.ADVANCE).invoiceInterval(IntervalType.QUARTERLY), "N_4"),
-			Arguments.of("Invoicing present and invoiced match with monthly invoice interval", new Invoicing().invoicedIn(InvoicedIn.ADVANCE).invoiceInterval(IntervalType.HALF_YEARLY), "N_6"),
-			Arguments.of("Invoicing present and invoiced match with monthly invoice interval", new Invoicing().invoicedIn(InvoicedIn.ADVANCE).invoiceInterval(IntervalType.YEARLY), "N_12"));
+			Arguments.of("Invoicing present and invoiced match with quarterly invoice interval", new Invoicing().invoicedIn(InvoicedIn.ADVANCE).invoiceInterval(IntervalType.QUARTERLY), "N_4"),
+			Arguments.of("Invoicing present and invoiced match with half-yearly invoice interval", new Invoicing().invoicedIn(InvoicedIn.ADVANCE).invoiceInterval(IntervalType.HALF_YEARLY), "N_6"),
+			Arguments.of("Invoicing present and invoiced match with yearly invoice interval", new Invoicing().invoicedIn(InvoicedIn.ADVANCE).invoiceInterval(IntervalType.YEARLY), "N_12"));
 	}
 
 	@Test

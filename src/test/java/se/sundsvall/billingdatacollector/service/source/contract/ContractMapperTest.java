@@ -162,7 +162,7 @@ class ContractMapperTest {
 	}
 
 	@ParameterizedTest(name = "{0}")
-	@MethodSource("recipientAttributesAgrumentProvider")
+	@MethodSource("recipientAttributesArgumentProvider")
 	void createBillingRecord_recipientAttributes(String description, List<Stakeholder> stakeholders, boolean hasMatch) {
 		// Arrange
 		final var yearly = BigDecimal.valueOf(1000.49);
@@ -204,10 +204,10 @@ class ContractMapperTest {
 		verify(settingsProviderMock).getVatCode(contractMock);
 	}
 
-	private static Stream<Arguments> recipientAttributesAgrumentProvider() {
+	private static Stream<Arguments> recipientAttributesArgumentProvider() {
 		return Stream.of(
 			Arguments.of("Stakeholders list is null", null, false),
-			Arguments.of("Stakeholders list is emtpy", emptyList(), false),
+			Arguments.of("Stakeholders list is empty", emptyList(), false),
 			Arguments.of("Stakeholders list only contains stakeholder where role list is null", List.of(generateStakeholder()), false),
 			Arguments.of("Stakeholders list only contains stakeholder where role list is empty", List.of(generateStakeholder().roles(emptyList())), false),
 			Arguments.of("Stakeholders list only contains stakeholder with non matching roles", List.of(generateStakeholder().addRolesItem(LESSOR).addRolesItem(PROPERTY_OWNER)), false),
@@ -232,7 +232,7 @@ class ContractMapperTest {
 
 		// Assert & verify
 		assertThat(e.getStatus()).isEqualTo(INTERNAL_SERVER_ERROR);
-		assertThat(e.getDetail()).isEqualTo("Manadatory address information not found for billing party with party id %s".formatted(PARTY_ID));
+		assertThat(e.getDetail()).isEqualTo("Mandatory address information not found for billing party with party id %s".formatted(PARTY_ID));
 		verify(contractMock).getStakeholders();
 		verify(settingsProviderMock).isLeaseTypeSettingsPresent(contractMock);
 		verify(settingsProviderMock).getVatCode(contractMock);

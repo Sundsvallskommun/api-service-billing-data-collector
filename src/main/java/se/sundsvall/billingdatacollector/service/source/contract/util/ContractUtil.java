@@ -22,7 +22,7 @@ public final class ContractUtil {
 	private static final String MESSAGE_CONTRACT_CAN_NOT_BE_NULL = "Parameter 'contract' can not be null";
 
 	private ContractUtil() {
-		// Prevent instansiation
+		// Prevent instantiation
 	}
 
 	public static String getContractId(Contract contract) {
@@ -75,7 +75,7 @@ public final class ContractUtil {
 			.orElse(null);
 	}
 
-	public static String getAccuralKey(Contract contract) {
+	public static String getAccrualKey(Contract contract) {
 		if (isNull(contract)) {
 			throw Problem.valueOf(NOT_FOUND, MESSAGE_CONTRACT_CAN_NOT_BE_NULL);
 		}
@@ -85,7 +85,7 @@ public final class ContractUtil {
 			.map(Invoicing::getInvoiceInterval)
 			.filter(Objects::nonNull)
 			.map(Interval::getByIntervalType)
-			.map(Interval::getAccuralKey)
+			.map(Interval::getAccrualKey)
 			.orElse(null);
 	}
 

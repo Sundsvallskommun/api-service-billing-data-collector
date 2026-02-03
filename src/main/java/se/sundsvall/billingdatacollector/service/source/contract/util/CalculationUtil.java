@@ -37,7 +37,6 @@ public final class CalculationUtil {
 	 * <ol>
 	 * <li>Derive the periodic (split) fee from the yearly fee based on the invoicing interval of the contract</li>
 	 * <li>Apply index adjustment based on KPI development</li>
-	 * <li>Apply index adjustment based on KPI development</li>
 	 * <li>Result is rounded to two decimals</li>
 	 * </ol>
 	 *
