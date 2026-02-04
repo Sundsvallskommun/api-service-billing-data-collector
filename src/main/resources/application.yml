@@ -6,7 +6,7 @@ spring:
   application:
     name: api-billing-data-collector
   cache:
-    cache-names: partyId, kpiData
+    cache-names: partyId, legalId, kpiData
     caffeine:
       # default setting used if no override has been defined
       spec: maximumSize=100,expireAfterWrite=5m

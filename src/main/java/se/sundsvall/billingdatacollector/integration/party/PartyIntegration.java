@@ -41,6 +41,22 @@ public class PartyIntegration {
 					.build()));
 	}
 
+	/**
+	 * Fetch legalId by partyId.
+	 *
+	 * @param  municipalityId The municipalityId
+	 * @param  partyId        The partyId
+	 * @return                The legalId
+	 */
+	@Cacheable("legalId")
+	public String getLegalId(final String municipalityId, final String partyId) {
+		return partyClient.getLegalId(municipalityId, partyId)
+			.orElseThrow(() -> Problem.builder()
+				.withTitle("Couldn't find legalId for partyId " + partyId)
+				.withStatus(INTERNAL_SERVER_ERROR)
+				.build());
+	}
+
 	private Optional<String> checkAndGetCorrectPersonalNumber(final String municipalityId, final String legalId) {
 		// Add century digits to legalId if they are missing
 		var cleanedLegalId = LegalIdUtil.addCenturyDigitsToLegalId(legalId);
