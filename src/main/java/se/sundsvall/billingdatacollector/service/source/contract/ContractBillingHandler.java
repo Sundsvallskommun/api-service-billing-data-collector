@@ -35,7 +35,7 @@ public class ContractBillingHandler extends AbstractHandler {
 		logInfo("Processing contract with id {} in municipality {}", externalId, municipalityId);
 
 		contractIntegration.getContract(municipalityId, externalId)
-			.map(contractMapper::toBillingRecord)
+			.map(contractMapper::createBillingRecord)
 			.ifPresentOrElse(
 				this::sendAndSave,
 				() -> handleNoMatchInContract(municipalityId, externalId));

@@ -61,7 +61,7 @@ class ContractBillingHandlerTest {
 	void sendBillingRecords_contractMatch() {
 		// Arrange
 		when(contractIntegrationMock.getContract(MUNICIPALITY_ID, CONTRACT_ID)).thenReturn(Optional.of(contractMock));
-		when(contractMapperMock.toBillingRecord(contractMock)).thenReturn(billingRecordMock);
+		when(contractMapperMock.createBillingRecord(contractMock)).thenReturn(billingRecordMock);
 
 		// Act
 		handler.sendBillingRecords(MUNICIPALITY_ID, CONTRACT_ID);
