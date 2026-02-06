@@ -48,7 +48,6 @@ public class PartyIntegration {
 	 * @param  partyId        The partyId
 	 * @return                The legalId
 	 */
-	@Cacheable("legalId")
 	public String getLegalId(final String municipalityId, final String partyId) {
 		return partyClient.getLegalId(municipalityId, partyId)
 			.orElseThrow(() -> Problem.builder()

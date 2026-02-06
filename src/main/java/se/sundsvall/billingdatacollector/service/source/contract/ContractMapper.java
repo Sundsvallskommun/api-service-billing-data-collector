@@ -51,25 +51,27 @@ public class ContractMapper {
 
 	private final ScbIntegration scbIntegration;
 	private final SettingsProvider settingsProvider;
+	private final CounterpartMappingService counterpartMappingService;
 
 	public ContractMapper(ScbIntegration scbIntegration,
-		SettingsProvider settingsProvider) {
+		SettingsProvider settingsProvider, CounterpartMappingService counterpartMappingService) {
 
 		this.scbIntegration = scbIntegration;
 		this.settingsProvider = settingsProvider;
+		this.counterpartMappingService = counterpartMappingService;
 	}
 
-	public BillingRecord createBillingRecord(Contract contract) {
+	public BillingRecord createBillingRecord(String municipalityId, Contract contract) {
 		return ofNullable(contract)
-			.map(this::toBillingRecord)
+			.map(contract1 -> this.toBillingRecord(municipalityId, contract1))
 			.orElse(null);
 	}
 
-	private BillingRecord toBillingRecord(Contract contract) {
+	private BillingRecord toBillingRecord(String municipalityId, Contract contract) {
 		final var billingRecord = new BillingRecord()
 			.approvedBy(APPROVED_BY)
 			.category(CATEGORY)
-			.invoice(toInvoice(contract))
+			.invoice(toInvoice(municipalityId, contract))
 			.recipient(toRecipient(contract))
 			.status(APPROVED)
 			.type(EXTERNAL)
@@ -84,11 +86,11 @@ public class ContractMapper {
 		return billingRecord;
 	}
 
-	private Invoice toInvoice(Contract contract) {
+	private Invoice toInvoice(String municipalityId, Contract contract) {
 		return new Invoice()
 			.ourReference(getContractId(contract))
 			.customerReference(getExtraParameter(contract, "InvoiceInfo", "markup"))
-			.addInvoiceRowsItem(mapInvoiceRow(contract))
+			.addInvoiceRowsItem(mapInvoiceRow(municipalityId, contract))
 			.description(ofNullable(contract.getInvoicing())
 				.filter(invoicing -> Objects.equals(ADVANCE, invoicing.getInvoicedIn()))
 				.map(Invoicing::getInvoiceInterval)
@@ -96,12 +98,12 @@ public class ContractMapper {
 				.orElse(null));
 	}
 
-	private InvoiceRow mapInvoiceRow(Contract contract) {
+	private InvoiceRow mapInvoiceRow(String municipalityId, Contract contract) {
 		final var costPerUnit = calculateCost(contract);
 
 		return new InvoiceRow()
 			.costPerUnit(costPerUnit)
-			.accountInformation(mapAccountInformation(contract, costPerUnit.multiply(QUANTITY)))
+			.accountInformation(mapAccountInformation(municipalityId, contract, costPerUnit.multiply(QUANTITY)))
 			.vatCode(settingsProvider.getVatCode(contract))
 			.quantity(QUANTITY)
 			.descriptions(ofNullable(contract.getFees()).map(Fees::getAdditionalInformation).orElse(null))
@@ -119,6 +121,21 @@ public class ContractMapper {
 			return calculateIndexedCost(contract, currentKPI);
 		}
 		return calculateNonIndexedCost(contract);
+	}
+
+	private String getCounterpart(String municipalityId, Contract contract) {
+		return ofNullable(contract.getStakeholders()).orElse(emptyList()).stream()
+			.filter(isPrimaryBillingParty())
+			.findFirst()
+			.map(stakeholder -> counterpartMappingService.findCounterpart(municipalityId, stakeholder.getPartyId(),
+				getStakeholderType(stakeholder)))
+			.orElse(null);
+	}
+
+	private String getStakeholderType(Stakeholder stakeholder) {
+		return ofNullable(stakeholder.getType())
+			.map(Enum::name)
+			.orElse(null);
 	}
 
 	private Recipient toRecipient(Contract contract) {
@@ -157,7 +174,7 @@ public class ContractMapper {
 			.anyMatch(role -> role == StakeholderRole.PRIMARY_BILLING_PARTY);
 	}
 
-	private List<AccountInformation> mapAccountInformation(Contract contract, BigDecimal amount) {
+	private List<AccountInformation> mapAccountInformation(String municipalityId, Contract contract, BigDecimal amount) {
 		if (settingsProvider.isLeaseTypeSettingsPresent(contract)) {
 			return List.of(new AccountInformation()
 				.accuralKey(getAccrualKey(contract))
@@ -165,6 +182,7 @@ public class ContractMapper {
 				.costCenter(settingsProvider.getCostCenter(contract))
 				.department(settingsProvider.getDepartment(contract))
 				.subaccount(settingsProvider.getSubaccount(contract))
+				.counterpart(getCounterpart(municipalityId, contract))
 				.amount(amount));
 		}
 		return emptyList();
