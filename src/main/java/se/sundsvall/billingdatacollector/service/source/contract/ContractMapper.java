@@ -51,12 +51,14 @@ public class ContractMapper {
 
 	private final ScbIntegration scbIntegration;
 	private final SettingsProvider settingsProvider;
+	private final CounterpartMappingService counterpartMappingService;
 
 	public ContractMapper(ScbIntegration scbIntegration,
-		SettingsProvider settingsProvider) {
+		SettingsProvider settingsProvider, CounterpartMappingService counterpartMappingService) {
 
 		this.scbIntegration = scbIntegration;
 		this.settingsProvider = settingsProvider;
+		this.counterpartMappingService = counterpartMappingService;
 	}
 
 	public BillingRecord createBillingRecord(Contract contract) {
@@ -121,6 +123,21 @@ public class ContractMapper {
 		return calculateNonIndexedCost(contract);
 	}
 
+	private String getCounterpart(Contract contract) {
+		return ofNullable(contract.getStakeholders()).orElse(emptyList()).stream()
+			.filter(isPrimaryBillingParty())
+			.findFirst()
+			.map(stakeholder -> counterpartMappingService.findCounterpartByLegalId(stakeholder.getOrganizationNumber(),
+				getStakeholderType(stakeholder)))
+			.orElse(null);
+	}
+
+	private String getStakeholderType(Stakeholder stakeholder) {
+		return ofNullable(stakeholder.getType())
+			.map(Enum::name)
+			.orElse(null);
+	}
+
 	private Recipient toRecipient(Contract contract) {
 		return ofNullable(contract.getStakeholders()).orElse(emptyList()).stream()
 			.filter(isPrimaryBillingParty())
@@ -165,6 +182,7 @@ public class ContractMapper {
 				.costCenter(settingsProvider.getCostCenter(contract))
 				.department(settingsProvider.getDepartment(contract))
 				.subaccount(settingsProvider.getSubaccount(contract))
+				.counterpart(getCounterpart(contract))
 				.amount(amount));
 		}
 		return emptyList();

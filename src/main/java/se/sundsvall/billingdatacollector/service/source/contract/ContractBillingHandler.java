@@ -6,6 +6,7 @@ import se.sundsvall.billingdatacollector.integration.billingpreprocessor.Billing
 import se.sundsvall.billingdatacollector.integration.contract.ContractIntegration;
 import se.sundsvall.billingdatacollector.integration.db.FalloutRepository;
 import se.sundsvall.billingdatacollector.integration.db.HistoryRepository;
+import se.sundsvall.billingdatacollector.integration.party.PartyIntegration;
 import se.sundsvall.billingdatacollector.service.source.AbstractHandler;
 
 @Component("contract")
@@ -15,19 +16,22 @@ public class ContractBillingHandler extends AbstractHandler {
 	private final BillingPreprocessorClient billingPreprocessorClient;
 	private final HistoryRepository historyRepository;
 	private final FalloutRepository falloutRepository;
+	private final PartyIntegration partyIntegration;
 
 	ContractBillingHandler(
 		ContractIntegration contractIntegration,
 		ContractMapper contractMapper,
 		BillingPreprocessorClient billingPreprocessorClient,
 		HistoryRepository historyRepository,
-		FalloutRepository falloutRepository) {
+		FalloutRepository falloutRepository,
+		PartyIntegration partyIntegration) {
 
 		this.contractIntegration = contractIntegration;
 		this.contractMapper = contractMapper;
 		this.billingPreprocessorClient = billingPreprocessorClient;
 		this.historyRepository = historyRepository;
 		this.falloutRepository = falloutRepository;
+		this.partyIntegration = partyIntegration;
 	}
 
 	@Override
