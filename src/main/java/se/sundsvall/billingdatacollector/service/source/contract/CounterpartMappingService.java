@@ -1,9 +1,11 @@
 package se.sundsvall.billingdatacollector.service.source.contract;
 
+import static java.util.function.Predicate.not;
 import static org.zalando.problem.Status.NOT_FOUND;
 
-import java.util.regex.Pattern;
-import java.util.regex.PatternSyntaxException;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Objects;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -30,9 +32,8 @@ public class CounterpartMappingService {
 	/**
 	 * Find the counterpart value for a given legalId and stakeholder type.
 	 * Lookup priority:
-	 * 1. Exact legalId match
-	 * 2. Regexp pattern matching on legalId
-	 * 3. Stakeholder type fallback
+	 * 1. Pattern matching on legalId
+	 * 2. Stakeholder type fallback
 	 *
 	 * @param  partyId                              the partyId to find legalId for
 	 * @param  stakeholderType                      the stakeholder type for fallback matching
@@ -44,24 +45,13 @@ public class CounterpartMappingService {
 
 		final var legalId = partyIntegration.getLegalId(municipalityId, partyId);
 
-		// 1. First try exact legalId match
-		var exactMatch = repository.findByLegalId(legalId);
-		if (exactMatch.isPresent()) {
-			return exactMatch.get().getCounterpart();
+		var counterpartMappingMatch = findBestMatch(legalId, repository.findAll());
+
+		if (counterpartMappingMatch != null) {
+			return counterpartMappingMatch.getCounterpart();
 		}
 
-		// 2. Try pattern matching - load all and filter in Java
-		var patternMatch = repository.findAll().stream()
-			.filter(mapping -> mapping.getLegalIdPattern() != null)
-			.filter(mapping -> matchesPattern(mapping.getLegalIdPattern(), legalId))
-			.map(CounterpartMappingEntity::getCounterpart)
-			.findFirst();
-
-		if (patternMatch.isPresent()) {
-			return patternMatch.get();
-		}
-
-		// 3. Fall back to stakeholder type
+		// Fall back to stakeholder type
 		if (stakeholderType != null) {
 			var typeMatch = repository.findByStakeholderType(stakeholderType);
 			if (typeMatch.isPresent()) {
@@ -76,13 +66,15 @@ public class CounterpartMappingService {
 			.build();
 	}
 
-	private boolean matchesPattern(String patternString, String legalId) {
-		try {
-			final var pattern = Pattern.compile(patternString);
-			return pattern.matcher(legalId).matches();
-		} catch (PatternSyntaxException e) {
-			LOG.error("Invalid regex pattern in database: {}", patternString, e);
-			return false;
-		}
+	private CounterpartMappingEntity findBestMatch(String legalId, List<CounterpartMappingEntity> mappingEntities) {
+		String cleanLegalId = legalId.replace("-", "");
+
+		return mappingEntities.stream()
+			.filter(Objects::nonNull)
+			.filter(not(mappingEntity -> mappingEntity.getLegalIdPattern() == null))
+			.filter(mappingEntity -> cleanLegalId.startsWith(mappingEntity.getLegalIdPattern()))
+			// If multiple patterns match, select the one with the longest match (most specific)
+			.max(Comparator.comparingInt(mappingEntity -> mappingEntity.getLegalIdPattern().length()))
+			.orElse(null);
 	}
 }

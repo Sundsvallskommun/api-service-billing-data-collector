@@ -1,10 +1,9 @@
 
     create table counterpart_mapping (
-        counterpart varchar(255) not null,
+        counterpart varchar(5) not null,
+        legal_id_pattern varchar(12),
+        stakeholder_type varchar(20),
         id varchar(255) not null,
-        legal_id varchar(255),
-        legal_id_pattern varchar(255),
-        stakeholder_type varchar(255),
         primary key (id)
     ) engine=InnoDB;
 
@@ -57,23 +56,11 @@
         primary key (id)
     ) engine=InnoDB;
 
-    create index idx_legal_id
-       on counterpart_mapping (legal_id);
-
-    create index idx_legal_id_pattern
-       on counterpart_mapping (legal_id_pattern);
-
     create index idx_stakeholder_type
        on counterpart_mapping (stakeholder_type);
 
     alter table if exists counterpart_mapping
-       add constraint UK9hoxyd4obyyb9qn512pmnc3bd unique (counterpart);
-
-    alter table if exists counterpart_mapping
-       add constraint UKpemlorp45cmcctcu9c80dljg9 unique (legal_id);
-
-    alter table if exists counterpart_mapping
-       add constraint UK5vhpvk40dco7n8igwfy81fdur unique (legal_id_pattern);
+       add constraint uq_legal_id_pattern unique (legal_id_pattern);
 
     create index idx_family_id
        on fallout (family_id);

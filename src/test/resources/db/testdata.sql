@@ -29,9 +29,9 @@ VALUES ('f0882f1d-06bc-47fd-b017-1d8307f5ce95', '2281', '66c57446-72e7-4cc5-af7c
        ('a1b2c3d4-e5f6-7890-abcd-ef1234567890', '2281', 'external-id-for-get-test', 'CONTRACT', '10,20', '3,6,9,12', '2025-03-10', false),
        ('d3e4f5a6-b7c8-9012-def0-123456789abc', '2281', 'external-id-for-delete', 'OPENE', '5', '1,7', '2025-01-05', true);
 
-INSERT INTO counterpart_mapping (id, legal_id, legal_id_pattern, stakeholder_type, counterpart)
+INSERT INTO counterpart_mapping (id, legal_id_pattern, stakeholder_type, counterpart)
 VALUES
-    ('f0882f1d-06bc-47fd-b017-1d8307f5ce96', '112233445566', null, null, '123'),
-    ('f0882f1d-06bc-47fd-b017-1d8307f5ce97', null, null, 'ASSOCIATION', '456'),
-    ('f0882f1d-06bc-47fd-b017-1d8307f5ce98', '5566778899', null, 'ORGANIZATION', '789'),
-	('f0882f1d-06bc-47fd-b017-1d8307f5ce99', null, '^4455.*', 'MUNICIPALITY', '012');
+    ('f0882f1d-06bc-47fd-b017-1d8307f5ce96', '112233445566', null, '123'),
+    ('f0882f1d-06bc-47fd-b017-1d8307f5ce97', null, 'ASSOCIATION', '456'),
+    ('f0882f1d-06bc-47fd-b017-1d8307f5ce98', '5566778899', 'ORGANIZATION', '789'),
+	('f0882f1d-06bc-47fd-b017-1d8307f5ce99', '4455', 'MUNICIPALITY', '012');

@@ -26,14 +26,12 @@ class CounterpartMappingEntityTest {
 	@Test
 	void testBuilderMethods() {
 		final var id = "id";
-		final var legalId = "legalId";
 		final var legalIdPattern = "legalIdPattern";
 		final var stakeholderType = "stakeholderType";
 		final var counterpart = "counterpart";
 
 		final var entity = CounterpartMappingEntity.builder()
 			.withId(id)
-			.withLegalId(legalId)
 			.withLegalIdPattern(legalIdPattern)
 			.withStakeholderType(stakeholderType)
 			.withCounterpart(counterpart)
@@ -41,7 +39,6 @@ class CounterpartMappingEntityTest {
 
 		assertThat(entity).isNotNull().hasNoNullFieldsOrProperties();
 		assertThat(entity.getId()).isEqualTo(id);
-		assertThat(entity.getLegalId()).isEqualTo(legalId);
 		assertThat(entity.getLegalIdPattern()).isEqualTo(legalIdPattern);
 		assertThat(entity.getStakeholderType()).isEqualTo(stakeholderType);
 		assertThat(entity.getCounterpart()).isEqualTo(counterpart);

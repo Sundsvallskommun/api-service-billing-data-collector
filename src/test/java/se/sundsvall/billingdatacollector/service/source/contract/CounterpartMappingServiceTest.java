@@ -24,7 +24,7 @@ import se.sundsvall.billingdatacollector.integration.party.PartyIntegration;
 @ExtendWith(MockitoExtension.class)
 class CounterpartMappingServiceTest {
 
-	private static final String LEGAL_ID = "112233445566";
+	private static final String LEGAL_ID = "11223344-5566";
 	private static final String PARTY_ID = "partyId";
 	private static final String STAKEHOLDER_TYPE = "ORGANIZATION";
 	private static final String COUNTERPART = "COUNTERPART";
@@ -40,41 +40,59 @@ class CounterpartMappingServiceTest {
 	private CounterpartMappingService service;
 
 	@Test
-	void findCounterpart_exactMatch() {
-		var entity = CounterpartMappingEntity.builder()
+	void findCounterpart_patternExactMatch() {
+		var patternEntity1 = CounterpartMappingEntity.builder()
 			.withId("id-1")
-			.withLegalId(LEGAL_ID)
+			.withLegalIdPattern("1122")
+			.withCounterpart("NOT_MATCHING")
+			.build();
+		var patternEntity2 = CounterpartMappingEntity.builder()
+			.withId("id-2")
+			.withLegalIdPattern("2233")
+			.withCounterpart("NOT_MATCHING")
+			.build();
+		var patternEntity3 = CounterpartMappingEntity.builder()
+			.withId("id-3")
+			.withLegalIdPattern("112233445566")
 			.withCounterpart(COUNTERPART)
 			.build();
 
 		when(mockPartyIntegration.getLegalId(MUNICIPALITY_ID, PARTY_ID)).thenReturn(LEGAL_ID);
-		when(mockRepository.findByLegalId(LEGAL_ID)).thenReturn(Optional.of(entity));
+		when(mockRepository.findAll()).thenReturn(List.of(patternEntity1, patternEntity2, patternEntity3));
 
 		var result = service.findCounterpart(MUNICIPALITY_ID, PARTY_ID, STAKEHOLDER_TYPE);
 
 		assertThat(result).isEqualTo(COUNTERPART);
 		verify(mockPartyIntegration).getLegalId(MUNICIPALITY_ID, PARTY_ID);
-		verify(mockRepository).findByLegalId(LEGAL_ID);
+		verify(mockRepository).findAll();
 		verifyNoMoreInteractions(mockRepository, mockPartyIntegration);
 	}
 
 	@Test
 	void findCounterpart_patternMatch() {
-		var patternEntity = CounterpartMappingEntity.builder()
+		var patternEntity1 = CounterpartMappingEntity.builder()
 			.withId("id-1")
-			.withLegalIdPattern("^1122.*")
+			.withLegalIdPattern("1122")
 			.withCounterpart(COUNTERPART)
+			.build();
+		var patternEntity2 = CounterpartMappingEntity.builder()
+			.withId("id-2")
+			.withLegalIdPattern("2233")
+			.withCounterpart("NOT_MATCHING")
+			.build();
+		var patternEntity3 = CounterpartMappingEntity.builder()
+			.withId("id-3")
+			.withLegalIdPattern("2233445566")
+			.withCounterpart("NOT_MATCHING")
 			.build();
 
 		when(mockPartyIntegration.getLegalId(MUNICIPALITY_ID, PARTY_ID)).thenReturn(LEGAL_ID);
-		when(mockRepository.findByLegalId(LEGAL_ID)).thenReturn(Optional.empty());
-		when(mockRepository.findAll()).thenReturn(List.of(patternEntity));
+		when(mockRepository.findAll()).thenReturn(List.of(patternEntity1, patternEntity2, patternEntity3));
 
 		var result = service.findCounterpart(MUNICIPALITY_ID, PARTY_ID, STAKEHOLDER_TYPE);
 
 		assertThat(result).isEqualTo(COUNTERPART);
 		verify(mockPartyIntegration).getLegalId(MUNICIPALITY_ID, PARTY_ID);
-		verify(mockRepository).findByLegalId(LEGAL_ID);
 		verify(mockRepository).findAll();
 		verifyNoMoreInteractions(mockRepository, mockPartyIntegration);
 	}
@@ -88,7 +106,6 @@ class CounterpartMappingServiceTest {
 			.build();
 
 		when(mockPartyIntegration.getLegalId(MUNICIPALITY_ID, PARTY_ID)).thenReturn(LEGAL_ID);
-		when(mockRepository.findByLegalId(LEGAL_ID)).thenReturn(Optional.empty());
 		when(mockRepository.findAll()).thenReturn(List.of());
 		when(mockRepository.findByStakeholderType(STAKEHOLDER_TYPE)).thenReturn(Optional.of(typeEntity));
 
@@ -96,7 +113,6 @@ class CounterpartMappingServiceTest {
 
 		assertThat(result).isEqualTo(COUNTERPART);
 		verify(mockPartyIntegration).getLegalId(MUNICIPALITY_ID, PARTY_ID);
-		verify(mockRepository).findByLegalId(LEGAL_ID);
 		verify(mockRepository).findAll();
 		verify(mockRepository).findByStakeholderType(STAKEHOLDER_TYPE);
 		verifyNoMoreInteractions(mockRepository, mockPartyIntegration);
@@ -105,7 +121,6 @@ class CounterpartMappingServiceTest {
 	@Test
 	void findCounterpart_noMatch_throwsNotFound() {
 		when(mockPartyIntegration.getLegalId(MUNICIPALITY_ID, PARTY_ID)).thenReturn(LEGAL_ID);
-		when(mockRepository.findByLegalId(LEGAL_ID)).thenReturn(Optional.empty());
 		when(mockRepository.findAll()).thenReturn(List.of());
 		when(mockRepository.findByStakeholderType(STAKEHOLDER_TYPE)).thenReturn(Optional.empty());
 
@@ -115,7 +130,6 @@ class CounterpartMappingServiceTest {
 			.hasMessage("No counterpart found for partyId: " + PARTY_ID + " or stakeholderType: " + STAKEHOLDER_TYPE);
 
 		verify(mockPartyIntegration).getLegalId(MUNICIPALITY_ID, PARTY_ID);
-		verify(mockRepository).findByLegalId(LEGAL_ID);
 		verify(mockRepository).findAll();
 		verify(mockRepository).findByStakeholderType(STAKEHOLDER_TYPE);
 		verifyNoMoreInteractions(mockRepository);
@@ -124,7 +138,6 @@ class CounterpartMappingServiceTest {
 	@Test
 	void findCounterpart_noMatchWithNullStakeholderType_throwsNotFound() {
 		when(mockPartyIntegration.getLegalId(MUNICIPALITY_ID, PARTY_ID)).thenReturn(LEGAL_ID);
-		when(mockRepository.findByLegalId(LEGAL_ID)).thenReturn(Optional.empty());
 		when(mockRepository.findAll()).thenReturn(List.of());
 
 		assertThatThrownBy(() -> service.findCounterpart(MUNICIPALITY_ID, PARTY_ID, null))
@@ -132,33 +145,6 @@ class CounterpartMappingServiceTest {
 			.hasFieldOrPropertyWithValue("status", NOT_FOUND);
 
 		verify(mockPartyIntegration).getLegalId(MUNICIPALITY_ID, PARTY_ID);
-		verify(mockRepository).findByLegalId(LEGAL_ID);
-		verify(mockRepository).findAll();
-		verifyNoMoreInteractions(mockRepository, mockPartyIntegration);
-	}
-
-	@Test
-	void findCounterpart_invalidRegexPattern_skipped() {
-		var invalidPatternEntity = CounterpartMappingEntity.builder()
-			.withId("id-1")
-			.withLegalIdPattern("[invalid(regex")
-			.withCounterpart("COUNTERPART_INVALID")
-			.build();
-		var validPatternEntity = CounterpartMappingEntity.builder()
-			.withId("id-2")
-			.withLegalIdPattern("^1122.*")
-			.withCounterpart(COUNTERPART)
-			.build();
-
-		when(mockPartyIntegration.getLegalId(MUNICIPALITY_ID, PARTY_ID)).thenReturn(LEGAL_ID);
-		when(mockRepository.findByLegalId(LEGAL_ID)).thenReturn(Optional.empty());
-		when(mockRepository.findAll()).thenReturn(List.of(invalidPatternEntity, validPatternEntity));
-
-		var result = service.findCounterpart(MUNICIPALITY_ID, PARTY_ID, STAKEHOLDER_TYPE);
-
-		assertThat(result).isEqualTo(COUNTERPART);
-		verify(mockPartyIntegration).getLegalId(MUNICIPALITY_ID, PARTY_ID);
-		verify(mockRepository).findByLegalId(LEGAL_ID);
 		verify(mockRepository).findAll();
 		verifyNoMoreInteractions(mockRepository, mockPartyIntegration);
 	}
@@ -167,7 +153,7 @@ class CounterpartMappingServiceTest {
 	void findCounterpart_patternDoesNotMatch_fallsBackToStakeholderType() {
 		var patternEntity = CounterpartMappingEntity.builder()
 			.withId("id-1")
-			.withLegalIdPattern("^9999.*")
+			.withLegalIdPattern("9999")
 			.withCounterpart("COUNTERPART_PATTERN")
 			.build();
 		var typeEntity = CounterpartMappingEntity.builder()
@@ -177,7 +163,6 @@ class CounterpartMappingServiceTest {
 			.build();
 
 		when(mockPartyIntegration.getLegalId(MUNICIPALITY_ID, PARTY_ID)).thenReturn(LEGAL_ID);
-		when(mockRepository.findByLegalId(LEGAL_ID)).thenReturn(Optional.empty());
 		when(mockRepository.findAll()).thenReturn(List.of(patternEntity));
 		when(mockRepository.findByStakeholderType(STAKEHOLDER_TYPE)).thenReturn(Optional.of(typeEntity));
 
@@ -185,7 +170,6 @@ class CounterpartMappingServiceTest {
 
 		assertThat(result).isEqualTo(COUNTERPART);
 		verify(mockPartyIntegration).getLegalId(MUNICIPALITY_ID, PARTY_ID);
-		verify(mockRepository).findByLegalId(LEGAL_ID);
 		verify(mockRepository).findAll();
 		verify(mockRepository).findByStakeholderType(STAKEHOLDER_TYPE);
 		verifyNoMoreInteractions(mockRepository, mockPartyIntegration);
