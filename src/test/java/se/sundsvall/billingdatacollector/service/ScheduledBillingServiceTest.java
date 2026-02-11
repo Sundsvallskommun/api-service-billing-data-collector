@@ -314,6 +314,34 @@ class ScheduledBillingServiceTest {
 		verifyNoMoreInteractions(mockRepository);
 	}
 
+	@Test
+	void testUpdateNextScheduledBillingInPast_success() {
+		// Arrange - entity with billing every day of every month
+		var entity = createScheduledBillingEntity();
+		entity.setNextScheduledBilling(LocalDate.of(2025, 9, 15)); // A date in the past
+		entity.setBillingDaysOfMonth(Set.of(15));
+		entity.setBillingMonths(Set.of(3, 6, 9, 12));
+		var originalNextBilling = entity.getNextScheduledBilling();
+
+		when(mockRepository.saveAndFlush(any(ScheduledBillingEntity.class)))
+			.thenAnswer(invocation -> invocation.getArgument(0));
+
+		// Act
+		service.updateNextScheduledBilling(entity);
+
+		// Assert - next billing should be tomorrow (not today) to prevent multiple runs on same day
+		var captor = ArgumentCaptor.forClass(ScheduledBillingEntity.class);
+		verify(mockRepository).saveAndFlush(captor.capture());
+		var savedEntity = captor.getValue();
+
+		assertThat(savedEntity.getNextScheduledBilling())
+			.isNotNull()
+			.isNotEqualTo(originalNextBilling)
+			.isEqualTo(LocalDate.of(2025, 12, 15));
+
+		verifyNoMoreInteractions(mockRepository);
+	}
+
 	private ScheduledBilling createScheduledBilling() {
 		return ScheduledBilling.builder()
 			.withExternalId(EXTERNAL_ID)

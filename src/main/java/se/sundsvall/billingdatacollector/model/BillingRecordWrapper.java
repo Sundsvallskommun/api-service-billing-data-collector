@@ -16,6 +16,7 @@ public class BillingRecordWrapper {
 	private BillingRecord billingRecord;
 	private String familyId;
 	private String flowInstanceId;
+	private String contractId;
 	private String legalId;
 	private String municipalityId;
 

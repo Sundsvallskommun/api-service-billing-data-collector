@@ -94,17 +94,17 @@ public class FalloutEntity {
 	public boolean equals(Object obj) {
 		if (this == obj) { return true; }
 		if (!(obj instanceof final FalloutEntity other)) { return false; }
-		return Objects.equals(billingRecordWrapper, other.billingRecordWrapper) && Objects.equals(created, other.created) && Objects.equals(errorMessage, other.errorMessage) && Objects.equals(familyId, other.familyId) && Objects.equals(flowInstanceId,
-			other.flowInstanceId) && Objects.equals(id, other.id) && Objects.equals(modified, other.modified) && Objects.equals(municipalityId, other.municipalityId) && Objects.equals(openEInstance, other.openEInstance) && (reported == other.reported)
-			&& Objects.equals(requestId, other.requestId);
+		return Objects.equals(billingRecordWrapper, other.billingRecordWrapper) && Objects.equals(created, other.created) && Objects.equals(errorMessage, other.errorMessage) && Objects.equals(familyId, other.familyId)
+			&& Objects.equals(flowInstanceId, other.flowInstanceId) && Objects.equals(id, other.id) && Objects.equals(modified, other.modified)
+			&& Objects.equals(municipalityId, other.municipalityId) && Objects.equals(openEInstance, other.openEInstance) && (reported == other.reported) && Objects.equals(requestId, other.requestId);
 	}
 
 	@Override
 	public String toString() {
 		final StringBuilder builder = new StringBuilder();
-		builder.append("FalloutEntity [id=").append(id).append(", municipalityId=").append(municipalityId).append(", requestId=").append(requestId).append(", billingRecordWrapper=").append(billingRecordWrapper).append(", openEInstance=").append(
-			openEInstance).append(", familyId=").append(familyId).append(", flowInstanceId=").append(flowInstanceId).append(", errorMessage=").append(errorMessage).append(", created=").append(created).append(", modified=").append(modified).append(
-				", reported=").append(reported).append("]");
+		builder.append("FalloutEntity [id=").append(id).append(", municipalityId=").append(municipalityId).append(", requestId=").append(requestId).append(", billingRecordWrapper=").append(billingRecordWrapper)
+			.append(", openEInstance=").append(openEInstance).append(", familyId=").append(familyId).append(", flowInstanceId=").append(flowInstanceId).append(", errorMessage=").append(errorMessage)
+			.append(", created=").append(created).append(", modified=").append(modified).append(", reported=").append(reported).append("]");
 		return builder.toString();
 	}
 }

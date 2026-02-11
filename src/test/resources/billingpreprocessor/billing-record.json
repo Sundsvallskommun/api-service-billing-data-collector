@@ -3,7 +3,9 @@
 		"approved": null,
 		"created": null,
 		"approvedBy": null,
-		"extraParameters": {},
+		"extraParameters": {
+			"contractId": "111 222 33-44"
+		},
 		"recipient": {
 			"firstName": "Kalle",
 			"lastName": "Anka",
@@ -60,6 +62,7 @@
 	},
 	"familyId": "358",
 	"municipalityId": "2281",
+	"contractId": "111 222 33-44",
 	"legalId": "1234567890",
 	"flowInstanceId": "12345",
 	"recipientPrivatePerson": true

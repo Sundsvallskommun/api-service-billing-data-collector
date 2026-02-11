@@ -31,6 +31,7 @@ class BillingRecordWrapperTest {
 		final var familyId = "123";
 		final var flowInstanceId = "4657";
 		final var municipalityId = "2281";
+		final var contractId = "contractId";
 		final var isRecipientPrivatePerson = true;
 
 		final var wrapper = BillingRecordWrapper.builder()
@@ -39,6 +40,7 @@ class BillingRecordWrapperTest {
 			.withFamilyId(familyId)
 			.withFlowInstanceId(flowInstanceId)
 			.withMunicipalityId(municipalityId)
+			.withContractId(contractId)
 			.withIsRecipientPrivatePerson(isRecipientPrivatePerson)
 			.build();
 
@@ -48,6 +50,7 @@ class BillingRecordWrapperTest {
 		assertThat(wrapper.getFamilyId()).isEqualTo(familyId);
 		assertThat(wrapper.getFlowInstanceId()).isEqualTo(flowInstanceId);
 		assertThat(wrapper.getMunicipalityId()).isEqualTo(municipalityId);
+		assertThat(wrapper.getContractId()).isEqualTo(contractId);
 		assertThat(wrapper.isRecipientPrivatePerson()).isEqualTo(isRecipientPrivatePerson);
 	}
 

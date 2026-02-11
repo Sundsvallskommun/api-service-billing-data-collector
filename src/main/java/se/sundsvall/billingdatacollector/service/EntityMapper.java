@@ -1,5 +1,6 @@
 package se.sundsvall.billingdatacollector.service;
 
+import generated.se.sundsvall.billingpreprocessor.BillingRecord;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
 import java.util.Optional;
@@ -12,7 +13,9 @@ import se.sundsvall.billingdatacollector.integration.opene.kundfakturaformular.m
 import se.sundsvall.billingdatacollector.model.BillingRecordWrapper;
 import se.sundsvall.dept44.requestid.RequestId;
 
-final class EntityMapper {
+public final class EntityMapper {
+
+	private static final String PARAMETER_KEY_CONTRACT_ID = "contractId";
 
 	private EntityMapper() {}
 
@@ -49,6 +52,16 @@ final class EntityMapper {
 			.build();
 	}
 
+	public static HistoryEntity mapToHistoryEntity(String municipalityId, BillingRecord billingRecord, String location) {
+		return HistoryEntity.builder()
+			.withBillingRecordWrapper(toBillingRecordWrapper(municipalityId, billingRecord))
+			.withMunicipalityId(municipalityId)
+			.withContractId(getContractId(billingRecord))
+			.withLocation(location)
+			.withRequestId(RequestId.get())
+			.build();
+	}
+
 	public static ScheduledJobEntity mapToScheduledJobEntity(LocalDate startDate, LocalDate endDate) {
 		return ScheduledJobEntity.builder()
 			.withMunicipalityId(BillingRecordConstants.SUNDSVALLS_MUNICIPALITY_ID)
@@ -80,5 +93,19 @@ final class EntityMapper {
 			.withNextScheduledBilling(nextScheduledBilling)
 			.withPaused(Optional.ofNullable(dto.getPaused()).orElse(false))
 			.build();
+	}
+
+	private static BillingRecordWrapper toBillingRecordWrapper(String municipalityId, BillingRecord billingRecord) {
+		return BillingRecordWrapper.builder()
+			.withBillingRecord(billingRecord)
+			.withContractId(getContractId(billingRecord))
+			.withMunicipalityId(municipalityId)
+			.build();
+	}
+
+	private static String getContractId(BillingRecord billingRecord) {
+		return Optional.ofNullable(billingRecord.getExtraParameters())
+			.map(parameters -> parameters.get(PARAMETER_KEY_CONTRACT_ID))
+			.orElse(null);
 	}
 }
