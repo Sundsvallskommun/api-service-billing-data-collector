@@ -148,8 +148,8 @@ public class ScheduledBillingService {
 
 	@Transactional(propagation = REQUIRES_NEW)
 	public void updateNextScheduledBilling(ScheduledBillingEntity scheduledBillingEntity) {
-		var tomorrow = LocalDate.now().plusDays(1);
-		scheduledBillingEntity.setNextScheduledBilling(calculateNextScheduledBilling(scheduledBillingEntity.getBillingDaysOfMonth(), scheduledBillingEntity.getBillingMonths(), tomorrow));
+		var startFrom = scheduledBillingEntity.getNextScheduledBilling().plusDays(1);
+		scheduledBillingEntity.setNextScheduledBilling(calculateNextScheduledBilling(scheduledBillingEntity.getBillingDaysOfMonth(), scheduledBillingEntity.getBillingMonths(), startFrom));
 		repository.saveAndFlush(scheduledBillingEntity);
 	}
 }

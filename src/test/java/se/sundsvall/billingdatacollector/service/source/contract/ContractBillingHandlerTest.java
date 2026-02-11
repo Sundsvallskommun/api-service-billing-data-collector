@@ -1,5 +1,6 @@
 package se.sundsvall.billingdatacollector.service.source.contract;
 
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
@@ -16,9 +17,9 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.zalando.problem.ThrowableProblem;
 import se.sundsvall.billingdatacollector.integration.billingpreprocessor.BillingPreprocessorClient;
 import se.sundsvall.billingdatacollector.integration.contract.ContractIntegration;
-import se.sundsvall.billingdatacollector.integration.db.FalloutRepository;
 import se.sundsvall.billingdatacollector.integration.db.HistoryRepository;
 
 @ExtendWith(MockitoExtension.class)
@@ -39,9 +40,6 @@ class ContractBillingHandlerTest {
 	private HistoryRepository historyRepositoryMock;
 
 	@Mock
-	private FalloutRepository falloutRepositoryMock;
-
-	@Mock
 	private Contract contractMock;
 
 	@Mock
@@ -56,8 +54,7 @@ class ContractBillingHandlerTest {
 			contractIntegrationMock,
 			contractMapperMock,
 			billingPreprocessorClientMock,
-			historyRepositoryMock,
-			falloutRepositoryMock);
+			historyRepositoryMock);
 	}
 
 	@Test
@@ -83,28 +80,28 @@ class ContractBillingHandlerTest {
 		// Arrange
 		when(contractIntegrationMock.getContract(MUNICIPALITY_ID, CONTRACT_ID)).thenReturn(Optional.empty());
 
-		// Act
-		handler.sendBillingRecords(MUNICIPALITY_ID, CONTRACT_ID);
+		// Act & Assert
+		assertThatThrownBy(() -> handler.sendBillingRecords(MUNICIPALITY_ID, CONTRACT_ID))
+			.isInstanceOf(ThrowableProblem.class)
+			.hasMessageContaining("No contract found");
 
-		// Assert & verify
 		verify(contractIntegrationMock).getContract(MUNICIPALITY_ID, CONTRACT_ID);
-		verify(falloutRepositoryMock).saveAndFlush(any());
 	}
 
 	@Test
-	void sendBillingRecords_shouldSaveFallout_whenPreprocessorFails() {
+	void sendBillingRecords_shouldThrowProblem_whenPreprocessorFails() {
 		// Arrange
 		when(contractIntegrationMock.getContract(MUNICIPALITY_ID, CONTRACT_ID)).thenReturn(Optional.of(contractMock));
 		when(contractMapperMock.createBillingRecord(MUNICIPALITY_ID, contractMock)).thenReturn(billingRecordMock);
 		when(billingPreprocessorClientMock.createBillingRecord(MUNICIPALITY_ID, billingRecordMock)).thenThrow(new RuntimeException("Preprocessor failure"));
 
-		// Act
-		handler.sendBillingRecords(MUNICIPALITY_ID, CONTRACT_ID);
+		// Act & Assert
+		assertThatThrownBy(() -> handler.sendBillingRecords(MUNICIPALITY_ID, CONTRACT_ID))
+			.isInstanceOf(ThrowableProblem.class)
+			.hasMessageContaining("Failed to send billing record to billing preprocessor");
 
-		// Assert & verify
 		verify(contractIntegrationMock).getContract(MUNICIPALITY_ID, CONTRACT_ID);
 		verify(contractMapperMock).createBillingRecord(MUNICIPALITY_ID, contractMock);
 		verify(billingPreprocessorClientMock).createBillingRecord(MUNICIPALITY_ID, billingRecordMock);
-		verify(falloutRepositoryMock).saveAndFlush(any());
 	}
 }

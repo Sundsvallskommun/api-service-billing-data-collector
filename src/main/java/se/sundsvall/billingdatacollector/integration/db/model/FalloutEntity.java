@@ -34,7 +34,6 @@ import se.sundsvall.billingdatacollector.model.BillingRecordWrapper;
 	indexes = {
 		@Index(name = "idx_family_id", columnList = "family_id"),
 		@Index(name = "idx_flow_instance_id", columnList = "flow_instance_id"),
-		@Index(name = "idx_contract_id", columnList = "contract_id"),
 		@Index(name = "idx_municipality_id", columnList = "municipality_id")
 	})
 public class FalloutEntity {
@@ -63,9 +62,6 @@ public class FalloutEntity {
 	@Column(name = "flow_instance_id")
 	private String flowInstanceId;
 
-	@Column(name = "contract_id")
-	private String contractId;
-
 	@Column(name = "error_message", length = 1024)
 	private String errorMessage;
 
@@ -91,7 +87,7 @@ public class FalloutEntity {
 
 	@Override
 	public int hashCode() {
-		return Objects.hash(billingRecordWrapper, created, errorMessage, familyId, flowInstanceId, contractId, id, modified, municipalityId, openEInstance, reported, requestId);
+		return Objects.hash(billingRecordWrapper, created, errorMessage, familyId, flowInstanceId, id, modified, municipalityId, openEInstance, reported, requestId);
 	}
 
 	@Override
@@ -99,7 +95,7 @@ public class FalloutEntity {
 		if (this == obj) { return true; }
 		if (!(obj instanceof final FalloutEntity other)) { return false; }
 		return Objects.equals(billingRecordWrapper, other.billingRecordWrapper) && Objects.equals(created, other.created) && Objects.equals(errorMessage, other.errorMessage) && Objects.equals(familyId, other.familyId)
-			&& Objects.equals(flowInstanceId, other.flowInstanceId) && Objects.equals(contractId, other.contractId) && Objects.equals(id, other.id) && Objects.equals(modified, other.modified)
+			&& Objects.equals(flowInstanceId, other.flowInstanceId) && Objects.equals(id, other.id) && Objects.equals(modified, other.modified)
 			&& Objects.equals(municipalityId, other.municipalityId) && Objects.equals(openEInstance, other.openEInstance) && (reported == other.reported) && Objects.equals(requestId, other.requestId);
 	}
 
@@ -107,7 +103,7 @@ public class FalloutEntity {
 	public String toString() {
 		final StringBuilder builder = new StringBuilder();
 		builder.append("FalloutEntity [id=").append(id).append(", municipalityId=").append(municipalityId).append(", requestId=").append(requestId).append(", billingRecordWrapper=").append(billingRecordWrapper)
-			.append(", openEInstance=").append(openEInstance).append(", familyId=").append(familyId).append(", flowInstanceId=").append(flowInstanceId).append(", contractId=").append(contractId).append(", errorMessage=").append(errorMessage)
+			.append(", openEInstance=").append(openEInstance).append(", familyId=").append(familyId).append(", flowInstanceId=").append(flowInstanceId).append(", errorMessage=").append(errorMessage)
 			.append(", created=").append(created).append(", modified=").append(modified).append(", reported=").append(reported).append("]");
 		return builder.toString();
 	}

@@ -41,25 +41,6 @@ public final class EntityMapper {
 			.build();
 	}
 
-	public static FalloutEntity mapToContractFalloutEntity(String municipalityId, String externalId, String message) {
-		return FalloutEntity.builder()
-			.withMunicipalityId(municipalityId)
-			.withContractId(externalId)
-			.withErrorMessage(message)
-			.withRequestId(RequestId.get())
-			.build();
-	}
-
-	public static FalloutEntity mapToBillingRecordFalloutEntity(String municipalityId, BillingRecord billingRecord, String message) {
-		return FalloutEntity.builder()
-			.withBillingRecordWrapper(toBillingRecordWrapper(municipalityId, billingRecord))
-			.withMunicipalityId(municipalityId)
-			.withContractId(getContractId(billingRecord))
-			.withErrorMessage(message)
-			.withRequestId(RequestId.get())
-			.build();
-	}
-
 	public static HistoryEntity mapToHistoryEntity(BillingRecordWrapper wrapper, String location) {
 		return HistoryEntity.builder()
 			.withBillingRecordWrapper(wrapper)
