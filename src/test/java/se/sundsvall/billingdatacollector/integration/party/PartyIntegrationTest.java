@@ -32,6 +32,8 @@ class PartyIntegrationTest {
 	private static final String FAULTY_PERSONAL_NUMBER = "19900101238";
 	private static final String PERSONAL_NUMBER = "199001012385";
 	private static final String ORGANIZATION_NUMBER = "5505158888";
+	private static final String PARTY_ID = "somePartyId";
+	private static final String LEGAL_ID = "someLegalId";
 
 	@Test
 	void testGetPartyIdForPrivateParty() {
@@ -93,5 +95,33 @@ class PartyIntegrationTest {
 
 		verifyNoMoreInteractions(mockPartyClient);
 
+	}
+
+	@Test
+	void testGetLegalId() {
+		when(mockPartyClient.getLegalId(MUNICIPALITY_ID, PARTY_ID))
+			.thenReturn(Optional.of(LEGAL_ID));
+
+		final var legalId = partyIntegration.getLegalId(MUNICIPALITY_ID, PARTY_ID);
+
+		assertThat(legalId).isEqualTo(LEGAL_ID);
+
+		verify(mockPartyClient).getLegalId(MUNICIPALITY_ID, PARTY_ID);
+		verifyNoMoreInteractions(mockPartyClient);
+	}
+
+	@Test
+	void testGetLegalIdWhenNothingIsFound() {
+		when(mockPartyClient.getLegalId(MUNICIPALITY_ID, PARTY_ID))
+			.thenReturn(Optional.empty());
+
+		assertThatExceptionOfType(ThrowableProblem.class).isThrownBy(() -> partyIntegration.getLegalId(MUNICIPALITY_ID, PARTY_ID))
+			.satisfies(problem -> {
+				assertThat(problem.getTitle()).isEqualTo("Couldn't find legalId for partyId " + PARTY_ID);
+				assertThat(problem.getStatus()).isEqualTo(Status.INTERNAL_SERVER_ERROR);
+			});
+
+		verify(mockPartyClient).getLegalId(MUNICIPALITY_ID, PARTY_ID);
+		verifyNoMoreInteractions(mockPartyClient);
 	}
 }

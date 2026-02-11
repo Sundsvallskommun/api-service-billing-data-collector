@@ -1,4 +1,13 @@
-create table fallout (
+
+    create table counterpart_mapping (
+        counterpart varchar(5) not null,
+        legal_id_pattern varchar(12),
+        stakeholder_type varchar(20),
+        id varchar(255) not null,
+        primary key (id)
+    ) engine=InnoDB;
+
+    create table fallout (
         municipality_id varchar(4) not null,
         reported boolean default false,
         created datetime(6),
@@ -47,22 +56,28 @@ create table fallout (
         primary key (id)
     ) engine=InnoDB;
 
-    create index idx_family_id 
+    create index idx_stakeholder_type
+       on counterpart_mapping (stakeholder_type);
+
+    alter table if exists counterpart_mapping
+       add constraint uq_legal_id_pattern unique (legal_id_pattern);
+
+    create index idx_family_id
        on fallout (family_id);
 
-    create index idx_flow_instance_id 
+    create index idx_flow_instance_id
        on fallout (flow_instance_id);
 
-    create index idx_municipality_id 
+    create index idx_municipality_id
        on fallout (municipality_id);
 
-    create index idx_family_id 
+    create index idx_family_id
        on history (family_id);
 
-    create index idx_flow_instance_id 
+    create index idx_flow_instance_id
        on history (flow_instance_id);
 
-    create index idx_municipality_id 
+    create index idx_municipality_id
        on history (municipality_id);
 
     create index idx_municipality_id_external_id_source

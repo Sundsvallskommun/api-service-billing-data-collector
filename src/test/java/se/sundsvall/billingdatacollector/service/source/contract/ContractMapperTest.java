@@ -6,6 +6,7 @@ import static generated.se.sundsvall.contract.StakeholderRole.LESSEE;
 import static generated.se.sundsvall.contract.StakeholderRole.LESSOR;
 import static generated.se.sundsvall.contract.StakeholderRole.PRIMARY_BILLING_PARTY;
 import static generated.se.sundsvall.contract.StakeholderRole.PROPERTY_OWNER;
+import static generated.se.sundsvall.contract.StakeholderType.PERSON;
 import static java.util.Collections.emptyList;
 import static org.apache.commons.lang3.StringUtils.isBlank;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -45,6 +46,7 @@ import se.sundsvall.billingdatacollector.integration.scb.model.KPIBaseYear;
 
 @ExtendWith(MockitoExtension.class)
 class ContractMapperTest {
+	private static final String MUNICIPALITY_ID = "municipalityId";
 	private static final String CARE_OF = "careOf";
 	private static final String CONTRACT_ID = "contractId";
 	private static final String FIRST_NAME = "firstName";
@@ -69,6 +71,9 @@ class ContractMapperTest {
 
 	@Mock
 	private Invoicing invoicingMock;
+
+	@Mock
+	private CounterpartMappingService counterpartMappingServiceMock;
 
 	@InjectMocks
 	private ContractMapper mapper;
@@ -109,7 +114,7 @@ class ContractMapperTest {
 		when(contractMock.getExternalReferenceId()).thenReturn(externalReferenceId);
 
 		// Act
-		final var result = mapper.createBillingRecord(contractMock);
+		final var result = mapper.createBillingRecord(MUNICIPALITY_ID, contractMock);
 
 		// Assert & verify
 		assertThat(result.getApprovedBy()).isEqualTo("CONTRACT-SERVICE");
@@ -147,7 +152,7 @@ class ContractMapperTest {
 
 		verify(contractMock, times(2)).getContractId();
 		verify(contractMock, times(2)).getExternalReferenceId();
-		verify(contractMock).getStakeholders();
+		verify(contractMock, times(2)).getStakeholders();
 		verify(settingsProviderMock).isLeaseTypeSettingsPresent(contractMock);
 		verify(settingsProviderMock).getActivity(contractMock);
 		verify(settingsProviderMock).getCostCenter(contractMock);
@@ -158,7 +163,7 @@ class ContractMapperTest {
 
 	@Test
 	void toBillingRecordFromNull() {
-		assertThat(mapper.createBillingRecord(null)).isNull();
+		assertThat(mapper.createBillingRecord(MUNICIPALITY_ID, null)).isNull();
 	}
 
 	@ParameterizedTest(name = "{0}")
@@ -176,7 +181,7 @@ class ContractMapperTest {
 		when(invoicingMock.getInvoiceInterval()).thenReturn(intervalType);
 
 		// Act
-		final var result = mapper.createBillingRecord(contractMock);
+		final var result = mapper.createBillingRecord(MUNICIPALITY_ID, contractMock);
 
 		// Assert & verify
 		if (hasMatch) {
@@ -228,7 +233,7 @@ class ContractMapperTest {
 		when(invoicingMock.getInvoiceInterval()).thenReturn(intervalType);
 
 		// Act
-		final var e = assertThrows(ThrowableProblem.class, () -> mapper.createBillingRecord(contractMock));
+		final var e = assertThrows(ThrowableProblem.class, () -> mapper.createBillingRecord(MUNICIPALITY_ID, contractMock));
 
 		// Assert & verify
 		assertThat(e.getStatus()).isEqualTo(INTERNAL_SERVER_ERROR);
@@ -239,7 +244,7 @@ class ContractMapperTest {
 	}
 
 	@Test
-	void createBillingRecord_withIndexedPrices() {
+	void createBillingRecord_withIndexedPricesAndCounterpart() {
 		// Arrange
 		final var yearly = BigDecimal.valueOf(10000);
 		final var intervalType = IntervalType.YEARLY;
@@ -247,9 +252,11 @@ class ContractMapperTest {
 		final var costCenter = "costCenter";
 		final var department = "department";
 		final var subaccount = "subaccount";
+		final var counterpart = "counterpart";
 		final var vatCode = "vatCode";
 		final var indexType = "KPI 80";
 		final var kpiIndex = BigDecimal.valueOf(415.51);
+		final var billableStakeholder = generateStakeholder().addRolesItem(PRIMARY_BILLING_PARTY).roles(List.of(PRIMARY_BILLING_PARTY, LESSEE));
 
 		when(contractMock.getFees()).thenReturn(feesMock);
 		when(feesMock.getYearly()).thenReturn(yearly);
@@ -266,9 +273,11 @@ class ContractMapperTest {
 		when(settingsProviderMock.getVatCode(contractMock)).thenReturn(vatCode);
 		when(contractMock.getContractId()).thenReturn(CONTRACT_ID);
 		when(scbIntegrationMock.getKPI(KPIBaseYear.KPI_80, YearMonth.now().withMonth(Month.OCTOBER.getValue()))).thenReturn(kpiIndex);
-
+		when(contractMock.getStakeholders()).thenReturn(List.of(generateStakeholder().roles(List.of(PRIMARY_BILLING_PARTY, LESSEE))
+			.type(PERSON)));
+		when(counterpartMappingServiceMock.findCounterpart(MUNICIPALITY_ID, billableStakeholder.getPartyId(), PERSON.getValue())).thenReturn(counterpart);
 		// Act
-		final var result = mapper.createBillingRecord(contractMock);
+		final var result = mapper.createBillingRecord(MUNICIPALITY_ID, contractMock);
 
 		// Assert & verify
 		assertThat(result.getApprovedBy()).isEqualTo("CONTRACT-SERVICE");
@@ -294,10 +303,10 @@ class ContractMapperTest {
 			assertThat(accountInfo.getSubaccount()).isEqualTo(subaccount);
 			assertThat(accountInfo.getAccuralKey()).isNull();
 			assertThat(accountInfo.getArticle()).isNull();
-			assertThat(accountInfo.getCounterpart()).isNull();
+			assertThat(accountInfo.getCounterpart()).isEqualTo(counterpart);
 			assertThat(accountInfo.getProject()).isNull();
 		});
-		assertThat(result.getRecipient()).isNull(); // Tested by other test methods
+		assertThat(result.getRecipient()).isNotNull(); // Tested by other test methods
 		assertThat(result.getStatus()).isEqualTo(APPROVED);
 		assertThat(result.getType()).isEqualTo(EXTERNAL);
 		assertThat(result.getExtraParameters()).hasSize(2).containsExactlyInAnyOrderEntriesOf(Map.of(
@@ -306,7 +315,7 @@ class ContractMapperTest {
 
 		verify(contractMock, times(2)).getContractId();
 		verify(contractMock, times(2)).getExternalReferenceId();
-		verify(contractMock).getStakeholders();
+		verify(contractMock, times(2)).getStakeholders();
 		verify(settingsProviderMock).isLeaseTypeSettingsPresent(contractMock);
 		verify(settingsProviderMock).getActivity(contractMock);
 		verify(settingsProviderMock).getCostCenter(contractMock);
