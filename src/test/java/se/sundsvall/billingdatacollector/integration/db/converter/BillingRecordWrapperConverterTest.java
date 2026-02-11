@@ -14,6 +14,7 @@ import generated.se.sundsvall.billingpreprocessor.Type;
 import jakarta.persistence.PersistenceException;
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.Map;
 import org.json.JSONException;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -65,6 +66,7 @@ class BillingRecordWrapperConverterTest {
 			.withMunicipalityId("2281")
 			.withFamilyId("358")
 			.withFlowInstanceId("12345")
+			.withContractId("111 222 33-44")
 			.withLegalId("1234567890")
 			.withIsRecipientPrivatePerson(true)
 			.withBillingRecord(new BillingRecord()
@@ -92,6 +94,7 @@ class BillingRecordWrapperConverterTest {
 					.firstName("Kalle")
 					.lastName("Anka")
 					.partyId("fb2f0290-3820-11ed-a261-0242ac120002"))
+				.extraParameters(Map.of("contractId", "111 222 33-44"))
 				.status(Status.APPROVED)
 				.type(Type.EXTERNAL))
 			.build();

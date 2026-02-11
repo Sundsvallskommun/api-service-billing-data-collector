@@ -38,6 +38,7 @@ class FalloutEntityTest {
 	void testBuilderMethods() {
 		final var id = UUID.randomUUID().toString();
 		final var municipalityId = "municipalityId";
+		final var contractId = "contractId";
 		final var requestId = UUID.randomUUID().toString();
 		final var billingRecordWrapper = BillingRecordWrapper.builder().build();
 		final var openEInstance = "some xml";
@@ -50,6 +51,7 @@ class FalloutEntityTest {
 		final var entity = FalloutEntity.builder()
 			.withId(id)
 			.withMunicipalityId(municipalityId)
+			.withContractId(contractId)
 			.withRequestId(requestId)
 			.withBillingRecordWrapper(billingRecordWrapper)
 			.withOpenEInstance(openEInstance)
@@ -63,6 +65,7 @@ class FalloutEntityTest {
 		assertThat(entity).isNotNull().hasNoNullFieldsOrProperties();
 		assertThat(entity.getId()).isEqualTo(id);
 		assertThat(entity.getMunicipalityId()).isEqualTo(municipalityId);
+		assertThat(entity.getContractId()).isEqualTo(contractId);
 		assertThat(entity.getRequestId()).isEqualTo(requestId);
 		assertThat(entity.getBillingRecordWrapper()).isEqualTo(billingRecordWrapper);
 		assertThat(entity.getOpenEInstance()).isEqualTo(openEInstance);

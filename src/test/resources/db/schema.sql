@@ -14,6 +14,7 @@
         modified datetime(6),
         request_id varchar(36),
         error_message varchar(1024),
+        contract_id varchar(255),
         family_id varchar(255),
         flow_instance_id varchar(255),
         id varchar(255) not null,
@@ -26,6 +27,7 @@
         municipality_id varchar(4) not null,
         created datetime(6),
         request_id varchar(36),
+        contract_id varchar(255),
         family_id varchar(255),
         flow_instance_id varchar(255),
         id varchar(255) not null,
@@ -68,6 +70,9 @@
     create index idx_flow_instance_id
        on fallout (flow_instance_id);
 
+    create index idx_contract_id
+       on fallout (contract_id);
+
     create index idx_municipality_id
        on fallout (municipality_id);
 
@@ -76,6 +81,9 @@
 
     create index idx_flow_instance_id
        on history (flow_instance_id);
+
+	create index idx_contract_id
+       on history (contract_id);
 
     create index idx_municipality_id
        on history (municipality_id);
