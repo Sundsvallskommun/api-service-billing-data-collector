@@ -17,6 +17,8 @@
 		<xsoup.version>0.3.7</xsoup.version>
 		<generated-sources-path>${project.build.directory}/generated-sources</generated-sources-path>
 		<generated-sources-java-path>src/main/java</generated-sources-java-path>
+		<!-- TODO Remove when certificate updated -->
+		<dept44.check.truststore.skip>true</dept44.check.truststore.skip>
 	</properties>
 	<dependencies>
 		<!-- Test -->
@@ -106,8 +108,6 @@
 					<excludes>
 						<exclude>**/se/sundsvall/billingdatacollector/Application*</exclude>
 						<exclude>**/se/sundsvall/billingdatacollector/**/BillingRecordConstants*</exclude>
-						<!-- TODO Remove when implemented -->
-						<exclude>**/se/sundsvall/billingdatacollector/**/CollectorResource*</exclude>
 						<!-- They are tested though -->
 						<exclude>**/generated/**/*</exclude>
 					</excludes>

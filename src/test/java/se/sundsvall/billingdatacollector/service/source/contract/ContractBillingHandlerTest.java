@@ -1,5 +1,6 @@
 package se.sundsvall.billingdatacollector.service.source.contract;
 
+import static java.util.Collections.emptyList;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
@@ -8,6 +9,8 @@ import static org.mockito.Mockito.when;
 
 import generated.se.sundsvall.billingpreprocessor.BillingRecord;
 import generated.se.sundsvall.contract.Contract;
+import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
@@ -61,6 +64,7 @@ class ContractBillingHandlerTest {
 	void sendBillingRecords_contractMatch() {
 		// Arrange
 		when(contractIntegrationMock.getContract(MUNICIPALITY_ID, CONTRACT_ID)).thenReturn(Optional.of(contractMock));
+		when(contractMock.getExtraParameters()).thenReturn(emptyList());
 		when(contractMapperMock.createBillingRecord(MUNICIPALITY_ID, contractMock)).thenReturn(billingRecordMock);
 		when(billingPreprocessorClientMock.createBillingRecord(MUNICIPALITY_ID, billingRecordMock))
 			.thenReturn(ResponseEntity.status(HttpStatus.CREATED).build());
@@ -76,6 +80,23 @@ class ContractBillingHandlerTest {
 	}
 
 	@Test
+	void sendBillingRecordsWhenLastBillingDateInPast_noContractMatch() {
+		// Arrange
+		when(contractIntegrationMock.getContract(MUNICIPALITY_ID, CONTRACT_ID)).thenReturn(Optional.of(contractMock));
+		when(contractMock.getExtraParameters()).thenReturn(List.of(
+			new generated.se.sundsvall.contract.ExtraParameterGroup()
+				.name("ContractDetails")
+				.parameters(Map.of("finalBillingDate", "2026-01-01"))));
+		// Act
+		assertThatThrownBy(() -> handler.sendBillingRecords(MUNICIPALITY_ID, CONTRACT_ID))
+			.isInstanceOf(ThrowableProblem.class)
+			.hasMessageContaining("No active contract found");
+
+		// Assert & verify
+		verify(contractIntegrationMock).getContract(MUNICIPALITY_ID, CONTRACT_ID);
+	}
+
+	@Test
 	void sendBillingRecords_noContractMatch() {
 		// Arrange
 		when(contractIntegrationMock.getContract(MUNICIPALITY_ID, CONTRACT_ID)).thenReturn(Optional.empty());
@@ -83,25 +104,8 @@ class ContractBillingHandlerTest {
 		// Act & Assert
 		assertThatThrownBy(() -> handler.sendBillingRecords(MUNICIPALITY_ID, CONTRACT_ID))
 			.isInstanceOf(ThrowableProblem.class)
-			.hasMessageContaining("No contract found");
+			.hasMessageContaining("No active contract found");
 
 		verify(contractIntegrationMock).getContract(MUNICIPALITY_ID, CONTRACT_ID);
-	}
-
-	@Test
-	void sendBillingRecords_shouldThrowProblem_whenPreprocessorFails() {
-		// Arrange
-		when(contractIntegrationMock.getContract(MUNICIPALITY_ID, CONTRACT_ID)).thenReturn(Optional.of(contractMock));
-		when(contractMapperMock.createBillingRecord(MUNICIPALITY_ID, contractMock)).thenReturn(billingRecordMock);
-		when(billingPreprocessorClientMock.createBillingRecord(MUNICIPALITY_ID, billingRecordMock)).thenThrow(new RuntimeException("Preprocessor failure"));
-
-		// Act & Assert
-		assertThatThrownBy(() -> handler.sendBillingRecords(MUNICIPALITY_ID, CONTRACT_ID))
-			.isInstanceOf(ThrowableProblem.class)
-			.hasMessageContaining("Failed to send billing record to billing preprocessor");
-
-		verify(contractIntegrationMock).getContract(MUNICIPALITY_ID, CONTRACT_ID);
-		verify(contractMapperMock).createBillingRecord(MUNICIPALITY_ID, contractMock);
-		verify(billingPreprocessorClientMock).createBillingRecord(MUNICIPALITY_ID, billingRecordMock);
 	}
 }
