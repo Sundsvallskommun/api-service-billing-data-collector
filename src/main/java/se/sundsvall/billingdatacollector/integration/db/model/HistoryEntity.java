@@ -30,6 +30,7 @@ import se.sundsvall.billingdatacollector.model.BillingRecordWrapper;
 	indexes = {
 		@Index(name = "idx_family_id", columnList = "family_id"),
 		@Index(name = "idx_flow_instance_id", columnList = "flow_instance_id"),
+		@Index(name = "idx_contract_id", columnList = "contract_id"),
 		@Index(name = "idx_municipality_id", columnList = "municipality_id")
 	})
 public class HistoryEntity {
@@ -55,6 +56,9 @@ public class HistoryEntity {
 	@Column(name = "flow_instance_id")
 	private String flowInstanceId;
 
+	@Column(name = "contract_id")
+	private String contractId;
+
 	@Column(name = "created")
 	private OffsetDateTime created;
 
@@ -68,14 +72,15 @@ public class HistoryEntity {
 
 	@Override
 	public int hashCode() {
-		return Objects.hash(billingRecordWrapper, created, familyId, flowInstanceId, id, location, municipalityId, requestId);
+		return Objects.hash(billingRecordWrapper, created, familyId, flowInstanceId, contractId, id, location, municipalityId, requestId);
 	}
 
 	@Override
 	public boolean equals(Object obj) {
 		if (this == obj) { return true; }
 		if (!(obj instanceof final HistoryEntity other)) { return false; }
-		return Objects.equals(billingRecordWrapper, other.billingRecordWrapper) && Objects.equals(created, other.created) && Objects.equals(familyId, other.familyId) && Objects.equals(flowInstanceId, other.flowInstanceId) && Objects.equals(id, other.id)
+		return Objects.equals(billingRecordWrapper, other.billingRecordWrapper) && Objects.equals(created, other.created) && Objects.equals(familyId, other.familyId)
+			&& Objects.equals(flowInstanceId, other.flowInstanceId) && Objects.equals(contractId, other.contractId) && Objects.equals(id, other.id)
 			&& Objects.equals(location, other.location) && Objects.equals(municipalityId, other.municipalityId) && Objects.equals(requestId, other.requestId);
 	}
 
@@ -83,7 +88,7 @@ public class HistoryEntity {
 	public String toString() {
 		final StringBuilder builder = new StringBuilder();
 		builder.append("HistoryEntity [id=").append(id).append(", municipalityId=").append(municipalityId).append(", requestId=").append(requestId).append(", billingRecordWrapper=").append(billingRecordWrapper).append(", familyId=").append(familyId)
-			.append(", flowInstanceId=").append(flowInstanceId).append(", created=").append(created).append(", location=").append(location).append("]");
+			.append(", flowInstanceId=").append(flowInstanceId).append(", contractId=").append(contractId).append(", created=").append(created).append(", location=").append(location).append("]");
 		return builder.toString();
 	}
 }
