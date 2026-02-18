@@ -1,10 +1,10 @@
 package se.sundsvall.billingdatacollector.integration.scb.model;
 
+import org.junit.jupiter.api.Test;
+
 import static org.assertj.core.api.Assertions.assertThat;
 import static se.sundsvall.billingdatacollector.integration.scb.model.KPIBaseYear.KPI_2020;
 import static se.sundsvall.billingdatacollector.integration.scb.model.KPIBaseYear.KPI_80;
-
-import org.junit.jupiter.api.Test;
 
 class KPIBaseYearTest {
 

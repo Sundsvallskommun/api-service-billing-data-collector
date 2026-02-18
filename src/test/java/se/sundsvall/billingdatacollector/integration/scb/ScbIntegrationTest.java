@@ -1,16 +1,5 @@
 package se.sundsvall.billingdatacollector.integration.scb;
 
-import static java.math.RoundingMode.HALF_EVEN;
-import static org.apache.commons.lang3.RandomUtils.secureStrong;
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyNoMoreInteractions;
-import static org.mockito.Mockito.when;
-import static org.zalando.problem.Status.NOT_FOUND;
-
 import generated.se.sundsvall.scb.Dataset;
 import generated.se.sundsvall.scb.VariablesSelection;
 import java.math.BigDecimal;
@@ -27,6 +16,17 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.zalando.problem.ThrowableProblem;
 import se.sundsvall.billingdatacollector.integration.scb.model.KPIBaseYear;
+
+import static java.math.RoundingMode.HALF_EVEN;
+import static org.apache.commons.lang3.RandomUtils.secureStrong;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
+import static org.mockito.Mockito.when;
+import static org.zalando.problem.Status.NOT_FOUND;
 
 @ExtendWith(MockitoExtension.class)
 class ScbIntegrationTest {

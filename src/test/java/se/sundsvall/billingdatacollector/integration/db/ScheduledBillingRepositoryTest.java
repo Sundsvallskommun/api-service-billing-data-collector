@@ -1,7 +1,5 @@
 package se.sundsvall.billingdatacollector.integration.db;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
 import java.time.LocalDate;
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
@@ -19,6 +17,8 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.jdbc.Sql;
 import se.sundsvall.billingdatacollector.api.model.BillingSource;
 import se.sundsvall.billingdatacollector.integration.db.model.ScheduledBillingEntity;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 @DataJpaTest
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)

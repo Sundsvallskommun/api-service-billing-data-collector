@@ -1,14 +1,5 @@
 package se.sundsvall.billingdatacollector.integration.scb;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.reset;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyNoMoreInteractions;
-import static org.mockito.Mockito.when;
-import static se.sundsvall.billingdatacollector.integration.scb.model.KPIBaseYear.KPI_80;
-
 import java.math.BigDecimal;
 import java.time.YearMonth;
 import org.junit.jupiter.api.BeforeEach;
@@ -24,6 +15,15 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.util.AopTestUtils;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.reset;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
+import static org.mockito.Mockito.when;
+import static se.sundsvall.billingdatacollector.integration.scb.model.KPIBaseYear.KPI_80;
 
 @ContextConfiguration
 @ExtendWith(SpringExtension.class)

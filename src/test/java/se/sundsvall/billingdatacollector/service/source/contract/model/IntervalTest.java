@@ -1,13 +1,13 @@
 package se.sundsvall.billingdatacollector.service.source.contract.model;
 
+import generated.se.sundsvall.contract.IntervalType;
+import org.junit.jupiter.api.Test;
+
 import static org.assertj.core.api.Assertions.assertThat;
 import static se.sundsvall.billingdatacollector.service.source.contract.model.Interval.HALF_YEARLY;
 import static se.sundsvall.billingdatacollector.service.source.contract.model.Interval.MONTHLY;
 import static se.sundsvall.billingdatacollector.service.source.contract.model.Interval.QUARTERLY;
 import static se.sundsvall.billingdatacollector.service.source.contract.model.Interval.YEARLY;
-
-import generated.se.sundsvall.contract.IntervalType;
-import org.junit.jupiter.api.Test;
 
 class IntervalTest {
 

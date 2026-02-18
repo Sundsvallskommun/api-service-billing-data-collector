@@ -1,7 +1,5 @@
 package se.sundsvall.billingdatacollector.service.scheduling.billing;
 
-import static java.util.Collections.emptySet;
-
 import java.time.LocalDate;
 import java.util.Optional;
 import org.slf4j.Logger;
@@ -10,6 +8,8 @@ import org.springframework.stereotype.Component;
 import se.sundsvall.billingdatacollector.integration.db.model.ScheduledJobEntity;
 import se.sundsvall.billingdatacollector.service.CollectorService;
 import se.sundsvall.billingdatacollector.service.DbService;
+
+import static java.util.Collections.emptySet;
 
 @Component
 public class BillingJobHandler {

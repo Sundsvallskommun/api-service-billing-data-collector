@@ -1,9 +1,9 @@
 package se.sundsvall.billingdatacollector.integration.opene.kundfakturaformular.model.external;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
 import org.junit.jupiter.api.Test;
 import se.sundsvall.billingdatacollector.integration.opene.kundfakturaformular.model.ExternFaktura;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 class ExternFakturaTest {
 

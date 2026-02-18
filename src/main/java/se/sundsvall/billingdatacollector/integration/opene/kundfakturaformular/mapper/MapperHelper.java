@@ -1,9 +1,5 @@
 package se.sundsvall.billingdatacollector.integration.opene.kundfakturaformular.mapper;
 
-import static java.util.Optional.ofNullable;
-import static org.apache.commons.lang3.StringUtils.isNotBlank;
-import static org.zalando.problem.Status.INTERNAL_SERVER_ERROR;
-
 import java.math.BigDecimal;
 import java.util.Optional;
 import java.util.regex.Matcher;
@@ -12,6 +8,10 @@ import org.apache.commons.lang3.StringUtils;
 import org.zalando.problem.Problem;
 import se.sundsvall.billingdatacollector.integration.opene.kundfakturaformular.model.ExternFaktura;
 import se.sundsvall.billingdatacollector.integration.opene.kundfakturaformular.model.OrganizationInformation;
+
+import static java.util.Optional.ofNullable;
+import static org.apache.commons.lang3.StringUtils.isNotBlank;
+import static org.zalando.problem.Status.INTERNAL_SERVER_ERROR;
 
 final class MapperHelper {
 

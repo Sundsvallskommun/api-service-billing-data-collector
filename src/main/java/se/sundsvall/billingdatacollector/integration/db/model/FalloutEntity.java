@@ -1,7 +1,5 @@
 package se.sundsvall.billingdatacollector.integration.db.model;
 
-import static org.hibernate.annotations.TimeZoneStorageType.NORMALIZE;
-
 import jakarta.persistence.Column;
 import jakarta.persistence.Convert;
 import jakarta.persistence.Entity;
@@ -22,6 +20,8 @@ import org.hibernate.annotations.TimeZoneStorage;
 import org.hibernate.annotations.UuidGenerator;
 import se.sundsvall.billingdatacollector.integration.db.converter.BillingRecordWrapperConverter;
 import se.sundsvall.billingdatacollector.model.BillingRecordWrapper;
+
+import static org.hibernate.annotations.TimeZoneStorageType.NORMALIZE;
 
 @Getter
 @Setter

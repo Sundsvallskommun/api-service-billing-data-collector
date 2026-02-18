@@ -1,8 +1,5 @@
 package se.sundsvall.billingdatacollector.service.scheduling.fallout;
 
-import static org.apache.commons.lang3.StringUtils.isBlank;
-import static org.springframework.util.CollectionUtils.isEmpty;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -14,6 +11,9 @@ import se.sundsvall.billingdatacollector.integration.messaging.FalloutMessagePro
 import se.sundsvall.billingdatacollector.integration.messaging.MessagingClient;
 import se.sundsvall.billingdatacollector.model.Fallout;
 import se.sundsvall.billingdatacollector.service.DbService;
+
+import static org.apache.commons.lang3.StringUtils.isBlank;
+import static org.springframework.util.CollectionUtils.isEmpty;
 
 @Component
 public class FalloutJobHandler {

@@ -1,7 +1,5 @@
 package se.sundsvall.billingdatacollector.service;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
 import java.time.OffsetDateTime;
@@ -12,6 +10,8 @@ import se.sundsvall.billingdatacollector.TestDataFactory;
 import se.sundsvall.billingdatacollector.api.model.BillingSource;
 import se.sundsvall.billingdatacollector.api.model.ScheduledBilling;
 import se.sundsvall.billingdatacollector.integration.db.model.ScheduledBillingEntity;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 class EntityMapperTest {
 

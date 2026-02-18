@@ -1,15 +1,5 @@
 package se.sundsvall.billingdatacollector.service.scheduling;
 
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.doNothing;
-import static org.mockito.Mockito.doThrow;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyNoInteractions;
-import static org.mockito.Mockito.verifyNoMoreInteractions;
-import static org.mockito.Mockito.when;
-
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -25,6 +15,16 @@ import se.sundsvall.billingdatacollector.integration.db.model.ScheduledBillingEn
 import se.sundsvall.billingdatacollector.service.ScheduledBillingService;
 import se.sundsvall.billingdatacollector.service.source.BillingSourceHandler;
 import se.sundsvall.dept44.scheduling.health.Dept44HealthUtility;
+
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
+import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class BillingSchedulerTest {

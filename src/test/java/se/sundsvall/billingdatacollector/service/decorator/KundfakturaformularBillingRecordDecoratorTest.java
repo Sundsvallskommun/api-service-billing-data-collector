@@ -1,12 +1,5 @@
 package se.sundsvall.billingdatacollector.service.decorator;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyNoMoreInteractions;
-import static org.mockito.Mockito.when;
-
 import generated.se.sundsvall.billingpreprocessor.BillingRecord;
 import generated.se.sundsvall.billingpreprocessor.Recipient;
 import generated.se.sundsvall.billingpreprocessor.Type;
@@ -20,6 +13,13 @@ import org.zalando.problem.ThrowableProblem;
 import se.sundsvall.billingdatacollector.integration.opene.OpenEIntegrationProperties;
 import se.sundsvall.billingdatacollector.integration.party.PartyIntegration;
 import se.sundsvall.billingdatacollector.model.BillingRecordWrapper;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
+import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class KundfakturaformularBillingRecordDecoratorTest {

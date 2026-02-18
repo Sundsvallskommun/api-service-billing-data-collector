@@ -1,13 +1,13 @@
 package se.sundsvall.billingdatacollector.integration.db.converter;
 
-import static java.util.Optional.ofNullable;
-import static java.util.function.Predicate.not;
-
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import jakarta.persistence.AttributeConverter;
 import jakarta.persistence.PersistenceException;
 import se.sundsvall.billingdatacollector.model.BillingRecordWrapper;
+
+import static java.util.Optional.ofNullable;
+import static java.util.function.Predicate.not;
 
 /**
  * Convert {@link BillingRecordWrapper} to and from JSON.

@@ -1,7 +1,5 @@
 package se.sundsvall.billingdatacollector.integration.opene.kundfakturaformular.mapper;
 
-import static se.sundsvall.billingdatacollector.integration.opene.util.XPathUtil.getString;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
@@ -9,6 +7,8 @@ import se.sundsvall.billingdatacollector.integration.opene.OpenEIntegrationPrope
 import se.sundsvall.billingdatacollector.integration.opene.OpenEMapper;
 import se.sundsvall.billingdatacollector.integration.opene.util.ListUtil;
 import se.sundsvall.billingdatacollector.model.BillingRecordWrapper;
+
+import static se.sundsvall.billingdatacollector.integration.opene.util.XPathUtil.getString;
 
 @Component
 class KundfakturaformularMapper implements OpenEMapper {

@@ -1,12 +1,12 @@
 package se.sundsvall.billingdatacollector.service.source.contract.model;
 
-import static java.util.Objects.isNull;
-import static org.zalando.problem.Status.NOT_FOUND;
-
 import generated.se.sundsvall.contract.IntervalType;
 import java.util.Objects;
 import java.util.stream.Stream;
 import org.zalando.problem.Problem;
+
+import static java.util.Objects.isNull;
+import static org.zalando.problem.Status.NOT_FOUND;
 
 public enum Interval {
 	MONTHLY("N_1", 12),

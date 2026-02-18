@@ -1,13 +1,5 @@
 package se.sundsvall.billingdatacollector.service.source.contract.util;
 
-import static generated.se.sundsvall.contract.IntervalType.HALF_YEARLY;
-import static generated.se.sundsvall.contract.IntervalType.MONTHLY;
-import static generated.se.sundsvall.contract.IntervalType.QUARTERLY;
-import static generated.se.sundsvall.contract.IntervalType.YEARLY;
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.Mockito.when;
-
 import generated.se.sundsvall.contract.Contract;
 import generated.se.sundsvall.contract.Fees;
 import generated.se.sundsvall.contract.IntervalType;
@@ -23,6 +15,14 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.zalando.problem.Status;
 import org.zalando.problem.ThrowableProblem;
+
+import static generated.se.sundsvall.contract.IntervalType.HALF_YEARLY;
+import static generated.se.sundsvall.contract.IntervalType.MONTHLY;
+import static generated.se.sundsvall.contract.IntervalType.QUARTERLY;
+import static generated.se.sundsvall.contract.IntervalType.YEARLY;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class CalculationUtilTest {

@@ -1,9 +1,9 @@
 package se.sundsvall.billingdatacollector.service.source;
 
-import static se.sundsvall.dept44.util.LogUtils.sanitizeForLogging;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import static se.sundsvall.dept44.util.LogUtils.sanitizeForLogging;
 
 public abstract class AbstractHandler implements BillingSourceHandler {
 	private final Logger logger;

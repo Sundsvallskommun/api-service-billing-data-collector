@@ -1,9 +1,9 @@
 package se.sundsvall.billingdatacollector.integration.opene.kundfakturaformular.model.internal;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
 import org.junit.jupiter.api.Test;
 import se.sundsvall.billingdatacollector.integration.opene.kundfakturaformular.model.InternFaktura;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 class InternFakturaTest {
 

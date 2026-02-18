@@ -1,10 +1,5 @@
 package se.sundsvall.billingdatacollector.integration.opene.kundfakturaformular.mapper;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
-import static org.mockito.Mockito.when;
-import static org.zalando.problem.Status.INTERNAL_SERVER_ERROR;
-
 import java.math.BigDecimal;
 import java.util.stream.Stream;
 import org.junit.jupiter.api.Test;
@@ -16,6 +11,11 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.zalando.problem.ThrowableProblem;
 import se.sundsvall.billingdatacollector.integration.opene.kundfakturaformular.model.ExternFaktura;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
+import static org.mockito.Mockito.when;
+import static org.zalando.problem.Status.INTERNAL_SERVER_ERROR;
 
 @ExtendWith(MockitoExtension.class)
 class MapperHelperTest {

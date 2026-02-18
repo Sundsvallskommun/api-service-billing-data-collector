@@ -1,12 +1,5 @@
 package se.sundsvall.billingdatacollector.service.scheduling.billing;
 
-import static org.mockito.ArgumentMatchers.anySet;
-import static org.mockito.Mockito.doNothing;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyNoMoreInteractions;
-import static org.mockito.Mockito.when;
-import static se.sundsvall.billingdatacollector.TestDataFactory.createScheduledJobEntity;
-
 import java.time.LocalDate;
 import java.util.Collections;
 import java.util.List;
@@ -19,6 +12,13 @@ import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import se.sundsvall.billingdatacollector.service.CollectorService;
 import se.sundsvall.billingdatacollector.service.DbService;
+
+import static org.mockito.ArgumentMatchers.anySet;
+import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
+import static org.mockito.Mockito.when;
+import static se.sundsvall.billingdatacollector.TestDataFactory.createScheduledJobEntity;
 
 @ExtendWith(MockitoExtension.class)
 class BillingJobHandlerTest {

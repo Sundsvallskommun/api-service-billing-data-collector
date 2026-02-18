@@ -1,5 +1,16 @@
 package se.sundsvall.billingdatacollector.service.source.contract;
 
+import generated.se.sundsvall.contract.Contract;
+import generated.se.sundsvall.contract.LeaseType;
+import java.util.stream.Stream;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.EnumSource;
+import org.junit.jupiter.params.provider.MethodSource;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+
 import static generated.se.sundsvall.contract.LeaseType.LAND_LEASE_MISC;
 import static generated.se.sundsvall.contract.LeaseType.LAND_LEASE_PUBLIC;
 import static generated.se.sundsvall.contract.LeaseType.LAND_LEASE_RESIDENTIAL;
@@ -13,17 +24,6 @@ import static generated.se.sundsvall.contract.LeaseType.USUFRUCT_MISC;
 import static generated.se.sundsvall.contract.LeaseType.USUFRUCT_MOORING;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.MOCK;
-
-import generated.se.sundsvall.contract.Contract;
-import generated.se.sundsvall.contract.LeaseType;
-import java.util.stream.Stream;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.Arguments;
-import org.junit.jupiter.params.provider.EnumSource;
-import org.junit.jupiter.params.provider.MethodSource;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
 
 @SpringBootTest(classes = SettingsProvider.class, webEnvironment = MOCK)
 class SettingsProviderTest {

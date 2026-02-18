@@ -1,12 +1,5 @@
 package se.sundsvall.billingdatacollector.service.scheduling.fallout;
 
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyNoInteractions;
-import static org.mockito.Mockito.verifyNoMoreInteractions;
-import static org.mockito.Mockito.when;
-
 import generated.se.sundsvall.messaging.EmailBatchRequest;
 import generated.se.sundsvall.messaging.MessageBatchResult;
 import java.util.List;
@@ -20,6 +13,13 @@ import se.sundsvall.billingdatacollector.integration.db.model.FalloutEntity;
 import se.sundsvall.billingdatacollector.integration.messaging.FalloutMessageProperties;
 import se.sundsvall.billingdatacollector.integration.messaging.MessagingClient;
 import se.sundsvall.billingdatacollector.service.DbService;
+
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
+import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class FalloutJobHandlerTest {

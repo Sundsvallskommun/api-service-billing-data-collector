@@ -1,7 +1,5 @@
 package se.sundsvall.billingdatacollector.service.scheduling.fallout;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
 import generated.se.sundsvall.messaging.Party;
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -13,6 +11,8 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 import se.sundsvall.billingdatacollector.Application;
 import se.sundsvall.billingdatacollector.model.Fallout;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 @SpringBootTest(classes = Application.class, webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @ActiveProfiles("junit")

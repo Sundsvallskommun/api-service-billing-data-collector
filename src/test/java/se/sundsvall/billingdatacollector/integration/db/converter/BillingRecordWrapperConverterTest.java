@@ -1,8 +1,5 @@
 package se.sundsvall.billingdatacollector.integration.db.converter;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
-
 import generated.se.sundsvall.billingpreprocessor.AccountInformation;
 import generated.se.sundsvall.billingpreprocessor.AddressDetails;
 import generated.se.sundsvall.billingpreprocessor.BillingRecord;
@@ -22,6 +19,9 @@ import org.skyscreamer.jsonassert.JSONAssert;
 import se.sundsvall.billingdatacollector.model.BillingRecordWrapper;
 import se.sundsvall.dept44.test.annotation.resource.Load;
 import se.sundsvall.dept44.test.extension.ResourceLoaderExtension;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 
 @ExtendWith(ResourceLoaderExtension.class)
 class BillingRecordWrapperConverterTest {

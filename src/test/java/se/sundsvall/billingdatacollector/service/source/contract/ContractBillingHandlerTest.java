@@ -1,12 +1,5 @@
 package se.sundsvall.billingdatacollector.service.source.contract;
 
-import static java.util.Collections.emptyList;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyNoMoreInteractions;
-import static org.mockito.Mockito.when;
-
 import generated.se.sundsvall.billingpreprocessor.BillingRecord;
 import generated.se.sundsvall.contract.Contract;
 import java.util.List;
@@ -24,6 +17,13 @@ import org.zalando.problem.ThrowableProblem;
 import se.sundsvall.billingdatacollector.integration.billingpreprocessor.BillingPreprocessorClient;
 import se.sundsvall.billingdatacollector.integration.contract.ContractIntegration;
 import se.sundsvall.billingdatacollector.integration.db.HistoryRepository;
+
+import static java.util.Collections.emptyList;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
+import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class ContractBillingHandlerTest {
