@@ -1,13 +1,5 @@
 package se.sundsvall.billingdatacollector.service;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.ArgumentMatchers.anyList;
-import static org.mockito.ArgumentMatchers.argThat;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyNoMoreInteractions;
-import static org.mockito.Mockito.when;
-
 import generated.se.sundsvall.billingpreprocessor.BillingRecord;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
@@ -34,6 +26,14 @@ import se.sundsvall.billingdatacollector.integration.db.model.FalloutEntity;
 import se.sundsvall.billingdatacollector.integration.db.model.HistoryEntity;
 import se.sundsvall.billingdatacollector.integration.db.model.ScheduledJobEntity;
 import se.sundsvall.billingdatacollector.model.BillingRecordWrapper;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.anyList;
+import static org.mockito.ArgumentMatchers.argThat;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
+import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class DbServiceTest {

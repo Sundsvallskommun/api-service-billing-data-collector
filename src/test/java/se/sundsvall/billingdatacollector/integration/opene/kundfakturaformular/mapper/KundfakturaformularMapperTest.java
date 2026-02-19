@@ -1,12 +1,5 @@
 package se.sundsvall.billingdatacollector.integration.opene.kundfakturaformular.mapper;
 
-import static generated.se.sundsvall.billingpreprocessor.Status.APPROVED;
-import static generated.se.sundsvall.billingpreprocessor.Type.EXTERNAL;
-import static generated.se.sundsvall.billingpreprocessor.Type.INTERNAL;
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
-import static se.sundsvall.billingdatacollector.TestDataFactory.readBytesFromOpenEFile;
-
 import java.math.BigDecimal;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,6 +7,13 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 import se.sundsvall.billingdatacollector.Application;
 import se.sundsvall.billingdatacollector.TestDataFactory;
+
+import static generated.se.sundsvall.billingpreprocessor.Status.APPROVED;
+import static generated.se.sundsvall.billingpreprocessor.Type.EXTERNAL;
+import static generated.se.sundsvall.billingpreprocessor.Type.INTERNAL;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
+import static se.sundsvall.billingdatacollector.TestDataFactory.readBytesFromOpenEFile;
 
 @SpringBootTest(classes = Application.class)
 @ActiveProfiles("junit")

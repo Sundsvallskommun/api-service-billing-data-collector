@@ -1,20 +1,5 @@
 package se.sundsvall.billingdatacollector.service.source.contract;
 
-import static generated.se.sundsvall.billingpreprocessor.Status.APPROVED;
-import static generated.se.sundsvall.billingpreprocessor.Type.EXTERNAL;
-import static generated.se.sundsvall.contract.InvoicedIn.ADVANCE;
-import static java.time.Month.OCTOBER;
-import static java.util.Collections.emptyList;
-import static java.util.Optional.ofNullable;
-import static org.zalando.problem.Status.INTERNAL_SERVER_ERROR;
-import static se.sundsvall.billingdatacollector.service.source.contract.util.CalculationUtil.calculateIndexedCost;
-import static se.sundsvall.billingdatacollector.service.source.contract.util.CalculationUtil.calculateNonIndexedCost;
-import static se.sundsvall.billingdatacollector.service.source.contract.util.ContractUtil.getAccrualKey;
-import static se.sundsvall.billingdatacollector.service.source.contract.util.ContractUtil.getContractId;
-import static se.sundsvall.billingdatacollector.service.source.contract.util.ContractUtil.getExtraParameter;
-import static se.sundsvall.billingdatacollector.service.source.contract.util.ContractUtil.getKPIBaseYear;
-import static se.sundsvall.billingdatacollector.service.source.contract.util.ContractUtil.isIndexed;
-
 import generated.se.sundsvall.billingpreprocessor.AccountInformation;
 import generated.se.sundsvall.billingpreprocessor.AddressDetails;
 import generated.se.sundsvall.billingpreprocessor.BillingRecord;
@@ -38,6 +23,21 @@ import java.util.function.Predicate;
 import org.springframework.stereotype.Component;
 import org.zalando.problem.Problem;
 import se.sundsvall.billingdatacollector.integration.scb.ScbIntegration;
+
+import static generated.se.sundsvall.billingpreprocessor.Status.APPROVED;
+import static generated.se.sundsvall.billingpreprocessor.Type.EXTERNAL;
+import static generated.se.sundsvall.contract.InvoicedIn.ADVANCE;
+import static java.time.Month.OCTOBER;
+import static java.util.Collections.emptyList;
+import static java.util.Optional.ofNullable;
+import static org.zalando.problem.Status.INTERNAL_SERVER_ERROR;
+import static se.sundsvall.billingdatacollector.service.source.contract.util.CalculationUtil.calculateIndexedCost;
+import static se.sundsvall.billingdatacollector.service.source.contract.util.CalculationUtil.calculateNonIndexedCost;
+import static se.sundsvall.billingdatacollector.service.source.contract.util.ContractUtil.getAccrualKey;
+import static se.sundsvall.billingdatacollector.service.source.contract.util.ContractUtil.getContractId;
+import static se.sundsvall.billingdatacollector.service.source.contract.util.ContractUtil.getExtraParameter;
+import static se.sundsvall.billingdatacollector.service.source.contract.util.ContractUtil.getKPIBaseYear;
+import static se.sundsvall.billingdatacollector.service.source.contract.util.ContractUtil.isIndexed;
 
 @Component
 public class ContractMapper {

@@ -1,5 +1,12 @@
 package se.sundsvall.billingdatacollector.integration.db.model;
 
+import java.time.OffsetDateTime;
+import java.util.Random;
+import java.util.UUID;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
+import se.sundsvall.billingdatacollector.model.BillingRecordWrapper;
+
 import static com.google.code.beanmatchers.BeanMatchers.hasValidBeanConstructor;
 import static com.google.code.beanmatchers.BeanMatchers.hasValidBeanEqualsExcluding;
 import static com.google.code.beanmatchers.BeanMatchers.hasValidBeanHashCodeExcluding;
@@ -9,13 +16,6 @@ import static com.google.code.beanmatchers.BeanMatchers.registerValueGenerator;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.CoreMatchers.allOf;
 import static org.hamcrest.MatcherAssert.assertThat;
-
-import java.time.OffsetDateTime;
-import java.util.Random;
-import java.util.UUID;
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.Test;
-import se.sundsvall.billingdatacollector.model.BillingRecordWrapper;
 
 class FalloutEntityTest {
 

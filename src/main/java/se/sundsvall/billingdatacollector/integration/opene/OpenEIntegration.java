@@ -1,10 +1,5 @@
 package se.sundsvall.billingdatacollector.integration.opene;
 
-import static java.util.stream.Collectors.toMap;
-import static se.sundsvall.billingdatacollector.integration.opene.kundfakturaformular.model.BillingRecordConstants.SUNDSVALLS_MUNICIPALITY_ID;
-import static se.sundsvall.billingdatacollector.integration.opene.util.XPathUtil.evaluateXPath;
-import static se.sundsvall.billingdatacollector.integration.opene.util.XPathUtil.getString;
-
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -19,6 +14,11 @@ import org.zalando.problem.Problem;
 import org.zalando.problem.Status;
 import se.sundsvall.billingdatacollector.model.BillingRecordWrapper;
 import se.sundsvall.billingdatacollector.service.DbService;
+
+import static java.util.stream.Collectors.toMap;
+import static se.sundsvall.billingdatacollector.integration.opene.kundfakturaformular.model.BillingRecordConstants.SUNDSVALLS_MUNICIPALITY_ID;
+import static se.sundsvall.billingdatacollector.integration.opene.util.XPathUtil.evaluateXPath;
+import static se.sundsvall.billingdatacollector.integration.opene.util.XPathUtil.getString;
 
 @Component
 public class OpenEIntegration {

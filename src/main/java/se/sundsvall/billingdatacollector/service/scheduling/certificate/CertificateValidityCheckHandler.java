@@ -1,8 +1,5 @@
 package se.sundsvall.billingdatacollector.service.scheduling.certificate;
 
-import static java.lang.Boolean.TRUE;
-import static org.apache.commons.lang3.time.DateUtils.toLocalDateTime;
-
 import java.io.IOException;
 import java.security.cert.Certificate;
 import java.security.cert.CertificateException;
@@ -21,6 +18,9 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.ResourceUtils;
 import se.sundsvall.billingdatacollector.service.scheduling.certificate.model.Health;
 import se.sundsvall.dept44.scheduling.health.Dept44HealthUtility;
+
+import static java.lang.Boolean.TRUE;
+import static org.apache.commons.lang3.time.DateUtils.toLocalDateTime;
 
 @Component
 public class CertificateValidityCheckHandler {

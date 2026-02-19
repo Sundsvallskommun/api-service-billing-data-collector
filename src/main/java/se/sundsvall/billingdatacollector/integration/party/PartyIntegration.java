@@ -1,9 +1,5 @@
 package se.sundsvall.billingdatacollector.integration.party;
 
-import static generated.se.sundsvall.party.PartyType.ENTERPRISE;
-import static generated.se.sundsvall.party.PartyType.PRIVATE;
-import static org.zalando.problem.Status.INTERNAL_SERVER_ERROR;
-
 import java.util.Optional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -11,6 +7,10 @@ import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Component;
 import org.zalando.problem.Problem;
 import se.sundsvall.billingdatacollector.service.util.LegalIdUtil;
+
+import static generated.se.sundsvall.party.PartyType.ENTERPRISE;
+import static generated.se.sundsvall.party.PartyType.PRIVATE;
+import static org.zalando.problem.Status.INTERNAL_SERVER_ERROR;
 
 @Component
 public class PartyIntegration {

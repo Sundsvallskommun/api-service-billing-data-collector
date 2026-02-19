@@ -1,8 +1,5 @@
 package se.sundsvall.billingdatacollector.service.source.contract;
 
-import static java.util.function.Predicate.not;
-import static org.zalando.problem.Status.NOT_FOUND;
-
 import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
@@ -14,6 +11,9 @@ import org.zalando.problem.Problem;
 import se.sundsvall.billingdatacollector.integration.db.CounterpartMappingRepository;
 import se.sundsvall.billingdatacollector.integration.db.model.CounterpartMappingEntity;
 import se.sundsvall.billingdatacollector.integration.party.PartyIntegration;
+
+import static java.util.function.Predicate.not;
+import static org.zalando.problem.Status.NOT_FOUND;
 
 @Service
 @Transactional(readOnly = true)

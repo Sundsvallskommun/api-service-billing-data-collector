@@ -1,9 +1,5 @@
 package se.sundsvall.billingdatacollector.service.source.contract;
 
-import static java.util.Collections.emptyList;
-import static java.util.Optional.ofNullable;
-import static org.zalando.problem.Status.INTERNAL_SERVER_ERROR;
-
 import generated.se.sundsvall.billingpreprocessor.BillingRecord;
 import generated.se.sundsvall.contract.Contract;
 import generated.se.sundsvall.contract.ExtraParameterGroup;
@@ -22,6 +18,10 @@ import se.sundsvall.billingdatacollector.integration.contract.ContractIntegratio
 import se.sundsvall.billingdatacollector.integration.db.HistoryRepository;
 import se.sundsvall.billingdatacollector.service.EntityMapper;
 import se.sundsvall.billingdatacollector.service.source.AbstractHandler;
+
+import static java.util.Collections.emptyList;
+import static java.util.Optional.ofNullable;
+import static org.zalando.problem.Status.INTERNAL_SERVER_ERROR;
 
 @Component("contract")
 public class ContractBillingHandler extends AbstractHandler {

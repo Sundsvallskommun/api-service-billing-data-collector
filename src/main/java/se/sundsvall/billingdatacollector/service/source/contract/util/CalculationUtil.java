@@ -1,5 +1,11 @@
 package se.sundsvall.billingdatacollector.service.source.contract.util;
 
+import generated.se.sundsvall.contract.Contract;
+import generated.se.sundsvall.contract.Fees;
+import java.math.BigDecimal;
+import java.util.Optional;
+import org.zalando.problem.Problem;
+
 import static java.math.BigDecimal.ZERO;
 import static java.math.RoundingMode.HALF_EVEN;
 import static java.util.Optional.ofNullable;
@@ -7,12 +13,6 @@ import static org.apache.commons.lang3.ObjectUtils.anyNull;
 import static org.apache.commons.lang3.ObjectUtils.notEqual;
 import static org.zalando.problem.Status.NOT_FOUND;
 import static se.sundsvall.billingdatacollector.service.source.contract.util.ContractUtil.getSplitFactor;
-
-import generated.se.sundsvall.contract.Contract;
-import generated.se.sundsvall.contract.Fees;
-import java.math.BigDecimal;
-import java.util.Optional;
-import org.zalando.problem.Problem;
 
 public final class CalculationUtil {
 

@@ -1,7 +1,5 @@
 package se.sundsvall.billingdatacollector.service;
 
-import static se.sundsvall.dept44.util.LogUtils.sanitizeForLogging;
-
 import java.net.URI;
 import java.time.LocalDate;
 import java.util.List;
@@ -19,6 +17,8 @@ import se.sundsvall.billingdatacollector.integration.db.model.FalloutEntity;
 import se.sundsvall.billingdatacollector.integration.db.model.HistoryEntity;
 import se.sundsvall.billingdatacollector.integration.db.model.ScheduledJobEntity;
 import se.sundsvall.billingdatacollector.model.BillingRecordWrapper;
+
+import static se.sundsvall.dept44.util.LogUtils.sanitizeForLogging;
 
 @Service
 @Transactional

@@ -1,7 +1,5 @@
 package se.sundsvall.billingdatacollector.integration.opene.util;
 
-import static java.util.Optional.ofNullable;
-
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
@@ -19,6 +17,8 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 import se.sundsvall.billingdatacollector.integration.opene.kundfakturaformular.model.OpeneCollections;
+
+import static java.util.Optional.ofNullable;
 
 /**
  * Util class to parse XML from OpenE-"lists" into lists.

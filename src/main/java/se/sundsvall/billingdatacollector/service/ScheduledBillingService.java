@@ -1,11 +1,5 @@
 package se.sundsvall.billingdatacollector.service;
 
-import static org.springframework.transaction.annotation.Propagation.REQUIRES_NEW;
-import static org.zalando.problem.Status.BAD_REQUEST;
-import static org.zalando.problem.Status.NOT_FOUND;
-import static se.sundsvall.billingdatacollector.service.util.ScheduledBillingUtil.calculateNextScheduledBilling;
-import static se.sundsvall.dept44.util.LogUtils.sanitizeForLogging;
-
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
@@ -20,6 +14,12 @@ import se.sundsvall.billingdatacollector.api.model.BillingSource;
 import se.sundsvall.billingdatacollector.api.model.ScheduledBilling;
 import se.sundsvall.billingdatacollector.integration.db.ScheduledBillingRepository;
 import se.sundsvall.billingdatacollector.integration.db.model.ScheduledBillingEntity;
+
+import static org.springframework.transaction.annotation.Propagation.REQUIRES_NEW;
+import static org.zalando.problem.Status.BAD_REQUEST;
+import static org.zalando.problem.Status.NOT_FOUND;
+import static se.sundsvall.billingdatacollector.service.util.ScheduledBillingUtil.calculateNextScheduledBilling;
+import static se.sundsvall.dept44.util.LogUtils.sanitizeForLogging;
 
 @Service
 @Transactional

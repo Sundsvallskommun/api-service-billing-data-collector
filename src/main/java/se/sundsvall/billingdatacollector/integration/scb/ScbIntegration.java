@@ -1,10 +1,5 @@
 package se.sundsvall.billingdatacollector.integration.scb;
 
-import static java.util.Collections.emptyList;
-import static java.util.Optional.ofNullable;
-import static org.zalando.problem.Status.NOT_FOUND;
-import static se.sundsvall.billingdatacollector.integration.scb.ScbMapper.toVariablesSelection;
-
 import generated.se.sundsvall.scb.Dataset;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -13,6 +8,11 @@ import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Component;
 import org.zalando.problem.Problem;
 import se.sundsvall.billingdatacollector.integration.scb.model.KPIBaseYear;
+
+import static java.util.Collections.emptyList;
+import static java.util.Optional.ofNullable;
+import static org.zalando.problem.Status.NOT_FOUND;
+import static se.sundsvall.billingdatacollector.integration.scb.ScbMapper.toVariablesSelection;
 
 @Component
 public class ScbIntegration {

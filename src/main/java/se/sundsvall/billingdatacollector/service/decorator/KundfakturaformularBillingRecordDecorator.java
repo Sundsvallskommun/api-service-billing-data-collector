@@ -1,8 +1,5 @@
 package se.sundsvall.billingdatacollector.service.decorator;
 
-import static java.util.Optional.ofNullable;
-import static org.zalando.problem.Status.INTERNAL_SERVER_ERROR;
-
 import generated.se.sundsvall.billingpreprocessor.Type;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -11,6 +8,9 @@ import org.zalando.problem.Problem;
 import se.sundsvall.billingdatacollector.integration.opene.OpenEIntegrationProperties;
 import se.sundsvall.billingdatacollector.integration.party.PartyIntegration;
 import se.sundsvall.billingdatacollector.model.BillingRecordWrapper;
+
+import static java.util.Optional.ofNullable;
+import static org.zalando.problem.Status.INTERNAL_SERVER_ERROR;
 
 @Component
 public class KundfakturaformularBillingRecordDecorator implements BillingRecordDecorator {

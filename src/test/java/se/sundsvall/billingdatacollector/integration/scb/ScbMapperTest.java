@@ -1,13 +1,13 @@
 package se.sundsvall.billingdatacollector.integration.scb;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.zalando.problem.Status.INTERNAL_SERVER_ERROR;
-
 import java.time.YearMonth;
 import java.time.format.DateTimeFormatter;
 import org.junit.jupiter.api.Test;
 import org.zalando.problem.ThrowableProblem;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.zalando.problem.Status.INTERNAL_SERVER_ERROR;
 
 class ScbMapperTest {
 

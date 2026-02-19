@@ -1,8 +1,5 @@
 package se.sundsvall.billingdatacollector.service;
 
-import static java.util.stream.Collectors.toSet;
-import static se.sundsvall.dept44.util.LogUtils.sanitizeForLogging;
-
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -22,6 +19,9 @@ import se.sundsvall.billingdatacollector.integration.opene.OpenEIntegration;
 import se.sundsvall.billingdatacollector.model.BillingRecordWrapper;
 import se.sundsvall.billingdatacollector.service.decorator.BillingRecordDecorator;
 import se.sundsvall.dept44.util.LogUtils;
+
+import static java.util.stream.Collectors.toSet;
+import static se.sundsvall.dept44.util.LogUtils.sanitizeForLogging;
 
 @Service
 public class CollectorService {

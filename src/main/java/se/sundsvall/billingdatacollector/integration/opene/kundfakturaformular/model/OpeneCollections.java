@@ -1,9 +1,5 @@
 package se.sundsvall.billingdatacollector.integration.opene.kundfakturaformular.model;
 
-import static se.sundsvall.billingdatacollector.integration.opene.kundfakturaformular.mapper.OpeneCollectionsMapper.consolidateBarakningarExternWithBerakningExtern;
-import static se.sundsvall.billingdatacollector.integration.opene.kundfakturaformular.mapper.OpeneCollectionsMapper.consolidateBerakningarExternWithBerakningExtern;
-import static se.sundsvall.billingdatacollector.integration.opene.kundfakturaformular.mapper.OpeneCollectionsMapper.consolidateBerakningarWithBerakningIntern;
-
 import java.lang.reflect.Field;
 import java.util.HashMap;
 import java.util.Map;
@@ -32,6 +28,10 @@ import se.sundsvall.billingdatacollector.integration.opene.kundfakturaformular.m
 import se.sundsvall.billingdatacollector.integration.opene.kundfakturaformular.model.internal.SummeringIntern;
 import se.sundsvall.billingdatacollector.integration.opene.kundfakturaformular.model.internal.UnderkontoIntern;
 import se.sundsvall.billingdatacollector.integration.opene.kundfakturaformular.model.internal.VerksamhetIntern;
+
+import static se.sundsvall.billingdatacollector.integration.opene.kundfakturaformular.mapper.OpeneCollectionsMapper.consolidateBarakningarExternWithBerakningExtern;
+import static se.sundsvall.billingdatacollector.integration.opene.kundfakturaformular.mapper.OpeneCollectionsMapper.consolidateBerakningarExternWithBerakningExtern;
+import static se.sundsvall.billingdatacollector.integration.opene.kundfakturaformular.mapper.OpeneCollectionsMapper.consolidateBerakningarWithBerakningIntern;
 
 /**
  * A class to hold all the different collections of objects from OpenE since there are no schema for them.

@@ -1,5 +1,11 @@
 package se.sundsvall.billingdatacollector.service.source.contract;
 
+import generated.se.sundsvall.contract.Contract;
+import generated.se.sundsvall.contract.LeaseType;
+import java.util.Map;
+import org.springframework.stereotype.Component;
+import se.sundsvall.billingdatacollector.service.source.contract.model.LeaseTypeSettings;
+
 import static generated.se.sundsvall.contract.LeaseType.LAND_LEASE_MISC;
 import static generated.se.sundsvall.contract.LeaseType.LAND_LEASE_PUBLIC;
 import static generated.se.sundsvall.contract.LeaseType.LAND_LEASE_RESIDENTIAL;
@@ -12,12 +18,6 @@ import static generated.se.sundsvall.contract.LeaseType.USUFRUCT_HUNTING;
 import static generated.se.sundsvall.contract.LeaseType.USUFRUCT_MISC;
 import static generated.se.sundsvall.contract.LeaseType.USUFRUCT_MOORING;
 import static java.util.Optional.ofNullable;
-
-import generated.se.sundsvall.contract.Contract;
-import generated.se.sundsvall.contract.LeaseType;
-import java.util.Map;
-import org.springframework.stereotype.Component;
-import se.sundsvall.billingdatacollector.service.source.contract.model.LeaseTypeSettings;
 
 @Component
 public class SettingsProvider {

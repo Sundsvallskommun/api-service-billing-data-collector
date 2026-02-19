@@ -1,12 +1,5 @@
 package se.sundsvall.billingdatacollector.integration.opene.util;
 
-import static java.lang.reflect.Modifier.isAbstract;
-import static java.lang.reflect.Modifier.isInterface;
-import static java.util.Optional.ofNullable;
-import static java.util.function.Predicate.not;
-import static org.jsoup.Jsoup.parse;
-import static org.jsoup.parser.Parser.xmlParser;
-
 import java.lang.reflect.Field;
 import java.nio.charset.StandardCharsets;
 import java.util.Optional;
@@ -16,6 +9,13 @@ import org.jsoup.select.Elements;
 import org.springframework.core.annotation.AnnotationUtils;
 import se.sundsvall.billingdatacollector.integration.opene.util.annotation.XPath;
 import us.codecraft.xsoup.Xsoup;
+
+import static java.lang.reflect.Modifier.isAbstract;
+import static java.lang.reflect.Modifier.isInterface;
+import static java.util.Optional.ofNullable;
+import static java.util.function.Predicate.not;
+import static org.jsoup.Jsoup.parse;
+import static org.jsoup.parser.Parser.xmlParser;
 
 public final class XPathUtil {
 
