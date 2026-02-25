@@ -1,15 +1,16 @@
 package se.sundsvall.billingdatacollector.service.source.contract;
 
 import generated.se.sundsvall.contract.Contract;
+import generated.se.sundsvall.contract.ContractType;
 import generated.se.sundsvall.contract.LeaseType;
 import java.util.Map;
 import org.springframework.stereotype.Component;
 import se.sundsvall.billingdatacollector.service.source.contract.model.LeaseTypeSettings;
 
+import static generated.se.sundsvall.contract.ContractType.LAND_LEASE_PUBLIC;
+import static generated.se.sundsvall.contract.ContractType.LEASEHOLD;
 import static generated.se.sundsvall.contract.LeaseType.LAND_LEASE_MISC;
-import static generated.se.sundsvall.contract.LeaseType.LAND_LEASE_PUBLIC;
 import static generated.se.sundsvall.contract.LeaseType.LAND_LEASE_RESIDENTIAL;
-import static generated.se.sundsvall.contract.LeaseType.LEASEHOLD;
 import static generated.se.sundsvall.contract.LeaseType.OBJECT_LEASE;
 import static generated.se.sundsvall.contract.LeaseType.OTHER_FEE;
 import static generated.se.sundsvall.contract.LeaseType.SITE_LEASE_COMMERCIAL;
@@ -34,16 +35,20 @@ public class SettingsProvider {
 
 	private final Map<LeaseType, LeaseTypeSettings> leaseTypeSettings;
 
+	private final Map<ContractType, LeaseTypeSettings> contractTypeSettings;
+
 	SettingsProvider() {
 		leaseTypeSettings = Map.ofEntries(
-			Map.entry(
-				LAND_LEASE_PUBLIC, LeaseTypeSettings.builder()
-					.withActivity(ACTIVITY_3093)
-					.withCostCenter(COST_CENTER_36000000)
-					.withDepartment(DEPARTMENT_810100)
-					.withSubAccount(SUB_ACCOUNT_342000)
-					.withVatCode(VATCODE_00)
-					.build()),
+			/*
+			 * Map.entry(
+			 * LAND_LEASE_PUBLIC, LeaseTypeSettings.builder()
+			 * .withActivity(ACTIVITY_3093)
+			 * .withCostCenter(COST_CENTER_36000000)
+			 * .withDepartment(DEPARTMENT_810100)
+			 * .withSubAccount(SUB_ACCOUNT_342000)
+			 * .withVatCode(VATCODE_00)
+			 * .build()),
+			 */
 			Map.entry(
 				SITE_LEASE_COMMERCIAL, LeaseTypeSettings.builder()
 					.withActivity(ACTIVITY_3091)
@@ -108,17 +113,37 @@ public class SettingsProvider {
 					.withSubAccount(SUB_ACCOUNT_342000)
 					.withVatCode(VATCODE_00)
 					.build()),
+			/*
+			 * Map.entry(
+			 * LEASEHOLD, LeaseTypeSettings.builder()
+			 * .withActivity(ACTIVITY_3092)
+			 * .withCostCenter(COST_CENTER_36000000)
+			 * .withDepartment(DEPARTMENT_810100)
+			 * .withSubAccount(SUB_ACCOUNT_342000)
+			 * .withVatCode(VATCODE_00)
+			 * .build()),
+			 */
 			Map.entry(
-				LEASEHOLD, LeaseTypeSettings.builder()
-					.withActivity(ACTIVITY_3092)
+				OTHER_FEE, LeaseTypeSettings.builder()
+					.withActivity(ACTIVITY_3091)
+					.withCostCenter(COST_CENTER_36000000)
+					.withDepartment(DEPARTMENT_810100)
+					.withSubAccount(SUB_ACCOUNT_342000)
+					.withVatCode(VATCODE_00)
+					.build()));
+
+		contractTypeSettings = Map.ofEntries(
+			Map.entry(
+				LAND_LEASE_PUBLIC, LeaseTypeSettings.builder()
+					.withActivity(ACTIVITY_3093)
 					.withCostCenter(COST_CENTER_36000000)
 					.withDepartment(DEPARTMENT_810100)
 					.withSubAccount(SUB_ACCOUNT_342000)
 					.withVatCode(VATCODE_00)
 					.build()),
 			Map.entry(
-				OTHER_FEE, LeaseTypeSettings.builder()
-					.withActivity(ACTIVITY_3091)
+				LEASEHOLD, LeaseTypeSettings.builder()
+					.withActivity(ACTIVITY_3092)
 					.withCostCenter(COST_CENTER_36000000)
 					.withDepartment(DEPARTMENT_810100)
 					.withSubAccount(SUB_ACCOUNT_342000)
@@ -129,41 +154,59 @@ public class SettingsProvider {
 	public boolean isLeaseTypeSettingsPresent(Contract contract) {
 		return ofNullable(contract.getLeaseType())
 			.map(leaseTypeSettings::containsKey)
-			.orElse(false);
+			.orElse(false)
+			|| ofNullable(contract.getType())
+				.map(contractTypeSettings::containsKey)
+				.orElse(false);
 	}
 
 	public String getActivity(Contract contract) {
 		return ofNullable(contract.getLeaseType())
 			.map(leaseTypeSettings::get)
 			.map(LeaseTypeSettings::activity)
-			.orElse(null);
+			.orElseGet(() -> ofNullable(contract.getType())
+				.map(contractTypeSettings::get)
+				.map(LeaseTypeSettings::activity)
+				.orElse(null));
 	}
 
 	public String getCostCenter(Contract contract) {
 		return ofNullable(contract.getLeaseType())
 			.map(leaseTypeSettings::get)
 			.map(LeaseTypeSettings::costCenter)
-			.orElse(null);
+			.orElseGet(() -> ofNullable(contract.getType())
+				.map(contractTypeSettings::get)
+				.map(LeaseTypeSettings::costCenter)
+				.orElse(null));
 	}
 
 	public String getDepartment(Contract contract) {
 		return ofNullable(contract.getLeaseType())
 			.map(leaseTypeSettings::get)
 			.map(LeaseTypeSettings::department)
-			.orElse(null);
+			.orElseGet(() -> ofNullable(contract.getType())
+				.map(contractTypeSettings::get)
+				.map(LeaseTypeSettings::department)
+				.orElse(null));
 	}
 
 	public String getSubaccount(Contract contract) {
 		return ofNullable(contract.getLeaseType())
 			.map(leaseTypeSettings::get)
 			.map(LeaseTypeSettings::subAccount)
-			.orElse(null);
+			.orElseGet(() -> ofNullable(contract.getType())
+				.map(contractTypeSettings::get)
+				.map(LeaseTypeSettings::subAccount)
+				.orElse(null));
 	}
 
 	public String getVatCode(Contract contract) {
 		return ofNullable(contract.getLeaseType())
 			.map(leaseTypeSettings::get)
 			.map(LeaseTypeSettings::vatCode)
-			.orElse(null);
+			.orElseGet(() -> ofNullable(contract.getType())
+				.map(contractTypeSettings::get)
+				.map(LeaseTypeSettings::vatCode)
+				.orElse(null));
 	}
 }

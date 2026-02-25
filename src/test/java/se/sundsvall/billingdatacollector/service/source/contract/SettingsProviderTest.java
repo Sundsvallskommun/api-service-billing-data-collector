@@ -11,10 +11,9 @@ import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
+import static generated.se.sundsvall.contract.ContractType.LAND_LEASE_PUBLIC;
 import static generated.se.sundsvall.contract.LeaseType.LAND_LEASE_MISC;
-import static generated.se.sundsvall.contract.LeaseType.LAND_LEASE_PUBLIC;
 import static generated.se.sundsvall.contract.LeaseType.LAND_LEASE_RESIDENTIAL;
-import static generated.se.sundsvall.contract.LeaseType.LEASEHOLD;
 import static generated.se.sundsvall.contract.LeaseType.OBJECT_LEASE;
 import static generated.se.sundsvall.contract.LeaseType.OTHER_FEE;
 import static generated.se.sundsvall.contract.LeaseType.SITE_LEASE_COMMERCIAL;
@@ -56,6 +55,11 @@ class SettingsProviderTest {
 		assertThat(settingsProvider.isLeaseTypeSettingsPresent(new Contract())).isFalse();
 	}
 
+	@Test
+	void isLeaseTypeSettingsPresentForContractType() {
+		assertThat(settingsProvider.isLeaseTypeSettingsPresent(new Contract().type(LAND_LEASE_PUBLIC))).isTrue();
+	}
+
 	@ParameterizedTest
 	@MethodSource("getActivityArgumentProvider")
 	void getActivity(LeaseType leaseType, String expectedValue) {
@@ -65,9 +69,9 @@ class SettingsProviderTest {
 	private static Stream<Arguments> getActivityArgumentProvider() {
 		return Stream.of(
 			Arguments.of(LAND_LEASE_MISC, ACTIVITY_3091),
-			Arguments.of(LAND_LEASE_PUBLIC, ACTIVITY_3093),
+			// Arguments.of(LAND_LEASE_PUBLIC, ACTIVITY_3093),
 			Arguments.of(LAND_LEASE_RESIDENTIAL, ACTIVITY_3091),
-			Arguments.of(LEASEHOLD, ACTIVITY_3092),
+			// Arguments.of(LEASEHOLD, ACTIVITY_3092),
 			Arguments.of(OBJECT_LEASE, ACTIVITY_3091),
 			Arguments.of(OTHER_FEE, ACTIVITY_3091),
 			Arguments.of(SITE_LEASE_COMMERCIAL, ACTIVITY_3091),
@@ -87,9 +91,9 @@ class SettingsProviderTest {
 	private static Stream<Arguments> getCostCenterArgumentProvider() {
 		return Stream.of(
 			Arguments.of(LAND_LEASE_MISC, COST_CENTER_36000000),
-			Arguments.of(LAND_LEASE_PUBLIC, COST_CENTER_36000000),
+			// Arguments.of(LAND_LEASE_PUBLIC, COST_CENTER_36000000),
 			Arguments.of(LAND_LEASE_RESIDENTIAL, COST_CENTER_36000000),
-			Arguments.of(LEASEHOLD, COST_CENTER_36000000),
+			// Arguments.of(LEASEHOLD, COST_CENTER_36000000),
 			Arguments.of(OBJECT_LEASE, COST_CENTER_36000000),
 			Arguments.of(OTHER_FEE, COST_CENTER_36000000),
 			Arguments.of(SITE_LEASE_COMMERCIAL, COST_CENTER_36000000),
@@ -109,9 +113,9 @@ class SettingsProviderTest {
 	private static Stream<Arguments> getDepartmentArgumentProvider() {
 		return Stream.of(
 			Arguments.of(LAND_LEASE_MISC, DEPARTMENT_810100),
-			Arguments.of(LAND_LEASE_PUBLIC, DEPARTMENT_810100),
+			// Arguments.of(LAND_LEASE_PUBLIC, DEPARTMENT_810100),
 			Arguments.of(LAND_LEASE_RESIDENTIAL, DEPARTMENT_810100),
-			Arguments.of(LEASEHOLD, DEPARTMENT_810100),
+			// Arguments.of(LEASEHOLD, DEPARTMENT_810100),
 			Arguments.of(OBJECT_LEASE, DEPARTMENT_810100),
 			Arguments.of(OTHER_FEE, DEPARTMENT_810100),
 			Arguments.of(SITE_LEASE_COMMERCIAL, DEPARTMENT_810100),
@@ -131,9 +135,9 @@ class SettingsProviderTest {
 	private static Stream<Arguments> getSubaccountArgumentProvider() {
 		return Stream.of(
 			Arguments.of(LAND_LEASE_MISC, SUB_ACCOUNT_342000),
-			Arguments.of(LAND_LEASE_PUBLIC, SUB_ACCOUNT_342000),
+			// Arguments.of(LAND_LEASE_PUBLIC, SUB_ACCOUNT_342000),
 			Arguments.of(LAND_LEASE_RESIDENTIAL, SUB_ACCOUNT_342000),
-			Arguments.of(LEASEHOLD, SUB_ACCOUNT_342000),
+			// Arguments.of(LEASEHOLD, SUB_ACCOUNT_342000),
 			Arguments.of(OBJECT_LEASE, SUB_ACCOUNT_342000),
 			Arguments.of(OTHER_FEE, SUB_ACCOUNT_342000),
 			Arguments.of(SITE_LEASE_COMMERCIAL, SUB_ACCOUNT_342000),
@@ -153,9 +157,9 @@ class SettingsProviderTest {
 	private static Stream<Arguments> getVatCodeArgumentProvider() {
 		return Stream.of(
 			Arguments.of(LAND_LEASE_MISC, VATCODE_00),
-			Arguments.of(LAND_LEASE_PUBLIC, VATCODE_00),
+			// Arguments.of(LAND_LEASE_PUBLIC, VATCODE_00),
 			Arguments.of(LAND_LEASE_RESIDENTIAL, VATCODE_00),
-			Arguments.of(LEASEHOLD, VATCODE_00),
+			// Arguments.of(LEASEHOLD, VATCODE_00),
 			Arguments.of(OBJECT_LEASE, VATCODE_00),
 			Arguments.of(OTHER_FEE, VATCODE_00),
 			Arguments.of(SITE_LEASE_COMMERCIAL, VATCODE_00),
@@ -164,5 +168,30 @@ class SettingsProviderTest {
 			Arguments.of(USUFRUCT_MISC, VATCODE_00),
 			Arguments.of(USUFRUCT_MOORING, VATCODE_00),
 			Arguments.of(null, null));
+	}
+
+	@Test
+	void getActivityFallbackToContractType() {
+		assertThat(settingsProvider.getActivity(new Contract().type(LAND_LEASE_PUBLIC))).isEqualTo(ACTIVITY_3093);
+	}
+
+	@Test
+	void getCostCenterFallbackToContractType() {
+		assertThat(settingsProvider.getCostCenter(new Contract().type(LAND_LEASE_PUBLIC))).isEqualTo(COST_CENTER_36000000);
+	}
+
+	@Test
+	void getDepartmentFallbackToContractType() {
+		assertThat(settingsProvider.getDepartment(new Contract().type(LAND_LEASE_PUBLIC))).isEqualTo(DEPARTMENT_810100);
+	}
+
+	@Test
+	void getSubaccountFallbackToContractType() {
+		assertThat(settingsProvider.getSubaccount(new Contract().type(LAND_LEASE_PUBLIC))).isEqualTo(SUB_ACCOUNT_342000);
+	}
+
+	@Test
+	void getVatCodeFallbackToContractType() {
+		assertThat(settingsProvider.getVatCode(new Contract().type(LAND_LEASE_PUBLIC))).isEqualTo(VATCODE_00);
 	}
 }

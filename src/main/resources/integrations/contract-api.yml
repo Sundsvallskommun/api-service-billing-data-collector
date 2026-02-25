@@ -1,13 +1,13 @@
 openapi: 3.1.0
 info:
   title: Contracts
-  contact: { }
+  contact: {}
   license:
     name: MIT License
     url: https://opensource.org/licenses/MIT
-  version: "4.0"
+  version: "6.0"
 servers:
-  - url: http://localhost:44437
+  - url: http://localhost:52321
     description: Generated server url
 tags:
   - name: Contract attachments
@@ -359,118 +359,45 @@ paths:
           required: true
           schema:
             type: string
-        - name: contractId
+        - name: filter
           in: query
-          description: Contract id
+          description: "Syntax: [spring-filter](https://github.com/turkraft/spring-filter/blob/85730f950a5f8623159cc0eb4d737555f9382bb7/README.md#syntax)"
           required: false
           schema:
-            type: string
-            description: Contract id
-            examples:
-              - 2024-12345
-        - name: partyId
-          in: query
-          description: PartyId
-          required: false
-          schema:
-            type: string
-            description: PartyId
-            examples:
-              - 40f14de9-815d-44a5-a34d-b1d38b628e07
-        - name: organizationNumber
-          in: query
-          description: Organization number
-          required: false
-          schema:
-            type: string
-            description: Organization number
-            examples:
-              - 771122-1234
-        - name: propertyDesignationNames
-          in: query
-          required: false
-          schema:
-            type: array
-            items:
-              type: string
-              description: Property designation names
-        - name: propertyDesignationDistricts
-          in: query
-          required: false
-          schema:
-            type: array
-            items:
-              type: string
-              description: Property designation districts
-        - name: externalReferenceId
-          in: query
-          description: External referenceId
-          required: false
-          schema:
-            type: string
-            description: External referenceId
-            examples:
-              - "123"
-        - name: end
-          in: query
-          description: "End date (format: yyyy-MM-dd)"
-          required: false
-          schema:
-            type: string
-            format: date
-            description: "End date (format: yyyy-MM-dd)"
-            examples:
-              - 2023-01-01
-        - name: leaseType
-          in: query
-          description: Lease type
-          required: false
-          schema:
-            $ref: "#/components/schemas/LeaseType"
-        - name: term
-          in: query
-          description: Specific term to search for
-          required: false
-          schema:
-            type:
-              - string
-              - "null"
-            description: Specific term to search for
-            examples:
-              - term
-            maxLength: 2147483647
-            minLength: 2
+            $ref: "#/components/schemas/SpecificationContractEntity"
+          example: type:'LEASE_AGREEMENT' and status:'ACTIVE'
         - name: page
           in: query
-          description: Page number
+          description: Zero-based page index (0..N)
           required: false
           schema:
             type: integer
-            format: int32
-            default: 1
-            description: Page number
-            example: 1
-            minimum: 1
-          example: 1
-        - name: limit
+            default: 0
+            minimum: 0
+        - name: size
           in: query
-          description: Result size per page. Maximum allowed value is dynamically configured
+          description: The size of the page to be returned
           required: false
           schema:
             type: integer
-            format: int32
-            description: Result size per page. Maximum allowed value is dynamically
-              configured
-            example: 15
+            default: 20
             minimum: 1
-          example: 15
+        - name: sort
+          in: query
+          description: "Sorting criteria in the format: property,(asc|desc). Default\
+          \ sort order is ascending. Multiple sort criteria are supported."
+          required: false
+          schema:
+            type: array
+            items:
+              type: string
       responses:
         "200":
           description: Ok
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/ContractPaginatedResponse"
+                $ref: "#/components/schemas/PageContract"
         "400":
           description: Bad Request
           content:
@@ -574,6 +501,12 @@ paths:
             format: int32
             exclusiveMinimum: 0
       responses:
+        "200":
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Diff"
         "404":
           description: Not Found
           content:
@@ -689,7 +622,7 @@ components:
           format: uri
         parameters:
           type: object
-          additionalProperties: { }
+          additionalProperties: {}
         title:
           type: string
         detail:
@@ -767,6 +700,13 @@ components:
           description: Notes on the attachment
           examples:
             - The contract was a little wrinkled when scanned
+        created:
+          type: string
+          format: date-time
+          description: Date when the attachment was created
+          examples:
+            - 2023-01-01T00:00:00.000Z
+          readOnly: true
       required:
         - filename
         - mimeType
@@ -789,7 +729,7 @@ components:
           readOnly: true
         description:
           type: string
-          description: 'A description '
+          description: A description of the contract
           examples:
             - A simple description of the contract
         externalReferenceId:
@@ -858,23 +798,23 @@ components:
         invoicing:
           $ref: "#/components/schemas/Invoicing"
           description: Invoicing details
-        start:
+        startDate:
           type: string
           format: date
-          description: Lease period start date
+          description: Start date of the contract
           examples:
             - 2020-01-01
-        end:
+        endDate:
           type: string
           format: date
-          description: Lease period end date
+          description: End date of the contract. Set when the contract is terminated
           examples:
             - 2022-12-31
-        notices:
-          type: array
-          items:
-            $ref: "#/components/schemas/Notice"
-            description: Termination periods
+        notice:
+          $ref: "#/components/schemas/Notice"
+        currentPeriod:
+          $ref: "#/components/schemas/Period"
+          description: Current contract period
         area:
           type: integer
           format: int32
@@ -888,6 +828,21 @@ components:
           $ref: "#/components/schemas/FeatureCollection"
           description: Part(s) of property covered by the lease. Described by GeoJSON
             using polygon(s)
+          examples:
+            - "{\n\t\"features\": [\n\t\t{\n\t\t\t\"geometry\": {\n\t\t\t\t\"coordinates\"\
+            : [\n\t\t\t\t\t[\n\t\t\t\t\t\t[\n\t\t\t\t\t\t\t1730072021484375,\n\t\t\
+            \t\t\t\t\t6238137830626575\n\t\t\t\t\t\t],\n\t\t\t\t\t\t[\n\t\t\t\t\t\t\
+            \t17297286987304688,\n\t\t\t\t\t\t\t6238050291927199\n\t\t\t\t\t\t],\n\
+            \t\t\t\t\t\t[\n\t\t\t\t\t\t\t17297801971435547,\n\t\t\t\t\t\t\t6237922958346664\n\
+            \t\t\t\t\t\t],\n\t\t\t\t\t\t[\n\t\t\t\t\t\t\t17301406860351562,\n\t\t\t\
+            \t\t\t\t62378194958300895\n\t\t\t\t\t\t],\n\t\t\t\t\t\t[\n\t\t\t\t\t\t\
+            \t17303810119628906,\n\t\t\t\t\t\t\t62379149998183046\n\t\t\t\t\t\t],\n\
+            \t\t\t\t\t\t[\n\t\t\t\t\t\t\t17303638458251953,\n\t\t\t\t\t\t\t6238066208244492\n\
+            \t\t\t\t\t\t],\n\t\t\t\t\t\t[\n\t\t\t\t\t\t\t1730072021484375,\n\t\t\t\
+            \t\t\t\t6238137830626575\n\t\t\t\t\t\t]\n\t\t\t\t\t]\n\t\t\t\t],\n\t\t\
+            \t\t\"type\": \"Polygon\"\n\t\t\t},\n\t\t\t\"properties\": {},\n\t\t\t\
+            \"type\": \"Feature\"\n\t\t}\n\t],\n\t\"type\": \"FeatureCollection\"\n\
+            }\n"
       required:
         - status
         - type
@@ -897,6 +852,9 @@ components:
       enum:
         - LEASE_AGREEMENT
         - PURCHASE_AGREEMENT
+        - LAND_LEASE_PUBLIC
+        - SHORT_TERM_LEASE_AGREEMENT
+        - LEASEHOLD
     Crs:
       type: object
       properties:
@@ -907,7 +865,7 @@ components:
             - link
         properties:
           type: object
-          additionalProperties: { }
+          additionalProperties: {}
     Duration:
       type: object
       description: Duration
@@ -915,6 +873,7 @@ components:
         leaseDuration:
           type: integer
           format: int32
+          minimum: 0
           description: The lease duration value
           examples:
             - "9"
@@ -940,6 +899,7 @@ components:
         leaseExtension:
           type: integer
           format: int32
+          minimum: 0
           description: The lease extension value
           examples:
             - "2"
@@ -967,16 +927,9 @@ components:
     Feature:
       type: object
       properties:
-        crs:
-          $ref: "#/components/schemas/Crs"
-        bbox:
-          type: array
-          items:
-            type: number
-            format: double
         properties:
           type: object
-          additionalProperties: { }
+          additionalProperties: {}
         geometry:
           oneOf:
             - $ref: "#/components/schemas/Feature"
@@ -988,6 +941,13 @@ components:
             - $ref: "#/components/schemas/MultiPolygon"
             - $ref: "#/components/schemas/Point"
             - $ref: "#/components/schemas/Polygon"
+        crs:
+          $ref: "#/components/schemas/Crs"
+        bbox:
+          type: array
+          items:
+            type: number
+            format: double
         id:
           type: string
     FeatureCollection:
@@ -1125,7 +1085,6 @@ components:
       type: string
       description: Lease type
       enum:
-        - LAND_LEASE_PUBLIC
         - LAND_LEASE_RESIDENTIAL
         - SITE_LEASE_COMMERCIAL
         - USUFRUCT_MOORING
@@ -1134,7 +1093,6 @@ components:
         - USUFRUCT_MISC
         - OBJECT_LEASE
         - LAND_LEASE_MISC
-        - LEASEHOLD
         - OTHER_FEE
     Leasehold:
       type: object
@@ -1144,7 +1102,7 @@ components:
           $ref: "#/components/schemas/LeaseholdType"
         description:
           type: string
-          description: 'description '
+          description: Description of the leasehold
           examples:
             - A simple description of the leasehold
         additionalInformation:
@@ -1236,7 +1194,27 @@ components:
                     $ref: "#/components/schemas/LngLatAlt"
     Notice:
       type: object
-      description: Notice
+      description: Notice information
+      properties:
+        terms:
+          type: array
+          items:
+            $ref: "#/components/schemas/NoticeTerm"
+            description: Notice terms per party
+        noticeDate:
+          type: string
+          format: date
+          description: Date when notice was given
+          examples:
+            - 2025-01-29
+        noticeGivenBy:
+          $ref: "#/components/schemas/Party"
+          description: Party that initiated the notice
+          examples:
+            - LESSOR
+    NoticeTerm:
+      type: object
+      description: Notice term
       properties:
         party:
           $ref: "#/components/schemas/Party"
@@ -1246,6 +1224,7 @@ components:
         periodOfNotice:
           type: integer
           format: int32
+          minimum: 0
           description: The period of notice
           examples:
             - "3"
@@ -1255,6 +1234,7 @@ components:
           examples:
             - MONTHS
       required:
+        - party
         - periodOfNotice
         - unit
     Parameter:
@@ -1268,9 +1248,6 @@ components:
         displayName:
           type: string
           description: Parameter display name
-        group:
-          type: string
-          description: Parameter group name
         values:
           type: array
           description: Parameter values
@@ -1284,6 +1261,23 @@ components:
       enum:
         - LESSOR
         - LESSEE
+        - ALL
+    Period:
+      type: object
+      description: Contract period
+      properties:
+        startDate:
+          type: string
+          format: date
+          description: Period start date
+          examples:
+            - 2021-07-01
+        endDate:
+          type: string
+          format: date
+          description: Period end date
+          examples:
+            - 2030-06-30
     Point:
       allOf:
         - $ref: "#/components/schemas/GeoJsonObject"
@@ -1311,11 +1305,13 @@ components:
           description: Name of property designation
           example: SUNDSVALL BALDER 5:1
           maxLength: 255
+          minLength: 0
         district:
           type: string
           description: District of property designation
           example: Sundsvall
           maxLength: 255
+          minLength: 0
     Stakeholder:
       type: object
       properties:
@@ -1485,7 +1481,7 @@ components:
           format: uri
         parameters:
           type: object
-          additionalProperties: { }
+          additionalProperties: {}
         detail:
           type: string
         suppressed:
@@ -1524,7 +1520,7 @@ components:
     ThrowableProblem:
       type: object
       properties:
-        cause: { }
+        cause: {}
         stackTrace:
           type: array
           items:
@@ -1557,7 +1553,7 @@ components:
           format: uri
         parameters:
           type: object
-          additionalProperties: { }
+          additionalProperties: {}
         title:
           type: string
         detail:
@@ -1627,49 +1623,98 @@ components:
           description: BASE64-encoded attachment file content
           examples:
             - QkFTRTY0LWVuY29kZWQgZGF0YQ==
-    ContractPaginatedResponse:
+    Change:
       type: object
-      description: Paginated response for contracts
       properties:
-        contracts:
+        path:
+          type: string
+        type:
+          type: string
+          enum:
+            - ADDITION
+            - REMOVAL
+            - MODIFICATION
+        oldValue:
+          $ref: "#/components/schemas/JsonNode"
+        newValue:
+          $ref: "#/components/schemas/JsonNode"
+    Diff:
+      type: object
+      properties:
+        oldVersion:
+          type: integer
+          format: int32
+        newVersion:
+          type: integer
+          format: int32
+        availableVersions:
           type: array
           items:
-            $ref: "#/components/schemas/Contract"
-        _meta:
-          $ref: "#/components/schemas/PagingMetaData"
-          readOnly: true
-    PagingMetaData:
+            type: integer
+            format: int32
+        changes:
+          type: array
+          items:
+            $ref: "#/components/schemas/Change"
+    JsonNode: {}
+    SpecificationContractEntity: {}
+    PageContract:
       type: object
-      description: PagingMetaData model
       properties:
-        page:
-          type: integer
-          format: int32
-          description: Current page
-          example: 5
-          readOnly: true
-        limit:
-          type: integer
-          format: int32
-          description: Displayed objects per page
-          example: 20
-          readOnly: true
-        count:
-          type: integer
-          format: int32
-          description: Displayed objects on current page
-          example: 13
-          readOnly: true
-        totalRecords:
-          type: integer
-          format: int64
-          description: Total amount of hits based on provided search parameters
-          example: 98
-          readOnly: true
         totalPages:
           type: integer
           format: int32
-          description: Total amount of pages based on provided search parameters
-          example: 23
-          readOnly: true
-  securitySchemes: { }
+        totalElements:
+          type: integer
+          format: int64
+        size:
+          type: integer
+          format: int32
+        content:
+          type: array
+          items:
+            $ref: "#/components/schemas/Contract"
+        number:
+          type: integer
+          format: int32
+        first:
+          type: boolean
+        last:
+          type: boolean
+        sort:
+          $ref: "#/components/schemas/SortObject"
+        numberOfElements:
+          type: integer
+          format: int32
+        pageable:
+          $ref: "#/components/schemas/PageableObject"
+        empty:
+          type: boolean
+    PageableObject:
+      type: object
+      properties:
+        offset:
+          type: integer
+          format: int64
+        sort:
+          $ref: "#/components/schemas/SortObject"
+        paged:
+          type: boolean
+        pageNumber:
+          type: integer
+          format: int32
+        pageSize:
+          type: integer
+          format: int32
+        unpaged:
+          type: boolean
+    SortObject:
+      type: object
+      properties:
+        empty:
+          type: boolean
+        sorted:
+          type: boolean
+        unsorted:
+          type: boolean
+  securitySchemes: {}
