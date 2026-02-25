@@ -18,7 +18,7 @@ import static se.sundsvall.billingdatacollector.integration.contract.ContractCon
 @CircuitBreaker(name = CLIENT_ID)
 public interface ContractClient {
 
-	@GetMapping(path = "/{municipalityId}/contracts/{/contractId}", produces = APPLICATION_JSON_VALUE)
+	@GetMapping(path = "/{municipalityId}/contracts/{contractId}", produces = APPLICATION_JSON_VALUE)
 	Optional<Contract> getContract(
 		@PathVariable final String municipalityId,
 		@PathVariable final String contractId);
