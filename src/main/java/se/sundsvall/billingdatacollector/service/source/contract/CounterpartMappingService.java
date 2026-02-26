@@ -7,13 +7,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.zalando.problem.Problem;
 import se.sundsvall.billingdatacollector.integration.db.CounterpartMappingRepository;
 import se.sundsvall.billingdatacollector.integration.db.model.CounterpartMappingEntity;
 import se.sundsvall.billingdatacollector.integration.party.PartyIntegration;
+import se.sundsvall.dept44.problem.Problem;
 
 import static java.util.function.Predicate.not;
-import static org.zalando.problem.Status.NOT_FOUND;
+import static org.springframework.http.HttpStatus.NOT_FOUND;
 
 @Service
 @Transactional(readOnly = true)
@@ -35,10 +35,10 @@ public class CounterpartMappingService {
 	 * 1. Pattern matching on legalId
 	 * 2. Stakeholder type fallback
 	 *
-	 * @param  partyId                              the partyId to find legalId for
-	 * @param  stakeholderType                      the stakeholder type for fallback matching
-	 * @return                                      the counterpart value
-	 * @throws org.zalando.problem.ThrowableProblem if no match found
+	 * @param  partyId                                      the partyId to find legalId for
+	 * @param  stakeholderType                              the stakeholder type for fallback matching
+	 * @return                                              the counterpart value
+	 * @throws se.sundsvall.dept44.problem.ThrowableProblem if no match found
 	 */
 	public String findCounterpart(String municipalityId, String partyId, String stakeholderType) {
 		LOG.debug("Finding counterpart for partyId: {}, stakeholderType: {}", partyId, stakeholderType);

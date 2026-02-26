@@ -7,8 +7,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.zalando.problem.Status;
-import org.zalando.problem.ThrowableProblem;
+import se.sundsvall.dept44.problem.ThrowableProblem;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
@@ -17,6 +16,7 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
+import static org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR;
 
 @ExtendWith(MockitoExtension.class)
 class PartyIntegrationTest {
@@ -74,7 +74,7 @@ class PartyIntegrationTest {
 		assertThatExceptionOfType(ThrowableProblem.class).isThrownBy(() -> partyIntegration.getPartyId(MUNICIPALITY_ID, PERSONAL_NUMBER))
 			.satisfies(problem -> {
 				assertThat(problem.getTitle()).isEqualTo("Couldn't find partyId for legalId 199001012385");
-				assertThat(problem.getStatus()).isEqualTo(Status.INTERNAL_SERVER_ERROR);
+				assertThat(problem.getStatus()).isEqualTo(INTERNAL_SERVER_ERROR);
 			});
 
 		verify(mockPartyClient).getPartyId(eq(MUNICIPALITY_ID), eq(PartyType.PRIVATE), any(String.class));
@@ -90,7 +90,7 @@ class PartyIntegrationTest {
 		assertThatExceptionOfType(ThrowableProblem.class).isThrownBy(() -> partyIntegration.getPartyId(MUNICIPALITY_ID, FAULTY_PERSONAL_NUMBER))
 			.satisfies(problem -> {
 				assertThat(problem.getTitle()).isEqualTo("Couldn't find partyId for legalId 19900101238");
-				assertThat(problem.getStatus()).isEqualTo(Status.INTERNAL_SERVER_ERROR);
+				assertThat(problem.getStatus()).isEqualTo(INTERNAL_SERVER_ERROR);
 			});
 
 		verifyNoMoreInteractions(mockPartyClient);
@@ -118,7 +118,7 @@ class PartyIntegrationTest {
 		assertThatExceptionOfType(ThrowableProblem.class).isThrownBy(() -> partyIntegration.getLegalId(MUNICIPALITY_ID, PARTY_ID))
 			.satisfies(problem -> {
 				assertThat(problem.getTitle()).isEqualTo("Couldn't find legalId for partyId " + PARTY_ID);
-				assertThat(problem.getStatus()).isEqualTo(Status.INTERNAL_SERVER_ERROR);
+				assertThat(problem.getStatus()).isEqualTo(INTERNAL_SERVER_ERROR);
 			});
 
 		verify(mockPartyClient).getLegalId(MUNICIPALITY_ID, PARTY_ID);

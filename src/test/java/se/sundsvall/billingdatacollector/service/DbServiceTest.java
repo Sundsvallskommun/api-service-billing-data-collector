@@ -283,7 +283,7 @@ class DbServiceTest {
 		final MultiValueMap<String, String> map = new LinkedMultiValueMap<>();
 		map.add("location", "/location/uuid");
 		final HttpHeaders headers = new HttpHeaders();
-		headers.addAll(map);
+		headers.putAll(map);
 		return headers;
 	}
 

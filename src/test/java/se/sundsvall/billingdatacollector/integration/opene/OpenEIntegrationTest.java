@@ -6,10 +6,9 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.zalando.problem.Status;
-import org.zalando.problem.ThrowableProblem;
 import se.sundsvall.billingdatacollector.model.BillingRecordWrapper;
 import se.sundsvall.billingdatacollector.service.DbService;
+import se.sundsvall.dept44.problem.ThrowableProblem;
 import se.sundsvall.dept44.test.annotation.resource.Load;
 import se.sundsvall.dept44.test.extension.ResourceLoaderExtension;
 
@@ -20,6 +19,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
+import static org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR;
 
 @ExtendWith({
 	MockitoExtension.class, ResourceLoaderExtension.class
@@ -77,7 +77,7 @@ class OpenEIntegrationTest {
 		assertThatExceptionOfType(ThrowableProblem.class)
 			.isThrownBy(() -> openEIntegration.getBillingRecord("123456"))
 			.satisfies(throwableProblem -> {
-				assertThat(throwableProblem.getStatus()).isEqualTo(Status.INTERNAL_SERVER_ERROR);
+				assertThat(throwableProblem.getStatus()).isEqualTo(INTERNAL_SERVER_ERROR);
 				assertThat(throwableProblem.getTitle()).isEqualTo("Couldn't map billing record from OpenE");
 				assertThat(throwableProblem.getDetail()).startsWith("Unsupported familyId: 358");
 			});
@@ -94,7 +94,7 @@ class OpenEIntegrationTest {
 		assertThatExceptionOfType(ThrowableProblem.class)
 			.isThrownBy(() -> openEIntegration.getBillingRecord("123456"))
 			.satisfies(throwableProblem -> {
-				assertThat(throwableProblem.getStatus()).isEqualTo(Status.INTERNAL_SERVER_ERROR);
+				assertThat(throwableProblem.getStatus()).isEqualTo(INTERNAL_SERVER_ERROR);
 				assertThat(throwableProblem.getTitle()).isEqualTo("Couldn't map billing record from OpenE");
 				assertThat(throwableProblem.getDetail()).startsWith("No familyId found in response");
 			});
