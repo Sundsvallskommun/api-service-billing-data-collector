@@ -13,13 +13,12 @@ import org.mockito.ArgumentMatchers;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.ResponseEntity;
-import org.zalando.problem.Status;
-import org.zalando.problem.ThrowableProblem;
 import se.sundsvall.billingdatacollector.TestDataFactory;
 import se.sundsvall.billingdatacollector.integration.billingpreprocessor.BillingPreprocessorClient;
 import se.sundsvall.billingdatacollector.integration.opene.OpenEIntegration;
 import se.sundsvall.billingdatacollector.model.BillingRecordWrapper;
 import se.sundsvall.billingdatacollector.service.decorator.BillingRecordDecorator;
+import se.sundsvall.dept44.problem.ThrowableProblem;
 import wiremock.com.google.common.collect.Sets;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -32,6 +31,7 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
+import static org.springframework.http.HttpStatus.BAD_REQUEST;
 import static se.sundsvall.billingdatacollector.integration.opene.kundfakturaformular.model.BillingRecordConstants.SUNDSVALLS_MUNICIPALITY_ID;
 
 @ExtendWith(MockitoExtension.class)
@@ -204,7 +204,7 @@ class CollectorServiceTest {
 		assertThatExceptionOfType(ThrowableProblem.class)
 			.isThrownBy(() -> collectorService.triggerBillingBetweenDates(START_DATE, END_DATE, WANTED_FAMILY_IDS))
 			.satisfies(throwableProblem -> {
-				assertThat(throwableProblem.getStatus()).isEqualTo(Status.BAD_REQUEST);
+				assertThat(throwableProblem.getStatus()).isEqualTo(BAD_REQUEST);
 				assertThat(throwableProblem.getDetail()).contains("Supported familyIds: [something_else]");
 				assertThat(throwableProblem.getTitle()).isEqualTo("No supported familyIds found");
 			});

@@ -13,8 +13,7 @@ import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.zalando.problem.Status;
-import org.zalando.problem.ThrowableProblem;
+import se.sundsvall.dept44.problem.ThrowableProblem;
 
 import static generated.se.sundsvall.contract.IntervalType.HALF_YEARLY;
 import static generated.se.sundsvall.contract.IntervalType.MONTHLY;
@@ -23,6 +22,7 @@ import static generated.se.sundsvall.contract.IntervalType.YEARLY;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.when;
+import static org.springframework.http.HttpStatus.NOT_FOUND;
 
 @ExtendWith(MockitoExtension.class)
 class CalculationUtilTest {
@@ -99,7 +99,7 @@ class CalculationUtilTest {
 		when(contractMock.getContractId()).thenReturn("contractId");
 
 		final var e = assertThrows(ThrowableProblem.class, () -> CalculationUtil.calculateIndexedCost(contractMock, currentIndex));
-		assertThat(e.getStatus()).isEqualTo(Status.NOT_FOUND);
+		assertThat(e.getStatus()).isEqualTo(NOT_FOUND);
 		assertThat(e.getDetail()).isEqualTo("Contract contractId is missing crucial information for calculating split factor");
 	}
 
@@ -111,7 +111,7 @@ class CalculationUtilTest {
 		when(contractMock.getInvoicing()).thenReturn(invoicingMock);
 
 		final var e = assertThrows(ThrowableProblem.class, () -> CalculationUtil.calculateIndexedCost(contractMock, currentIndex));
-		assertThat(e.getStatus()).isEqualTo(Status.NOT_FOUND);
+		assertThat(e.getStatus()).isEqualTo(NOT_FOUND);
 		assertThat(e.getDetail()).isEqualTo("Contract contractId is missing crucial information for calculating split factor");
 	}
 
@@ -127,7 +127,7 @@ class CalculationUtilTest {
 		when(invoicingMock.getInvoiceInterval()).thenReturn(YEARLY);
 
 		final var e = assertThrows(ThrowableProblem.class, () -> CalculationUtil.calculateIndexedCost(contractMock, currentIndex));
-		assertThat(e.getStatus()).isEqualTo(Status.NOT_FOUND);
+		assertThat(e.getStatus()).isEqualTo(NOT_FOUND);
 		assertThat(e.getDetail()).isEqualTo("Contract contractId is missing crucial information for calculating indexed cost");
 	}
 
@@ -143,7 +143,7 @@ class CalculationUtilTest {
 		when(invoicingMock.getInvoiceInterval()).thenReturn(YEARLY);
 
 		final var e = assertThrows(ThrowableProblem.class, () -> CalculationUtil.calculateIndexedCost(contractMock, currentIndex));
-		assertThat(e.getStatus()).isEqualTo(Status.NOT_FOUND);
+		assertThat(e.getStatus()).isEqualTo(NOT_FOUND);
 		assertThat(e.getDetail()).isEqualTo("Contract contractId is missing crucial information for calculating indexed cost");
 	}
 
@@ -157,7 +157,7 @@ class CalculationUtilTest {
 		when(invoicingMock.getInvoiceInterval()).thenReturn(YEARLY);
 
 		final var e = assertThrows(ThrowableProblem.class, () -> CalculationUtil.calculateIndexedCost(contractMock, currentIndex));
-		assertThat(e.getStatus()).isEqualTo(Status.NOT_FOUND);
+		assertThat(e.getStatus()).isEqualTo(NOT_FOUND);
 		assertThat(e.getDetail()).isEqualTo("Contract contractId is missing crucial information for calculating indexed cost");
 	}
 
@@ -171,7 +171,7 @@ class CalculationUtilTest {
 
 		final var e = assertThrows(ThrowableProblem.class, () -> CalculationUtil.calculateIndexedCost(contractMock, currentIndex));
 
-		assertThat(e.getStatus()).isEqualTo(Status.NOT_FOUND);
+		assertThat(e.getStatus()).isEqualTo(NOT_FOUND);
 		assertThat(e.getDetail()).isEqualTo("Contract contractId is missing crucial information for calculating indexed cost");
 	}
 
@@ -205,7 +205,7 @@ class CalculationUtilTest {
 
 		final var e = assertThrows(ThrowableProblem.class, () -> CalculationUtil.calculateNonIndexedCost(contractMock));
 
-		assertThat(e.getStatus()).isEqualTo(Status.NOT_FOUND);
+		assertThat(e.getStatus()).isEqualTo(NOT_FOUND);
 		assertThat(e.getDetail()).isEqualTo("Contract contractId is missing crucial information for calculating non indexed cost");
 	}
 
@@ -216,7 +216,7 @@ class CalculationUtilTest {
 
 		final var e = assertThrows(ThrowableProblem.class, () -> CalculationUtil.calculateNonIndexedCost(contractMock));
 
-		assertThat(e.getStatus()).isEqualTo(Status.NOT_FOUND);
+		assertThat(e.getStatus()).isEqualTo(NOT_FOUND);
 		assertThat(e.getDetail()).isEqualTo("Contract contractId is missing crucial information for calculating non indexed cost");
 	}
 
@@ -228,7 +228,7 @@ class CalculationUtilTest {
 
 		final var e = assertThrows(ThrowableProblem.class, () -> CalculationUtil.calculateNonIndexedCost(contractMock));
 
-		assertThat(e.getStatus()).isEqualTo(Status.NOT_FOUND);
+		assertThat(e.getStatus()).isEqualTo(NOT_FOUND);
 		assertThat(e.getDetail()).isEqualTo("Contract contractId is missing crucial information for calculating split factor");
 	}
 }

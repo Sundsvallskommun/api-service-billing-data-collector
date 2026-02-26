@@ -21,8 +21,8 @@ import java.util.Objects;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import org.springframework.stereotype.Component;
-import org.zalando.problem.Problem;
 import se.sundsvall.billingdatacollector.integration.scb.ScbIntegration;
+import se.sundsvall.dept44.problem.Problem;
 
 import static generated.se.sundsvall.billingpreprocessor.Status.APPROVED;
 import static generated.se.sundsvall.billingpreprocessor.Type.EXTERNAL;
@@ -30,7 +30,7 @@ import static generated.se.sundsvall.contract.InvoicedIn.ADVANCE;
 import static java.time.Month.OCTOBER;
 import static java.util.Collections.emptyList;
 import static java.util.Optional.ofNullable;
-import static org.zalando.problem.Status.INTERNAL_SERVER_ERROR;
+import static org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR;
 import static se.sundsvall.billingdatacollector.service.source.contract.util.CalculationUtil.calculateIndexedCost;
 import static se.sundsvall.billingdatacollector.service.source.contract.util.CalculationUtil.calculateNonIndexedCost;
 import static se.sundsvall.billingdatacollector.service.source.contract.util.ContractUtil.getAccrualKey;
