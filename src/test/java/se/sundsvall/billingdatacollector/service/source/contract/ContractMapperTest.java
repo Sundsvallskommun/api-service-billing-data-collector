@@ -119,7 +119,7 @@ class ContractMapperTest {
 		// Assert & verify
 		assertThat(result.getApprovedBy()).isEqualTo("CONTRACT-SERVICE");
 		assertThat(result.getCategory()).isEqualTo("MEX_INVOICE");
-		assertThat(result.getInvoice()).isNotNull().hasAllNullFieldsOrPropertiesExcept("ourReference", "invoiceRows").satisfies(invoice -> {
+		assertThat(result.getInvoice()).isNotNull().hasAllNullFieldsOrPropertiesExcept("customerId", "ourReference", "invoiceRows").satisfies(invoice -> {
 			assertThat(invoice.getOurReference()).isEqualTo(CONTRACT_ID);
 			assertThat(invoice.getInvoiceRows()).hasSize(1);
 
@@ -272,7 +272,7 @@ class ContractMapperTest {
 		when(settingsProviderMock.getSubaccount(contractMock)).thenReturn(subaccount);
 		when(settingsProviderMock.getVatCode(contractMock)).thenReturn(vatCode);
 		when(contractMock.getContractId()).thenReturn(CONTRACT_ID);
-		when(scbIntegrationMock.getKPI(KPIBaseYear.KPI_80, YearMonth.now().withMonth(Month.OCTOBER.getValue()))).thenReturn(kpiIndex);
+		when(scbIntegrationMock.getKPI(KPIBaseYear.KPI_80, YearMonth.now().minusYears(1).withMonth(Month.OCTOBER.getValue()))).thenReturn(kpiIndex);
 		when(contractMock.getStakeholders()).thenReturn(List.of(generateStakeholder().roles(List.of(PRIMARY_BILLING_PARTY, LESSEE))
 			.type(PERSON)));
 		when(counterpartMappingServiceMock.findCounterpart(MUNICIPALITY_ID, billableStakeholder.getPartyId(), PERSON.getValue())).thenReturn(counterpart);
@@ -282,7 +282,7 @@ class ContractMapperTest {
 		// Assert & verify
 		assertThat(result.getApprovedBy()).isEqualTo("CONTRACT-SERVICE");
 		assertThat(result.getCategory()).isEqualTo("MEX_INVOICE");
-		assertThat(result.getInvoice()).isNotNull().hasAllNullFieldsOrPropertiesExcept("ourReference", "invoiceRows").satisfies(invoice -> {
+		assertThat(result.getInvoice()).isNotNull().hasAllNullFieldsOrPropertiesExcept("customerId", "ourReference", "invoiceRows").satisfies(invoice -> {
 			assertThat(invoice.getOurReference()).isEqualTo(CONTRACT_ID);
 			assertThat(invoice.getInvoiceRows()).hasSize(1);
 

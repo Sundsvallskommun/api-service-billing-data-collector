@@ -68,6 +68,7 @@ public class ContractMapper {
 	}
 
 	private BillingRecord toBillingRecord(String municipalityId, Contract contract) {
+		// TODO add transferDate
 		final var billingRecord = new BillingRecord()
 			.approvedBy(APPROVED_BY)
 			.category(CATEGORY)
@@ -79,7 +80,8 @@ public class ContractMapper {
 
 		if (isIndexed(contract)) {
 			final var indexBaseYear = getKPIBaseYear(contract);
-			final var currentIndexPeriod = YearMonth.now().withMonth(INDEX_MONTH);
+			// TODO Fix logic for curentIndexPeriod
+			final var currentIndexPeriod = YearMonth.now().minusYears(1).withMonth(INDEX_MONTH);
 			billingRecord.putExtraParametersItem(PARAMETER_KEY_KPI, String.valueOf(scbIntegration.getKPI(indexBaseYear, currentIndexPeriod))); // KPI value used when calculating prices
 		}
 
@@ -90,6 +92,7 @@ public class ContractMapper {
 		return new Invoice()
 			.ourReference(getContractId(contract))
 			.customerReference(getExtraParameter(contract, "InvoiceInfo", "markup"))
+			.customerId("changeMe") // TODO Vad ska customerId vara?
 			.addInvoiceRowsItem(mapInvoiceRow(municipalityId, contract))
 			.description(ofNullable(contract.getInvoicing())
 				.filter(invoicing -> Objects.equals(ADVANCE, invoicing.getInvoicedIn()))
@@ -116,7 +119,8 @@ public class ContractMapper {
 	private BigDecimal calculateCost(Contract contract) {
 		if (isIndexed(contract)) {
 			final var indexBaseYear = getKPIBaseYear(contract);
-			final var currentIndexPeriod = YearMonth.now().withMonth(INDEX_MONTH);
+			// TODO Fix logic for curentIndexPeriod
+			final var currentIndexPeriod = YearMonth.now().minusYears(1).withMonth(INDEX_MONTH);
 			final var currentKPI = scbIntegration.getKPI(indexBaseYear, currentIndexPeriod);
 			return calculateIndexedCost(contract, currentKPI);
 		}

@@ -13,6 +13,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.ArgumentMatchers.matches;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
 @SpringBootTest(classes = Application.class, webEnvironment = SpringBootTest.WebEnvironment.MOCK)
@@ -34,7 +35,7 @@ class CertificateValidityCheckHandlerTest {
 		handler.checkCertificateHealth();
 
 		// Verify that health mock is triggered at least once (as startup sequence will interfere with verification)
-		verify(dept44HealthUtilityMock).setHealthIndicatorHealthy("certificate-health");
+		verify(dept44HealthUtilityMock, times(2)).setHealthIndicatorHealthy("certificate-health");
 	}
 
 	@Test
