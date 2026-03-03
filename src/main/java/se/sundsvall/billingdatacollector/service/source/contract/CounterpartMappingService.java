@@ -43,12 +43,13 @@ public class CounterpartMappingService {
 	public String findCounterpart(String municipalityId, String partyId, String stakeholderType) {
 		LOG.debug("Finding counterpart for partyId: {}, stakeholderType: {}", partyId, stakeholderType);
 
-		final var legalId = partyIntegration.getLegalId(municipalityId, partyId);
+		final var legalId = partyIntegration.getLegalId(municipalityId, partyId, stakeholderType);
 
-		var counterpartMappingMatch = findBestMatch(legalId, repository.findAll());
-
-		if (counterpartMappingMatch != null) {
-			return counterpartMappingMatch.getCounterpart();
+		if (legalId.isPresent()) {
+			var counterpartMappingMatch = findBestMatch(legalId.get(), repository.findAll());
+			if (counterpartMappingMatch != null) {
+				return counterpartMappingMatch.getCounterpart();
+			}
 		}
 
 		// Fall back to stakeholder type
