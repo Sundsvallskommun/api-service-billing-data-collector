@@ -3,10 +3,10 @@ package se.sundsvall.billingdatacollector.service.source.contract.model;
 import generated.se.sundsvall.contract.IntervalType;
 import java.util.Objects;
 import java.util.stream.Stream;
-import org.zalando.problem.Problem;
+import se.sundsvall.dept44.problem.Problem;
 
 import static java.util.Objects.isNull;
-import static org.zalando.problem.Status.NOT_FOUND;
+import static org.springframework.http.HttpStatus.NOT_FOUND;
 
 public enum Interval {
 	MONTHLY("N_1", 12),

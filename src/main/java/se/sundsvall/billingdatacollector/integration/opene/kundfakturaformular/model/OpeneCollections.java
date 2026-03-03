@@ -7,8 +7,6 @@ import lombok.Getter;
 import lombok.Setter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.zalando.problem.Problem;
-import org.zalando.problem.Status;
 import se.sundsvall.billingdatacollector.integration.opene.kundfakturaformular.model.external.AktivitetskontoExtern;
 import se.sundsvall.billingdatacollector.integration.opene.kundfakturaformular.model.external.AnsvarExtern;
 import se.sundsvall.billingdatacollector.integration.opene.kundfakturaformular.model.external.BarakningarExtern;
@@ -28,7 +26,9 @@ import se.sundsvall.billingdatacollector.integration.opene.kundfakturaformular.m
 import se.sundsvall.billingdatacollector.integration.opene.kundfakturaformular.model.internal.SummeringIntern;
 import se.sundsvall.billingdatacollector.integration.opene.kundfakturaformular.model.internal.UnderkontoIntern;
 import se.sundsvall.billingdatacollector.integration.opene.kundfakturaformular.model.internal.VerksamhetIntern;
+import se.sundsvall.dept44.problem.Problem;
 
+import static org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR;
 import static se.sundsvall.billingdatacollector.integration.opene.kundfakturaformular.mapper.OpeneCollectionsMapper.consolidateBarakningarExternWithBerakningExtern;
 import static se.sundsvall.billingdatacollector.integration.opene.kundfakturaformular.mapper.OpeneCollectionsMapper.consolidateBerakningarExternWithBerakningExtern;
 import static se.sundsvall.billingdatacollector.integration.opene.kundfakturaformular.mapper.OpeneCollectionsMapper.consolidateBerakningarWithBerakningIntern;
@@ -114,7 +114,7 @@ public class OpeneCollections {
 
 		if (rows == 0) {
 			throw Problem.builder()
-				.withStatus(Status.INTERNAL_SERVER_ERROR)
+				.withStatus(INTERNAL_SERVER_ERROR)
 				.withTitle("No data from OpenE")
 				.build();
 		}

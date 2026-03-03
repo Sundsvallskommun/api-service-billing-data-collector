@@ -8,11 +8,10 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.zalando.problem.Status;
-import org.zalando.problem.ThrowableProblem;
 import se.sundsvall.billingdatacollector.integration.opene.OpenEIntegrationProperties;
 import se.sundsvall.billingdatacollector.integration.party.PartyIntegration;
 import se.sundsvall.billingdatacollector.model.BillingRecordWrapper;
+import se.sundsvall.dept44.problem.ThrowableProblem;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
@@ -20,6 +19,7 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
+import static org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR;
 
 @ExtendWith(MockitoExtension.class)
 class KundfakturaformularBillingRecordDecoratorTest {
@@ -72,7 +72,7 @@ class KundfakturaformularBillingRecordDecoratorTest {
 		assertThatExceptionOfType(ThrowableProblem.class)
 			.isThrownBy(() -> decorator.decorate(billingRecordWrapper))
 			.satisfies(problem -> {
-				assertThat(problem.getStatus()).isEqualTo(Status.INTERNAL_SERVER_ERROR);
+				assertThat(problem.getStatus()).isEqualTo(INTERNAL_SERVER_ERROR);
 				assertThat(problem.getMessage()).contains("Couldn't find partyId for legalId legalId");
 			});
 		verify(mockPartyIntegration).getPartyId(MUNICIPALITY_ID, LEGAL_ID);

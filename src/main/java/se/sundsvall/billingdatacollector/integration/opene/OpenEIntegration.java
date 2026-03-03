@@ -10,12 +10,12 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
-import org.zalando.problem.Problem;
-import org.zalando.problem.Status;
 import se.sundsvall.billingdatacollector.model.BillingRecordWrapper;
 import se.sundsvall.billingdatacollector.service.DbService;
+import se.sundsvall.dept44.problem.Problem;
 
 import static java.util.stream.Collectors.toMap;
+import static org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR;
 import static se.sundsvall.billingdatacollector.integration.opene.kundfakturaformular.model.BillingRecordConstants.SUNDSVALLS_MUNICIPALITY_ID;
 import static se.sundsvall.billingdatacollector.integration.opene.util.XPathUtil.evaluateXPath;
 import static se.sundsvall.billingdatacollector.integration.opene.util.XPathUtil.getString;
@@ -95,7 +95,7 @@ public class OpenEIntegration {
 			.orElseThrow(() -> Problem.builder()
 				.withTitle("Couldn't map billing record from OpenE")
 				.withDetail("No familyId found in response")
-				.withStatus(Status.INTERNAL_SERVER_ERROR)
+				.withStatus(INTERNAL_SERVER_ERROR)
 				.build());
 
 		// If the familyId is not supported, also throw a Problem
@@ -104,7 +104,7 @@ public class OpenEIntegration {
 			.orElseThrow(() -> Problem.builder()
 				.withTitle("Couldn't map billing record from OpenE")
 				.withDetail("Unsupported familyId: " + familyId)
-				.withStatus(Status.INTERNAL_SERVER_ERROR)
+				.withStatus(INTERNAL_SERVER_ERROR)
 				.build());
 
 		return familyId;

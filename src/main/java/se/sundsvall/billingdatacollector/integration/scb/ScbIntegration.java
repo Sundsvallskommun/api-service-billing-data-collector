@@ -6,12 +6,12 @@ import java.math.RoundingMode;
 import java.time.YearMonth;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Component;
-import org.zalando.problem.Problem;
 import se.sundsvall.billingdatacollector.integration.scb.model.KPIBaseYear;
+import se.sundsvall.dept44.problem.Problem;
 
 import static java.util.Collections.emptyList;
 import static java.util.Optional.ofNullable;
-import static org.zalando.problem.Status.NOT_FOUND;
+import static org.springframework.http.HttpStatus.NOT_FOUND;
 import static se.sundsvall.billingdatacollector.integration.scb.ScbMapper.toVariablesSelection;
 
 @Component

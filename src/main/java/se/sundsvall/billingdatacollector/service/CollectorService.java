@@ -12,15 +12,15 @@ import java.util.stream.Collectors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
-import org.zalando.problem.Problem;
-import org.zalando.problem.Status;
 import se.sundsvall.billingdatacollector.integration.billingpreprocessor.BillingPreprocessorClient;
 import se.sundsvall.billingdatacollector.integration.opene.OpenEIntegration;
 import se.sundsvall.billingdatacollector.model.BillingRecordWrapper;
 import se.sundsvall.billingdatacollector.service.decorator.BillingRecordDecorator;
+import se.sundsvall.dept44.problem.Problem;
 import se.sundsvall.dept44.util.LogUtils;
 
 import static java.util.stream.Collectors.toSet;
+import static org.springframework.http.HttpStatus.BAD_REQUEST;
 import static se.sundsvall.dept44.util.LogUtils.sanitizeForLogging;
 
 @Service
@@ -142,7 +142,7 @@ public class CollectorService {
 		if (validFamilyIds.isEmpty()) {
 			throw Problem.builder()
 				.withTitle("No supported familyIds found")
-				.withStatus(Status.BAD_REQUEST)
+				.withStatus(BAD_REQUEST)
 				.withDetail("Supported familyIds: " + supportedFamilyIds)
 				.build();
 		}
