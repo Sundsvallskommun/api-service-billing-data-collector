@@ -90,13 +90,7 @@ public class ContractMapper {
 	}
 
 	private YearMonth getCurrentIndexPeriod() {
-		final var now = YearMonth.now();
-		// If we haven't reached October yet this year, use last year's October
-		// Otherwise use this year's October
-		if (now.getMonthValue() < INDEX_MONTH) {
-			return now.minusYears(1).withMonth(INDEX_MONTH);
-		}
-		return now.withMonth(INDEX_MONTH);
+		return YearMonth.now().minusYears(1).withMonth(INDEX_MONTH);
 	}
 
 	private Invoice toInvoice(String municipalityId, Contract contract) {

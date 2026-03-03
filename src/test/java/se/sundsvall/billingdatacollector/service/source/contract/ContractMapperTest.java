@@ -38,9 +38,6 @@ import static java.util.Collections.emptyList;
 import static org.apache.commons.lang3.StringUtils.isBlank;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.CALLS_REAL_METHODS;
-import static org.mockito.Mockito.mockStatic;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
@@ -326,62 +323,6 @@ class ContractMapperTest {
 		verify(settingsProviderMock).getSubaccount(contractMock);
 		verify(settingsProviderMock).getVatCode(contractMock);
 
-	}
-
-	@ParameterizedTest
-	@MethodSource("getCurrentIndexPeriodArgumentProvider")
-	void createBillingRecord_currentIndexPeriod(YearMonth currentMonth, YearMonth expectedIndexPeriod) {
-		try (var mockedYearMonth = mockStatic(YearMonth.class, CALLS_REAL_METHODS)) {
-			// Arrange
-			final var yearly = BigDecimal.valueOf(10000);
-			final var intervalType = IntervalType.YEARLY;
-			final var activity = "activity";
-			final var costCenter = "costCenter";
-			final var department = "department";
-			final var subaccount = "subaccount";
-			final var counterpart = "counterpart";
-			final var vatCode = "vatCode";
-			final var indexType = "KPI 80";
-			final var kpiIndex = BigDecimal.valueOf(415.51);
-			final var billableStakeholder = generateStakeholder().addRolesItem(PRIMARY_BILLING_PARTY).roles(List.of(PRIMARY_BILLING_PARTY, LESSEE));
-
-			mockedYearMonth.when(YearMonth::now).thenReturn(currentMonth);
-
-			when(contractMock.getFees()).thenReturn(feesMock);
-			when(feesMock.getYearly()).thenReturn(yearly);
-			when(feesMock.getIndexType()).thenReturn(indexType);
-			when(feesMock.getIndexNumber()).thenReturn(409);
-			when(feesMock.getIndexationRate()).thenReturn(BigDecimal.ONE);
-			when(contractMock.getInvoicing()).thenReturn(invoicingMock);
-			when(invoicingMock.getInvoiceInterval()).thenReturn(intervalType);
-			when(settingsProviderMock.isLeaseTypeSettingsPresent(contractMock)).thenReturn(true);
-			when(settingsProviderMock.getActivity(contractMock)).thenReturn(activity);
-			when(settingsProviderMock.getCostCenter(contractMock)).thenReturn(costCenter);
-			when(settingsProviderMock.getDepartment(contractMock)).thenReturn(department);
-			when(settingsProviderMock.getSubaccount(contractMock)).thenReturn(subaccount);
-			when(settingsProviderMock.getVatCode(contractMock)).thenReturn(vatCode);
-			when(contractMock.getContractId()).thenReturn(CONTRACT_ID);
-			when(scbIntegrationMock.getKPI(any(), any())).thenReturn(kpiIndex);
-			when(contractMock.getStakeholders()).thenReturn(List.of(generateStakeholder().roles(List.of(PRIMARY_BILLING_PARTY, LESSEE))
-				.type(PERSON)));
-			when(counterpartMappingServiceMock.findCounterpart(MUNICIPALITY_ID, billableStakeholder.getPartyId(), PERSON.getValue())).thenReturn(counterpart);
-
-			// Act
-			mapper.createBillingRecord(MUNICIPALITY_ID, contractMock);
-
-			// Assert - verify that getKPI was called with the expected index period
-			verify(scbIntegrationMock, times(2)).getKPI(KPIBaseYear.KPI_80, expectedIndexPeriod);
-			verify(settingsProviderMock).isLeaseTypeSettingsPresent(contractMock);
-			verify(settingsProviderMock).getVatCode(contractMock);
-		}
-	}
-
-	private static Stream<Arguments> getCurrentIndexPeriodArgumentProvider() {
-		return Stream.of(
-			Arguments.of(YearMonth.of(2026, 1), YearMonth.of(2025, 10)),   // January -> previous year's October
-			Arguments.of(YearMonth.of(2026, 9), YearMonth.of(2025, 10)),   // September -> previous year's October
-			Arguments.of(YearMonth.of(2026, 10), YearMonth.of(2026, 10)),  // October -> this year's October
-			Arguments.of(YearMonth.of(2026, 12), YearMonth.of(2026, 10))); // December -> this year's October
 	}
 
 	private static Stakeholder generateStakeholder() {
