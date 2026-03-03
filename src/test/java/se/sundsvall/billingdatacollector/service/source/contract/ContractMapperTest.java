@@ -5,6 +5,7 @@ import generated.se.sundsvall.contract.Contract;
 import generated.se.sundsvall.contract.Fees;
 import generated.se.sundsvall.contract.IntervalType;
 import generated.se.sundsvall.contract.Invoicing;
+import generated.se.sundsvall.contract.PropertyDesignation;
 import generated.se.sundsvall.contract.Stakeholder;
 import java.math.BigDecimal;
 import java.time.Month;
@@ -22,6 +23,7 @@ import org.junit.jupiter.params.provider.NullSource;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import se.sundsvall.billingdatacollector.integration.scb.ScbIntegration;
 import se.sundsvall.billingdatacollector.integration.scb.model.KPIBaseYear;
@@ -29,6 +31,7 @@ import se.sundsvall.dept44.problem.ThrowableProblem;
 
 import static generated.se.sundsvall.billingpreprocessor.Status.APPROVED;
 import static generated.se.sundsvall.billingpreprocessor.Type.EXTERNAL;
+import static generated.se.sundsvall.contract.InvoicedIn.ADVANCE;
 import static generated.se.sundsvall.contract.StakeholderRole.LESSEE;
 import static generated.se.sundsvall.contract.StakeholderRole.LESSOR;
 import static generated.se.sundsvall.contract.StakeholderRole.PRIMARY_BILLING_PARTY;
@@ -248,6 +251,7 @@ class ContractMapperTest {
 		// Arrange
 		final var yearly = BigDecimal.valueOf(10000);
 		final var intervalType = IntervalType.YEARLY;
+		final var propertyDesignations = List.of(new PropertyDesignation().name("designation").district("district"));
 		final var activity = "activity";
 		final var costCenter = "costCenter";
 		final var department = "department";
@@ -255,16 +259,19 @@ class ContractMapperTest {
 		final var counterpart = "counterpart";
 		final var vatCode = "vatCode";
 		final var indexType = "KPI 80";
+		final var accuralKey = "N_12";
 		final var kpiIndex = BigDecimal.valueOf(415.51);
 		final var billableStakeholder = generateStakeholder().addRolesItem(PRIMARY_BILLING_PARTY).roles(List.of(PRIMARY_BILLING_PARTY, LESSEE));
 
 		when(contractMock.getFees()).thenReturn(feesMock);
+		when(contractMock.getPropertyDesignations()).thenReturn(propertyDesignations);
 		when(feesMock.getYearly()).thenReturn(yearly);
 		when(feesMock.getIndexType()).thenReturn(indexType);
 		when(feesMock.getIndexNumber()).thenReturn(409);
 		when(feesMock.getIndexationRate()).thenReturn(BigDecimal.ONE);
 		when(contractMock.getInvoicing()).thenReturn(invoicingMock);
 		when(invoicingMock.getInvoiceInterval()).thenReturn(intervalType);
+		when(invoicingMock.getInvoicedIn()).thenReturn(ADVANCE);
 		when(settingsProviderMock.isLeaseTypeSettingsPresent(contractMock)).thenReturn(true);
 		when(settingsProviderMock.getActivity(contractMock)).thenReturn(activity);
 		when(settingsProviderMock.getCostCenter(contractMock)).thenReturn(costCenter);
@@ -276,36 +283,40 @@ class ContractMapperTest {
 		when(contractMock.getStakeholders()).thenReturn(List.of(generateStakeholder().roles(List.of(PRIMARY_BILLING_PARTY, LESSEE))
 			.type(PERSON)));
 		when(counterpartMappingServiceMock.findCounterpart(MUNICIPALITY_ID, billableStakeholder.getPartyId(), PERSON.getValue())).thenReturn(counterpart);
+
 		// Act
 		final var result = mapper.createBillingRecord(MUNICIPALITY_ID, contractMock);
 
 		// Assert & verify
 		assertThat(result.getApprovedBy()).isEqualTo("CONTRACT-SERVICE");
 		assertThat(result.getCategory()).isEqualTo("MEX_INVOICE");
-		assertThat(result.getInvoice()).isNotNull().hasAllNullFieldsOrPropertiesExcept("customerReference", "customerId", "ourReference", "invoiceRows").satisfies(invoice -> {
-			assertThat(invoice.getOurReference()).isEqualTo(CONTRACT_ID);
-			assertThat(invoice.getInvoiceRows()).hasSize(1);
+		assertThat(result.getInvoice()).isNotNull()
+			.hasAllNullFieldsOrPropertiesExcept("description", "customerReference", "customerId", "ourReference", "invoiceRows")
+			.satisfies(invoice -> {
+				assertThat(invoice.getOurReference()).isEqualTo(CONTRACT_ID);
+				assertThat(invoice.getInvoiceRows()).hasSize(1);
+				assertThat(invoice.getDescription()).isEqualTo(intervalType.getValue());
 
-			final var invoiceRow = invoice.getInvoiceRows().getFirst();
-			assertThat(invoiceRow.getDescriptions()).isEmpty();
-			assertThat(invoiceRow.getDetailedDescriptions()).isEmpty();
-			assertThat(invoiceRow.getQuantity()).isEqualTo(BigDecimal.ONE);
-			assertThat(invoiceRow.getCostPerUnit()).isEqualTo(BigDecimal.valueOf(10159.17));
-			assertThat(invoiceRow.getVatCode()).isEqualTo(vatCode);
-			assertThat(invoiceRow.getTotalAmount()).isNull();
-			assertThat(invoiceRow.getAccountInformation()).hasSize(1);
+				final var invoiceRow = invoice.getInvoiceRows().getFirst();
+				assertThat(invoiceRow.getDescriptions()).isEmpty();
+				assertThat(invoiceRow.getDetailedDescriptions()).hasSize(2);
+				assertThat(invoiceRow.getQuantity()).isEqualTo(BigDecimal.ONE);
+				assertThat(invoiceRow.getCostPerUnit()).isEqualTo(BigDecimal.valueOf(10159.17));
+				assertThat(invoiceRow.getVatCode()).isEqualTo(vatCode);
+				assertThat(invoiceRow.getTotalAmount()).isNull();
+				assertThat(invoiceRow.getAccountInformation()).hasSize(1);
 
-			final var accountInfo = invoiceRow.getAccountInformation().getFirst();
-			assertThat(accountInfo.getActivity()).isEqualTo(activity);
-			assertThat(accountInfo.getAmount()).isEqualTo(BigDecimal.valueOf(10159.17));
-			assertThat(accountInfo.getCostCenter()).isEqualTo(costCenter);
-			assertThat(accountInfo.getDepartment()).isEqualTo(department);
-			assertThat(accountInfo.getSubaccount()).isEqualTo(subaccount);
-			assertThat(accountInfo.getAccuralKey()).isNull();
-			assertThat(accountInfo.getArticle()).isNull();
-			assertThat(accountInfo.getCounterpart()).isEqualTo(counterpart);
-			assertThat(accountInfo.getProject()).isNull();
-		});
+				final var accountInfo = invoiceRow.getAccountInformation().getFirst();
+				assertThat(accountInfo.getActivity()).isEqualTo(activity);
+				assertThat(accountInfo.getAmount()).isEqualTo(BigDecimal.valueOf(10159.17));
+				assertThat(accountInfo.getCostCenter()).isEqualTo(costCenter);
+				assertThat(accountInfo.getDepartment()).isEqualTo(department);
+				assertThat(accountInfo.getSubaccount()).isEqualTo(subaccount);
+				assertThat(accountInfo.getAccuralKey()).isEqualTo(accuralKey);
+				assertThat(accountInfo.getArticle()).isNull();
+				assertThat(accountInfo.getCounterpart()).isEqualTo(counterpart);
+				assertThat(accountInfo.getProject()).isNull();
+			});
 		assertThat(result.getRecipient()).isNotNull(); // Tested by other test methods
 		assertThat(result.getStatus()).isEqualTo(APPROVED);
 		assertThat(result.getType()).isEqualTo(EXTERNAL);
@@ -323,6 +334,47 @@ class ContractMapperTest {
 		verify(settingsProviderMock).getSubaccount(contractMock);
 		verify(settingsProviderMock).getVatCode(contractMock);
 
+	}
+
+	@ParameterizedTest
+	@MethodSource("descriptionArgumentProvider")
+	void createBillingRecord_invoiceDescription(YearMonth yearMonth, IntervalType intervalType, String expectedDescription) {
+		try (var mockedYearMonth = Mockito.mockStatic(YearMonth.class, Mockito.CALLS_REAL_METHODS)) {
+			mockedYearMonth.when(YearMonth::now).thenReturn(yearMonth);
+
+			// Arrange
+			when(contractMock.getFees()).thenReturn(feesMock);
+			when(feesMock.getYearly()).thenReturn(BigDecimal.valueOf(1000));
+			when(contractMock.getInvoicing()).thenReturn(invoicingMock);
+			when(invoicingMock.getInvoiceInterval()).thenReturn(intervalType);
+			when(invoicingMock.getInvoicedIn()).thenReturn(ADVANCE);
+			when(contractMock.getContractId()).thenReturn(CONTRACT_ID);
+
+			// Act
+			var result = mapper.createBillingRecord(MUNICIPALITY_ID, contractMock);
+
+			// Assert
+			var invoiceRow = result.getInvoice().getInvoiceRows().getFirst();
+			assertThat(invoiceRow.getDetailedDescriptions()).contains(expectedDescription);
+
+			// Verify
+			verify(settingsProviderMock).isLeaseTypeSettingsPresent(contractMock);
+			verify(settingsProviderMock).getVatCode(contractMock);
+		}
+	}
+
+	private static Stream<Arguments> descriptionArgumentProvider() {
+		return Stream.of(
+			// YEARLY
+			Arguments.of(YearMonth.of(2026, 3), IntervalType.YEARLY, "Avser januari-december 2027"),
+			// QUARTERLY
+			Arguments.of(YearMonth.of(2026, 1), IntervalType.QUARTERLY, "Avser april-juni 2026"),
+			Arguments.of(YearMonth.of(2026, 4), IntervalType.QUARTERLY, "Avser juli-september 2026"),
+			Arguments.of(YearMonth.of(2026, 7), IntervalType.QUARTERLY, "Avser oktober-december 2026"),
+			Arguments.of(YearMonth.of(2026, 10), IntervalType.QUARTERLY, "Avser januari-mars 2027"),
+			// HALF_YEARLY
+			Arguments.of(YearMonth.of(2026, 3), IntervalType.HALF_YEARLY, "Avser juli-december 2026"),
+			Arguments.of(YearMonth.of(2026, 7), IntervalType.HALF_YEARLY, "Avser januari-juni 2027"));
 	}
 
 	private static Stakeholder generateStakeholder() {
