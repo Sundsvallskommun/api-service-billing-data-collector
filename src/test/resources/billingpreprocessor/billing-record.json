@@ -6,6 +6,7 @@
 		"extraParameters": {
 			"contractId": "111 222 33-44"
 		},
+		"transferDate": null,
 		"recipient": {
 			"firstName": "Kalle",
 			"lastName": "Anka",

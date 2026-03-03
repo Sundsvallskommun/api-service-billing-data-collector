@@ -57,13 +57,13 @@ class CounterpartMappingServiceTest {
 			.withCounterpart(COUNTERPART)
 			.build();
 
-		when(mockPartyIntegration.getLegalId(MUNICIPALITY_ID, PARTY_ID)).thenReturn(LEGAL_ID);
+		when(mockPartyIntegration.getLegalId(MUNICIPALITY_ID, PARTY_ID, STAKEHOLDER_TYPE)).thenReturn(Optional.of(LEGAL_ID));
 		when(mockRepository.findAll()).thenReturn(List.of(patternEntity1, patternEntity2, patternEntity3));
 
 		var result = service.findCounterpart(MUNICIPALITY_ID, PARTY_ID, STAKEHOLDER_TYPE);
 
 		assertThat(result).isEqualTo(COUNTERPART);
-		verify(mockPartyIntegration).getLegalId(MUNICIPALITY_ID, PARTY_ID);
+		verify(mockPartyIntegration).getLegalId(MUNICIPALITY_ID, PARTY_ID, STAKEHOLDER_TYPE);
 		verify(mockRepository).findAll();
 		verifyNoMoreInteractions(mockRepository, mockPartyIntegration);
 	}
@@ -86,13 +86,13 @@ class CounterpartMappingServiceTest {
 			.withCounterpart("NOT_MATCHING")
 			.build();
 
-		when(mockPartyIntegration.getLegalId(MUNICIPALITY_ID, PARTY_ID)).thenReturn(LEGAL_ID);
+		when(mockPartyIntegration.getLegalId(MUNICIPALITY_ID, PARTY_ID, STAKEHOLDER_TYPE)).thenReturn(Optional.of(LEGAL_ID));
 		when(mockRepository.findAll()).thenReturn(List.of(patternEntity1, patternEntity2, patternEntity3));
 
 		var result = service.findCounterpart(MUNICIPALITY_ID, PARTY_ID, STAKEHOLDER_TYPE);
 
 		assertThat(result).isEqualTo(COUNTERPART);
-		verify(mockPartyIntegration).getLegalId(MUNICIPALITY_ID, PARTY_ID);
+		verify(mockPartyIntegration).getLegalId(MUNICIPALITY_ID, PARTY_ID, STAKEHOLDER_TYPE);
 		verify(mockRepository).findAll();
 		verifyNoMoreInteractions(mockRepository, mockPartyIntegration);
 	}
@@ -105,14 +105,14 @@ class CounterpartMappingServiceTest {
 			.withCounterpart(COUNTERPART)
 			.build();
 
-		when(mockPartyIntegration.getLegalId(MUNICIPALITY_ID, PARTY_ID)).thenReturn(LEGAL_ID);
+		when(mockPartyIntegration.getLegalId(MUNICIPALITY_ID, PARTY_ID, STAKEHOLDER_TYPE)).thenReturn(Optional.of(LEGAL_ID));
 		when(mockRepository.findAll()).thenReturn(List.of());
 		when(mockRepository.findByStakeholderType(STAKEHOLDER_TYPE)).thenReturn(Optional.of(typeEntity));
 
 		var result = service.findCounterpart(MUNICIPALITY_ID, PARTY_ID, STAKEHOLDER_TYPE);
 
 		assertThat(result).isEqualTo(COUNTERPART);
-		verify(mockPartyIntegration).getLegalId(MUNICIPALITY_ID, PARTY_ID);
+		verify(mockPartyIntegration).getLegalId(MUNICIPALITY_ID, PARTY_ID, STAKEHOLDER_TYPE);
 		verify(mockRepository).findAll();
 		verify(mockRepository).findByStakeholderType(STAKEHOLDER_TYPE);
 		verifyNoMoreInteractions(mockRepository, mockPartyIntegration);
@@ -120,7 +120,7 @@ class CounterpartMappingServiceTest {
 
 	@Test
 	void findCounterpart_noMatch_throwsNotFound() {
-		when(mockPartyIntegration.getLegalId(MUNICIPALITY_ID, PARTY_ID)).thenReturn(LEGAL_ID);
+		when(mockPartyIntegration.getLegalId(MUNICIPALITY_ID, PARTY_ID, STAKEHOLDER_TYPE)).thenReturn(Optional.of(LEGAL_ID));
 		when(mockRepository.findAll()).thenReturn(List.of());
 		when(mockRepository.findByStakeholderType(STAKEHOLDER_TYPE)).thenReturn(Optional.empty());
 
@@ -129,7 +129,7 @@ class CounterpartMappingServiceTest {
 			.hasFieldOrPropertyWithValue("status", NOT_FOUND)
 			.hasMessage("No counterpart found for partyId: " + PARTY_ID + " or stakeholderType: " + STAKEHOLDER_TYPE);
 
-		verify(mockPartyIntegration).getLegalId(MUNICIPALITY_ID, PARTY_ID);
+		verify(mockPartyIntegration).getLegalId(MUNICIPALITY_ID, PARTY_ID, STAKEHOLDER_TYPE);
 		verify(mockRepository).findAll();
 		verify(mockRepository).findByStakeholderType(STAKEHOLDER_TYPE);
 		verifyNoMoreInteractions(mockRepository);
@@ -137,15 +137,13 @@ class CounterpartMappingServiceTest {
 
 	@Test
 	void findCounterpart_noMatchWithNullStakeholderType_throwsNotFound() {
-		when(mockPartyIntegration.getLegalId(MUNICIPALITY_ID, PARTY_ID)).thenReturn(LEGAL_ID);
-		when(mockRepository.findAll()).thenReturn(List.of());
+		when(mockPartyIntegration.getLegalId(MUNICIPALITY_ID, PARTY_ID, null)).thenReturn(Optional.empty());
 
 		assertThatThrownBy(() -> service.findCounterpart(MUNICIPALITY_ID, PARTY_ID, null))
 			.isInstanceOf(ThrowableProblem.class)
 			.hasFieldOrPropertyWithValue("status", NOT_FOUND);
 
-		verify(mockPartyIntegration).getLegalId(MUNICIPALITY_ID, PARTY_ID);
-		verify(mockRepository).findAll();
+		verify(mockPartyIntegration).getLegalId(MUNICIPALITY_ID, PARTY_ID, null);
 		verifyNoMoreInteractions(mockRepository, mockPartyIntegration);
 	}
 
@@ -162,14 +160,14 @@ class CounterpartMappingServiceTest {
 			.withCounterpart(COUNTERPART)
 			.build();
 
-		when(mockPartyIntegration.getLegalId(MUNICIPALITY_ID, PARTY_ID)).thenReturn(LEGAL_ID);
+		when(mockPartyIntegration.getLegalId(MUNICIPALITY_ID, PARTY_ID, STAKEHOLDER_TYPE)).thenReturn(Optional.of(LEGAL_ID));
 		when(mockRepository.findAll()).thenReturn(List.of(patternEntity));
 		when(mockRepository.findByStakeholderType(STAKEHOLDER_TYPE)).thenReturn(Optional.of(typeEntity));
 
 		var result = service.findCounterpart(MUNICIPALITY_ID, PARTY_ID, STAKEHOLDER_TYPE);
 
 		assertThat(result).isEqualTo(COUNTERPART);
-		verify(mockPartyIntegration).getLegalId(MUNICIPALITY_ID, PARTY_ID);
+		verify(mockPartyIntegration).getLegalId(MUNICIPALITY_ID, PARTY_ID, STAKEHOLDER_TYPE);
 		verify(mockRepository).findAll();
 		verify(mockRepository).findByStakeholderType(STAKEHOLDER_TYPE);
 		verifyNoMoreInteractions(mockRepository, mockPartyIntegration);
@@ -177,7 +175,7 @@ class CounterpartMappingServiceTest {
 
 	@Test
 	void findCounterpart_throwsExceptionWhenGetLegalId() {
-		when(mockPartyIntegration.getLegalId(MUNICIPALITY_ID, PARTY_ID)).thenThrow(Problem.builder()
+		when(mockPartyIntegration.getLegalId(MUNICIPALITY_ID, PARTY_ID, STAKEHOLDER_TYPE)).thenThrow(Problem.builder()
 			.withTitle("Error fetching legalId")
 			.withStatus(INTERNAL_SERVER_ERROR)
 			.build());
@@ -186,7 +184,7 @@ class CounterpartMappingServiceTest {
 			.isInstanceOf(ThrowableProblem.class)
 			.hasFieldOrPropertyWithValue("status", INTERNAL_SERVER_ERROR);
 
-		verify(mockPartyIntegration).getLegalId(MUNICIPALITY_ID, PARTY_ID);
+		verify(mockPartyIntegration).getLegalId(MUNICIPALITY_ID, PARTY_ID, STAKEHOLDER_TYPE);
 		verifyNoMoreInteractions(mockRepository, mockPartyIntegration);
 	}
 }

@@ -93,35 +93,56 @@ class PartyIntegrationTest {
 				assertThat(problem.getStatus()).isEqualTo(INTERNAL_SERVER_ERROR);
 			});
 
+		verify(mockPartyClient).getPartyId(eq(MUNICIPALITY_ID), eq(PartyType.ENTERPRISE), any(String.class));
 		verifyNoMoreInteractions(mockPartyClient);
 
 	}
 
 	@Test
 	void testGetLegalId() {
-		when(mockPartyClient.getLegalId(MUNICIPALITY_ID, PARTY_ID))
+		when(mockPartyClient.getLegalId(MUNICIPALITY_ID, PartyType.ENTERPRISE, PARTY_ID))
 			.thenReturn(Optional.of(LEGAL_ID));
 
-		final var legalId = partyIntegration.getLegalId(MUNICIPALITY_ID, PARTY_ID);
+		final var legalId = partyIntegration.getLegalId(MUNICIPALITY_ID, PARTY_ID, "ORGANIZATION");
 
-		assertThat(legalId).isEqualTo(LEGAL_ID);
+		assertThat(legalId).isPresent().hasValue(LEGAL_ID);
 
-		verify(mockPartyClient).getLegalId(MUNICIPALITY_ID, PARTY_ID);
+		verify(mockPartyClient).getLegalId(MUNICIPALITY_ID, PartyType.ENTERPRISE, PARTY_ID);
+		verifyNoMoreInteractions(mockPartyClient);
+	}
+
+	@Test
+	void testGetLegalIdForPrivateParty() {
+		when(mockPartyClient.getLegalId(MUNICIPALITY_ID, PartyType.PRIVATE, PARTY_ID))
+			.thenReturn(Optional.of(LEGAL_ID));
+
+		final var legalId = partyIntegration.getLegalId(MUNICIPALITY_ID, PARTY_ID, "PRIVATE");
+
+		assertThat(legalId).isPresent().hasValue(LEGAL_ID);
+
+		verify(mockPartyClient).getLegalId(MUNICIPALITY_ID, PartyType.PRIVATE, PARTY_ID);
 		verifyNoMoreInteractions(mockPartyClient);
 	}
 
 	@Test
 	void testGetLegalIdWhenNothingIsFound() {
-		when(mockPartyClient.getLegalId(MUNICIPALITY_ID, PARTY_ID))
+		when(mockPartyClient.getLegalId(MUNICIPALITY_ID, PartyType.ENTERPRISE, PARTY_ID))
 			.thenReturn(Optional.empty());
 
-		assertThatExceptionOfType(ThrowableProblem.class).isThrownBy(() -> partyIntegration.getLegalId(MUNICIPALITY_ID, PARTY_ID))
-			.satisfies(problem -> {
-				assertThat(problem.getTitle()).isEqualTo("Couldn't find legalId for partyId " + PARTY_ID);
-				assertThat(problem.getStatus()).isEqualTo(INTERNAL_SERVER_ERROR);
-			});
+		final var legalId = partyIntegration.getLegalId(MUNICIPALITY_ID, PARTY_ID, "ORGANIZATION");
 
-		verify(mockPartyClient).getLegalId(MUNICIPALITY_ID, PARTY_ID);
+		assertThat(legalId).isEmpty();
+
+		verify(mockPartyClient).getLegalId(MUNICIPALITY_ID, PartyType.ENTERPRISE, PARTY_ID);
+		verifyNoMoreInteractions(mockPartyClient);
+	}
+
+	@Test
+	void testGetLegalIdWhenUnknownType() {
+		final var legalId = partyIntegration.getLegalId(MUNICIPALITY_ID, PARTY_ID, "UNKNOWN");
+
+		assertThat(legalId).isEmpty();
+
 		verifyNoMoreInteractions(mockPartyClient);
 	}
 }

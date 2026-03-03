@@ -15,6 +15,7 @@ import generated.se.sundsvall.contract.PropertyDesignation;
 import generated.se.sundsvall.contract.Stakeholder;
 import generated.se.sundsvall.contract.StakeholderRole;
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.time.YearMonth;
 import java.util.List;
 import java.util.Objects;
@@ -46,6 +47,7 @@ public class ContractMapper {
 	private static final String APPROVED_BY = "CONTRACT-SERVICE";
 	private static final String PARAMETER_KEY_CONTRACT_ID = "contractId";
 	private static final String PARAMETER_KEY_KPI = "index";
+	private static final String NOT_APPLICABLE = "N/A";
 	private static final int INDEX_MONTH = OCTOBER.getValue(); // Month to use when fetching KPI is always october
 	private static final BigDecimal QUANTITY = BigDecimal.ONE; // Quantity is always one for periodical invoicing
 
@@ -75,27 +77,39 @@ public class ContractMapper {
 			.recipient(toRecipient(contract))
 			.status(APPROVED)
 			.type(EXTERNAL)
+			.transferDate(LocalDate.now())
 			.putExtraParametersItem(PARAMETER_KEY_CONTRACT_ID, getContractId(contract));
 
 		if (isIndexed(contract)) {
 			final var indexBaseYear = getKPIBaseYear(contract);
-			final var currentIndexPeriod = YearMonth.now().withMonth(INDEX_MONTH);
+			final var currentIndexPeriod = getCurrentIndexPeriod();
 			billingRecord.putExtraParametersItem(PARAMETER_KEY_KPI, String.valueOf(scbIntegration.getKPI(indexBaseYear, currentIndexPeriod))); // KPI value used when calculating prices
 		}
 
 		return billingRecord;
 	}
 
+	private YearMonth getCurrentIndexPeriod() {
+		return YearMonth.now().minusYears(1).withMonth(INDEX_MONTH);
+	}
+
 	private Invoice toInvoice(String municipalityId, Contract contract) {
 		return new Invoice()
 			.ourReference(getContractId(contract))
-			.customerReference(getExtraParameter(contract, "InvoiceInfo", "markup"))
+			.customerReference(getCustomerReference(contract))
+			.customerId(NOT_APPLICABLE)
 			.addInvoiceRowsItem(mapInvoiceRow(municipalityId, contract))
 			.description(ofNullable(contract.getInvoicing())
 				.filter(invoicing -> Objects.equals(ADVANCE, invoicing.getInvoicedIn()))
 				.map(Invoicing::getInvoiceInterval)
 				.map(IntervalType::getValue)
 				.orElse(null));
+	}
+
+	private String getCustomerReference(Contract contract) {
+		return ofNullable(getExtraParameter(contract, "InvoiceInfo", "markup"))
+			.orElseGet(() -> ofNullable(contract.getExternalReferenceId())
+				.orElse(contract.getContractId()));
 	}
 
 	private InvoiceRow mapInvoiceRow(String municipalityId, Contract contract) {
@@ -116,7 +130,7 @@ public class ContractMapper {
 	private BigDecimal calculateCost(Contract contract) {
 		if (isIndexed(contract)) {
 			final var indexBaseYear = getKPIBaseYear(contract);
-			final var currentIndexPeriod = YearMonth.now().withMonth(INDEX_MONTH);
+			final var currentIndexPeriod = getCurrentIndexPeriod();
 			final var currentKPI = scbIntegration.getKPI(indexBaseYear, currentIndexPeriod);
 			return calculateIndexedCost(contract, currentKPI);
 		}

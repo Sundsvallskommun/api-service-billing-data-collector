@@ -46,14 +46,15 @@ public class PartyIntegration {
 	 *
 	 * @param  municipalityId The municipalityId
 	 * @param  partyId        The partyId
+	 *                        param type The stakeholder type
 	 * @return                The legalId
 	 */
-	public String getLegalId(final String municipalityId, final String partyId) {
-		return partyClient.getLegalId(municipalityId, partyId)
-			.orElseThrow(() -> Problem.builder()
-				.withTitle("Couldn't find legalId for partyId " + partyId)
-				.withStatus(INTERNAL_SERVER_ERROR)
-				.build());
+	public Optional<String> getLegalId(final String municipalityId, final String partyId, final String type) {
+		return switch (type) {
+			case "ORGANIZATION", "MUNICIPALITY", "ASSOCIATION" -> partyClient.getLegalId(municipalityId, ENTERPRISE, partyId);
+			case "PRIVATE" -> partyClient.getLegalId(municipalityId, PRIVATE, partyId);
+			default -> Optional.empty();
+		};
 	}
 
 	private Optional<String> checkAndGetCorrectPersonalNumber(final String municipalityId, final String legalId) {

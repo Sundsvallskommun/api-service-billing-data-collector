@@ -119,7 +119,7 @@ class ContractMapperTest {
 		// Assert & verify
 		assertThat(result.getApprovedBy()).isEqualTo("CONTRACT-SERVICE");
 		assertThat(result.getCategory()).isEqualTo("MEX_INVOICE");
-		assertThat(result.getInvoice()).isNotNull().hasAllNullFieldsOrPropertiesExcept("ourReference", "invoiceRows").satisfies(invoice -> {
+		assertThat(result.getInvoice()).isNotNull().hasAllNullFieldsOrPropertiesExcept("customerReference", "customerId", "ourReference", "invoiceRows").satisfies(invoice -> {
 			assertThat(invoice.getOurReference()).isEqualTo(CONTRACT_ID);
 			assertThat(invoice.getInvoiceRows()).hasSize(1);
 
@@ -150,8 +150,8 @@ class ContractMapperTest {
 			.hasSize(1)
 			.containsExactly(Map.entry("contractId", isBlank(externalReferenceId) ? CONTRACT_ID : "%s (%s)".formatted(CONTRACT_ID, externalReferenceId)));
 
-		verify(contractMock, times(2)).getContractId();
-		verify(contractMock, times(2)).getExternalReferenceId();
+		verify(contractMock, times(3)).getContractId();
+		verify(contractMock, times(3)).getExternalReferenceId();
 		verify(contractMock, times(2)).getStakeholders();
 		verify(settingsProviderMock).isLeaseTypeSettingsPresent(contractMock);
 		verify(settingsProviderMock).getActivity(contractMock);
@@ -202,8 +202,8 @@ class ContractMapperTest {
 			assertThat(result.getRecipient()).isNull();
 		}
 
-		verify(contractMock, times(2)).getContractId();
-		verify(contractMock, times(2)).getExternalReferenceId();
+		verify(contractMock, times(3)).getContractId();
+		verify(contractMock, times(3)).getExternalReferenceId();
 		verify(contractMock).getStakeholders();
 		verify(settingsProviderMock).isLeaseTypeSettingsPresent(contractMock);
 		verify(settingsProviderMock).getVatCode(contractMock);
@@ -272,7 +272,7 @@ class ContractMapperTest {
 		when(settingsProviderMock.getSubaccount(contractMock)).thenReturn(subaccount);
 		when(settingsProviderMock.getVatCode(contractMock)).thenReturn(vatCode);
 		when(contractMock.getContractId()).thenReturn(CONTRACT_ID);
-		when(scbIntegrationMock.getKPI(KPIBaseYear.KPI_80, YearMonth.now().withMonth(Month.OCTOBER.getValue()))).thenReturn(kpiIndex);
+		when(scbIntegrationMock.getKPI(KPIBaseYear.KPI_80, YearMonth.now().minusYears(1).withMonth(Month.OCTOBER.getValue()))).thenReturn(kpiIndex);
 		when(contractMock.getStakeholders()).thenReturn(List.of(generateStakeholder().roles(List.of(PRIMARY_BILLING_PARTY, LESSEE))
 			.type(PERSON)));
 		when(counterpartMappingServiceMock.findCounterpart(MUNICIPALITY_ID, billableStakeholder.getPartyId(), PERSON.getValue())).thenReturn(counterpart);
@@ -282,7 +282,7 @@ class ContractMapperTest {
 		// Assert & verify
 		assertThat(result.getApprovedBy()).isEqualTo("CONTRACT-SERVICE");
 		assertThat(result.getCategory()).isEqualTo("MEX_INVOICE");
-		assertThat(result.getInvoice()).isNotNull().hasAllNullFieldsOrPropertiesExcept("ourReference", "invoiceRows").satisfies(invoice -> {
+		assertThat(result.getInvoice()).isNotNull().hasAllNullFieldsOrPropertiesExcept("customerReference", "customerId", "ourReference", "invoiceRows").satisfies(invoice -> {
 			assertThat(invoice.getOurReference()).isEqualTo(CONTRACT_ID);
 			assertThat(invoice.getInvoiceRows()).hasSize(1);
 
@@ -313,8 +313,8 @@ class ContractMapperTest {
 			"contractId", CONTRACT_ID,
 			"index", kpiIndex.toString()));
 
-		verify(contractMock, times(2)).getContractId();
-		verify(contractMock, times(2)).getExternalReferenceId();
+		verify(contractMock, times(3)).getContractId();
+		verify(contractMock, times(3)).getExternalReferenceId();
 		verify(contractMock, times(2)).getStakeholders();
 		verify(settingsProviderMock).isLeaseTypeSettingsPresent(contractMock);
 		verify(settingsProviderMock).getActivity(contractMock);
