@@ -143,8 +143,7 @@ public class ScheduledBillingService {
 	}
 
 	public List<ScheduledBillingEntity> getDueScheduledBillings() {
-		// TODO: Remove this temparary date and replace with LocalDate.now() when ready to use in production
-		return repository.findAllByPausedFalseAndNextScheduledBillingLessThanEqual(LocalDate.of(2026, 3, 2));
+		return repository.findAllByPausedFalseAndNextScheduledBillingLessThanEqual(LocalDate.now());
 	}
 
 	@Transactional(propagation = REQUIRES_NEW)

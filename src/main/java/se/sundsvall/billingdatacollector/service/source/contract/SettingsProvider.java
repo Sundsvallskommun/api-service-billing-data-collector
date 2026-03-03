@@ -9,15 +9,14 @@ import se.sundsvall.billingdatacollector.service.source.contract.model.LeaseType
 
 import static generated.se.sundsvall.contract.ContractType.LAND_LEASE_PUBLIC;
 import static generated.se.sundsvall.contract.ContractType.LEASEHOLD;
+import static generated.se.sundsvall.contract.ContractType.OBJECT_LEASE;
 import static generated.se.sundsvall.contract.LeaseType.LAND_LEASE_MISC;
 import static generated.se.sundsvall.contract.LeaseType.LAND_LEASE_RESIDENTIAL;
-import static generated.se.sundsvall.contract.LeaseType.OBJECT_LEASE;
 import static generated.se.sundsvall.contract.LeaseType.OTHER_FEE;
 import static generated.se.sundsvall.contract.LeaseType.SITE_LEASE_COMMERCIAL;
 import static generated.se.sundsvall.contract.LeaseType.USUFRUCT_FARMING;
 import static generated.se.sundsvall.contract.LeaseType.USUFRUCT_HUNTING;
 import static generated.se.sundsvall.contract.LeaseType.USUFRUCT_MISC;
-import static generated.se.sundsvall.contract.LeaseType.USUFRUCT_MOORING;
 import static java.util.Optional.ofNullable;
 
 @Component
@@ -25,7 +24,6 @@ public class SettingsProvider {
 	private static final String ACTIVITY_3091 = "3091";
 	private static final String ACTIVITY_3092 = "3092";
 	private static final String ACTIVITY_3093 = "3093";
-	private static final String ACTIVITY_3099 = "3099";
 	private static final String COST_CENTER_36000000 = "36000000";
 	private static final String DEPARTMENT_810100 = "810100";
 	private static final String SUB_ACCOUNT_342000 = "342000";
@@ -39,16 +37,6 @@ public class SettingsProvider {
 
 	SettingsProvider() {
 		leaseTypeSettings = Map.ofEntries(
-			/*
-			 * Map.entry(
-			 * LAND_LEASE_PUBLIC, LeaseTypeSettings.builder()
-			 * .withActivity(ACTIVITY_3093)
-			 * .withCostCenter(COST_CENTER_36000000)
-			 * .withDepartment(DEPARTMENT_810100)
-			 * .withSubAccount(SUB_ACCOUNT_342000)
-			 * .withVatCode(VATCODE_00)
-			 * .build()),
-			 */
 			Map.entry(
 				SITE_LEASE_COMMERCIAL, LeaseTypeSettings.builder()
 					.withActivity(ACTIVITY_3091)
@@ -59,22 +47,6 @@ public class SettingsProvider {
 					.build()),
 			Map.entry(
 				LAND_LEASE_RESIDENTIAL, LeaseTypeSettings.builder()
-					.withActivity(ACTIVITY_3091)
-					.withCostCenter(COST_CENTER_36000000)
-					.withDepartment(DEPARTMENT_810100)
-					.withSubAccount(SUB_ACCOUNT_342000)
-					.withVatCode(VATCODE_00)
-					.build()),
-			Map.entry(
-				USUFRUCT_MOORING, LeaseTypeSettings.builder()
-					.withActivity(ACTIVITY_3099)
-					.withCostCenter(COST_CENTER_36000000)
-					.withDepartment(DEPARTMENT_810100)
-					.withSubAccount(SUB_ACCOUNT_342000)
-					.withVatCode(VATCODE_00)
-					.build()),
-			Map.entry(
-				OBJECT_LEASE, LeaseTypeSettings.builder()
 					.withActivity(ACTIVITY_3091)
 					.withCostCenter(COST_CENTER_36000000)
 					.withDepartment(DEPARTMENT_810100)
@@ -113,16 +85,6 @@ public class SettingsProvider {
 					.withSubAccount(SUB_ACCOUNT_342000)
 					.withVatCode(VATCODE_00)
 					.build()),
-			/*
-			 * Map.entry(
-			 * LEASEHOLD, LeaseTypeSettings.builder()
-			 * .withActivity(ACTIVITY_3092)
-			 * .withCostCenter(COST_CENTER_36000000)
-			 * .withDepartment(DEPARTMENT_810100)
-			 * .withSubAccount(SUB_ACCOUNT_342000)
-			 * .withVatCode(VATCODE_00)
-			 * .build()),
-			 */
 			Map.entry(
 				OTHER_FEE, LeaseTypeSettings.builder()
 					.withActivity(ACTIVITY_3091)
@@ -136,6 +98,14 @@ public class SettingsProvider {
 			Map.entry(
 				LAND_LEASE_PUBLIC, LeaseTypeSettings.builder()
 					.withActivity(ACTIVITY_3093)
+					.withCostCenter(COST_CENTER_36000000)
+					.withDepartment(DEPARTMENT_810100)
+					.withSubAccount(SUB_ACCOUNT_342000)
+					.withVatCode(VATCODE_00)
+					.build()),
+			Map.entry(
+				OBJECT_LEASE, LeaseTypeSettings.builder()
+					.withActivity(ACTIVITY_3091)
 					.withCostCenter(COST_CENTER_36000000)
 					.withDepartment(DEPARTMENT_810100)
 					.withSubAccount(SUB_ACCOUNT_342000)

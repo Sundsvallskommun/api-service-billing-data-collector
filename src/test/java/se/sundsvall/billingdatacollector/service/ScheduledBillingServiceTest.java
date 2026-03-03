@@ -270,8 +270,7 @@ class ScheduledBillingServiceTest {
 		// Arrange
 		var scheduledBilling = createScheduledBillingEntity();
 		var entities = List.of(scheduledBilling);
-		// TODO: Change back to LocalDate.now() when temporary date in service is removed
-		var localDate = LocalDate.of(2026, 3, 2);
+		var localDate = LocalDate.now();
 
 		when(mockRepository.findAllByPausedFalseAndNextScheduledBillingLessThanEqual(localDate))
 			.thenReturn(entities);

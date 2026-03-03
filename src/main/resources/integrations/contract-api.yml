@@ -6,9 +6,6 @@ info:
     name: MIT License
     url: https://opensource.org/licenses/MIT
   version: "6.0"
-servers:
-  - url: http://localhost:52321
-    description: Generated server url
 tags:
   - name: Contract attachments
     description: Contract attachment resources
@@ -623,9 +620,9 @@ components:
         parameters:
           type: object
           additionalProperties: {}
-        title:
-          type: string
         detail:
+          type: string
+        title:
           type: string
         status:
           $ref: "#/components/schemas/StatusType"
@@ -854,6 +851,7 @@ components:
         - PURCHASE_AGREEMENT
         - LAND_LEASE_PUBLIC
         - SHORT_TERM_LEASE_AGREEMENT
+        - OBJECT_LEASE
         - LEASEHOLD
     Crs:
       type: object
@@ -873,10 +871,10 @@ components:
         leaseDuration:
           type: integer
           format: int32
-          minimum: 0
           description: The lease duration value
           examples:
             - "9"
+          minimum: 0
         unit:
           $ref: "#/components/schemas/TimeUnit"
           description: The unit of the duration value
@@ -899,10 +897,10 @@ components:
         leaseExtension:
           type: integer
           format: int32
-          minimum: 0
           description: The lease extension value
           examples:
             - "2"
+          minimum: 0
         unit:
           $ref: "#/components/schemas/TimeUnit"
           description: The unit of the extension value
@@ -1087,11 +1085,9 @@ components:
       enum:
         - LAND_LEASE_RESIDENTIAL
         - SITE_LEASE_COMMERCIAL
-        - USUFRUCT_MOORING
         - USUFRUCT_HUNTING
         - USUFRUCT_FARMING
         - USUFRUCT_MISC
-        - OBJECT_LEASE
         - LAND_LEASE_MISC
         - OTHER_FEE
     Leasehold:
@@ -1224,10 +1220,10 @@ components:
         periodOfNotice:
           type: integer
           format: int32
-          minimum: 0
           description: The period of notice
           examples:
             - "3"
+          minimum: 0
         unit:
           $ref: "#/components/schemas/TimeUnit"
           description: The unit of the periodOfNotice value
@@ -1554,9 +1550,9 @@ components:
         parameters:
           type: object
           additionalProperties: {}
-        title:
-          type: string
         detail:
+          type: string
+        title:
           type: string
         status:
           $ref: "#/components/schemas/StatusType"
@@ -1626,14 +1622,14 @@ components:
     Change:
       type: object
       properties:
-        path:
-          type: string
         type:
           type: string
           enum:
             - ADDITION
             - REMOVAL
             - MODIFICATION
+        path:
+          type: string
         oldValue:
           $ref: "#/components/schemas/JsonNode"
         newValue:
@@ -1647,26 +1643,26 @@ components:
         newVersion:
           type: integer
           format: int32
+        changes:
+          type: array
+          items:
+            $ref: "#/components/schemas/Change"
         availableVersions:
           type: array
           items:
             type: integer
             format: int32
-        changes:
-          type: array
-          items:
-            $ref: "#/components/schemas/Change"
     JsonNode: {}
     SpecificationContractEntity: {}
     PageContract:
       type: object
       properties:
-        totalPages:
-          type: integer
-          format: int32
         totalElements:
           type: integer
           format: int64
+        totalPages:
+          type: integer
+          format: int32
         size:
           type: integer
           format: int32
@@ -1677,6 +1673,8 @@ components:
         number:
           type: integer
           format: int32
+        pageable:
+          $ref: "#/components/schemas/PageableObject"
         first:
           type: boolean
         last:
@@ -1686,8 +1684,6 @@ components:
         numberOfElements:
           type: integer
           format: int32
-        pageable:
-          $ref: "#/components/schemas/PageableObject"
         empty:
           type: boolean
     PageableObject:
@@ -1696,25 +1692,25 @@ components:
         offset:
           type: integer
           format: int64
-        sort:
-          $ref: "#/components/schemas/SortObject"
-        paged:
-          type: boolean
-        pageNumber:
-          type: integer
-          format: int32
         pageSize:
           type: integer
           format: int32
+        pageNumber:
+          type: integer
+          format: int32
         unpaged:
+          type: boolean
+        sort:
+          $ref: "#/components/schemas/SortObject"
+        paged:
           type: boolean
     SortObject:
       type: object
       properties:
         empty:
           type: boolean
-        sorted:
-          type: boolean
         unsorted:
+          type: boolean
+        sorted:
           type: boolean
   securitySchemes: {}

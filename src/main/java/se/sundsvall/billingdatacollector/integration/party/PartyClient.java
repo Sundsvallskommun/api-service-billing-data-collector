@@ -20,16 +20,16 @@ import static se.sundsvall.billingdatacollector.integration.party.PartyIntegrati
 interface PartyClient {
 
 	@GetMapping(
-		path = "/{municipalityId}/{type}/{legalId}/partyId",
+		path = "/{municipalityId}/{partyType}/{legalId}/partyId",
 		produces = {
 			TEXT_PLAIN_VALUE, APPLICATION_PROBLEM_JSON_VALUE
 		})
-	Optional<String> getPartyId(@PathVariable("municipalityId") String municipalityId, @PathVariable("type") PartyType partyType, @PathVariable("legalId") String legalId);
+	Optional<String> getPartyId(@PathVariable String municipalityId, @PathVariable PartyType partyType, @PathVariable String legalId);
 
 	@GetMapping(
-		path = "/{municipalityId}/{type}/{partyId}/legalId",
+		path = "/{municipalityId}/{partyType}/{partyId}/legalId",
 		produces = {
 			TEXT_PLAIN_VALUE, APPLICATION_PROBLEM_JSON_VALUE
 		})
-	Optional<String> getLegalId(@PathVariable("municipalityId") String municipalityId, @PathVariable("type") PartyType partyType, @PathVariable("partyId") String partyId);
+	Optional<String> getLegalId(@PathVariable String municipalityId, @PathVariable PartyType partyType, @PathVariable String partyId);
 }
