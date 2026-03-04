@@ -10,7 +10,7 @@ import static org.springframework.http.HttpStatus.NOT_FOUND;
 
 public enum Interval {
 	MONTHLY("N_1", 12),
-	QUARTERLY("N_4", 4),
+	QUARTERLY("N_3", 4),
 	HALF_YEARLY("N_6", 2),
 	YEARLY("N_12", 1)
 

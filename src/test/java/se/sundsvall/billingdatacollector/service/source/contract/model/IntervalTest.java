@@ -19,7 +19,7 @@ class IntervalTest {
 	@Test
 	void accrualKey() {
 		assertThat(MONTHLY.getAccrualKey()).isEqualTo("N_1");
-		assertThat(QUARTERLY.getAccrualKey()).isEqualTo("N_4");
+		assertThat(QUARTERLY.getAccrualKey()).isEqualTo("N_3");
 		assertThat(HALF_YEARLY.getAccrualKey()).isEqualTo("N_6");
 		assertThat(YEARLY.getAccrualKey()).isEqualTo("N_12");
 	}
