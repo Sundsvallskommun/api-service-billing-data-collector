@@ -28,7 +28,10 @@ import se.sundsvall.dept44.problem.Problem;
 import static generated.se.sundsvall.billingpreprocessor.Status.APPROVED;
 import static generated.se.sundsvall.billingpreprocessor.Type.EXTERNAL;
 import static generated.se.sundsvall.contract.InvoicedIn.ADVANCE;
+import static java.time.Month.JUNE;
+import static java.time.Month.MARCH;
 import static java.time.Month.OCTOBER;
+import static java.time.Month.SEPTEMBER;
 import static java.util.Collections.emptyList;
 import static java.util.Optional.ofNullable;
 import static org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR;
@@ -50,6 +53,13 @@ public class ContractMapper {
 	private static final String NOT_APPLICABLE = "N/A";
 	private static final int INDEX_MONTH = OCTOBER.getValue(); // Month to use when fetching KPI is always october
 	private static final BigDecimal QUANTITY = BigDecimal.ONE; // Quantity is always one for periodical invoicing
+	private static final String YEARLY_DESCRIPTION = "Avser januari-december %s";
+	private static final String QUARTERLY_DESCRIPTION_Q1 = "Avser januari-mars %s";
+	private static final String QUARTERLY_DESCRIPTION_Q2 = "Avser april-juni %s";
+	private static final String QUARTERLY_DESCRIPTION_Q3 = "Avser juli-september %s";
+	private static final String QUARTERLY_DESCRIPTION_Q4 = "Avser oktober-december %s";
+	private static final String HALF_YEARLY_DESCRIPTION_1 = "Avser januari-juni %s";
+	private static final String HALF_YEARLY_DESCRIPTION_2 = "Avser juli-december %s";
 
 	private final ScbIntegration scbIntegration;
 	private final SettingsProvider settingsProvider;
@@ -115,16 +125,17 @@ public class ContractMapper {
 	private InvoiceRow mapInvoiceRow(String municipalityId, Contract contract) {
 		final var costPerUnit = calculateCost(contract);
 
-		return new InvoiceRow()
+		var invoiceRow = new InvoiceRow()
 			.costPerUnit(costPerUnit)
 			.accountInformation(mapAccountInformation(municipalityId, contract, costPerUnit.multiply(QUANTITY)))
 			.vatCode(settingsProvider.getVatCode(contract))
 			.quantity(QUANTITY)
-			.descriptions(ofNullable(contract.getFees()).map(Fees::getAdditionalInformation).orElse(null))
-			.detailedDescriptions(ofNullable(contract.getPropertyDesignations())
-				.orElse(emptyList()).stream()
-				.map(PropertyDesignation::getName)
-				.toList());
+			.descriptions(ofNullable(contract.getFees()).map(Fees::getAdditionalInformation).orElse(null));
+
+		ofNullable(getPropertyDesignation(contract)).ifPresent(invoiceRow::addDetailedDescriptionsItem);
+		ofNullable(getInvoiceDescription(contract)).ifPresent(invoiceRow::addDetailedDescriptionsItem);
+
+		return invoiceRow;
 	}
 
 	private BigDecimal calculateCost(Contract contract) {
@@ -200,5 +211,52 @@ public class ContractMapper {
 				.amount(amount));
 		}
 		return emptyList();
+	}
+
+	private String getPropertyDesignation(Contract contract) {
+		return ofNullable(contract.getPropertyDesignations())
+			.orElse(emptyList()).stream()
+			.map(PropertyDesignation::getName)
+			.filter(Objects::nonNull)
+			.findFirst()
+			.orElse(null);
+	}
+
+	private String getInvoiceDescription(Contract contract) {
+		return ofNullable(contract.getInvoicing())
+			.filter(invoicing -> Objects.equals(ADVANCE, invoicing.getInvoicedIn()))
+			.map(Invoicing::getInvoiceInterval)
+			.map(this::getDescription)
+			.orElse(null);
+	}
+
+	private String getDescription(IntervalType invoiceInterval) {
+		final var currentMonth = YearMonth.now().getMonthValue();
+		switch (invoiceInterval) {
+			case YEARLY -> {
+				return String.format(YEARLY_DESCRIPTION, YearMonth.now().plusYears(1).getYear());
+			}
+			case QUARTERLY -> {
+				if (currentMonth <= MARCH.getValue()) {
+					return String.format(QUARTERLY_DESCRIPTION_Q2, YearMonth.now().getYear());
+				} else if (currentMonth <= JUNE.getValue()) {
+					return String.format(QUARTERLY_DESCRIPTION_Q3, YearMonth.now().getYear());
+				} else if (currentMonth <= SEPTEMBER.getValue()) {
+					return String.format(QUARTERLY_DESCRIPTION_Q4, YearMonth.now().getYear());
+				} else {
+					return String.format(QUARTERLY_DESCRIPTION_Q1, YearMonth.now().plusYears(1).getYear());
+				}
+			}
+			case HALF_YEARLY -> {
+				if (currentMonth <= JUNE.getValue()) {
+					return String.format(HALF_YEARLY_DESCRIPTION_2, YearMonth.now().getYear());
+				} else {
+					return String.format(HALF_YEARLY_DESCRIPTION_1, YearMonth.now().plusYears(1).getYear());
+				}
+			}
+			default -> {
+				return null;
+			}
+		}
 	}
 }
