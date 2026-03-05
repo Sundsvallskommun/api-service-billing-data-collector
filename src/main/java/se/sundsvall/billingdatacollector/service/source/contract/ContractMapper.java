@@ -109,6 +109,7 @@ public class ContractMapper {
 			.customerReference(getCustomerReference(contract))
 			.customerId(NOT_APPLICABLE)
 			.addInvoiceRowsItem(mapInvoiceRow(municipalityId, contract))
+			.dueDate(YearMonth.now().atEndOfMonth())
 			.description(ofNullable(contract.getInvoicing())
 				.filter(invoicing -> Objects.equals(ADVANCE, invoicing.getInvoicedIn()))
 				.map(Invoicing::getInvoiceInterval)

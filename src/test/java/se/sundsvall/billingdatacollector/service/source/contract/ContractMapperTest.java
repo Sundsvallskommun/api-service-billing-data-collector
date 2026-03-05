@@ -122,9 +122,10 @@ class ContractMapperTest {
 		// Assert & verify
 		assertThat(result.getApprovedBy()).isEqualTo("CONTRACT-SERVICE");
 		assertThat(result.getCategory()).isEqualTo("MEX_INVOICE");
-		assertThat(result.getInvoice()).isNotNull().hasAllNullFieldsOrPropertiesExcept("customerReference", "customerId", "ourReference", "invoiceRows").satisfies(invoice -> {
+		assertThat(result.getInvoice()).isNotNull().hasAllNullFieldsOrPropertiesExcept("dueDate", "customerReference", "customerId", "ourReference", "invoiceRows").satisfies(invoice -> {
 			assertThat(invoice.getOurReference()).isEqualTo(CONTRACT_ID);
 			assertThat(invoice.getInvoiceRows()).hasSize(1);
+			assertThat(invoice.getDueDate()).isEqualTo(YearMonth.now().atEndOfMonth());
 
 			final var invoiceRow = invoice.getInvoiceRows().getFirst();
 			assertThat(invoiceRow.getDescriptions()).isEmpty();
@@ -291,10 +292,11 @@ class ContractMapperTest {
 		assertThat(result.getApprovedBy()).isEqualTo("CONTRACT-SERVICE");
 		assertThat(result.getCategory()).isEqualTo("MEX_INVOICE");
 		assertThat(result.getInvoice()).isNotNull()
-			.hasAllNullFieldsOrPropertiesExcept("description", "customerReference", "customerId", "ourReference", "invoiceRows")
+			.hasAllNullFieldsOrPropertiesExcept("dueDate", "description", "customerReference", "customerId", "ourReference", "invoiceRows")
 			.satisfies(invoice -> {
 				assertThat(invoice.getOurReference()).isEqualTo(CONTRACT_ID);
 				assertThat(invoice.getInvoiceRows()).hasSize(1);
+				assertThat(invoice.getDueDate()).isEqualTo(YearMonth.now().atEndOfMonth());
 				assertThat(invoice.getDescription()).isEqualTo(intervalType.getValue());
 
 				final var invoiceRow = invoice.getInvoiceRows().getFirst();

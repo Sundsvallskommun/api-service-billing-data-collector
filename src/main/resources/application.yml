@@ -19,6 +19,32 @@ spring:
   jpa:
     hibernate:
       ddl-auto: validate
+  security:
+    oauth2:
+      client:
+        provider:
+          party:
+            token-uri: ${integration.party.oauth2.token-url}
+          contract:
+            token-uri: ${integration.contract.oauth2.token-url}
+          billing-preprocessor:
+            token-uri: ${integration.billing-preprocessor.oauth2.token-url}
+        registration:
+          party:
+            authorization-grant-type: client_credentials
+            provider: party
+            client-id: ${integration.party.oauth2.client-id}
+            client-secret: ${integration.party.oauth2.client-secret}
+          contract:
+            authorization-grant-type: client_credentials
+            provider: contract
+            client-id: ${integration.contract.oauth2.client-id}
+            client-secret: ${integration.contract.oauth2.client-secret}
+          billing-preprocessor:
+            authorization-grant-type: client_credentials
+            provider: billing-preprocessor
+            client-id: ${integration.billing-preprocessor.oauth2.client-id}
+            client-secret: ${integration.billing-preprocessor.oauth2.client-secret}
 scheduler:
   opene:
     cron:
