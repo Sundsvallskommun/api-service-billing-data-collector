@@ -38,7 +38,7 @@ class CalculationUtilTest {
 
 	@ParameterizedTest(name = "{0}")
 	@MethodSource("calculateIndexedCostArgumentProvider")
-	void calculateIndexedCost(String description, IntervalType intervalType, BigDecimal yearlyFee, Integer indexNumber, BigDecimal indexationRate, BigDecimal currentYearKPI, BigDecimal expectedValue) {
+	void calculateIndexedCost(String description, IntervalType intervalType, BigDecimal yearlyFee, BigDecimal indexNumber, BigDecimal indexationRate, BigDecimal currentYearKPI, BigDecimal expectedValue) {
 		when(contractMock.getInvoicing()).thenReturn(invoicingMock);
 		when(contractMock.getFees()).thenReturn(feesMock);
 		when(feesMock.getYearly()).thenReturn(yearlyFee);
@@ -51,7 +51,7 @@ class CalculationUtilTest {
 
 	private static Stream<Arguments> calculateIndexedCostArgumentProvider() {
 		final var yearlyFee = BigDecimal.valueOf(12000);
-		final var originalKPI = 100;
+		final var originalKPI = BigDecimal.valueOf(100);
 		final var indexationRate1 = BigDecimal.valueOf(1);
 		final var indexationRate05 = BigDecimal.valueOf(0.5);
 		final var currentYearKPIEqual = BigDecimal.valueOf(100);
@@ -123,7 +123,7 @@ class CalculationUtilTest {
 		when(contractMock.getInvoicing()).thenReturn(invoicingMock);
 		when(contractMock.getFees()).thenReturn(feesMock);
 		when(feesMock.getYearly()).thenReturn(BigDecimal.valueOf(12000));
-		when(feesMock.getIndexNumber()).thenReturn(100);
+		when(feesMock.getIndexNumber()).thenReturn(BigDecimal.valueOf(100));
 		when(invoicingMock.getInvoiceInterval()).thenReturn(YEARLY);
 
 		final var e = assertThrows(ThrowableProblem.class, () -> CalculationUtil.calculateIndexedCost(contractMock, currentIndex));
