@@ -58,7 +58,7 @@ public final class CalculationUtil {
 			.filter(Optional::isPresent)
 			.map(Optional::get)
 			// Step 2: Apply index adjustment using KPI and base index
-			.map(periodicFee -> calculateForIndexAdjustment(BigDecimal.valueOf(contract.getFees().getIndexNumber()), contract.getFees().getIndexationRate(), periodicFee, currentYearKPI))
+			.map(periodicFee -> calculateForIndexAdjustment(contract.getFees().getIndexNumber(), contract.getFees().getIndexationRate(), periodicFee, currentYearKPI))
 			.filter(Optional::isPresent)
 			.map(Optional::get)
 			// Step 3: Round fee to two decimals

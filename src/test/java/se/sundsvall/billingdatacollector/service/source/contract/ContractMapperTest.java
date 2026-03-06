@@ -268,7 +268,7 @@ class ContractMapperTest {
 		when(contractMock.getPropertyDesignations()).thenReturn(propertyDesignations);
 		when(feesMock.getYearly()).thenReturn(yearly);
 		when(feesMock.getIndexType()).thenReturn(indexType);
-		when(feesMock.getIndexNumber()).thenReturn(409);
+		when(feesMock.getIndexNumber()).thenReturn(BigDecimal.valueOf(409));
 		when(feesMock.getIndexationRate()).thenReturn(BigDecimal.ONE);
 		when(contractMock.getInvoicing()).thenReturn(invoicingMock);
 		when(invoicingMock.getInvoiceInterval()).thenReturn(intervalType);
