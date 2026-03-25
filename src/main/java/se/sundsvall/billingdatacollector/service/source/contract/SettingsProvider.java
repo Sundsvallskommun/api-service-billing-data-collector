@@ -10,6 +10,7 @@ import se.sundsvall.billingdatacollector.service.source.contract.model.LeaseType
 import static generated.se.sundsvall.contract.ContractType.LAND_LEASE_PUBLIC;
 import static generated.se.sundsvall.contract.ContractType.LEASEHOLD;
 import static generated.se.sundsvall.contract.ContractType.OBJECT_LEASE;
+import static generated.se.sundsvall.contract.LeaseType.LAND_LEASE_LICENSE;
 import static generated.se.sundsvall.contract.LeaseType.LAND_LEASE_MISC;
 import static generated.se.sundsvall.contract.LeaseType.LAND_LEASE_RESIDENTIAL;
 import static generated.se.sundsvall.contract.LeaseType.OTHER_FEE;
@@ -80,6 +81,14 @@ public class SettingsProvider {
 			Map.entry(
 				USUFRUCT_MISC, LeaseTypeSettings.builder()
 					.withActivity(ACTIVITY_3091)
+					.withCostCenter(COST_CENTER_36000000)
+					.withDepartment(DEPARTMENT_810100)
+					.withSubAccount(SUB_ACCOUNT_342000)
+					.withVatCode(VATCODE_00)
+					.build()),
+			Map.entry(
+				LAND_LEASE_LICENSE, LeaseTypeSettings.builder()
+					.withActivity(ACTIVITY_3093)
 					.withCostCenter(COST_CENTER_36000000)
 					.withDepartment(DEPARTMENT_810100)
 					.withSubAccount(SUB_ACCOUNT_342000)

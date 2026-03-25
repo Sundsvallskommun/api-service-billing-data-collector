@@ -5,9 +5,9 @@ info:
   license:
     name: MIT License
     url: https://opensource.org/licenses/MIT
-  version: "6.0"
+  version: "7.0"
 servers:
-  - url: http://localhost:58360
+  - url: https://contract-af-contract.apps.ocp201.sundsvall.se
     description: Generated server url
 tags:
   - name: Contract attachments
@@ -678,11 +678,13 @@ components:
           description: The attachment filename
           examples:
             - LeaseContract12.pdf
+          minLength: 1
         mimeType:
           type: string
           description: The attachment mime-type
           examples:
             - application/pdf
+          minLength: 1
         note:
           type: string
           description: Notes on the attachment
@@ -843,6 +845,7 @@ components:
         - SHORT_TERM_LEASE_AGREEMENT
         - OBJECT_LEASE
         - LEASEHOLD
+        - MAINTENANCE_AGREEMENT
     Crs:
       type: object
       properties:
@@ -1078,6 +1081,8 @@ components:
         - USUFRUCT_FARMING
         - USUFRUCT_MISC
         - LAND_LEASE_MISC
+        - LAND_LEASE_LICENSE
+        - LAND_LEASE_MUNICIPALITY
         - OTHER_FEE
     Leasehold:
       type: object
@@ -1538,10 +1543,6 @@ components:
           type: boolean
         container:
           type: boolean
-        binary:
-          type: boolean
-        valueNode:
-          type: boolean
         missingNode:
           type: boolean
         nodeType:
@@ -1558,28 +1559,32 @@ components:
             - STRING
         integralNumber:
           type: boolean
-        bigDecimal:
-          type: boolean
-        bigInteger:
+        pojo:
           type: boolean
         floatingPointNumber:
           type: boolean
-        number:
+        short:
           type: boolean
-        pojo:
-          type: boolean
-        textual:
-          type: boolean
-          deprecated: true
         int:
           type: boolean
         long:
           type: boolean
         double:
           type: boolean
-        string:
+        bigDecimal:
           type: boolean
-        short:
+        bigInteger:
+          type: boolean
+        textual:
+          type: boolean
+          deprecated: true
+        binary:
+          type: boolean
+        valueNode:
+          type: boolean
+        number:
+          type: boolean
+        string:
           type: boolean
         boolean:
           type: boolean
@@ -1605,8 +1610,8 @@ components:
         number:
           type: integer
           format: int32
-        sort:
-          $ref: "#/components/schemas/SortObject"
+        pageable:
+          $ref: "#/components/schemas/PageableObject"
         first:
           type: boolean
         last:
@@ -1614,8 +1619,8 @@ components:
         numberOfElements:
           type: integer
           format: int32
-        pageable:
-          $ref: "#/components/schemas/PageableObject"
+        sort:
+          $ref: "#/components/schemas/SortObject"
         empty:
           type: boolean
     PageableObject:
@@ -1624,16 +1629,16 @@ components:
         offset:
           type: integer
           format: int64
-        sort:
-          $ref: "#/components/schemas/SortObject"
+        paged:
+          type: boolean
         pageNumber:
           type: integer
           format: int32
         pageSize:
           type: integer
           format: int32
-        paged:
-          type: boolean
+        sort:
+          $ref: "#/components/schemas/SortObject"
         unpaged:
           type: boolean
     SortObject:
