@@ -15,7 +15,9 @@ import org.springframework.boot.test.context.SpringBootTest;
 import static generated.se.sundsvall.contract.ContractType.LAND_LEASE_PUBLIC;
 import static generated.se.sundsvall.contract.ContractType.LEASEHOLD;
 import static generated.se.sundsvall.contract.ContractType.OBJECT_LEASE;
+import static generated.se.sundsvall.contract.LeaseType.LAND_LEASE_LICENSE;
 import static generated.se.sundsvall.contract.LeaseType.LAND_LEASE_MISC;
+import static generated.se.sundsvall.contract.LeaseType.LAND_LEASE_MUNICIPALITY;
 import static generated.se.sundsvall.contract.LeaseType.LAND_LEASE_RESIDENTIAL;
 import static generated.se.sundsvall.contract.LeaseType.OTHER_FEE;
 import static generated.se.sundsvall.contract.LeaseType.SITE_LEASE_COMMERCIAL;
@@ -48,6 +50,11 @@ class SettingsProviderTest {
 	@ParameterizedTest
 	@EnumSource(value = LeaseType.class)
 	void isLeaseTypeSettingsPresent(LeaseType leaseType) {
+		if (LAND_LEASE_MUNICIPALITY.equals(leaseType)) {
+			// This lease type is intentionally not included in the settings
+			assertThat(settingsProvider.isLeaseTypeSettingsPresent(new Contract().leaseType(leaseType))).isFalse();
+			return;
+		}
 		assertThat(settingsProvider.isLeaseTypeSettingsPresent(new Contract().leaseType(leaseType))).isTrue();
 	}
 
@@ -78,6 +85,8 @@ class SettingsProviderTest {
 			Arguments.of(USUFRUCT_FARMING, null, ACTIVITY_3091),
 			Arguments.of(USUFRUCT_HUNTING, null, ACTIVITY_3091),
 			Arguments.of(USUFRUCT_MISC, null, ACTIVITY_3091),
+			Arguments.of(LAND_LEASE_LICENSE, null, ACTIVITY_3093),
+			Arguments.of(LAND_LEASE_MUNICIPALITY, null, null),
 			Arguments.of(null, null, null));
 	}
 
@@ -99,6 +108,8 @@ class SettingsProviderTest {
 			Arguments.of(USUFRUCT_FARMING, null, COST_CENTER_36000000),
 			Arguments.of(USUFRUCT_HUNTING, null, COST_CENTER_36000000),
 			Arguments.of(USUFRUCT_MISC, null, COST_CENTER_36000000),
+			Arguments.of(LAND_LEASE_LICENSE, null, COST_CENTER_36000000),
+			Arguments.of(LAND_LEASE_MUNICIPALITY, null, null),
 			Arguments.of(null, null, null));
 	}
 
@@ -121,6 +132,8 @@ class SettingsProviderTest {
 			Arguments.of(USUFRUCT_FARMING, null, DEPARTMENT_810100),
 			Arguments.of(USUFRUCT_HUNTING, null, DEPARTMENT_810100),
 			Arguments.of(USUFRUCT_MISC, null, DEPARTMENT_810100),
+			Arguments.of(LAND_LEASE_LICENSE, null, DEPARTMENT_810100),
+			Arguments.of(LAND_LEASE_MUNICIPALITY, null, null),
 			Arguments.of(null, null, null));
 	}
 
@@ -143,6 +156,8 @@ class SettingsProviderTest {
 			Arguments.of(USUFRUCT_FARMING, null, SUB_ACCOUNT_342100),
 			Arguments.of(USUFRUCT_HUNTING, null, SUB_ACCOUNT_342100),
 			Arguments.of(USUFRUCT_MISC, null, SUB_ACCOUNT_342000),
+			Arguments.of(LAND_LEASE_LICENSE, null, SUB_ACCOUNT_342000),
+			Arguments.of(LAND_LEASE_MUNICIPALITY, null, null),
 			Arguments.of(null, null, null));
 	}
 
@@ -165,6 +180,8 @@ class SettingsProviderTest {
 			Arguments.of(USUFRUCT_FARMING, null, VATCODE_25),
 			Arguments.of(USUFRUCT_HUNTING, null, VATCODE_25),
 			Arguments.of(USUFRUCT_MISC, null, VATCODE_00),
+			Arguments.of(LAND_LEASE_LICENSE, null, VATCODE_00),
+			Arguments.of(LAND_LEASE_MUNICIPALITY, null, null),
 			Arguments.of(null, null, null));
 	}
 
