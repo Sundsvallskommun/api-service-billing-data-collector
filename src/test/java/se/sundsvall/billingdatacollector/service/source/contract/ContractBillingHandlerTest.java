@@ -16,11 +16,13 @@ import org.springframework.http.ResponseEntity;
 import se.sundsvall.billingdatacollector.integration.billingpreprocessor.BillingPreprocessorClient;
 import se.sundsvall.billingdatacollector.integration.contract.ContractIntegration;
 import se.sundsvall.billingdatacollector.integration.db.HistoryRepository;
+import se.sundsvall.billingdatacollector.integration.relation.RelationClient;
 import se.sundsvall.dept44.problem.ThrowableProblem;
 
 import static java.util.Collections.emptyList;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
@@ -48,6 +50,9 @@ class ContractBillingHandlerTest {
 	@Mock
 	private BillingRecord billingRecordMock;
 
+	@Mock
+	private RelationClient relationClientMock;
+
 	@InjectMocks
 	private ContractBillingHandler handler;
 
@@ -70,12 +75,13 @@ class ContractBillingHandlerTest {
 			.thenReturn(ResponseEntity.status(HttpStatus.CREATED).build());
 
 		// Act
-		handler.sendBillingRecords(MUNICIPALITY_ID, CONTRACT_ID);
+		handler.sendBillingRecords(MUNICIPALITY_ID, CONTRACT_ID, msg -> {});
 
 		// Assert & verify
 		verify(contractIntegrationMock).getContract(MUNICIPALITY_ID, CONTRACT_ID);
 		verify(contractMapperMock).createBillingRecord(MUNICIPALITY_ID, contractMock);
 		verify(billingPreprocessorClientMock).createBillingRecord(MUNICIPALITY_ID, billingRecordMock);
+		verify(relationClientMock).createRelation(eq(MUNICIPALITY_ID), any());
 		verify(historyRepositoryMock).saveAndFlush(any());
 	}
 
@@ -88,7 +94,7 @@ class ContractBillingHandlerTest {
 				.name("ContractDetails")
 				.parameters(Map.of("finalBillingDate", "2026-01-01"))));
 		// Act
-		assertThatThrownBy(() -> handler.sendBillingRecords(MUNICIPALITY_ID, CONTRACT_ID))
+		assertThatThrownBy(() -> handler.sendBillingRecords(MUNICIPALITY_ID, CONTRACT_ID, msg -> {}))
 			.isInstanceOf(ThrowableProblem.class)
 			.hasMessageContaining("No active contract found");
 
@@ -102,7 +108,7 @@ class ContractBillingHandlerTest {
 		when(contractIntegrationMock.getContract(MUNICIPALITY_ID, CONTRACT_ID)).thenReturn(Optional.empty());
 
 		// Act & Assert
-		assertThatThrownBy(() -> handler.sendBillingRecords(MUNICIPALITY_ID, CONTRACT_ID))
+		assertThatThrownBy(() -> handler.sendBillingRecords(MUNICIPALITY_ID, CONTRACT_ID, msg -> {}))
 			.isInstanceOf(ThrowableProblem.class)
 			.hasMessageContaining("No active contract found");
 
