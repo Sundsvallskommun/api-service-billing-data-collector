@@ -188,6 +188,18 @@
 							</configOptions>
 						</configuration>
 					</execution>
+					<execution>
+						<id>relation-api</id>
+						<goals>
+							<goal>generate</goal>
+						</goals>
+						<configuration>
+							<inputSpec>src/main/resources/integrations/relation-api.yaml</inputSpec>
+							<configOptions>
+								<modelPackage>generated.se.sundsvall.relation</modelPackage>
+							</configOptions>
+						</configuration>
+					</execution>
 				</executions>
 			</plugin>
 			<plugin>
