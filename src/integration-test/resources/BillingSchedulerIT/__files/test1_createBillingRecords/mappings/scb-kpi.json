@@ -12,7 +12,22 @@
 		},
 		"bodyPatterns": [
 			{
-				"equalToJson": "{\"selection\":[{\"valueCodes\":[\"2025M10\"],\"variableCode\":\"Tid\"},{\"valueCodes\":[\"000004VU\"],\"variableCode\":\"ContentsCode\"}]}",
+				"equalToJson": {
+					"selection": [
+						{
+							"valueCodes": [
+								"2025M10"
+							],
+							"variableCode": "Tid"
+						},
+						{
+							"valueCodes": [
+								"000004VU"
+							],
+							"variableCode": "ContentsCode"
+						}
+					]
+				},
 				"ignoreArrayOrder": true
 			}
 		]
