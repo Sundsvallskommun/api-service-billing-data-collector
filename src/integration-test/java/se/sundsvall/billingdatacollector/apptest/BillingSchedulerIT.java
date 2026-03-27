@@ -1,9 +1,7 @@
 package se.sundsvall.billingdatacollector.apptest;
 
-import static java.util.concurrent.TimeUnit.SECONDS;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.within;
-import static org.awaitility.Awaitility.await;
 
 import java.time.OffsetDateTime;
 import java.time.temporal.ChronoUnit;
@@ -42,9 +40,6 @@ class BillingSchedulerIT extends AbstractAppTest {
 
 		// Trigger the "scheduled" job
 		billingScheduler.createBillingRecords();
-		await()
-			.atMost(5, SECONDS)
-			.until(() -> historyRepository.count() > 2);
 
 		var historyEntities = historyRepository.findAll();
 
@@ -59,5 +54,6 @@ class BillingSchedulerIT extends AbstractAppTest {
 			.orElseThrow(() -> new AssertionError("Expected history entity not found"));
 
 		assertThat(newHistoryEntity.getCreated()).isCloseTo(OffsetDateTime.now(), within(2, ChronoUnit.SECONDS));
+		verifyAllStubs();
 	}
 }

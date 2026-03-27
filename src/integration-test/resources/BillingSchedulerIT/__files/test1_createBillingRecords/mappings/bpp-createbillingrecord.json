@@ -8,7 +8,60 @@
 		"method": "POST",
 		"bodyPatterns": [
 			{
-				"equalToJson": "{\n  \"approvedBy\" : \"CONTRACT-SERVICE\",\n  \"category\" : \"MEX_INVOICE\",\n  \"extraParameters\" : {\n    \"contractId\" : \"2026-00001 (111 222 333-1)\",\n    \"index\" : \"355.91\"\n  },\n  \"invoice\" : {\n    \"customerId\" : \"N/A\",\n    \"customerReference\" : \"111 222 333-1\",\n    \"description\" : \"QUARTERLY\",\n    \"dueDate\" : \"2026-03-31\",\n    \"invoiceRows\" : [ {\n      \"accountInformation\" : [ {\n        \"accuralKey\" : \"N_3\",\n        \"activity\" : \"3091\",\n        \"amount\" : 363.74,\n        \"costCenter\" : \"36000000\",\n        \"counterpart\" : \"123\",\n        \"department\" : \"810100\",\n        \"subaccount\" : \"342000\"\n      } ],\n      \"costPerUnit\" : 363.74,\n      \"descriptions\" : [ \"Avgift, nyttjanderätt\" ],\n      \"detailedDescriptions\" : [ \"ANKEBORG NORRA 99:1\", \"Avser april-juni 2026\" ],\n      \"quantity\" : 1,\n      \"vatCode\" : \"00\"\n    } ],\n    \"ourReference\" : \"2026-00001 (111 222 333-1)\"\n  },\n  \"recipient\" : {\n    \"addressDetails\" : {\n      \"city\" : \"ANKEBORG\",\n      \"postalCode\" : \"111 22\",\n      \"street\" : \"STORGATAN 1\"\n    },\n    \"firstName\" : \"KALLE\",\n    \"lastName\" : \"ANKA\",\n    \"partyId\" : \"fb2f0290-3820-11ed-a261-0242ac122345\"\n  },\n  \"status\" : \"APPROVED\",\n  \"transferDate\" : \"2026-03-26\",\n  \"type\" : \"EXTERNAL\"\n}"
+				"equalToJson": {
+					"approvedBy": "CONTRACT-SERVICE",
+					"category": "MEX_INVOICE",
+					"extraParameters": {
+						"contractId": "2026-00001 (111 222 333-1)",
+						"index": "355.91"
+					},
+					"invoice": {
+						"customerId": "N/A",
+						"customerReference": "111 222 333-1",
+						"description": "QUARTERLY",
+						"dueDate": "2026-03-31",
+						"invoiceRows": [
+							{
+								"accountInformation": [
+									{
+										"accuralKey": "N_3",
+										"activity": "3091",
+										"amount": 363.74,
+										"costCenter": "36000000",
+										"counterpart": "123",
+										"department": "810100",
+										"subaccount": "342000"
+									}
+								],
+								"costPerUnit": 363.74,
+								"descriptions": [
+									"Avgift, nyttjanderätt"
+								],
+								"detailedDescriptions": [
+									"ANKEBORG NORRA 99:1",
+									"Avser april-juni 2026"
+								],
+								"quantity": 1,
+								"vatCode": "00"
+							}
+						],
+						"ourReference": "2026-00001 (111 222 333-1)"
+					},
+					"recipient": {
+						"addressDetails": {
+							"city": "ANKEBORG",
+							"postalCode": "111 22",
+							"street": "STORGATAN 1"
+						},
+						"firstName": "KALLE",
+						"lastName": "ANKA",
+						"partyId": "fb2f0290-3820-11ed-a261-0242ac122345"
+					},
+					"status": "APPROVED",
+					"transferDate": "${json-unit.any-string}",
+					"type": "EXTERNAL"
+				},
+				"ignoreArrayOrder": true
 			}
 		],
 		"urlPathPattern": "/bpp/2281/billingrecords"
