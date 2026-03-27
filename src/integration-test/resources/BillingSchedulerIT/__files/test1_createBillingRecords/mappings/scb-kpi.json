@@ -1,0 +1,42 @@
+{
+	"request": {
+		"method": "POST",
+		"urlPathPattern": "/scb/tables/TAB5737/data",
+		"queryParameters": {
+			"lang": {
+				"equalTo": "sv"
+			},
+			"outputFormat": {
+				"equalTo": "json-stat2"
+			}
+		},
+		"bodyPatterns": [
+			{
+				"equalToJson": {
+					"selection": [
+						{
+							"valueCodes": [
+								"2025M10"
+							],
+							"variableCode": "Tid"
+						},
+						{
+							"valueCodes": [
+								"000004VU"
+							],
+							"variableCode": "ContentsCode"
+						}
+					]
+				},
+				"ignoreArrayOrder": true
+			}
+		]
+	},
+	"response": {
+		"headers": {
+			"Content-Type": "application/json"
+		},
+		"bodyFileName": "test1_createBillingRecords/response/scb-kpi.json",
+		"status": 200
+	}
+}

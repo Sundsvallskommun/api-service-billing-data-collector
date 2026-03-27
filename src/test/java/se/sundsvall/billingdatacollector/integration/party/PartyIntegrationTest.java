@@ -116,7 +116,7 @@ class PartyIntegrationTest {
 		when(mockPartyClient.getLegalId(MUNICIPALITY_ID, PartyType.PRIVATE, PARTY_ID))
 			.thenReturn(Optional.of(LEGAL_ID));
 
-		final var legalId = partyIntegration.getLegalId(MUNICIPALITY_ID, PARTY_ID, "PRIVATE");
+		final var legalId = partyIntegration.getLegalId(MUNICIPALITY_ID, PARTY_ID, "PERSON");
 
 		assertThat(legalId).isPresent().hasValue(LEGAL_ID);
 
