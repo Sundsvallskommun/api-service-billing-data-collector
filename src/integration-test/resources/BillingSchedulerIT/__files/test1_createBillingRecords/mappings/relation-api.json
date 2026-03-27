@@ -1,0 +1,31 @@
+{
+	"request": {
+		"method": "POST",
+		"urlPathPattern": "/relation/2281/relations",
+		"bodyPatterns": [
+			{
+				"equalToJson": {
+					"source": {
+						"resourceId": "2026-00001",
+						"service": "contract",
+						"type": "contract"
+					},
+					"target": {
+						"resourceId": "a13607c3-1cba-44b8-904e-49f9b968acfe",
+						"service": "billingpreprocessor",
+						"type": "billing-record"
+					},
+					"type": "LINK"
+				},
+				"ignoreArrayOrder": true
+			}
+		]
+	},
+	"response": {
+		"headers": {
+			"Location": "/2281/relations/699c593c-84cd-4863-a3a2-7a230079de6c",
+			"Content-Type": "*/*"
+		},
+		"status": 201
+	}
+}

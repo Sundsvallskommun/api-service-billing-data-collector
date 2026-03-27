@@ -1,5 +1,6 @@
 package se.sundsvall.billingdatacollector.service.source;
 
+import java.util.function.Consumer;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -238,7 +239,7 @@ class AbstractHandlerTest {
 
 	private static class DummyHandler extends AbstractHandler {
 		@Override
-		public void sendBillingRecords(String municipalityId, String externalId) {
+		public void sendBillingRecords(String municipalityId, String externalId, Consumer<String> unhealthyMessageConsumer) {
 			// Not implemented as dummy class is only used by test
 		}
 	}
