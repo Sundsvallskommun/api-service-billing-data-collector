@@ -57,7 +57,7 @@ class BillingSchedulerTest {
 		var entity = createScheduledBillingEntity(BillingSource.CONTRACT);
 
 		when(mockScheduledBillingService.getDueScheduledBillings()).thenReturn(List.of(entity));
-		doNothing().when(mockContractHandler).sendBillingRecords(MUNICIPALITY_ID, EXTERNAL_ID);
+		doNothing().when(mockContractHandler).sendBillingRecords(eq(MUNICIPALITY_ID), eq(EXTERNAL_ID), any());
 		doNothing().when(mockScheduledBillingService).updateNextScheduledBilling(entity);
 
 		// Act
@@ -65,7 +65,7 @@ class BillingSchedulerTest {
 
 		// Assert
 		verify(mockScheduledBillingService).getDueScheduledBillings();
-		verify(mockContractHandler).sendBillingRecords(MUNICIPALITY_ID, EXTERNAL_ID);
+		verify(mockContractHandler).sendBillingRecords(eq(MUNICIPALITY_ID), eq(EXTERNAL_ID), any());
 		verify(mockScheduledBillingService).updateNextScheduledBilling(entity);
 		verifyNoInteractions(mockDept44HealthUtility);
 		verifyNoMoreInteractions(mockScheduledBillingService, mockContractHandler);
@@ -95,14 +95,14 @@ class BillingSchedulerTest {
 		var entity = createScheduledBillingEntity(BillingSource.CONTRACT);
 
 		when(mockScheduledBillingService.getDueScheduledBillings()).thenReturn(List.of(entity));
-		doThrow(new RuntimeException("Test exception")).when(mockContractHandler).sendBillingRecords(MUNICIPALITY_ID, EXTERNAL_ID);
+		doThrow(new RuntimeException("Test exception")).when(mockContractHandler).sendBillingRecords(eq(MUNICIPALITY_ID), eq(EXTERNAL_ID), any());
 
 		// Act
 		billingScheduler.createBillingRecords();
 
 		// Assert
 		verify(mockScheduledBillingService).getDueScheduledBillings();
-		verify(mockContractHandler).sendBillingRecords(MUNICIPALITY_ID, EXTERNAL_ID);
+		verify(mockContractHandler).sendBillingRecords(eq(MUNICIPALITY_ID), eq(EXTERNAL_ID), any());
 		verify(mockDept44HealthUtility).setHealthIndicatorUnhealthy(eq(JOB_NAME), any(String.class));
 		verify(mockScheduledBillingService, never()).updateNextScheduledBilling(any());
 		verifyNoMoreInteractions(mockScheduledBillingService, mockContractHandler, mockDept44HealthUtility);

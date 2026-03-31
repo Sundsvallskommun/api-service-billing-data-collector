@@ -1,0 +1,117 @@
+{
+	"additionalTerms": [],
+	"area": 20,
+	"attachmentMetaData": [],
+	"contractId": "2026-00001",
+	"duration": {
+		"unit": "DAYS"
+	},
+	"extension": {
+		"autoExtend": false,
+		"unit": "MONTHS"
+	},
+	"externalReferenceId": "111 222 333-1",
+	"extraParameters": [
+		{
+			"name": "InvoiceInfo",
+			"parameters": {
+				"article": "NYTTJANDERÄTT INDEX"
+			}
+		},
+		{
+			"name": "ContractDetails",
+			"parameters": {
+				"contractNumber": "111 222 333-1",
+				"contractDate": "2017-12-04",
+				"migratedFrom": "Xpand",
+				"originalContractType": "NYTTJANDERÄTT"
+			}
+		}
+	],
+	"fees": {
+		"additionalInformation": [
+			"Avgift, nyttjanderätt"
+		],
+		"currency": "SEK",
+		"indexNumber": 318,
+		"indexType": "KPI 80",
+		"indexYear": 2016,
+		"indexationRate": 1,
+		"total": 1300,
+		"yearly": 1300
+	},
+	"indexTerms": [],
+	"invoicing": {
+		"invoiceInterval": "QUARTERLY",
+		"invoicedIn": "ADVANCE"
+	},
+	"leaseType": "LAND_LEASE_MISC",
+	"municipalityId": "2281",
+	"notice": {
+		"terms": [
+			{
+				"party": "LESSEE",
+				"periodOfNotice": 3,
+				"unit": "MONTHS"
+			},
+			{
+				"party": "LESSOR",
+				"periodOfNotice": 3,
+				"unit": "MONTHS"
+			}
+		]
+	},
+	"propertyDesignations": [
+		{
+			"district": "Ankeborg",
+			"name": "ANKEBORG NORRA 99:1"
+		}
+	],
+	"signedByWitness": false,
+	"stakeholders": [
+		{
+			"address": {
+				"postalCode": "111 22",
+				"town": "Ankeborg",
+				"type": "POSTAL_ADDRESS"
+			},
+			"organizationName": "Sundsvalls kommun",
+			"parameters": [
+				{
+					"displayName": "Enhet",
+					"key": "organizationNameExtension",
+					"values": [
+						"Stadsbyggnadsnämnden"
+					]
+				}
+			],
+			"partyId": "fb2f0290-3820-11ed-a261-0242ac122345",
+			"roles": [
+				"LESSOR"
+			],
+			"type": "MUNICIPALITY"
+		},
+		{
+			"address": {
+				"country": "SVERIGE",
+				"postalCode": "111 22",
+				"streetAddress": "STORGATAN 1",
+				"town": "ANKEBORG",
+				"type": "POSTAL_ADDRESS"
+			},
+			"firstName": "KALLE",
+			"lastName": "ANKA",
+			"parameters": [],
+			"partyId": "fb2f0290-3820-11ed-a261-0242ac122345",
+			"roles": [
+				"LESSEE",
+				"PRIMARY_BILLING_PARTY"
+			],
+			"type": "PERSON"
+		}
+	],
+	"startDate": "2017-01-01",
+	"status": "ACTIVE",
+	"type": "LEASE_AGREEMENT",
+	"version": 1
+}

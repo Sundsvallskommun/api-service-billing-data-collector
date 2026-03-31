@@ -11,8 +11,8 @@ spring:
       # default setting used if no override has been defined
       spec: maximumSize=100,expireAfterWrite=5m
       # overriding of default setting for specific caches
-      spec-overrides: 
-        - cache-name:  kpiData
+      spec-overrides:
+        - cache-name: kpiData
           spec: maximumSize=100, expireAfterWrite=30d
   flyway:
     enabled: false
@@ -29,6 +29,8 @@ spring:
             token-uri: ${integration.contract.oauth2.token-url}
           billing-preprocessor:
             token-uri: ${integration.billing-preprocessor.oauth2.token-url}
+          relation:
+            token-uri: ${integration.relation.oauth2.token-url}
         registration:
           party:
             authorization-grant-type: client_credentials
@@ -45,6 +47,11 @@ spring:
             provider: billing-preprocessor
             client-id: ${integration.billing-preprocessor.oauth2.client-id}
             client-secret: ${integration.billing-preprocessor.oauth2.client-secret}
+          relation:
+            authorization-grant-type: client_credentials
+            provider: relation
+            client-id: ${integration.relation.oauth2.client-id}
+            client-secret: ${integration.relation.oauth2.client-secret}
 scheduler:
   opene:
     cron:
@@ -69,7 +76,7 @@ scheduler:
     warn-days-before-expiration: 15
     lock-at-most-for: PT5M
     maximum-execution-time: PT5M
-    
+
 falloutreport:
   recipients:
     - dummy@sundsvall.se

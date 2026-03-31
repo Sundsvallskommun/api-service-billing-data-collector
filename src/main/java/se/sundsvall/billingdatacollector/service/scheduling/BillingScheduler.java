@@ -42,7 +42,7 @@ public class BillingScheduler {
 				try {
 					var billingHandler = billingSourceHandlerMap.get(scheduledBillingEntity.getSource().name().toLowerCase());
 					if (billingHandler != null) {
-						billingHandler.sendBillingRecords(scheduledBillingEntity.getMunicipalityId(), scheduledBillingEntity.getExternalId());
+						billingHandler.sendBillingRecords(scheduledBillingEntity.getMunicipalityId(), scheduledBillingEntity.getExternalId(), billingSetUnHealthyConsumer);
 						scheduledBillingService.updateNextScheduledBilling(scheduledBillingEntity);
 					} else {
 						LOG.error("Skipping scheduled billing since no handler exists. municipalityId '{}', source: '{}', externalId: '{}'",

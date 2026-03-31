@@ -52,7 +52,7 @@ public class PartyIntegration {
 	public Optional<String> getLegalId(final String municipalityId, final String partyId, final String type) {
 		return switch (type) {
 			case "ORGANIZATION", "MUNICIPALITY", "ASSOCIATION" -> partyClient.getLegalId(municipalityId, ENTERPRISE, partyId);
-			case "PRIVATE" -> partyClient.getLegalId(municipalityId, PRIVATE, partyId);
+			case "PERSON" -> partyClient.getLegalId(municipalityId, PRIVATE, partyId);
 			default -> Optional.empty();
 		};
 	}

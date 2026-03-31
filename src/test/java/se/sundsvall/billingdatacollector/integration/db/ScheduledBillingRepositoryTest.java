@@ -48,7 +48,7 @@ class ScheduledBillingRepositoryTest {
 
 	@Test
 	void existsByMunicipalityIdAndExternalIdAndSource() {
-		final var externalId = "66c57446-72e7-4cc5-af7c-053919ce904b";
+		final var externalId = "2026-00001";
 		final var municipalityId = "2281";
 		final var source = BillingSource.CONTRACT;
 
@@ -112,7 +112,7 @@ class ScheduledBillingRepositoryTest {
 
 		assertThat(entity.getId()).isEqualTo(id);
 		assertThat(entity.getMunicipalityId()).isEqualTo("2281");
-		assertThat(entity.getExternalId()).isEqualTo("66c57446-72e7-4cc5-af7c-053919ce904b");
+		assertThat(entity.getExternalId()).isEqualTo("2026-00001");
 		assertThat(entity.getSource()).isEqualTo(BillingSource.CONTRACT);
 		assertThat(entity.getBillingDaysOfMonth()).containsExactlyInAnyOrder(1, 15);
 		assertThat(entity.getBillingMonths()).containsExactlyInAnyOrder(1, 4, 7, 10);
@@ -124,7 +124,7 @@ class ScheduledBillingRepositoryTest {
 	@Test
 	void findByMunicipalityIdAndExternalId() {
 		final var municipalityId = "2281";
-		final var externalId = "66c57446-72e7-4cc5-af7c-053919ce904b";
+		final var externalId = "2026-00001";
 		final var source = BillingSource.CONTRACT;
 
 		final var result = repository.findByMunicipalityIdAndExternalIdAndSource(municipalityId, externalId, source);
