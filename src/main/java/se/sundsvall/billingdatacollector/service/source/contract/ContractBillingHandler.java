@@ -60,12 +60,12 @@ public class ContractBillingHandler extends AbstractHandler {
 
 	@Transactional
 	@Override
-	public void sendBillingRecords(String municipalityId, String externalId, Consumer<String> unhealthyMessageConsumer) {
+	public void sendBillingRecords(String municipalityId, String externalId, LocalDate scheduledDate, Consumer<String> unhealthyMessageConsumer) {
 		logInfo("Processing contract with id {} in municipality {}", externalId, municipalityId);
 
 		contractIntegration.getContract(municipalityId, externalId)
-			.filter(isBeforeLastBillingDateIfPresent())
-			.map(contract -> contractMapper.createBillingRecord(municipalityId, contract))
+			.filter(isBeforeLastBillingDateIfPresent(scheduledDate))
+			.map(contract -> contractMapper.createBillingRecord(municipalityId, contract, scheduledDate))
 			.ifPresentOrElse(
 				billingRecord -> sendAndSave(municipalityId, billingRecord, externalId, unhealthyMessageConsumer),
 				() -> handleNoMatchInContract(municipalityId, externalId));
@@ -119,7 +119,7 @@ public class ContractBillingHandler extends AbstractHandler {
 			.build();
 	}
 
-	private static Predicate<? super Contract> isBeforeLastBillingDateIfPresent() {
+	private static Predicate<? super Contract> isBeforeLastBillingDateIfPresent(LocalDate scheduledDate) {
 		return contract -> ofNullable(contract.getExtraParameters())
 			.orElse(emptyList()).stream()
 			.filter(extraParameterGroup -> CONTRACT_DETAILS_GROUP_NAME.equals(extraParameterGroup.getName()))
@@ -128,7 +128,7 @@ public class ContractBillingHandler extends AbstractHandler {
 			.filter(Objects::nonNull)
 			.map(LocalDate::parse)
 			.findFirst()
-			.map(finalBillingDate -> LocalDate.now().isBefore(finalBillingDate))
+			.map(scheduledDate::isBefore)
 			.orElse(true);
 	}
 

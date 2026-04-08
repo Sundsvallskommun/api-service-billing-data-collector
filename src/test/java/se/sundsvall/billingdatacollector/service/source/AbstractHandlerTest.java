@@ -1,5 +1,6 @@
 package se.sundsvall.billingdatacollector.service.source;
 
+import java.time.LocalDate;
 import java.util.function.Consumer;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
@@ -239,7 +240,7 @@ class AbstractHandlerTest {
 
 	private static class DummyHandler extends AbstractHandler {
 		@Override
-		public void sendBillingRecords(String municipalityId, String externalId, Consumer<String> unhealthyMessageConsumer) {
+		public void sendBillingRecords(String municipalityId, String externalId, LocalDate scheduledDate, Consumer<String> unhealthyMessageConsumer) {
 			// Not implemented as dummy class is only used by test
 		}
 	}

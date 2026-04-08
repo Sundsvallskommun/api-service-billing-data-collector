@@ -19,7 +19,7 @@
 						"customerId": "N/A",
 						"customerReference": "111 222 333-1",
 						"description": "QUARTERLY",
-						"dueDate": "2026-03-31",
+						"dueDate": "${json-unit.any-string}",
 						"invoiceRows": [
 							{
 								"accountInformation": [
@@ -39,7 +39,7 @@
 								],
 								"detailedDescriptions": [
 									"ANKEBORG NORRA 99:1",
-									"Avser april-juni 2026"
+									"${json-unit.any-string}"
 								],
 								"quantity": 1,
 								"vatCode": "00"
@@ -62,6 +62,14 @@
 					"type": "EXTERNAL"
 				},
 				"ignoreArrayOrder": true
+			},
+			{
+				"matchesJsonPath": {
+					"expression": "$.invoice.dueDate",
+					"equalToDateTime": "now",
+					"actualFormat": "yyyy-MM-dd",
+					"truncateExpected": "last day of month"
+				}
 			}
 		],
 		"urlPathPattern": "/bpp/2281/billingrecords"
