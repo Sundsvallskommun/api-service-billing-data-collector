@@ -54,6 +54,7 @@ public class ContractMapper {
 	private static final int INDEX_MONTH = OCTOBER.getValue(); // Month to use when fetching KPI is always october
 	private static final BigDecimal QUANTITY = BigDecimal.ONE; // Quantity is always one for periodical invoicing
 	private static final String YEARLY_DESCRIPTION = "Avser januari-december %s";
+	private static final String YEARLY_SPLIT_DESCRIPTION = "Avser juli %s-juni %s";
 	private static final String QUARTERLY_DESCRIPTION_Q1 = "Avser januari-mars %s";
 	private static final String QUARTERLY_DESCRIPTION_Q2 = "Avser april-juni %s";
 	private static final String QUARTERLY_DESCRIPTION_Q3 = "Avser juli-september %s";
@@ -73,17 +74,17 @@ public class ContractMapper {
 		this.counterpartMappingService = counterpartMappingService;
 	}
 
-	public BillingRecord createBillingRecord(String municipalityId, Contract contract) {
+	public BillingRecord createBillingRecord(String municipalityId, Contract contract, LocalDate scheduledDate) {
 		return ofNullable(contract)
-			.map(contract1 -> this.toBillingRecord(municipalityId, contract1))
+			.map(contract1 -> this.toBillingRecord(municipalityId, contract1, scheduledDate))
 			.orElse(null);
 	}
 
-	private BillingRecord toBillingRecord(String municipalityId, Contract contract) {
+	private BillingRecord toBillingRecord(String municipalityId, Contract contract, LocalDate scheduledDate) {
 		final var billingRecord = new BillingRecord()
 			.approvedBy(APPROVED_BY)
 			.category(CATEGORY)
-			.invoice(toInvoice(municipalityId, contract))
+			.invoice(toInvoice(municipalityId, contract, scheduledDate))
 			.recipient(toRecipient(contract))
 			.status(APPROVED)
 			.type(EXTERNAL)
@@ -92,23 +93,23 @@ public class ContractMapper {
 
 		if (isIndexed(contract)) {
 			final var indexBaseYear = getKPIBaseYear(contract);
-			final var currentIndexPeriod = getCurrentIndexPeriod();
-			billingRecord.putExtraParametersItem(PARAMETER_KEY_KPI, String.valueOf(scbIntegration.getKPI(indexBaseYear, currentIndexPeriod))); // KPI value used when calculating prices
+			final var indexPeriod = getIndexPeriod(scheduledDate);
+			billingRecord.putExtraParametersItem(PARAMETER_KEY_KPI, String.valueOf(scbIntegration.getKPI(indexBaseYear, indexPeriod))); // KPI value used when calculating prices
 		}
 
 		return billingRecord;
 	}
 
-	private YearMonth getCurrentIndexPeriod() {
-		return YearMonth.now().minusYears(1).withMonth(INDEX_MONTH);
+	private YearMonth getIndexPeriod(LocalDate scheduledDate) {
+		return YearMonth.from(scheduledDate.minusYears(1).withMonth(INDEX_MONTH));
 	}
 
-	private Invoice toInvoice(String municipalityId, Contract contract) {
+	private Invoice toInvoice(String municipalityId, Contract contract, LocalDate scheduledDate) {
 		return new Invoice()
 			.ourReference(getContractId(contract))
 			.customerReference(getCustomerReference(contract))
 			.customerId(NOT_APPLICABLE)
-			.addInvoiceRowsItem(mapInvoiceRow(municipalityId, contract))
+			.addInvoiceRowsItem(mapInvoiceRow(municipalityId, contract, scheduledDate))
 			.dueDate(YearMonth.now().atEndOfMonth())
 			.description(ofNullable(contract.getInvoicing())
 				.filter(invoicing -> Objects.equals(ADVANCE, invoicing.getInvoicedIn()))
@@ -123,8 +124,8 @@ public class ContractMapper {
 				.orElse(contract.getContractId()));
 	}
 
-	private InvoiceRow mapInvoiceRow(String municipalityId, Contract contract) {
-		final var costPerUnit = calculateCost(contract);
+	private InvoiceRow mapInvoiceRow(String municipalityId, Contract contract, LocalDate scheduledDate) {
+		final var costPerUnit = calculateCost(contract, scheduledDate);
 
 		var invoiceRow = new InvoiceRow()
 			.costPerUnit(costPerUnit)
@@ -134,16 +135,16 @@ public class ContractMapper {
 			.descriptions(ofNullable(contract.getFees()).map(Fees::getAdditionalInformation).orElse(null));
 
 		ofNullable(getPropertyDesignation(contract)).ifPresent(invoiceRow::addDetailedDescriptionsItem);
-		ofNullable(getInvoiceDescription(contract)).ifPresent(invoiceRow::addDetailedDescriptionsItem);
+		ofNullable(getInvoiceDescription(contract, scheduledDate)).ifPresent(invoiceRow::addDetailedDescriptionsItem);
 
 		return invoiceRow;
 	}
 
-	private BigDecimal calculateCost(Contract contract) {
+	private BigDecimal calculateCost(Contract contract, LocalDate scheduledDate) {
 		if (isIndexed(contract)) {
 			final var indexBaseYear = getKPIBaseYear(contract);
-			final var currentIndexPeriod = getCurrentIndexPeriod();
-			final var currentKPI = scbIntegration.getKPI(indexBaseYear, currentIndexPeriod);
+			final var indexPeriod = getIndexPeriod(scheduledDate);
+			final var currentKPI = scbIntegration.getKPI(indexBaseYear, indexPeriod);
 			return calculateIndexedCost(contract, currentKPI);
 		}
 		return calculateNonIndexedCost(contract);
@@ -223,36 +224,40 @@ public class ContractMapper {
 			.orElse(null);
 	}
 
-	private String getInvoiceDescription(Contract contract) {
+	private String getInvoiceDescription(Contract contract, LocalDate scheduledDate) {
 		return ofNullable(contract.getInvoicing())
 			.filter(invoicing -> Objects.equals(ADVANCE, invoicing.getInvoicedIn()))
 			.map(Invoicing::getInvoiceInterval)
-			.map(this::getDescription)
+			.map(intervalType -> getDescription(intervalType, scheduledDate))
 			.orElse(null);
 	}
 
-	private String getDescription(IntervalType invoiceInterval) {
-		final var currentMonth = YearMonth.now().getMonthValue();
+	private String getDescription(IntervalType invoiceInterval, LocalDate scheduledDate) {
+		final var scheduledMonth = scheduledDate.getMonthValue();
 		switch (invoiceInterval) {
 			case YEARLY -> {
-				return String.format(YEARLY_DESCRIPTION, YearMonth.now().plusYears(1).getYear());
+				if (scheduledMonth == JUNE.getValue()) {
+					return String.format(YEARLY_SPLIT_DESCRIPTION, scheduledDate.getYear(), scheduledDate.plusYears(1).getYear());
+				} else {
+					return String.format(YEARLY_DESCRIPTION, scheduledDate.plusYears(1).getYear());
+				}
 			}
 			case QUARTERLY -> {
-				if (currentMonth <= MARCH.getValue()) {
-					return String.format(QUARTERLY_DESCRIPTION_Q2, YearMonth.now().getYear());
-				} else if (currentMonth <= JUNE.getValue()) {
-					return String.format(QUARTERLY_DESCRIPTION_Q3, YearMonth.now().getYear());
-				} else if (currentMonth <= SEPTEMBER.getValue()) {
-					return String.format(QUARTERLY_DESCRIPTION_Q4, YearMonth.now().getYear());
+				if (scheduledMonth <= MARCH.getValue()) {
+					return String.format(QUARTERLY_DESCRIPTION_Q2, scheduledDate.getYear());
+				} else if (scheduledMonth <= JUNE.getValue()) {
+					return String.format(QUARTERLY_DESCRIPTION_Q3, scheduledDate.getYear());
+				} else if (scheduledMonth <= SEPTEMBER.getValue()) {
+					return String.format(QUARTERLY_DESCRIPTION_Q4, scheduledDate.getYear());
 				} else {
-					return String.format(QUARTERLY_DESCRIPTION_Q1, YearMonth.now().plusYears(1).getYear());
+					return String.format(QUARTERLY_DESCRIPTION_Q1, scheduledDate.plusYears(1).getYear());
 				}
 			}
 			case HALF_YEARLY -> {
-				if (currentMonth <= JUNE.getValue()) {
-					return String.format(HALF_YEARLY_DESCRIPTION_2, YearMonth.now().getYear());
+				if (scheduledMonth <= JUNE.getValue()) {
+					return String.format(HALF_YEARLY_DESCRIPTION_2, scheduledDate.getYear());
 				} else {
-					return String.format(HALF_YEARLY_DESCRIPTION_1, YearMonth.now().plusYears(1).getYear());
+					return String.format(HALF_YEARLY_DESCRIPTION_1, scheduledDate.plusYears(1).getYear());
 				}
 			}
 			default -> {

@@ -16,7 +16,7 @@
 					"selection": [
 						{
 							"valueCodes": [
-								"2025M10"
+								"${json-unit.regex}\\d{4}M10"
 							],
 							"variableCode": "Tid"
 						},

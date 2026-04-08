@@ -2,6 +2,7 @@ package se.sundsvall.billingdatacollector.service.source.contract;
 
 import generated.se.sundsvall.billingpreprocessor.BillingRecord;
 import generated.se.sundsvall.contract.Contract;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -31,6 +32,7 @@ import static org.mockito.Mockito.when;
 class ContractBillingHandlerTest {
 	private static final String MUNICIPALITY_ID = "municipalityId";
 	private static final String CONTRACT_ID = "contractId";
+	private static final LocalDate SCHEDULED_DATE = LocalDate.of(2025, 1, 1);
 
 	@Mock
 	private ContractIntegration contractIntegrationMock;
@@ -70,16 +72,16 @@ class ContractBillingHandlerTest {
 		// Arrange
 		when(contractIntegrationMock.getContract(MUNICIPALITY_ID, CONTRACT_ID)).thenReturn(Optional.of(contractMock));
 		when(contractMock.getExtraParameters()).thenReturn(emptyList());
-		when(contractMapperMock.createBillingRecord(MUNICIPALITY_ID, contractMock)).thenReturn(billingRecordMock);
+		when(contractMapperMock.createBillingRecord(MUNICIPALITY_ID, contractMock, SCHEDULED_DATE)).thenReturn(billingRecordMock);
 		when(billingPreprocessorClientMock.createBillingRecord(MUNICIPALITY_ID, billingRecordMock))
 			.thenReturn(ResponseEntity.status(HttpStatus.CREATED).build());
 
 		// Act
-		handler.sendBillingRecords(MUNICIPALITY_ID, CONTRACT_ID, msg -> {});
+		handler.sendBillingRecords(MUNICIPALITY_ID, CONTRACT_ID, SCHEDULED_DATE, msg -> {});
 
 		// Assert & verify
 		verify(contractIntegrationMock).getContract(MUNICIPALITY_ID, CONTRACT_ID);
-		verify(contractMapperMock).createBillingRecord(MUNICIPALITY_ID, contractMock);
+		verify(contractMapperMock).createBillingRecord(MUNICIPALITY_ID, contractMock, SCHEDULED_DATE);
 		verify(billingPreprocessorClientMock).createBillingRecord(MUNICIPALITY_ID, billingRecordMock);
 		verify(relationClientMock).createRelation(eq(MUNICIPALITY_ID), any());
 		verify(historyRepositoryMock).saveAndFlush(any());
@@ -92,9 +94,9 @@ class ContractBillingHandlerTest {
 		when(contractMock.getExtraParameters()).thenReturn(List.of(
 			new generated.se.sundsvall.contract.ExtraParameterGroup()
 				.name("ContractDetails")
-				.parameters(Map.of("finalBillingDate", "2026-01-01"))));
+				.parameters(Map.of("finalBillingDate", "2025-01-01"))));
 		// Act
-		assertThatThrownBy(() -> handler.sendBillingRecords(MUNICIPALITY_ID, CONTRACT_ID, msg -> {}))
+		assertThatThrownBy(() -> handler.sendBillingRecords(MUNICIPALITY_ID, CONTRACT_ID, SCHEDULED_DATE, msg -> {}))
 			.isInstanceOf(ThrowableProblem.class)
 			.hasMessageContaining("No active contract found");
 
@@ -108,7 +110,7 @@ class ContractBillingHandlerTest {
 		when(contractIntegrationMock.getContract(MUNICIPALITY_ID, CONTRACT_ID)).thenReturn(Optional.empty());
 
 		// Act & Assert
-		assertThatThrownBy(() -> handler.sendBillingRecords(MUNICIPALITY_ID, CONTRACT_ID, msg -> {}))
+		assertThatThrownBy(() -> handler.sendBillingRecords(MUNICIPALITY_ID, CONTRACT_ID, SCHEDULED_DATE, msg -> {}))
 			.isInstanceOf(ThrowableProblem.class)
 			.hasMessageContaining("No active contract found");
 

@@ -1,5 +1,6 @@
 package se.sundsvall.billingdatacollector.service.scheduling;
 
+import java.time.LocalDate;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -32,6 +33,7 @@ class BillingSchedulerTest {
 	private static final String JOB_NAME = "billing-scheduler";
 	private static final String MUNICIPALITY_ID = "2281";
 	private static final String EXTERNAL_ID = "test-external-id";
+	private static final LocalDate NEXT_SCHEDULED_BILLING = LocalDate.of(2025, 1, 31);
 
 	@Mock
 	private Dept44HealthUtility mockDept44HealthUtility;
@@ -57,7 +59,7 @@ class BillingSchedulerTest {
 		var entity = createScheduledBillingEntity(BillingSource.CONTRACT);
 
 		when(mockScheduledBillingService.getDueScheduledBillings()).thenReturn(List.of(entity));
-		doNothing().when(mockContractHandler).sendBillingRecords(eq(MUNICIPALITY_ID), eq(EXTERNAL_ID), any());
+		doNothing().when(mockContractHandler).sendBillingRecords(eq(MUNICIPALITY_ID), eq(EXTERNAL_ID), eq(NEXT_SCHEDULED_BILLING), any());
 		doNothing().when(mockScheduledBillingService).updateNextScheduledBilling(entity);
 
 		// Act
@@ -65,7 +67,7 @@ class BillingSchedulerTest {
 
 		// Assert
 		verify(mockScheduledBillingService).getDueScheduledBillings();
-		verify(mockContractHandler).sendBillingRecords(eq(MUNICIPALITY_ID), eq(EXTERNAL_ID), any());
+		verify(mockContractHandler).sendBillingRecords(eq(MUNICIPALITY_ID), eq(EXTERNAL_ID), eq(NEXT_SCHEDULED_BILLING), any());
 		verify(mockScheduledBillingService).updateNextScheduledBilling(entity);
 		verifyNoInteractions(mockDept44HealthUtility);
 		verifyNoMoreInteractions(mockScheduledBillingService, mockContractHandler);
@@ -95,14 +97,14 @@ class BillingSchedulerTest {
 		var entity = createScheduledBillingEntity(BillingSource.CONTRACT);
 
 		when(mockScheduledBillingService.getDueScheduledBillings()).thenReturn(List.of(entity));
-		doThrow(new RuntimeException("Test exception")).when(mockContractHandler).sendBillingRecords(eq(MUNICIPALITY_ID), eq(EXTERNAL_ID), any());
+		doThrow(new RuntimeException("Test exception")).when(mockContractHandler).sendBillingRecords(eq(MUNICIPALITY_ID), eq(EXTERNAL_ID), eq(NEXT_SCHEDULED_BILLING), any());
 
 		// Act
 		billingScheduler.createBillingRecords();
 
 		// Assert
 		verify(mockScheduledBillingService).getDueScheduledBillings();
-		verify(mockContractHandler).sendBillingRecords(eq(MUNICIPALITY_ID), eq(EXTERNAL_ID), any());
+		verify(mockContractHandler).sendBillingRecords(eq(MUNICIPALITY_ID), eq(EXTERNAL_ID), eq(NEXT_SCHEDULED_BILLING), any());
 		verify(mockDept44HealthUtility).setHealthIndicatorUnhealthy(eq(JOB_NAME), any(String.class));
 		verify(mockScheduledBillingService, never()).updateNextScheduledBilling(any());
 		verifyNoMoreInteractions(mockScheduledBillingService, mockContractHandler, mockDept44HealthUtility);
@@ -131,6 +133,7 @@ class BillingSchedulerTest {
 			.withBillingDaysOfMonth(Set.of(1))
 			.withBillingMonths(Set.of(1))
 			.withPaused(false)
+			.withNextScheduledBilling(NEXT_SCHEDULED_BILLING)
 			.build();
 	}
 }

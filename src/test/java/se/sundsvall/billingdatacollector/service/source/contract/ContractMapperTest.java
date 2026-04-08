@@ -8,6 +8,7 @@ import generated.se.sundsvall.contract.Invoicing;
 import generated.se.sundsvall.contract.PropertyDesignation;
 import generated.se.sundsvall.contract.Stakeholder;
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.time.Month;
 import java.time.YearMonth;
 import java.util.List;
@@ -23,7 +24,6 @@ import org.junit.jupiter.params.provider.NullSource;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import se.sundsvall.billingdatacollector.integration.scb.ScbIntegration;
 import se.sundsvall.billingdatacollector.integration.scb.model.KPIBaseYear;
@@ -59,6 +59,7 @@ class ContractMapperTest {
 	private static final String TOWN = "town";
 	private static final String PARTY_ID = "partyId";
 	private static final String POSTAL_CODE = "postalCode";
+	private static final LocalDate SCHEDULED_DATE = LocalDate.of(2026, 1, 1);
 
 	@Mock
 	private ScbIntegration scbIntegrationMock;
@@ -117,7 +118,7 @@ class ContractMapperTest {
 		when(contractMock.getExternalReferenceId()).thenReturn(externalReferenceId);
 
 		// Act
-		final var result = mapper.createBillingRecord(MUNICIPALITY_ID, contractMock);
+		final var result = mapper.createBillingRecord(MUNICIPALITY_ID, contractMock, SCHEDULED_DATE);
 
 		// Assert & verify
 		assertThat(result.getApprovedBy()).isEqualTo("CONTRACT-SERVICE");
@@ -167,7 +168,7 @@ class ContractMapperTest {
 
 	@Test
 	void toBillingRecordFromNull() {
-		assertThat(mapper.createBillingRecord(MUNICIPALITY_ID, null)).isNull();
+		assertThat(mapper.createBillingRecord(MUNICIPALITY_ID, null, SCHEDULED_DATE)).isNull();
 	}
 
 	@ParameterizedTest(name = "{0}")
@@ -185,7 +186,7 @@ class ContractMapperTest {
 		when(invoicingMock.getInvoiceInterval()).thenReturn(intervalType);
 
 		// Act
-		final var result = mapper.createBillingRecord(MUNICIPALITY_ID, contractMock);
+		final var result = mapper.createBillingRecord(MUNICIPALITY_ID, contractMock, SCHEDULED_DATE);
 
 		// Assert & verify
 		if (hasMatch) {
@@ -237,7 +238,7 @@ class ContractMapperTest {
 		when(invoicingMock.getInvoiceInterval()).thenReturn(intervalType);
 
 		// Act
-		final var e = assertThrows(ThrowableProblem.class, () -> mapper.createBillingRecord(MUNICIPALITY_ID, contractMock));
+		final var e = assertThrows(ThrowableProblem.class, () -> mapper.createBillingRecord(MUNICIPALITY_ID, contractMock, SCHEDULED_DATE));
 
 		// Assert & verify
 		assertThat(e.getStatus()).isEqualTo(INTERNAL_SERVER_ERROR);
@@ -280,13 +281,13 @@ class ContractMapperTest {
 		when(settingsProviderMock.getSubaccount(contractMock)).thenReturn(subaccount);
 		when(settingsProviderMock.getVatCode(contractMock)).thenReturn(vatCode);
 		when(contractMock.getContractId()).thenReturn(CONTRACT_ID);
-		when(scbIntegrationMock.getKPI(KPIBaseYear.KPI_80, YearMonth.now().minusYears(1).withMonth(Month.OCTOBER.getValue()))).thenReturn(kpiIndex);
+		when(scbIntegrationMock.getKPI(KPIBaseYear.KPI_80, YearMonth.from(SCHEDULED_DATE.minusYears(1).withMonth(Month.OCTOBER.getValue())))).thenReturn(kpiIndex);
 		when(contractMock.getStakeholders()).thenReturn(List.of(generateStakeholder().roles(List.of(PRIMARY_BILLING_PARTY, LESSEE))
 			.type(PERSON)));
 		when(counterpartMappingServiceMock.findCounterpart(MUNICIPALITY_ID, billableStakeholder.getPartyId(), PERSON.getValue())).thenReturn(counterpart);
 
 		// Act
-		final var result = mapper.createBillingRecord(MUNICIPALITY_ID, contractMock);
+		final var result = mapper.createBillingRecord(MUNICIPALITY_ID, contractMock, SCHEDULED_DATE);
 
 		// Assert & verify
 		assertThat(result.getApprovedBy()).isEqualTo("CONTRACT-SERVICE");
@@ -340,43 +341,42 @@ class ContractMapperTest {
 
 	@ParameterizedTest
 	@MethodSource("descriptionArgumentProvider")
-	void createBillingRecord_invoiceDescription(YearMonth yearMonth, IntervalType intervalType, String expectedDescription) {
-		try (var mockedYearMonth = Mockito.mockStatic(YearMonth.class, Mockito.CALLS_REAL_METHODS)) {
-			mockedYearMonth.when(YearMonth::now).thenReturn(yearMonth);
+	void createBillingRecord_invoiceDescription(LocalDate scheduledDate, IntervalType intervalType, String expectedDescription) {
 
-			// Arrange
-			when(contractMock.getFees()).thenReturn(feesMock);
-			when(feesMock.getYearly()).thenReturn(BigDecimal.valueOf(1000));
-			when(contractMock.getInvoicing()).thenReturn(invoicingMock);
-			when(invoicingMock.getInvoiceInterval()).thenReturn(intervalType);
-			when(invoicingMock.getInvoicedIn()).thenReturn(ADVANCE);
-			when(contractMock.getContractId()).thenReturn(CONTRACT_ID);
+		// Arrange
+		when(contractMock.getFees()).thenReturn(feesMock);
+		when(feesMock.getYearly()).thenReturn(BigDecimal.valueOf(1000));
+		when(contractMock.getInvoicing()).thenReturn(invoicingMock);
+		when(invoicingMock.getInvoiceInterval()).thenReturn(intervalType);
+		when(invoicingMock.getInvoicedIn()).thenReturn(ADVANCE);
+		when(contractMock.getContractId()).thenReturn(CONTRACT_ID);
 
-			// Act
-			var result = mapper.createBillingRecord(MUNICIPALITY_ID, contractMock);
+		// Act
+		var result = mapper.createBillingRecord(MUNICIPALITY_ID, contractMock, scheduledDate);
 
-			// Assert
-			var invoiceRow = result.getInvoice().getInvoiceRows().getFirst();
-			assertThat(invoiceRow.getDetailedDescriptions()).contains(expectedDescription);
+		// Assert
+		var invoiceRow = result.getInvoice().getInvoiceRows().getFirst();
+		assertThat(invoiceRow.getDetailedDescriptions()).contains(expectedDescription);
 
-			// Verify
-			verify(settingsProviderMock).isLeaseTypeSettingsPresent(contractMock);
-			verify(settingsProviderMock).getVatCode(contractMock);
-		}
+		// Verify
+		verify(settingsProviderMock).isLeaseTypeSettingsPresent(contractMock);
+		verify(settingsProviderMock).getVatCode(contractMock);
+
 	}
 
 	private static Stream<Arguments> descriptionArgumentProvider() {
 		return Stream.of(
 			// YEARLY
-			Arguments.of(YearMonth.of(2026, 3), IntervalType.YEARLY, "Avser januari-december 2027"),
+			Arguments.of(LocalDate.of(2026, 3, 1), IntervalType.YEARLY, "Avser januari-december 2027"),
+			Arguments.of(LocalDate.of(2026, 6, 1), IntervalType.YEARLY, "Avser juli 2026-juni 2027"),
 			// QUARTERLY
-			Arguments.of(YearMonth.of(2026, 1), IntervalType.QUARTERLY, "Avser april-juni 2026"),
-			Arguments.of(YearMonth.of(2026, 4), IntervalType.QUARTERLY, "Avser juli-september 2026"),
-			Arguments.of(YearMonth.of(2026, 7), IntervalType.QUARTERLY, "Avser oktober-december 2026"),
-			Arguments.of(YearMonth.of(2026, 10), IntervalType.QUARTERLY, "Avser januari-mars 2027"),
+			Arguments.of(LocalDate.of(2026, 1, 1), IntervalType.QUARTERLY, "Avser april-juni 2026"),
+			Arguments.of(LocalDate.of(2026, 4, 1), IntervalType.QUARTERLY, "Avser juli-september 2026"),
+			Arguments.of(LocalDate.of(2026, 7, 1), IntervalType.QUARTERLY, "Avser oktober-december 2026"),
+			Arguments.of(LocalDate.of(2026, 10, 1), IntervalType.QUARTERLY, "Avser januari-mars 2027"),
 			// HALF_YEARLY
-			Arguments.of(YearMonth.of(2026, 3), IntervalType.HALF_YEARLY, "Avser juli-december 2026"),
-			Arguments.of(YearMonth.of(2026, 7), IntervalType.HALF_YEARLY, "Avser januari-juni 2027"));
+			Arguments.of(LocalDate.of(2026, 3, 1), IntervalType.HALF_YEARLY, "Avser juli-december 2026"),
+			Arguments.of(LocalDate.of(2026, 7, 1), IntervalType.HALF_YEARLY, "Avser januari-juni 2027"));
 	}
 
 	private static Stakeholder generateStakeholder() {
