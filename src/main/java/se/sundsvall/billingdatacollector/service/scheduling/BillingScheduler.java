@@ -1,5 +1,6 @@
 package se.sundsvall.billingdatacollector.service.scheduling;
 
+import java.time.OffsetDateTime;
 import java.util.Map;
 import java.util.function.Consumer;
 import org.slf4j.Logger;
@@ -43,6 +44,7 @@ public class BillingScheduler {
 					var billingHandler = billingSourceHandlerMap.get(scheduledBillingEntity.getSource().name().toLowerCase());
 					if (billingHandler != null) {
 						billingHandler.sendBillingRecords(scheduledBillingEntity.getMunicipalityId(), scheduledBillingEntity.getExternalId(), scheduledBillingEntity.getNextScheduledBilling(), billingSetUnHealthyConsumer);
+						scheduledBillingEntity.setLastBilled(OffsetDateTime.now());
 						scheduledBillingService.updateNextScheduledBilling(scheduledBillingEntity);
 					} else {
 						LOG.error("Skipping scheduled billing since no handler exists. municipalityId '{}', source: '{}', externalId: '{}'",
