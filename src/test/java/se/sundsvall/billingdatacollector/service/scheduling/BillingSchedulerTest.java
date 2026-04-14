@@ -1,6 +1,8 @@
 package se.sundsvall.billingdatacollector.service.scheduling;
 
 import java.time.LocalDate;
+import java.time.OffsetDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -17,6 +19,8 @@ import se.sundsvall.billingdatacollector.service.ScheduledBillingService;
 import se.sundsvall.billingdatacollector.service.source.BillingSourceHandler;
 import se.sundsvall.dept44.scheduling.health.Dept44HealthUtility;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.within;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doNothing;
@@ -66,6 +70,7 @@ class BillingSchedulerTest {
 		billingScheduler.createBillingRecords();
 
 		// Assert
+		assertThat(entity.getLastBilled()).isCloseTo(OffsetDateTime.now(), within(2, ChronoUnit.SECONDS));
 		verify(mockScheduledBillingService).getDueScheduledBillings();
 		verify(mockContractHandler).sendBillingRecords(eq(MUNICIPALITY_ID), eq(EXTERNAL_ID), eq(NEXT_SCHEDULED_BILLING), any());
 		verify(mockScheduledBillingService).updateNextScheduledBilling(entity);
@@ -103,6 +108,7 @@ class BillingSchedulerTest {
 		billingScheduler.createBillingRecords();
 
 		// Assert
+		assertThat(entity.getLastBilled()).isNull();
 		verify(mockScheduledBillingService).getDueScheduledBillings();
 		verify(mockContractHandler).sendBillingRecords(eq(MUNICIPALITY_ID), eq(EXTERNAL_ID), eq(NEXT_SCHEDULED_BILLING), any());
 		verify(mockDept44HealthUtility).setHealthIndicatorUnhealthy(eq(JOB_NAME), any(String.class));
