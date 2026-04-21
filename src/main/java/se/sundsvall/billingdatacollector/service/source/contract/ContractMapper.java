@@ -10,6 +10,7 @@ import generated.se.sundsvall.contract.Address;
 import generated.se.sundsvall.contract.Contract;
 import generated.se.sundsvall.contract.Fees;
 import generated.se.sundsvall.contract.IntervalType;
+import generated.se.sundsvall.contract.InvoicedIn;
 import generated.se.sundsvall.contract.Invoicing;
 import generated.se.sundsvall.contract.PropertyDesignation;
 import generated.se.sundsvall.contract.Stakeholder;
@@ -112,7 +113,6 @@ public class ContractMapper {
 			.addInvoiceRowsItem(mapInvoiceRow(municipalityId, contract, scheduledDate))
 			.dueDate(YearMonth.now().atEndOfMonth())
 			.description(ofNullable(contract.getInvoicing())
-				.filter(invoicing -> Objects.equals(ADVANCE, invoicing.getInvoicedIn()))
 				.map(Invoicing::getInvoiceInterval)
 				.map(IntervalType::getValue)
 				.orElse(null));
@@ -226,43 +226,74 @@ public class ContractMapper {
 
 	private String getInvoiceDescription(Contract contract, LocalDate scheduledDate) {
 		return ofNullable(contract.getInvoicing())
-			.filter(invoicing -> Objects.equals(ADVANCE, invoicing.getInvoicedIn()))
-			.map(Invoicing::getInvoiceInterval)
-			.map(intervalType -> getDescription(intervalType, scheduledDate))
+			.map(invoicing -> getDescription(invoicing, scheduledDate))
 			.orElse(null);
 	}
 
-	private String getDescription(IntervalType invoiceInterval, LocalDate scheduledDate) {
+	private String getDescription(Invoicing invoicing, LocalDate scheduledDate) {
+
+		return switch (invoicing.getInvoiceInterval()) {
+			case YEARLY -> getYearlyDescription(invoicing.getInvoicedIn(), scheduledDate);
+			case QUARTERLY -> getQuarterlyDescription(invoicing.getInvoicedIn(), scheduledDate);
+			case HALF_YEARLY -> getHalfYearlyDescription(invoicing.getInvoicedIn(), scheduledDate);
+			case null, default -> null;
+		};
+	}
+
+	private String getYearlyDescription(InvoicedIn invoicedIn, LocalDate scheduledDate) {
 		final var scheduledMonth = scheduledDate.getMonthValue();
-		switch (invoiceInterval) {
-			case YEARLY -> {
-				if (scheduledMonth == JUNE.getValue()) {
-					return String.format(YEARLY_SPLIT_DESCRIPTION, scheduledDate.getYear(), scheduledDate.plusYears(1).getYear());
-				} else {
-					return String.format(YEARLY_DESCRIPTION, scheduledDate.plusYears(1).getYear());
-				}
+
+		if (scheduledMonth == JUNE.getValue()) {
+			if (ADVANCE.equals(invoicedIn)) {
+				return String.format(YEARLY_SPLIT_DESCRIPTION, scheduledDate.getYear(), scheduledDate.plusYears(1).getYear());
 			}
-			case QUARTERLY -> {
-				if (scheduledMonth <= MARCH.getValue()) {
-					return String.format(QUARTERLY_DESCRIPTION_Q2, scheduledDate.getYear());
-				} else if (scheduledMonth <= JUNE.getValue()) {
-					return String.format(QUARTERLY_DESCRIPTION_Q3, scheduledDate.getYear());
-				} else if (scheduledMonth <= SEPTEMBER.getValue()) {
-					return String.format(QUARTERLY_DESCRIPTION_Q4, scheduledDate.getYear());
-				} else {
-					return String.format(QUARTERLY_DESCRIPTION_Q1, scheduledDate.plusYears(1).getYear());
-				}
+			return String.format(YEARLY_SPLIT_DESCRIPTION, scheduledDate.minusYears(1).getYear(), scheduledDate.getYear());
+		} else {
+			if (ADVANCE.equals(invoicedIn)) {
+				return String.format(YEARLY_DESCRIPTION, scheduledDate.plusYears(1).getYear());
 			}
-			case HALF_YEARLY -> {
-				if (scheduledMonth <= JUNE.getValue()) {
-					return String.format(HALF_YEARLY_DESCRIPTION_2, scheduledDate.getYear());
-				} else {
-					return String.format(HALF_YEARLY_DESCRIPTION_1, scheduledDate.plusYears(1).getYear());
-				}
+			return String.format(YEARLY_DESCRIPTION, scheduledDate.getYear());
+		}
+	}
+
+	private String getQuarterlyDescription(InvoicedIn invoicedIn, LocalDate scheduledDate) {
+		final var scheduledMonth = scheduledDate.getMonthValue();
+
+		if (scheduledMonth <= MARCH.getValue()) {
+			if (ADVANCE.equals(invoicedIn)) {
+				return String.format(QUARTERLY_DESCRIPTION_Q2, scheduledDate.getYear());
 			}
-			default -> {
-				return null;
+			return String.format(QUARTERLY_DESCRIPTION_Q1, scheduledDate.getYear());
+		} else if (scheduledMonth <= JUNE.getValue()) {
+			if (ADVANCE.equals(invoicedIn)) {
+				return String.format(QUARTERLY_DESCRIPTION_Q3, scheduledDate.getYear());
 			}
+			return String.format(QUARTERLY_DESCRIPTION_Q2, scheduledDate.getYear());
+		} else if (scheduledMonth <= SEPTEMBER.getValue()) {
+			if (ADVANCE.equals(invoicedIn)) {
+				return String.format(QUARTERLY_DESCRIPTION_Q4, scheduledDate.getYear());
+			}
+			return String.format(QUARTERLY_DESCRIPTION_Q3, scheduledDate.getYear());
+		} else {
+			if (ADVANCE.equals(invoicedIn)) {
+				return String.format(QUARTERLY_DESCRIPTION_Q1, scheduledDate.plusYears(1).getYear());
+			}
+			return String.format(QUARTERLY_DESCRIPTION_Q4, scheduledDate.getYear());
+		}
+	}
+
+	private String getHalfYearlyDescription(InvoicedIn invoicedIn, LocalDate scheduledDate) {
+		final var scheduledMonth = scheduledDate.getMonthValue();
+		if (scheduledMonth <= JUNE.getValue()) {
+			if (ADVANCE.equals(invoicedIn)) {
+				return String.format(HALF_YEARLY_DESCRIPTION_2, scheduledDate.getYear());
+			}
+			return String.format(HALF_YEARLY_DESCRIPTION_1, scheduledDate.getYear());
+		} else {
+			if (ADVANCE.equals(invoicedIn)) {
+				return String.format(HALF_YEARLY_DESCRIPTION_1, scheduledDate.plusYears(1).getYear());
+			}
+			return String.format(HALF_YEARLY_DESCRIPTION_2, scheduledDate.getYear());
 		}
 	}
 }
