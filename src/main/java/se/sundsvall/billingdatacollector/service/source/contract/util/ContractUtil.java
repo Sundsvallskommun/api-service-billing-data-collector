@@ -83,7 +83,6 @@ public final class ContractUtil {
 		return ofNullable(contract.getInvoicing())
 			.filter(invoicing -> Objects.equals(ADVANCE, invoicing.getInvoicedIn()))
 			.map(Invoicing::getInvoiceInterval)
-			.filter(Objects::nonNull)
 			.map(Interval::getByIntervalType)
 			.map(Interval::getAccrualKey)
 			.orElse(null);
@@ -93,7 +92,6 @@ public final class ContractUtil {
 		return ofNullable(contract)
 			.map(c -> ofNullable(c.getInvoicing())
 				.map(Invoicing::getInvoiceInterval)
-				.filter(Objects::nonNull)
 				.map(Interval::getByIntervalType)
 				.map(Interval::getSplitFactor)
 				.orElseThrow(() -> Problem.valueOf(NOT_FOUND, "Contract %s is missing crucial information for calculating split factor".formatted(contract.getContractId()))))
