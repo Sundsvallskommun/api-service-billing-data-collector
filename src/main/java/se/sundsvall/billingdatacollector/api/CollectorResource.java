@@ -28,8 +28,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import se.sundsvall.billingdatacollector.api.model.BillingSource;
+import se.sundsvall.billingdatacollector.api.model.ContractEventRequest;
 import se.sundsvall.billingdatacollector.api.model.ScheduledBilling;
 import se.sundsvall.billingdatacollector.service.CollectorService;
+import se.sundsvall.billingdatacollector.service.ContractEventService;
 import se.sundsvall.billingdatacollector.service.ScheduledBillingService;
 import se.sundsvall.dept44.common.validators.annotation.ValidMunicipalityId;
 import se.sundsvall.dept44.problem.Problem;
@@ -74,10 +76,12 @@ class CollectorResource {
 
 	private final CollectorService collectorService;
 	private final ScheduledBillingService scheduledBillingService;
+	private final ContractEventService contractEventService;
 
-	CollectorResource(CollectorService collectorService, ScheduledBillingService scheduledBillingService) {
+	CollectorResource(CollectorService collectorService, ScheduledBillingService scheduledBillingService, ContractEventService contractEventService) {
 		this.collectorService = collectorService;
 		this.scheduledBillingService = scheduledBillingService;
+		this.contractEventService = contractEventService;
 	}
 
 	@Operation(
@@ -188,6 +192,18 @@ class CollectorResource {
 		@Parameter(name = "source", description = "Source system where data is collected", example = "CONTRACT") @PathVariable("source") final BillingSource source,
 		@Parameter(name = "externalId", description = "externalId of scheduled billing", example = "b82bd8ac-1507-4d9a-958d-369261eecc14") @PathVariable final String externalId) {
 		return ok(scheduledBillingService.getByExternalId(municipalityId, source, externalId));
+	}
+
+	@PostMapping(path = "/{source}/events", consumes = APPLICATION_JSON_VALUE, produces = ALL_VALUE)
+	@Operation(summary = "Handle events from external services", responses = {
+		@ApiResponse(responseCode = "204", description = "No Content")
+	})
+	ResponseEntity<Void> contractEvent(
+		@Parameter(name = "municipalityId", description = "Municipality id", example = "2281") @ValidMunicipalityId @PathVariable final String municipalityId,
+		@Parameter(name = "source", description = "Source system sending the event", example = "CONTRACTS") @PathVariable final String source,
+		@NotNull @RequestBody final ContractEventRequest request) {
+		contractEventService.handleEvent(municipalityId, request);
+		return noContent().build();
 	}
 
 	// Validate that the end date is after, or equal to, the start date

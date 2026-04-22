@@ -3,6 +3,7 @@ package se.sundsvall.billingdatacollector.service;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
@@ -140,6 +141,60 @@ public class ScheduledBillingService {
 				.withDetail("No scheduled billing found with externalId: " + externalId +
 					" and source: " + source)
 				.build());
+	}
+
+	public void upsertByContractId(String municipalityId, String contractId, Set<Integer> billingMonths, Set<Integer> billingDaysOfMonth) {
+		LOG.info("Upserting scheduled billing for municipalityId: {} contractId: {}",
+			sanitizeForLogging(municipalityId), sanitizeForLogging(contractId));
+
+		var nextBilling = calculateNextScheduledBilling(billingDaysOfMonth, billingMonths);
+
+		repository.findByMunicipalityIdAndExternalIdAndSource(municipalityId, contractId, BillingSource.CONTRACT)
+			.ifPresentOrElse(
+				existing -> {
+					existing.setBillingMonths(billingMonths);
+					existing.setBillingDaysOfMonth(billingDaysOfMonth);
+					existing.setNextScheduledBilling(nextBilling);
+					repository.saveAndFlush(existing);
+				},
+				() -> repository.saveAndFlush(ScheduledBillingEntity.builder()
+					.withMunicipalityId(municipalityId)
+					.withExternalId(contractId)
+					.withSource(BillingSource.CONTRACT)
+					.withBillingMonths(billingMonths)
+					.withBillingDaysOfMonth(billingDaysOfMonth)
+					.withNextScheduledBilling(nextBilling)
+					.build()));
+	}
+
+	public Optional<LocalDate> getNextScheduledBillingByContractId(String municipalityId, String contractId) {
+		return repository.findByMunicipalityIdAndExternalIdAndSource(municipalityId, contractId, BillingSource.CONTRACT)
+			.map(ScheduledBillingEntity::getNextScheduledBilling);
+	}
+
+	public void updateFinalBillingDate(String municipalityId, String contractId, LocalDate finalBillingDate) {
+		LOG.info("Updating finalBillingDate to {} for municipalityId: {} contractId: {}",
+			finalBillingDate, sanitizeForLogging(municipalityId), sanitizeForLogging(contractId));
+
+		repository.findByMunicipalityIdAndExternalIdAndSource(municipalityId, contractId, BillingSource.CONTRACT)
+			.ifPresent(entity -> {
+				entity.setFinalBillingDate(finalBillingDate);
+				repository.saveAndFlush(entity);
+			});
+	}
+
+	public void deleteScheduledBillingEntity(ScheduledBillingEntity entity) {
+		LOG.info("Deleting final scheduled billing for municipalityId: {} externalId: {}",
+			sanitizeForLogging(entity.getMunicipalityId()), sanitizeForLogging(entity.getExternalId()));
+		repository.delete(entity);
+	}
+
+	public void deleteByContractId(String municipalityId, String contractId) {
+		LOG.info("Deleting scheduled billing for municipalityId: {} contractId: {}",
+			sanitizeForLogging(municipalityId), sanitizeForLogging(contractId));
+
+		repository.findByMunicipalityIdAndExternalIdAndSource(municipalityId, contractId, BillingSource.CONTRACT)
+			.ifPresent(repository::delete);
 	}
 
 	public List<ScheduledBillingEntity> getDueScheduledBillings() {

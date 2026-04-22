@@ -1,0 +1,93 @@
+@startuml billing-solution
+
+!theme plain
+skinparam backgroundColor #FAFAFA
+skinparam defaultFontName Arial
+skinparam defaultFontSize 13
+skinparam ArrowColor #555555
+skinparam ArrowThickness 1.5
+
+skinparam component {
+  BackgroundColor #EEEDFE
+  BorderColor #534AB7
+  FontColor #3C3489
+}
+
+skinparam database {
+  BackgroundColor #E6F1FB
+  BorderColor #185FA5
+  FontColor #0C447C
+}
+
+title billing-data-collector — Kontraktsbaserad fakturering
+
+package "billing-data-collector" #EEEDFE {
+
+  component "CollectorResource\nPOST /{municipalityId}/{source}/events" as controller
+  component "ContractEventService" as eventService
+  component "ScheduledBillingService" as scheduledService
+  component "BillingScheduler\n(cron var 2:e timme)" as scheduler
+  component "ContractBillingHandler" as billingHandler
+
+  controller    --> eventService      : handleEvent(municipalityId, request)
+  eventService  --> scheduledService  : upsertByContractId()\nupdateFinalBillingDate()\ndeleteByContractId()
+  scheduler     --> scheduledService  : getDueScheduledBillings()
+  scheduler     --> billingHandler    : sendBillingRecords()
+  scheduler     --> scheduledService  : updateNextScheduledBilling()\ndeleteScheduledBillingEntity()
+}
+
+database "billing DB" as billingDB #E6F1FB {
+  collections "scheduled_billing\n(id, municipality_id, external_id,\nsource, billing_months,\nbilling_days_of_month,\nnext_scheduled_billing,\nfinal_billing_date, last_billed,\npaused)" as scheduledTable
+}
+
+scheduledService --> scheduledTable : SELECT / INSERT / UPDATE / DELETE
+
+interface "POST /{municipalityId}/{source}/events\n{id, municipalityId, eventType}" as inbound
+
+inbound --> controller
+
+component "ContractIntegration\nGET /{municipalityId}/contracts/{id}" as contractClient
+component "BillingPreprocessorClient" as bppClient
+component "RelationClient" as relationClient
+
+eventService    --> contractClient  : getContract()\n(CREATED / UPDATED / TERMINATED)
+billingHandler  --> contractClient  : getContract()
+billingHandler  --> bppClient       : createBillingRecord()
+billingHandler  --> relationClient  : createRelation()
+
+note left of inbound
+  Anropas av contract-service
+  via outbox-mönster.
+  Retry var 5:e minut i max 1 timme
+  vid non-2xx svar.
+end note
+
+note right of scheduledTable
+  next_scheduled_billing: nästa kördag
+  final_billing_date: sista faktura,
+    sätts vid endDate-logik
+    (ADVANCE/ARREARS + endDate
+    vs nextScheduledBilling)
+  Unik per (external_id,
+    municipality_id, source)
+end note
+
+note bottom of scheduler
+  Hämtar rader där
+  next_scheduled_billing <= idag
+  och paused = false.
+  Efter fakturering:
+  - final_billing_date satt → radera rad
+  - annars → räkna fram nästa datum
+end note
+
+note right of eventService
+  CONTRACT_CREATED/UPDATED:
+    hämtar kontrakt → upsert
+  CONTRACT_DELETED:
+    radera direkt (kontrakt borta)
+  CONTRACT_TERMINATED:
+    hämtar kontrakt → endDate-logik
+end note
+
+@enduml

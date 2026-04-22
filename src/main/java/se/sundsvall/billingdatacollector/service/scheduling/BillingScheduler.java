@@ -45,7 +45,11 @@ public class BillingScheduler {
 					if (billingHandler != null) {
 						billingHandler.sendBillingRecords(scheduledBillingEntity.getMunicipalityId(), scheduledBillingEntity.getExternalId(), scheduledBillingEntity.getNextScheduledBilling(), billingSetUnHealthyConsumer);
 						scheduledBillingEntity.setLastBilled(OffsetDateTime.now());
-						scheduledBillingService.updateNextScheduledBilling(scheduledBillingEntity);
+						if (scheduledBillingEntity.getFinalBillingDate() != null) {
+							scheduledBillingService.deleteScheduledBillingEntity(scheduledBillingEntity);
+						} else {
+							scheduledBillingService.updateNextScheduledBilling(scheduledBillingEntity);
+						}
 					} else {
 						LOG.error("Skipping scheduled billing since no handler exists. municipalityId '{}', source: '{}', externalId: '{}'",
 							scheduledBillingEntity.getMunicipalityId(),

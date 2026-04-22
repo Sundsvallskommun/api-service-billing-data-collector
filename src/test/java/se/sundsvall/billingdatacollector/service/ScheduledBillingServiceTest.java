@@ -342,6 +342,192 @@ class ScheduledBillingServiceTest {
 		verifyNoMoreInteractions(mockRepository);
 	}
 
+	// ========== upsertByContractId ==========
+
+	@Test
+	void testUpsertByContractId_whenExisting_shouldUpdate() {
+		// Arrange
+		var billingMonths = Set.of(3, 6, 9, 12);
+		var billingDaysOfMonth = Set.of(1);
+		var existingEntity = createScheduledBillingEntity();
+
+		when(mockRepository.findByMunicipalityIdAndExternalIdAndSource(MUNICIPALITY_ID, EXTERNAL_ID, BillingSource.CONTRACT))
+			.thenReturn(Optional.of(existingEntity));
+		when(mockRepository.saveAndFlush(any(ScheduledBillingEntity.class))).thenAnswer(invocation -> invocation.getArgument(0));
+
+		// Act
+		service.upsertByContractId(MUNICIPALITY_ID, EXTERNAL_ID, billingMonths, billingDaysOfMonth);
+
+		// Assert
+		var captor = ArgumentCaptor.forClass(ScheduledBillingEntity.class);
+		verify(mockRepository).saveAndFlush(captor.capture());
+		var saved = captor.getValue();
+
+		assertThat(saved.getId()).isEqualTo(ID);
+		assertThat(saved.getBillingMonths()).isEqualTo(billingMonths);
+		assertThat(saved.getBillingDaysOfMonth()).isEqualTo(billingDaysOfMonth);
+		assertThat(saved.getNextScheduledBilling()).isNotNull();
+
+		verify(mockRepository).findByMunicipalityIdAndExternalIdAndSource(MUNICIPALITY_ID, EXTERNAL_ID, BillingSource.CONTRACT);
+		verifyNoMoreInteractions(mockRepository);
+	}
+
+	@Test
+	void testUpsertByContractId_whenNotExisting_shouldCreate() {
+		// Arrange
+		var billingMonths = Set.of(6, 12);
+		var billingDaysOfMonth = Set.of(1);
+
+		when(mockRepository.findByMunicipalityIdAndExternalIdAndSource(MUNICIPALITY_ID, EXTERNAL_ID, BillingSource.CONTRACT))
+			.thenReturn(Optional.empty());
+		when(mockRepository.saveAndFlush(any(ScheduledBillingEntity.class))).thenAnswer(invocation -> invocation.getArgument(0));
+
+		// Act
+		service.upsertByContractId(MUNICIPALITY_ID, EXTERNAL_ID, billingMonths, billingDaysOfMonth);
+
+		// Assert
+		var captor = ArgumentCaptor.forClass(ScheduledBillingEntity.class);
+		verify(mockRepository).saveAndFlush(captor.capture());
+		var saved = captor.getValue();
+
+		assertThat(saved.getId()).isNull();
+		assertThat(saved.getMunicipalityId()).isEqualTo(MUNICIPALITY_ID);
+		assertThat(saved.getExternalId()).isEqualTo(EXTERNAL_ID);
+		assertThat(saved.getSource()).isEqualTo(BillingSource.CONTRACT);
+		assertThat(saved.getBillingMonths()).isEqualTo(billingMonths);
+		assertThat(saved.getBillingDaysOfMonth()).isEqualTo(billingDaysOfMonth);
+		assertThat(saved.getNextScheduledBilling()).isNotNull();
+
+		verify(mockRepository).findByMunicipalityIdAndExternalIdAndSource(MUNICIPALITY_ID, EXTERNAL_ID, BillingSource.CONTRACT);
+		verifyNoMoreInteractions(mockRepository);
+	}
+
+	// ========== getNextScheduledBillingByContractId ==========
+
+	@Test
+	void testGetNextScheduledBillingByContractId_whenExisting_shouldReturnDate() {
+		var entity = createScheduledBillingEntity();
+
+		when(mockRepository.findByMunicipalityIdAndExternalIdAndSource(MUNICIPALITY_ID, EXTERNAL_ID, BillingSource.CONTRACT))
+			.thenReturn(Optional.of(entity));
+
+		var result = service.getNextScheduledBillingByContractId(MUNICIPALITY_ID, EXTERNAL_ID);
+
+		assertThat(result).isPresent().contains(entity.getNextScheduledBilling());
+		verify(mockRepository).findByMunicipalityIdAndExternalIdAndSource(MUNICIPALITY_ID, EXTERNAL_ID, BillingSource.CONTRACT);
+		verifyNoMoreInteractions(mockRepository);
+	}
+
+	@Test
+	void testGetNextScheduledBillingByContractId_whenNotExisting_shouldReturnEmpty() {
+		when(mockRepository.findByMunicipalityIdAndExternalIdAndSource(MUNICIPALITY_ID, EXTERNAL_ID, BillingSource.CONTRACT))
+			.thenReturn(Optional.empty());
+
+		var result = service.getNextScheduledBillingByContractId(MUNICIPALITY_ID, EXTERNAL_ID);
+
+		assertThat(result).isEmpty();
+		verify(mockRepository).findByMunicipalityIdAndExternalIdAndSource(MUNICIPALITY_ID, EXTERNAL_ID, BillingSource.CONTRACT);
+		verifyNoMoreInteractions(mockRepository);
+	}
+
+	// ========== updateFinalBillingDate ==========
+
+	@Test
+	void testUpdateFinalBillingDate_whenExisting_shouldSave() {
+		var finalDate = LocalDate.of(2026, 6, 30);
+		var entity = createScheduledBillingEntity();
+
+		when(mockRepository.findByMunicipalityIdAndExternalIdAndSource(MUNICIPALITY_ID, EXTERNAL_ID, BillingSource.CONTRACT))
+			.thenReturn(Optional.of(entity));
+		when(mockRepository.saveAndFlush(any(ScheduledBillingEntity.class))).thenAnswer(invocation -> invocation.getArgument(0));
+
+		service.updateFinalBillingDate(MUNICIPALITY_ID, EXTERNAL_ID, finalDate);
+
+		var captor = ArgumentCaptor.forClass(ScheduledBillingEntity.class);
+		verify(mockRepository).saveAndFlush(captor.capture());
+		assertThat(captor.getValue().getFinalBillingDate()).isEqualTo(finalDate);
+
+		verify(mockRepository).findByMunicipalityIdAndExternalIdAndSource(MUNICIPALITY_ID, EXTERNAL_ID, BillingSource.CONTRACT);
+		verifyNoMoreInteractions(mockRepository);
+	}
+
+	@Test
+	void testUpdateFinalBillingDate_clearDate_shouldSaveNull() {
+		var entity = createScheduledBillingEntity();
+		entity.setFinalBillingDate(LocalDate.of(2026, 6, 30));
+
+		when(mockRepository.findByMunicipalityIdAndExternalIdAndSource(MUNICIPALITY_ID, EXTERNAL_ID, BillingSource.CONTRACT))
+			.thenReturn(Optional.of(entity));
+		when(mockRepository.saveAndFlush(any(ScheduledBillingEntity.class))).thenAnswer(invocation -> invocation.getArgument(0));
+
+		service.updateFinalBillingDate(MUNICIPALITY_ID, EXTERNAL_ID, null);
+
+		var captor = ArgumentCaptor.forClass(ScheduledBillingEntity.class);
+		verify(mockRepository).saveAndFlush(captor.capture());
+		assertThat(captor.getValue().getFinalBillingDate()).isNull();
+
+		verify(mockRepository).findByMunicipalityIdAndExternalIdAndSource(MUNICIPALITY_ID, EXTERNAL_ID, BillingSource.CONTRACT);
+		verifyNoMoreInteractions(mockRepository);
+	}
+
+	@Test
+	void testUpdateFinalBillingDate_whenNotExisting_shouldDoNothing() {
+		when(mockRepository.findByMunicipalityIdAndExternalIdAndSource(MUNICIPALITY_ID, EXTERNAL_ID, BillingSource.CONTRACT))
+			.thenReturn(Optional.empty());
+
+		service.updateFinalBillingDate(MUNICIPALITY_ID, EXTERNAL_ID, LocalDate.of(2026, 6, 30));
+
+		verify(mockRepository).findByMunicipalityIdAndExternalIdAndSource(MUNICIPALITY_ID, EXTERNAL_ID, BillingSource.CONTRACT);
+		verify(mockRepository, never()).saveAndFlush(any());
+		verifyNoMoreInteractions(mockRepository);
+	}
+
+	// ========== deleteScheduledBillingEntity ==========
+
+	@Test
+	void testDeleteScheduledBillingEntity_shouldDelete() {
+		var entity = createScheduledBillingEntity();
+
+		service.deleteScheduledBillingEntity(entity);
+
+		verify(mockRepository).delete(entity);
+		verifyNoMoreInteractions(mockRepository);
+	}
+
+	// ========== deleteByContractId ==========
+
+	@Test
+	void testDeleteByContractId_whenExisting_shouldDelete() {
+		// Arrange
+		var entity = createScheduledBillingEntity();
+
+		when(mockRepository.findByMunicipalityIdAndExternalIdAndSource(MUNICIPALITY_ID, EXTERNAL_ID, BillingSource.CONTRACT))
+			.thenReturn(Optional.of(entity));
+
+		// Act
+		service.deleteByContractId(MUNICIPALITY_ID, EXTERNAL_ID);
+
+		// Assert
+		verify(mockRepository).findByMunicipalityIdAndExternalIdAndSource(MUNICIPALITY_ID, EXTERNAL_ID, BillingSource.CONTRACT);
+		verify(mockRepository).delete(entity);
+		verifyNoMoreInteractions(mockRepository);
+	}
+
+	@Test
+	void testDeleteByContractId_whenNotExisting_shouldDoNothing() {
+		// Arrange
+		when(mockRepository.findByMunicipalityIdAndExternalIdAndSource(MUNICIPALITY_ID, EXTERNAL_ID, BillingSource.CONTRACT))
+			.thenReturn(Optional.empty());
+
+		// Act
+		service.deleteByContractId(MUNICIPALITY_ID, EXTERNAL_ID);
+
+		// Assert
+		verify(mockRepository).findByMunicipalityIdAndExternalIdAndSource(MUNICIPALITY_ID, EXTERNAL_ID, BillingSource.CONTRACT);
+		verify(mockRepository, never()).delete(any());
+		verifyNoMoreInteractions(mockRepository);
+	}
+
 	private ScheduledBilling createScheduledBilling() {
 		return ScheduledBilling.builder()
 			.withExternalId(EXTERNAL_ID)
