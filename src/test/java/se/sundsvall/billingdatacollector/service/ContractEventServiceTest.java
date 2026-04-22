@@ -19,7 +19,6 @@ import se.sundsvall.billingdatacollector.api.model.ContractEventRequest;
 import se.sundsvall.billingdatacollector.api.model.ContractEventType;
 import se.sundsvall.billingdatacollector.integration.contract.ContractIntegration;
 
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
@@ -165,9 +164,9 @@ class ContractEventServiceTest {
 		service.handleEvent(MUNICIPALITY_ID, eventRequest(ContractEventType.CONTRACT_CREATED));
 
 		verify(mockScheduledBillingService).upsertByContractId(
-			eq(MUNICIPALITY_ID), eq(CONTRACT_ID),
-			eq(Set.of(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12)),
-			eq(Set.of(1)));
+			MUNICIPALITY_ID, CONTRACT_ID,
+			Set.of(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12),
+			Set.of(1));
 	}
 
 	@Test
@@ -178,9 +177,9 @@ class ContractEventServiceTest {
 		service.handleEvent(MUNICIPALITY_ID, eventRequest(ContractEventType.CONTRACT_CREATED));
 
 		verify(mockScheduledBillingService).upsertByContractId(
-			eq(MUNICIPALITY_ID), eq(CONTRACT_ID),
-			eq(Set.of(3, 6, 9, 12)),
-			eq(Set.of(1)));
+			MUNICIPALITY_ID, CONTRACT_ID,
+			Set.of(3, 6, 9, 12),
+			Set.of(1));
 	}
 
 	@Test
@@ -191,9 +190,9 @@ class ContractEventServiceTest {
 		service.handleEvent(MUNICIPALITY_ID, eventRequest(ContractEventType.CONTRACT_CREATED));
 
 		verify(mockScheduledBillingService).upsertByContractId(
-			eq(MUNICIPALITY_ID), eq(CONTRACT_ID),
-			eq(Set.of(6, 12)),
-			eq(Set.of(1)));
+			MUNICIPALITY_ID, CONTRACT_ID,
+			Set.of(6, 12),
+			Set.of(1));
 	}
 
 	@Test
@@ -204,9 +203,9 @@ class ContractEventServiceTest {
 		service.handleEvent(MUNICIPALITY_ID, eventRequest(ContractEventType.CONTRACT_CREATED));
 
 		verify(mockScheduledBillingService).upsertByContractId(
-			eq(MUNICIPALITY_ID), eq(CONTRACT_ID),
-			eq(Set.of(12)),
-			eq(Set.of(1)));
+			MUNICIPALITY_ID, CONTRACT_ID,
+			Set.of(12),
+			Set.of(1));
 	}
 
 	@Test
@@ -218,9 +217,9 @@ class ContractEventServiceTest {
 		service.handleEvent(MUNICIPALITY_ID, eventRequest(ContractEventType.CONTRACT_CREATED));
 
 		verify(mockScheduledBillingService).upsertByContractId(
-			eq(MUNICIPALITY_ID), eq(CONTRACT_ID),
-			eq(Set.of(6)),
-			eq(Set.of(1)));
+			MUNICIPALITY_ID, CONTRACT_ID,
+			Set.of(6),
+			Set.of(1));
 	}
 
 	@Test
@@ -231,7 +230,7 @@ class ContractEventServiceTest {
 
 		service.handleEvent(MUNICIPALITY_ID, eventRequest(ContractEventType.CONTRACT_CREATED));
 
-		verify(mockScheduledBillingService).upsertByContractId(eq(MUNICIPALITY_ID), eq(CONTRACT_ID), eq(Set.of(12)), eq(Set.of(1)));
+		verify(mockScheduledBillingService).upsertByContractId(MUNICIPALITY_ID, CONTRACT_ID, Set.of(12), Set.of(1));
 	}
 
 	@Test
@@ -242,7 +241,7 @@ class ContractEventServiceTest {
 
 		service.handleEvent(MUNICIPALITY_ID, eventRequest(ContractEventType.CONTRACT_CREATED));
 
-		verify(mockScheduledBillingService).upsertByContractId(eq(MUNICIPALITY_ID), eq(CONTRACT_ID), eq(Set.of(12)), eq(Set.of(1)));
+		verify(mockScheduledBillingService).upsertByContractId(MUNICIPALITY_ID, CONTRACT_ID, Set.of(12), Set.of(1));
 	}
 
 	@Test
@@ -253,7 +252,7 @@ class ContractEventServiceTest {
 
 		service.handleEvent(MUNICIPALITY_ID, eventRequest(ContractEventType.CONTRACT_CREATED));
 
-		verify(mockScheduledBillingService).upsertByContractId(eq(MUNICIPALITY_ID), eq(CONTRACT_ID), eq(Set.of(12)), eq(Set.of(1)));
+		verify(mockScheduledBillingService).upsertByContractId(MUNICIPALITY_ID, CONTRACT_ID, Set.of(12), Set.of(1));
 	}
 
 	// ========== applyEndDateLogic ==========
