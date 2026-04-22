@@ -10,8 +10,12 @@ import generated.se.sundsvall.contract.Status;
 import java.time.LocalDate;
 import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Stream;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -208,51 +212,24 @@ class ContractEventServiceTest {
 			Set.of(1));
 	}
 
-	@Test
-	void handleEvent_yearly_landLeaseResidentialEndOfJune_shouldUseJune() {
-		var contract = buildContract(Status.ACTIVE, IntervalType.YEARLY, null, null, LocalDate.of(2026, 6, 30));
-		contract.setLeaseType(LeaseType.LAND_LEASE_RESIDENTIAL);
+	@ParameterizedTest
+	@MethodSource("yearlyBillingMonthsProvider")
+	void handleEvent_yearly_landLease_shouldCalculateBillingMonths(LeaseType leaseType, LocalDate periodEndDate, Set<Integer> expectedMonths) {
+		var contract = buildContract(Status.ACTIVE, IntervalType.YEARLY, null, null, periodEndDate);
+		contract.setLeaseType(leaseType);
 		when(mockContractIntegration.getContract(MUNICIPALITY_ID, CONTRACT_ID)).thenReturn(Optional.of(contract));
 
 		service.handleEvent(MUNICIPALITY_ID, eventRequest(ContractEventType.CONTRACT_CREATED));
 
-		verify(mockScheduledBillingService).upsertByContractId(
-			MUNICIPALITY_ID, CONTRACT_ID,
-			Set.of(6),
-			Set.of(1));
+		verify(mockScheduledBillingService).upsertByContractId(MUNICIPALITY_ID, CONTRACT_ID, expectedMonths, Set.of(1));
 	}
 
-	@Test
-	void handleEvent_yearly_shouldUseDecemberWhenSpecialCaseDoesNotApply_wrongLeaseType() {
-		var contract = buildContract(Status.ACTIVE, IntervalType.YEARLY, null, null, LocalDate.of(2026, 6, 30));
-		contract.setLeaseType(LeaseType.LAND_LEASE_MISC);
-		when(mockContractIntegration.getContract(MUNICIPALITY_ID, CONTRACT_ID)).thenReturn(Optional.of(contract));
-
-		service.handleEvent(MUNICIPALITY_ID, eventRequest(ContractEventType.CONTRACT_CREATED));
-
-		verify(mockScheduledBillingService).upsertByContractId(MUNICIPALITY_ID, CONTRACT_ID, Set.of(12), Set.of(1));
-	}
-
-	@Test
-	void handleEvent_yearly_shouldUseDecemberWhenSpecialCaseDoesNotApply_wrongMonth() {
-		var contract = buildContract(Status.ACTIVE, IntervalType.YEARLY, null, null, LocalDate.of(2026, 12, 31));
-		contract.setLeaseType(LeaseType.LAND_LEASE_RESIDENTIAL);
-		when(mockContractIntegration.getContract(MUNICIPALITY_ID, CONTRACT_ID)).thenReturn(Optional.of(contract));
-
-		service.handleEvent(MUNICIPALITY_ID, eventRequest(ContractEventType.CONTRACT_CREATED));
-
-		verify(mockScheduledBillingService).upsertByContractId(MUNICIPALITY_ID, CONTRACT_ID, Set.of(12), Set.of(1));
-	}
-
-	@Test
-	void handleEvent_yearly_shouldUseDecemberWhenSpecialCaseDoesNotApply_wrongDay() {
-		var contract = buildContract(Status.ACTIVE, IntervalType.YEARLY, null, null, LocalDate.of(2026, 6, 29));
-		contract.setLeaseType(LeaseType.LAND_LEASE_RESIDENTIAL);
-		when(mockContractIntegration.getContract(MUNICIPALITY_ID, CONTRACT_ID)).thenReturn(Optional.of(contract));
-
-		service.handleEvent(MUNICIPALITY_ID, eventRequest(ContractEventType.CONTRACT_CREATED));
-
-		verify(mockScheduledBillingService).upsertByContractId(MUNICIPALITY_ID, CONTRACT_ID, Set.of(12), Set.of(1));
+	private static Stream<Arguments> yearlyBillingMonthsProvider() {
+		return Stream.of(
+			Arguments.of(LeaseType.LAND_LEASE_RESIDENTIAL, LocalDate.of(2026, 6, 30), Set.of(6)),
+			Arguments.of(LeaseType.LAND_LEASE_MISC, LocalDate.of(2026, 6, 30), Set.of(12)),
+			Arguments.of(LeaseType.LAND_LEASE_RESIDENTIAL, LocalDate.of(2026, 12, 31), Set.of(12)),
+			Arguments.of(LeaseType.LAND_LEASE_RESIDENTIAL, LocalDate.of(2026, 6, 29), Set.of(12)));
 	}
 
 	// ========== applyEndDateLogic ==========
