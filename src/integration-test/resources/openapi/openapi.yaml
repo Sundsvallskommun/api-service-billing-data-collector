@@ -1,17 +1,19 @@
 openapi: 3.1.0
 info:
   title: api-billing-data-collector
-  contact: { }
+  contact: {}
   license:
     name: MIT License
     url: https://opensource.org/licenses/MIT
-  version: "1.1"
+  version: "1.2"
 servers:
-  - url: http://localhost:50164
+  - url: http://localhost:52123
     description: Generated server url
 tags:
   - name: Billing Data Collector
     description: Billing Data Collector resources
+  - name: Counterpart
+    description: Counterpart resources
 paths:
   /{municipalityId}/scheduled-billing/{id}:
     get:
@@ -463,6 +465,67 @@ paths:
             application/problem+json:
               schema:
                 $ref: "#/components/schemas/Problem"
+  /{municipalityId}/counterpart:
+    get:
+      tags:
+        - Counterpart
+      summary: Find counterpart by partyId and stakeholderType
+      operationId: getCounterpart
+      parameters:
+        - name: municipalityId
+          in: path
+          description: Municipality id
+          required: true
+          schema:
+            type: string
+          example: 2281
+        - name: partyId
+          in: query
+          description: Party id
+          required: true
+          schema:
+            type: string
+          example: fb2f0290-3820-11ed-a261-0242ac120002
+        - name: stakeholderType
+          in: query
+          description: Stakeholder type
+          required: false
+          schema:
+            type: string
+          example: PERSON
+      responses:
+        "200":
+          description: Successful
+          content:
+            text/plain:
+              schema:
+                type: string
+        "404":
+          description: Not Found
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Problem"
+        "400":
+          description: Bad Request
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                  - $ref: "#/components/schemas/Problem"
+                  - $ref: "#/components/schemas/ConstraintViolationProblem"
+        "500":
+          description: Internal Server Error
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Problem"
+        "502":
+          description: Bad Gateway
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Problem"
   /api-docs:
     get:
       tags:
@@ -484,16 +547,16 @@ components:
     Problem:
       type: object
       properties:
-        title:
-          type: string
-        detail:
-          type: string
         instance:
           type: string
           format: uri
         type:
           type: string
           format: uri
+        title:
+          type: string
+        detail:
+          type: string
         status:
           type: integer
           format: int32
@@ -581,13 +644,13 @@ components:
             $ref: "#/components/schemas/Violation"
         title:
           type: string
-        causeAsProblem:
-          $ref: "#/components/schemas/ThrowableProblem"
-        detail:
-          type: string
         instance:
           type: string
           format: uri
+        detail:
+          type: string
+        causeAsProblem:
+          $ref: "#/components/schemas/ThrowableProblem"
     ThrowableProblem:
       type: object
       properties:
@@ -604,7 +667,7 @@ components:
         instance:
           type: string
           format: uri
-        causeAsProblem: { }
+        causeAsProblem: {}
     Violation:
       type: object
       properties:
@@ -615,21 +678,10 @@ components:
     PageScheduledBilling:
       type: object
       properties:
-        totalPages:
-          type: integer
-          format: int32
         totalElements:
           type: integer
           format: int64
-        pageable:
-          $ref: "#/components/schemas/PageableObject"
-        sort:
-          $ref: "#/components/schemas/SortObject"
-        first:
-          type: boolean
-        last:
-          type: boolean
-        numberOfElements:
+        totalPages:
           type: integer
           format: int32
         size:
@@ -642,33 +694,44 @@ components:
         number:
           type: integer
           format: int32
+        pageable:
+          $ref: "#/components/schemas/PageableObject"
+        numberOfElements:
+          type: integer
+          format: int32
+        first:
+          type: boolean
+        last:
+          type: boolean
+        sort:
+          $ref: "#/components/schemas/SortObject"
         empty:
           type: boolean
     PageableObject:
       type: object
       properties:
-        paged:
-          type: boolean
-        pageNumber:
+        offset:
+          type: integer
+          format: int64
+        pageSize:
           type: integer
           format: int32
-        pageSize:
+        pageNumber:
           type: integer
           format: int32
         unpaged:
           type: boolean
+        paged:
+          type: boolean
         sort:
           $ref: "#/components/schemas/SortObject"
-        offset:
-          type: integer
-          format: int64
     SortObject:
       type: object
       properties:
-        sorted:
+        empty:
           type: boolean
         unsorted:
           type: boolean
-        empty:
+        sorted:
           type: boolean
-  securitySchemes: { }
+  securitySchemes: {}
