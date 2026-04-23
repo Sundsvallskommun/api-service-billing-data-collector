@@ -10,8 +10,9 @@ import java.util.Set;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
-import se.sundsvall.billingdatacollector.api.model.ContractEventRequest;
+import se.sundsvall.billingdatacollector.api.model.EventRequest;
 import se.sundsvall.billingdatacollector.integration.contract.ContractIntegration;
+import se.sundsvall.billingdatacollector.service.util.ScheduledBillingUtil;
 
 import static se.sundsvall.dept44.util.LogUtils.sanitizeForLogging;
 
@@ -35,7 +36,7 @@ public class ContractEventService {
 		this.contractIntegration = contractIntegration;
 	}
 
-	public void handleEvent(String municipalityId, ContractEventRequest request) {
+	public void handleEvent(String municipalityId, EventRequest request) {
 		LOG.info("Handling {} for contractId: {} municipalityId: {}",
 			request.getEventType(), sanitizeForLogging(request.getId()), sanitizeForLogging(municipalityId));
 
@@ -51,8 +52,9 @@ public class ContractEventService {
 		contractIntegration.getContract(municipalityId, contractId)
 			.ifPresent(contract -> {
 				if (isBillable(contract)) {
+					var billingMonths = calculateBillingMonths(contract);
 					scheduledBillingService.upsertByContractId(municipalityId, contractId,
-						calculateBillingMonths(contract), BILLING_DAYS_OF_MONTH);
+						billingMonths, BILLING_DAYS_OF_MONTH, calculateStartFrom(contract, billingMonths));
 					applyEndDateLogic(municipalityId, contractId, contract);
 				}
 			});
@@ -64,7 +66,7 @@ public class ContractEventService {
 				contract -> {
 					if (isBillable(contract)) {
 						scheduledBillingService.upsertByContractId(municipalityId, contractId,
-							calculateBillingMonths(contract), BILLING_DAYS_OF_MONTH);
+							calculateBillingMonths(contract), BILLING_DAYS_OF_MONTH, LocalDate.now());
 						applyEndDateLogic(municipalityId, contractId, contract);
 					} else {
 						scheduledBillingService.deleteByContractId(municipalityId, contractId);
@@ -119,6 +121,27 @@ public class ContractEventService {
 		} else {
 			scheduledBillingService.deleteByContractId(municipalityId, contractId);
 		}
+	}
+
+	/**
+	 * Calculates the first nextScheduledBilling date based on startDate and invoicing direction.
+	 *
+	 * <ul>
+	 * <li>ADVANCE: first slot on or after startDate (billing precedes the period)</li>
+	 * <li>ARREARS: first slot after the first full period, i.e. the slot after the first ADVANCE slot
+	 * (billing follows the period)</li>
+	 * <li>null invoicedIn: falls back to ADVANCE behavior</li>
+	 * </ul>
+	 */
+	private LocalDate calculateStartFrom(Contract contract, Set<Integer> billingMonths) {
+		var startDate = contract.getStartDate() != null ? contract.getStartDate() : LocalDate.now();
+		var invoicedIn = contract.getInvoicing().getInvoicedIn();
+
+		if (InvoicedIn.ARREARS.equals(invoicedIn)) {
+			var firstAdvanceSlot = ScheduledBillingUtil.calculateNextScheduledBilling(BILLING_DAYS_OF_MONTH, billingMonths, startDate);
+			return ScheduledBillingUtil.calculateNextScheduledBilling(BILLING_DAYS_OF_MONTH, billingMonths, firstAdvanceSlot.plusDays(1));
+		}
+		return startDate;
 	}
 
 	private boolean isBillable(Contract contract) {

@@ -143,11 +143,11 @@ public class ScheduledBillingService {
 				.build());
 	}
 
-	public void upsertByContractId(String municipalityId, String contractId, Set<Integer> billingMonths, Set<Integer> billingDaysOfMonth) {
+	public void upsertByContractId(String municipalityId, String contractId, Set<Integer> billingMonths, Set<Integer> billingDaysOfMonth, LocalDate startFrom) {
 		LOG.info("Upserting scheduled billing for municipalityId: {} contractId: {}",
 			sanitizeForLogging(municipalityId), sanitizeForLogging(contractId));
 
-		var nextBilling = calculateNextScheduledBilling(billingDaysOfMonth, billingMonths);
+		var nextBilling = calculateNextScheduledBilling(billingDaysOfMonth, billingMonths, startFrom);
 
 		repository.findByMunicipalityIdAndExternalIdAndSource(municipalityId, contractId, BillingSource.CONTRACT)
 			.ifPresentOrElse(

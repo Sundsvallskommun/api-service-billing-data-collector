@@ -356,7 +356,8 @@ class ScheduledBillingServiceTest {
 		when(mockRepository.saveAndFlush(any(ScheduledBillingEntity.class))).thenAnswer(invocation -> invocation.getArgument(0));
 
 		// Act
-		service.upsertByContractId(MUNICIPALITY_ID, EXTERNAL_ID, billingMonths, billingDaysOfMonth);
+		var startFrom = LocalDate.of(2025, 1, 1);
+		service.upsertByContractId(MUNICIPALITY_ID, EXTERNAL_ID, billingMonths, billingDaysOfMonth, startFrom);
 
 		// Assert
 		var captor = ArgumentCaptor.forClass(ScheduledBillingEntity.class);
@@ -366,7 +367,7 @@ class ScheduledBillingServiceTest {
 		assertThat(saved.getId()).isEqualTo(ID);
 		assertThat(saved.getBillingMonths()).isEqualTo(billingMonths);
 		assertThat(saved.getBillingDaysOfMonth()).isEqualTo(billingDaysOfMonth);
-		assertThat(saved.getNextScheduledBilling()).isNotNull();
+		assertThat(saved.getNextScheduledBilling()).isNotNull().isAfterOrEqualTo(startFrom);
 
 		verify(mockRepository).findByMunicipalityIdAndExternalIdAndSource(MUNICIPALITY_ID, EXTERNAL_ID, BillingSource.CONTRACT);
 		verifyNoMoreInteractions(mockRepository);
@@ -383,7 +384,8 @@ class ScheduledBillingServiceTest {
 		when(mockRepository.saveAndFlush(any(ScheduledBillingEntity.class))).thenAnswer(invocation -> invocation.getArgument(0));
 
 		// Act
-		service.upsertByContractId(MUNICIPALITY_ID, EXTERNAL_ID, billingMonths, billingDaysOfMonth);
+		var startFrom = LocalDate.of(2025, 1, 1);
+		service.upsertByContractId(MUNICIPALITY_ID, EXTERNAL_ID, billingMonths, billingDaysOfMonth, startFrom);
 
 		// Assert
 		var captor = ArgumentCaptor.forClass(ScheduledBillingEntity.class);
@@ -396,7 +398,7 @@ class ScheduledBillingServiceTest {
 		assertThat(saved.getSource()).isEqualTo(BillingSource.CONTRACT);
 		assertThat(saved.getBillingMonths()).isEqualTo(billingMonths);
 		assertThat(saved.getBillingDaysOfMonth()).isEqualTo(billingDaysOfMonth);
-		assertThat(saved.getNextScheduledBilling()).isNotNull();
+		assertThat(saved.getNextScheduledBilling()).isNotNull().isAfterOrEqualTo(startFrom);
 
 		verify(mockRepository).findByMunicipalityIdAndExternalIdAndSource(MUNICIPALITY_ID, EXTERNAL_ID, BillingSource.CONTRACT);
 		verifyNoMoreInteractions(mockRepository);

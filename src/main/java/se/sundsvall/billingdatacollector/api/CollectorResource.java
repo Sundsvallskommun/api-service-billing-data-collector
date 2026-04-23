@@ -28,7 +28,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import se.sundsvall.billingdatacollector.api.model.BillingSource;
-import se.sundsvall.billingdatacollector.api.model.ContractEventRequest;
+import se.sundsvall.billingdatacollector.api.model.EventRequest;
 import se.sundsvall.billingdatacollector.api.model.ScheduledBilling;
 import se.sundsvall.billingdatacollector.service.CollectorService;
 import se.sundsvall.billingdatacollector.service.ContractEventService;
@@ -198,10 +198,11 @@ class CollectorResource {
 	@Operation(summary = "Handle events from external services", responses = {
 		@ApiResponse(responseCode = "204", description = "No Content")
 	})
-	ResponseEntity<Void> contractEvent(
+	ResponseEntity<Void> handleEvent(
 		@Parameter(name = "municipalityId", description = "Municipality id", example = "2281") @ValidMunicipalityId @PathVariable final String municipalityId,
-		@Parameter(name = "source", description = "Source system sending the event", example = "CONTRACTS") @PathVariable final String source,
-		@NotNull @RequestBody final ContractEventRequest request) {
+		@Parameter(name = "source", description = "Source system sending the event", example = "CONTRACT") @PathVariable final BillingSource source,
+		@NotNull @RequestBody final EventRequest request) {
+		request.setSource(source);
 		contractEventService.handleEvent(municipalityId, request);
 		return noContent().build();
 	}

@@ -25,8 +25,8 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.reactive.server.WebTestClient;
 import se.sundsvall.billingdatacollector.Application;
 import se.sundsvall.billingdatacollector.api.model.BillingSource;
-import se.sundsvall.billingdatacollector.api.model.ContractEventRequest;
 import se.sundsvall.billingdatacollector.api.model.ContractEventType;
+import se.sundsvall.billingdatacollector.api.model.EventRequest;
 import se.sundsvall.billingdatacollector.api.model.ScheduledBilling;
 import se.sundsvall.billingdatacollector.service.CollectorService;
 import se.sundsvall.billingdatacollector.service.ContractEventService;
@@ -417,10 +417,10 @@ class CollectorResourceTest {
 
 	@Test
 	void testContractEvent_shouldReturnNoContent() {
-		var request = createContractEventRequest(ContractEventType.CONTRACT_CREATED);
+		var request = createEventRequest(ContractEventType.CONTRACT_CREATED);
 
 		webTestClient.post()
-			.uri(uriBuilder -> uriBuilder.path("/{municipalityId}/CONTRACTS/events").build(MUNICIPALITY_ID))
+			.uri(uriBuilder -> uriBuilder.path("/{municipalityId}/CONTRACT/events").build(MUNICIPALITY_ID))
 			.contentType(APPLICATION_JSON)
 			.bodyValue(request)
 			.exchange()
@@ -433,9 +433,9 @@ class CollectorResourceTest {
 	@Test
 	void testContractEvent_withInvalidMunicipalityId_shouldReturnBadRequest() {
 		var responseBody = webTestClient.post()
-			.uri(uriBuilder -> uriBuilder.path("/{municipalityId}/CONTRACTS/events").build("invalid"))
+			.uri(uriBuilder -> uriBuilder.path("/{municipalityId}/CONTRACT/events").build("invalid"))
 			.contentType(APPLICATION_JSON)
-			.bodyValue(createContractEventRequest(ContractEventType.CONTRACT_CREATED))
+			.bodyValue(createEventRequest(ContractEventType.CONTRACT_CREATED))
 			.exchange()
 			.expectStatus().isBadRequest()
 			.expectHeader().contentType(APPLICATION_PROBLEM_JSON)
@@ -446,7 +446,7 @@ class CollectorResourceTest {
 		assertThat(responseBody).isNotNull();
 		assertThat(responseBody.getViolations())
 			.extracting(Violation::field, Violation::message)
-			.containsExactlyInAnyOrder(tuple("contractEvent.municipalityId", "not a valid municipality ID"));
+			.containsExactlyInAnyOrder(tuple("handleEvent.municipalityId", "not a valid municipality ID"));
 
 		verifyNoInteractions(mockContractEventService);
 	}
@@ -503,8 +503,9 @@ class CollectorResourceTest {
 			Arguments.of("GET", "/{municipalityId}/scheduled-billing/external/{source}/{externalId}", false, "getScheduledBillingExternalId.municipalityId", Map.of("source", "CONTRACT", "externalId", "some-external-id")));
 	}
 
-	private ContractEventRequest createContractEventRequest(ContractEventType eventType) {
-		return ContractEventRequest.builder()
+	private EventRequest createEventRequest(ContractEventType eventType) {
+		return EventRequest.builder()
+			.withSource(BillingSource.CONTRACT)
 			.withId("2026-00001")
 			.withMunicipalityId(MUNICIPALITY_ID)
 			.withEventType(eventType)

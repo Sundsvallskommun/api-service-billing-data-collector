@@ -7,13 +7,13 @@ info:
     url: https://opensource.org/licenses/MIT
   version: "1.2"
 servers:
-  - url: http://localhost:52123
-    description: Generated server url
+- url: http://localhost:64009
+  description: Generated server url
 tags:
 - name: Billing Data Collector
   description: Billing Data Collector resources
-  - name: Counterpart
-    description: Counterpart resources
+- name: Counterpart
+  description: Counterpart resources
 paths:
   /{municipalityId}/scheduled-billing/{id}:
     get:
@@ -182,7 +182,7 @@ paths:
       tags:
       - Billing Data Collector
       summary: Handle events from external services
-      operationId: contractEvent
+      operationId: handleEvent
       parameters:
       - name: municipalityId
         in: path
@@ -197,12 +197,15 @@ paths:
         required: true
         schema:
           type: string
-        example: CONTRACTS
+          enum:
+          - CONTRACT
+          - OPENE
+        example: CONTRACT
       requestBody:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/ContractEventRequest"
+              $ref: "#/components/schemas/EventRequest"
         required: true
       responses:
         "204":
@@ -501,8 +504,8 @@ paths:
             application/problem+json:
               schema:
                 oneOf:
-                  - $ref: "#/components/schemas/Problem"
-                  - $ref: "#/components/schemas/ConstraintViolationProblem"
+                - $ref: "#/components/schemas/Problem"
+                - $ref: "#/components/schemas/ConstraintViolationProblem"
         "500":
           description: Internal Server Error
           content:
@@ -518,31 +521,31 @@ paths:
   /{municipalityId}/counterpart:
     get:
       tags:
-        - Counterpart
+      - Counterpart
       summary: Find counterpart by partyId and stakeholderType
       operationId: getCounterpart
       parameters:
-        - name: municipalityId
-          in: path
-          description: Municipality id
-          required: true
-          schema:
-            type: string
-          example: 2281
-        - name: partyId
-          in: query
-          description: Party id
-          required: true
-          schema:
-            type: string
-          example: fb2f0290-3820-11ed-a261-0242ac120002
-        - name: stakeholderType
-          in: query
-          description: Stakeholder type
-          required: false
-          schema:
-            type: string
-          example: PERSON
+      - name: municipalityId
+        in: path
+        description: Municipality id
+        required: true
+        schema:
+          type: string
+        example: 2281
+      - name: partyId
+        in: query
+        description: Party id
+        required: true
+        schema:
+          type: string
+        example: fb2f0290-3820-11ed-a261-0242ac120002
+      - name: stakeholderType
+        in: query
+        description: Stakeholder type
+        required: false
+        schema:
+          type: string
+        example: PERSON
       responses:
         "200":
           description: Successful
@@ -597,16 +600,16 @@ components:
     Problem:
       type: object
       properties:
+        title:
+          type: string
+        detail:
+          type: string
         instance:
           type: string
           format: uri
         type:
           type: string
           format: uri
-        title:
-          type: string
-        detail:
-          type: string
         status:
           type: integer
           format: int32
@@ -701,13 +704,13 @@ components:
             $ref: "#/components/schemas/Violation"
         title:
           type: string
-        instance:
-          type: string
-          format: uri
         detail:
           type: string
         causeAsProblem:
           $ref: "#/components/schemas/ThrowableProblem"
+        instance:
+          type: string
+          format: uri
     ThrowableProblem:
       type: object
       properties:
@@ -732,13 +735,20 @@ components:
           type: string
         message:
           type: string
-    ContractEventRequest:
+    EventRequest:
       type: object
-      description: Contract event from contract service
+      description: Billing source event
       properties:
+        source:
+          type: string
+          description: Source system
+          enum:
+          - CONTRACT
+          - OPENE
+          example: CONTRACT
         id:
           type: string
-          description: Contract id
+          description: External id
           example: 2026-00001
         municipalityId:
           type: string
@@ -756,20 +766,23 @@ components:
     PageScheduledBilling:
       type: object
       properties:
+        totalPages:
+          type: integer
+          format: int32
         totalElements:
           type: integer
           format: int64
-        pageable:
-          $ref: "#/components/schemas/PageableObject"
-        sort:
-          $ref: "#/components/schemas/SortObject"
         first:
           type: boolean
         last:
           type: boolean
+        sort:
+          $ref: "#/components/schemas/SortObject"
         numberOfElements:
           type: integer
           format: int32
+        pageable:
+          $ref: "#/components/schemas/PageableObject"
         size:
           type: integer
           format: int32
@@ -780,44 +793,33 @@ components:
         number:
           type: integer
           format: int32
-        pageable:
-          $ref: "#/components/schemas/PageableObject"
-        numberOfElements:
-          type: integer
-          format: int32
-        first:
-          type: boolean
-        last:
-          type: boolean
-        sort:
-          $ref: "#/components/schemas/SortObject"
         empty:
           type: boolean
     PageableObject:
       type: object
       properties:
-        offset:
-          type: integer
-          format: int64
-        pageSize:
+        sort:
+          $ref: "#/components/schemas/SortObject"
+        paged:
+          type: boolean
+        pageNumber:
           type: integer
           format: int32
-        pageNumber:
+        pageSize:
           type: integer
           format: int32
         unpaged:
           type: boolean
-        paged:
-          type: boolean
-        sort:
-          $ref: "#/components/schemas/SortObject"
+        offset:
+          type: integer
+          format: int64
     SortObject:
       type: object
       properties:
-        empty:
+        sorted:
           type: boolean
         unsorted:
           type: boolean
-        sorted:
+        empty:
           type: boolean
   securitySchemes: {}

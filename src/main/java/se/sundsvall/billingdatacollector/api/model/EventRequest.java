@@ -6,14 +6,17 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-@Schema(description = "Contract event from contract service")
+@Schema(description = "Billing source event")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder(setterPrefix = "with")
-public class ContractEventRequest {
+public class EventRequest {
 
-	@Schema(description = "Contract id", example = "2026-00001")
+	@Schema(description = "Source system", example = "CONTRACT")
+	private BillingSource source;
+
+	@Schema(description = "External id", example = "2026-00001")
 	private String id;
 
 	@Schema(description = "Municipality id", example = "2281")
