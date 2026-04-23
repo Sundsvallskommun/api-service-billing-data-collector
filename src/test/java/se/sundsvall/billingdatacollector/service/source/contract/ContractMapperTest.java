@@ -4,6 +4,7 @@ import generated.se.sundsvall.contract.Address;
 import generated.se.sundsvall.contract.Contract;
 import generated.se.sundsvall.contract.Fees;
 import generated.se.sundsvall.contract.IntervalType;
+import generated.se.sundsvall.contract.InvoicedIn;
 import generated.se.sundsvall.contract.Invoicing;
 import generated.se.sundsvall.contract.PropertyDesignation;
 import generated.se.sundsvall.contract.Stakeholder;
@@ -32,6 +33,7 @@ import se.sundsvall.dept44.problem.ThrowableProblem;
 import static generated.se.sundsvall.billingpreprocessor.Status.APPROVED;
 import static generated.se.sundsvall.billingpreprocessor.Type.EXTERNAL;
 import static generated.se.sundsvall.contract.InvoicedIn.ADVANCE;
+import static generated.se.sundsvall.contract.InvoicedIn.ARREARS;
 import static generated.se.sundsvall.contract.StakeholderRole.LESSEE;
 import static generated.se.sundsvall.contract.StakeholderRole.LESSOR;
 import static generated.se.sundsvall.contract.StakeholderRole.PRIMARY_BILLING_PARTY;
@@ -108,6 +110,7 @@ class ContractMapperTest {
 		when(feesMock.getYearly()).thenReturn(yearly);
 		when(contractMock.getInvoicing()).thenReturn(invoicingMock);
 		when(invoicingMock.getInvoiceInterval()).thenReturn(intervalType);
+		when(invoicingMock.getInvoicedIn()).thenReturn(ARREARS);
 		when(settingsProviderMock.isLeaseTypeSettingsPresent(contractMock)).thenReturn(true);
 		when(settingsProviderMock.getActivity(contractMock)).thenReturn(activity);
 		when(settingsProviderMock.getCostCenter(contractMock)).thenReturn(costCenter);
@@ -123,14 +126,14 @@ class ContractMapperTest {
 		// Assert & verify
 		assertThat(result.getApprovedBy()).isEqualTo("CONTRACT-SERVICE");
 		assertThat(result.getCategory()).isEqualTo("MEX_INVOICE");
-		assertThat(result.getInvoice()).isNotNull().hasAllNullFieldsOrPropertiesExcept("dueDate", "customerReference", "customerId", "ourReference", "invoiceRows").satisfies(invoice -> {
+		assertThat(result.getInvoice()).isNotNull().hasAllNullFieldsOrPropertiesExcept("dueDate", "customerReference", "customerId", "ourReference", "invoiceRows", "description").satisfies(invoice -> {
 			assertThat(invoice.getOurReference()).isEqualTo(CONTRACT_ID);
 			assertThat(invoice.getInvoiceRows()).hasSize(1);
 			assertThat(invoice.getDueDate()).isEqualTo(YearMonth.now().atEndOfMonth());
 
 			final var invoiceRow = invoice.getInvoiceRows().getFirst();
 			assertThat(invoiceRow.getDescriptions()).isEmpty();
-			assertThat(invoiceRow.getDetailedDescriptions()).isEmpty();
+			assertThat(invoiceRow.getDetailedDescriptions()).hasSize(1);
 			assertThat(invoiceRow.getQuantity()).isEqualTo(BigDecimal.ONE);
 			assertThat(invoiceRow.getCostPerUnit()).isEqualTo(BigDecimal.valueOf(250.12));
 			assertThat(invoiceRow.getVatCode()).isEqualTo(vatCode);
@@ -143,7 +146,7 @@ class ContractMapperTest {
 			assertThat(accountInfo.getCostCenter()).isEqualTo(costCenter);
 			assertThat(accountInfo.getDepartment()).isEqualTo(department);
 			assertThat(accountInfo.getSubaccount()).isEqualTo(subaccount);
-			assertThat(accountInfo.getAccuralKey()).isNull();
+			assertThat(accountInfo.getAccuralKey()).isNull(); // Is null when InvoicedIn = ARREARS
 			assertThat(accountInfo.getArticle()).isNull();
 			assertThat(accountInfo.getCounterpart()).isNull();
 			assertThat(accountInfo.getProject()).isNull();
@@ -341,14 +344,14 @@ class ContractMapperTest {
 
 	@ParameterizedTest
 	@MethodSource("descriptionArgumentProvider")
-	void createBillingRecord_invoiceDescription(LocalDate scheduledDate, IntervalType intervalType, String expectedDescription) {
+	void createBillingRecord_invoiceDescription(LocalDate scheduledDate, IntervalType intervalType, InvoicedIn invoicedIn, String expectedDescription) {
 
 		// Arrange
 		when(contractMock.getFees()).thenReturn(feesMock);
 		when(feesMock.getYearly()).thenReturn(BigDecimal.valueOf(1000));
 		when(contractMock.getInvoicing()).thenReturn(invoicingMock);
 		when(invoicingMock.getInvoiceInterval()).thenReturn(intervalType);
-		when(invoicingMock.getInvoicedIn()).thenReturn(ADVANCE);
+		when(invoicingMock.getInvoicedIn()).thenReturn(invoicedIn);
 		when(contractMock.getContractId()).thenReturn(CONTRACT_ID);
 
 		// Act
@@ -367,16 +370,24 @@ class ContractMapperTest {
 	private static Stream<Arguments> descriptionArgumentProvider() {
 		return Stream.of(
 			// YEARLY
-			Arguments.of(LocalDate.of(2026, 3, 1), IntervalType.YEARLY, "Avser januari-december 2027"),
-			Arguments.of(LocalDate.of(2026, 6, 1), IntervalType.YEARLY, "Avser juli 2026-juni 2027"),
+			Arguments.of(LocalDate.of(2026, 3, 1), IntervalType.YEARLY, ADVANCE, "Avser januari-december 2027"),
+			Arguments.of(LocalDate.of(2026, 6, 1), IntervalType.YEARLY, ADVANCE, "Avser juli 2026-juni 2027"),
+			Arguments.of(LocalDate.of(2026, 3, 1), IntervalType.YEARLY, ARREARS, "Avser januari-december 2026"),
+			Arguments.of(LocalDate.of(2026, 6, 1), IntervalType.YEARLY, ARREARS, "Avser juli 2025-juni 2026"),
 			// QUARTERLY
-			Arguments.of(LocalDate.of(2026, 1, 1), IntervalType.QUARTERLY, "Avser april-juni 2026"),
-			Arguments.of(LocalDate.of(2026, 4, 1), IntervalType.QUARTERLY, "Avser juli-september 2026"),
-			Arguments.of(LocalDate.of(2026, 7, 1), IntervalType.QUARTERLY, "Avser oktober-december 2026"),
-			Arguments.of(LocalDate.of(2026, 10, 1), IntervalType.QUARTERLY, "Avser januari-mars 2027"),
+			Arguments.of(LocalDate.of(2026, 1, 1), IntervalType.QUARTERLY, ADVANCE, "Avser april-juni 2026"),
+			Arguments.of(LocalDate.of(2026, 4, 1), IntervalType.QUARTERLY, ADVANCE, "Avser juli-september 2026"),
+			Arguments.of(LocalDate.of(2026, 7, 1), IntervalType.QUARTERLY, ADVANCE, "Avser oktober-december 2026"),
+			Arguments.of(LocalDate.of(2026, 10, 1), IntervalType.QUARTERLY, ADVANCE, "Avser januari-mars 2027"),
+			Arguments.of(LocalDate.of(2026, 1, 1), IntervalType.QUARTERLY, ARREARS, "Avser januari-mars 2026"),
+			Arguments.of(LocalDate.of(2026, 4, 1), IntervalType.QUARTERLY, ARREARS, "Avser april-juni 2026"),
+			Arguments.of(LocalDate.of(2026, 7, 1), IntervalType.QUARTERLY, ARREARS, "Avser juli-september 2026"),
+			Arguments.of(LocalDate.of(2026, 10, 1), IntervalType.QUARTERLY, ARREARS, "Avser oktober-december 2026"),
 			// HALF_YEARLY
-			Arguments.of(LocalDate.of(2026, 3, 1), IntervalType.HALF_YEARLY, "Avser juli-december 2026"),
-			Arguments.of(LocalDate.of(2026, 7, 1), IntervalType.HALF_YEARLY, "Avser januari-juni 2027"));
+			Arguments.of(LocalDate.of(2026, 3, 1), IntervalType.HALF_YEARLY, ADVANCE, "Avser juli-december 2026"),
+			Arguments.of(LocalDate.of(2026, 7, 1), IntervalType.HALF_YEARLY, ADVANCE, "Avser januari-juni 2027"),
+			Arguments.of(LocalDate.of(2026, 3, 1), IntervalType.HALF_YEARLY, ARREARS, "Avser januari-juni 2026"),
+			Arguments.of(LocalDate.of(2026, 7, 1), IntervalType.HALF_YEARLY, ARREARS, "Avser juli-december 2026"));
 	}
 
 	private static Stakeholder generateStakeholder() {
