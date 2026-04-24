@@ -19,8 +19,9 @@ import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import se.sundsvall.billingdatacollector.api.model.ContractEventType;
+import se.sundsvall.billingdatacollector.api.model.BillingSource;
 import se.sundsvall.billingdatacollector.api.model.EventRequest;
+import se.sundsvall.billingdatacollector.api.model.EventType;
 import se.sundsvall.billingdatacollector.integration.contract.ContractIntegration;
 
 import static org.mockito.Mockito.verify;
@@ -49,17 +50,17 @@ class ContractEventServiceTest {
 	@InjectMocks
 	private ContractEventService service;
 
-	// ========== CONTRACT_CREATED ==========
+	// ========== CREATED ==========
 
 	@Test
 	void handleEvent_created_whenBillable_shouldUpsert() {
 		var contract = buildContract(Status.ACTIVE, IntervalType.QUARTERLY, null, null, null);
 		when(mockContractIntegration.getContract(MUNICIPALITY_ID, CONTRACT_ID)).thenReturn(Optional.of(contract));
 
-		service.handleEvent(MUNICIPALITY_ID, eventRequest(ContractEventType.CONTRACT_CREATED));
+		service.handleEvent(eventRequest(EventType.CREATED));
 
 		verify(mockContractIntegration).getContract(MUNICIPALITY_ID, CONTRACT_ID);
-		verify(mockScheduledBillingService).upsertByContractId(MUNICIPALITY_ID, CONTRACT_ID, Set.of(3, 6, 9, 12), Set.of(1), START_DATE);
+		verify(mockScheduledBillingService).upsert(MUNICIPALITY_ID, CONTRACT_ID, BillingSource.CONTRACT, Set.of(3, 6, 9, 12), Set.of(1), START_DATE);
 		verifyNoMoreInteractions(mockScheduledBillingService);
 	}
 
@@ -68,7 +69,7 @@ class ContractEventServiceTest {
 		var contract = buildContract(Status.TERMINATED, IntervalType.QUARTERLY, null, null, null);
 		when(mockContractIntegration.getContract(MUNICIPALITY_ID, CONTRACT_ID)).thenReturn(Optional.of(contract));
 
-		service.handleEvent(MUNICIPALITY_ID, eventRequest(ContractEventType.CONTRACT_CREATED));
+		service.handleEvent(eventRequest(EventType.CREATED));
 
 		verify(mockContractIntegration).getContract(MUNICIPALITY_ID, CONTRACT_ID);
 		verifyNoInteractions(mockScheduledBillingService);
@@ -78,23 +79,23 @@ class ContractEventServiceTest {
 	void handleEvent_created_whenContractNotFound_shouldDoNothing() {
 		when(mockContractIntegration.getContract(MUNICIPALITY_ID, CONTRACT_ID)).thenReturn(Optional.empty());
 
-		service.handleEvent(MUNICIPALITY_ID, eventRequest(ContractEventType.CONTRACT_CREATED));
+		service.handleEvent(eventRequest(EventType.CREATED));
 
 		verify(mockContractIntegration).getContract(MUNICIPALITY_ID, CONTRACT_ID);
 		verifyNoInteractions(mockScheduledBillingService);
 	}
 
-	// ========== CONTRACT_UPDATED ==========
+	// ========== UPDATED ==========
 
 	@Test
 	void handleEvent_updated_whenBillable_shouldUpsert() {
 		var contract = buildContract(Status.ACTIVE, IntervalType.YEARLY, null, null, null);
 		when(mockContractIntegration.getContract(MUNICIPALITY_ID, CONTRACT_ID)).thenReturn(Optional.of(contract));
 
-		service.handleEvent(MUNICIPALITY_ID, eventRequest(ContractEventType.CONTRACT_UPDATED));
+		service.handleEvent(eventRequest(EventType.UPDATED));
 
 		verify(mockContractIntegration).getContract(MUNICIPALITY_ID, CONTRACT_ID);
-		verify(mockScheduledBillingService).upsertByContractId(MUNICIPALITY_ID, CONTRACT_ID, Set.of(12), Set.of(1), LocalDate.now());
+		verify(mockScheduledBillingService).upsert(MUNICIPALITY_ID, CONTRACT_ID, BillingSource.CONTRACT, Set.of(12), Set.of(1), LocalDate.now());
 		verifyNoMoreInteractions(mockScheduledBillingService);
 	}
 
@@ -103,10 +104,10 @@ class ContractEventServiceTest {
 		var contract = buildContract(Status.TERMINATED, IntervalType.QUARTERLY, null, null, null);
 		when(mockContractIntegration.getContract(MUNICIPALITY_ID, CONTRACT_ID)).thenReturn(Optional.of(contract));
 
-		service.handleEvent(MUNICIPALITY_ID, eventRequest(ContractEventType.CONTRACT_UPDATED));
+		service.handleEvent(eventRequest(EventType.UPDATED));
 
 		verify(mockContractIntegration).getContract(MUNICIPALITY_ID, CONTRACT_ID);
-		verify(mockScheduledBillingService).deleteByContractId(MUNICIPALITY_ID, CONTRACT_ID);
+		verify(mockScheduledBillingService).deleteByExternalId(MUNICIPALITY_ID, CONTRACT_ID, BillingSource.CONTRACT);
 		verifyNoMoreInteractions(mockScheduledBillingService);
 	}
 
@@ -114,38 +115,38 @@ class ContractEventServiceTest {
 	void handleEvent_updated_whenContractNotFound_shouldDelete() {
 		when(mockContractIntegration.getContract(MUNICIPALITY_ID, CONTRACT_ID)).thenReturn(Optional.empty());
 
-		service.handleEvent(MUNICIPALITY_ID, eventRequest(ContractEventType.CONTRACT_UPDATED));
+		service.handleEvent(eventRequest(EventType.UPDATED));
 
 		verify(mockContractIntegration).getContract(MUNICIPALITY_ID, CONTRACT_ID);
-		verify(mockScheduledBillingService).deleteByContractId(MUNICIPALITY_ID, CONTRACT_ID);
+		verify(mockScheduledBillingService).deleteByExternalId(MUNICIPALITY_ID, CONTRACT_ID, BillingSource.CONTRACT);
 		verifyNoMoreInteractions(mockScheduledBillingService);
 	}
 
-	// ========== CONTRACT_DELETED ==========
+	// ========== DELETED ==========
 
 	@Test
 	void handleEvent_deleted_shouldDeleteWithoutFetchingContract() {
-		service.handleEvent(MUNICIPALITY_ID, eventRequest(ContractEventType.CONTRACT_DELETED));
+		service.handleEvent(eventRequest(EventType.DELETED));
 
 		verifyNoInteractions(mockContractIntegration);
-		verify(mockScheduledBillingService).deleteByContractId(MUNICIPALITY_ID, CONTRACT_ID);
+		verify(mockScheduledBillingService).deleteByExternalId(MUNICIPALITY_ID, CONTRACT_ID, BillingSource.CONTRACT);
 		verifyNoMoreInteractions(mockScheduledBillingService);
 	}
 
-	// ========== CONTRACT_TERMINATED ==========
+	// ========== TERMINATED ==========
 
 	@Test
 	void handleEvent_terminated_whenContractFound_shouldApplyEndDateLogic() {
 		var contract = buildContract(Status.TERMINATED, null, InvoicedIn.ADVANCE, END_DATE_AFTER_NEXT, null);
 		when(mockContractIntegration.getContract(MUNICIPALITY_ID, CONTRACT_ID)).thenReturn(Optional.of(contract));
-		when(mockScheduledBillingService.getNextScheduledBillingByContractId(MUNICIPALITY_ID, CONTRACT_ID))
+		when(mockScheduledBillingService.getNextScheduledBilling(MUNICIPALITY_ID, CONTRACT_ID, BillingSource.CONTRACT))
 			.thenReturn(Optional.of(NEXT_BILLING));
 
-		service.handleEvent(MUNICIPALITY_ID, eventRequest(ContractEventType.CONTRACT_TERMINATED));
+		service.handleEvent(eventRequest(EventType.TERMINATED));
 
 		verify(mockContractIntegration).getContract(MUNICIPALITY_ID, CONTRACT_ID);
-		verify(mockScheduledBillingService).getNextScheduledBillingByContractId(MUNICIPALITY_ID, CONTRACT_ID);
-		verify(mockScheduledBillingService).updateFinalBillingDate(MUNICIPALITY_ID, CONTRACT_ID, END_DATE_AFTER_NEXT);
+		verify(mockScheduledBillingService).getNextScheduledBilling(MUNICIPALITY_ID, CONTRACT_ID, BillingSource.CONTRACT);
+		verify(mockScheduledBillingService).updateFinalBillingDate(MUNICIPALITY_ID, CONTRACT_ID, BillingSource.CONTRACT, END_DATE_AFTER_NEXT);
 		verifyNoMoreInteractions(mockScheduledBillingService);
 	}
 
@@ -153,10 +154,10 @@ class ContractEventServiceTest {
 	void handleEvent_terminated_whenContractNotFound_shouldDelete() {
 		when(mockContractIntegration.getContract(MUNICIPALITY_ID, CONTRACT_ID)).thenReturn(Optional.empty());
 
-		service.handleEvent(MUNICIPALITY_ID, eventRequest(ContractEventType.CONTRACT_TERMINATED));
+		service.handleEvent(eventRequest(EventType.TERMINATED));
 
 		verify(mockContractIntegration).getContract(MUNICIPALITY_ID, CONTRACT_ID);
-		verify(mockScheduledBillingService).deleteByContractId(MUNICIPALITY_ID, CONTRACT_ID);
+		verify(mockScheduledBillingService).deleteByExternalId(MUNICIPALITY_ID, CONTRACT_ID, BillingSource.CONTRACT);
 		verifyNoMoreInteractions(mockScheduledBillingService);
 	}
 
@@ -167,10 +168,10 @@ class ContractEventServiceTest {
 		var contract = buildContract(Status.ACTIVE, IntervalType.MONTHLY, null, null, null);
 		when(mockContractIntegration.getContract(MUNICIPALITY_ID, CONTRACT_ID)).thenReturn(Optional.of(contract));
 
-		service.handleEvent(MUNICIPALITY_ID, eventRequest(ContractEventType.CONTRACT_CREATED));
+		service.handleEvent(eventRequest(EventType.CREATED));
 
-		verify(mockScheduledBillingService).upsertByContractId(
-			MUNICIPALITY_ID, CONTRACT_ID,
+		verify(mockScheduledBillingService).upsert(
+			MUNICIPALITY_ID, CONTRACT_ID, BillingSource.CONTRACT,
 			Set.of(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12),
 			Set.of(1), START_DATE);
 	}
@@ -180,10 +181,10 @@ class ContractEventServiceTest {
 		var contract = buildContract(Status.ACTIVE, IntervalType.QUARTERLY, null, null, null);
 		when(mockContractIntegration.getContract(MUNICIPALITY_ID, CONTRACT_ID)).thenReturn(Optional.of(contract));
 
-		service.handleEvent(MUNICIPALITY_ID, eventRequest(ContractEventType.CONTRACT_CREATED));
+		service.handleEvent(eventRequest(EventType.CREATED));
 
-		verify(mockScheduledBillingService).upsertByContractId(
-			MUNICIPALITY_ID, CONTRACT_ID,
+		verify(mockScheduledBillingService).upsert(
+			MUNICIPALITY_ID, CONTRACT_ID, BillingSource.CONTRACT,
 			Set.of(3, 6, 9, 12),
 			Set.of(1), START_DATE);
 	}
@@ -193,10 +194,10 @@ class ContractEventServiceTest {
 		var contract = buildContract(Status.ACTIVE, IntervalType.HALF_YEARLY, null, null, null);
 		when(mockContractIntegration.getContract(MUNICIPALITY_ID, CONTRACT_ID)).thenReturn(Optional.of(contract));
 
-		service.handleEvent(MUNICIPALITY_ID, eventRequest(ContractEventType.CONTRACT_CREATED));
+		service.handleEvent(eventRequest(EventType.CREATED));
 
-		verify(mockScheduledBillingService).upsertByContractId(
-			MUNICIPALITY_ID, CONTRACT_ID,
+		verify(mockScheduledBillingService).upsert(
+			MUNICIPALITY_ID, CONTRACT_ID, BillingSource.CONTRACT,
 			Set.of(6, 12),
 			Set.of(1), START_DATE);
 	}
@@ -206,10 +207,10 @@ class ContractEventServiceTest {
 		var contract = buildContract(Status.ACTIVE, IntervalType.YEARLY, null, null, null);
 		when(mockContractIntegration.getContract(MUNICIPALITY_ID, CONTRACT_ID)).thenReturn(Optional.of(contract));
 
-		service.handleEvent(MUNICIPALITY_ID, eventRequest(ContractEventType.CONTRACT_CREATED));
+		service.handleEvent(eventRequest(EventType.CREATED));
 
-		verify(mockScheduledBillingService).upsertByContractId(
-			MUNICIPALITY_ID, CONTRACT_ID,
+		verify(mockScheduledBillingService).upsert(
+			MUNICIPALITY_ID, CONTRACT_ID, BillingSource.CONTRACT,
 			Set.of(12),
 			Set.of(1), START_DATE);
 	}
@@ -221,9 +222,9 @@ class ContractEventServiceTest {
 		contract.setLeaseType(leaseType);
 		when(mockContractIntegration.getContract(MUNICIPALITY_ID, CONTRACT_ID)).thenReturn(Optional.of(contract));
 
-		service.handleEvent(MUNICIPALITY_ID, eventRequest(ContractEventType.CONTRACT_CREATED));
+		service.handleEvent(eventRequest(EventType.CREATED));
 
-		verify(mockScheduledBillingService).upsertByContractId(MUNICIPALITY_ID, CONTRACT_ID, expectedMonths, Set.of(1), START_DATE);
+		verify(mockScheduledBillingService).upsert(MUNICIPALITY_ID, CONTRACT_ID, BillingSource.CONTRACT, expectedMonths, Set.of(1), START_DATE);
 	}
 
 	private static Stream<Arguments> yearlyBillingMonthsProvider() {
@@ -240,14 +241,14 @@ class ContractEventServiceTest {
 	void handleEvent_advance_endDateAfterNextBilling_shouldSetFinalBillingDate() {
 		var contract = buildContract(Status.ACTIVE, IntervalType.QUARTERLY, InvoicedIn.ADVANCE, END_DATE_AFTER_NEXT, null);
 		when(mockContractIntegration.getContract(MUNICIPALITY_ID, CONTRACT_ID)).thenReturn(Optional.of(contract));
-		when(mockScheduledBillingService.getNextScheduledBillingByContractId(MUNICIPALITY_ID, CONTRACT_ID))
+		when(mockScheduledBillingService.getNextScheduledBilling(MUNICIPALITY_ID, CONTRACT_ID, BillingSource.CONTRACT))
 			.thenReturn(Optional.of(NEXT_BILLING));
 
-		service.handleEvent(MUNICIPALITY_ID, eventRequest(ContractEventType.CONTRACT_CREATED));
+		service.handleEvent(eventRequest(EventType.CREATED));
 
-		verify(mockScheduledBillingService).upsertByContractId(MUNICIPALITY_ID, CONTRACT_ID, Set.of(3, 6, 9, 12), Set.of(1), START_DATE);
-		verify(mockScheduledBillingService).getNextScheduledBillingByContractId(MUNICIPALITY_ID, CONTRACT_ID);
-		verify(mockScheduledBillingService).updateFinalBillingDate(MUNICIPALITY_ID, CONTRACT_ID, END_DATE_AFTER_NEXT);
+		verify(mockScheduledBillingService).upsert(MUNICIPALITY_ID, CONTRACT_ID, BillingSource.CONTRACT, Set.of(3, 6, 9, 12), Set.of(1), START_DATE);
+		verify(mockScheduledBillingService).getNextScheduledBilling(MUNICIPALITY_ID, CONTRACT_ID, BillingSource.CONTRACT);
+		verify(mockScheduledBillingService).updateFinalBillingDate(MUNICIPALITY_ID, CONTRACT_ID, BillingSource.CONTRACT, END_DATE_AFTER_NEXT);
 		verifyNoMoreInteractions(mockScheduledBillingService);
 	}
 
@@ -255,14 +256,14 @@ class ContractEventServiceTest {
 	void handleEvent_advance_endDateBeforeNextBilling_shouldDelete() {
 		var contract = buildContract(Status.ACTIVE, IntervalType.QUARTERLY, InvoicedIn.ADVANCE, END_DATE_BEFORE_NEXT, null);
 		when(mockContractIntegration.getContract(MUNICIPALITY_ID, CONTRACT_ID)).thenReturn(Optional.of(contract));
-		when(mockScheduledBillingService.getNextScheduledBillingByContractId(MUNICIPALITY_ID, CONTRACT_ID))
+		when(mockScheduledBillingService.getNextScheduledBilling(MUNICIPALITY_ID, CONTRACT_ID, BillingSource.CONTRACT))
 			.thenReturn(Optional.of(NEXT_BILLING));
 
-		service.handleEvent(MUNICIPALITY_ID, eventRequest(ContractEventType.CONTRACT_CREATED));
+		service.handleEvent(eventRequest(EventType.CREATED));
 
-		verify(mockScheduledBillingService).upsertByContractId(MUNICIPALITY_ID, CONTRACT_ID, Set.of(3, 6, 9, 12), Set.of(1), START_DATE);
-		verify(mockScheduledBillingService).getNextScheduledBillingByContractId(MUNICIPALITY_ID, CONTRACT_ID);
-		verify(mockScheduledBillingService).deleteByContractId(MUNICIPALITY_ID, CONTRACT_ID);
+		verify(mockScheduledBillingService).upsert(MUNICIPALITY_ID, CONTRACT_ID, BillingSource.CONTRACT, Set.of(3, 6, 9, 12), Set.of(1), START_DATE);
+		verify(mockScheduledBillingService).getNextScheduledBilling(MUNICIPALITY_ID, CONTRACT_ID, BillingSource.CONTRACT);
+		verify(mockScheduledBillingService).deleteByExternalId(MUNICIPALITY_ID, CONTRACT_ID, BillingSource.CONTRACT);
 		verifyNoMoreInteractions(mockScheduledBillingService);
 	}
 
@@ -270,14 +271,14 @@ class ContractEventServiceTest {
 	void handleEvent_advance_endDateOnNextBilling_shouldDelete() {
 		var contract = buildContract(Status.ACTIVE, IntervalType.QUARTERLY, InvoicedIn.ADVANCE, END_DATE_ON_NEXT, null);
 		when(mockContractIntegration.getContract(MUNICIPALITY_ID, CONTRACT_ID)).thenReturn(Optional.of(contract));
-		when(mockScheduledBillingService.getNextScheduledBillingByContractId(MUNICIPALITY_ID, CONTRACT_ID))
+		when(mockScheduledBillingService.getNextScheduledBilling(MUNICIPALITY_ID, CONTRACT_ID, BillingSource.CONTRACT))
 			.thenReturn(Optional.of(NEXT_BILLING));
 
-		service.handleEvent(MUNICIPALITY_ID, eventRequest(ContractEventType.CONTRACT_CREATED));
+		service.handleEvent(eventRequest(EventType.CREATED));
 
-		verify(mockScheduledBillingService).upsertByContractId(MUNICIPALITY_ID, CONTRACT_ID, Set.of(3, 6, 9, 12), Set.of(1), START_DATE);
-		verify(mockScheduledBillingService).getNextScheduledBillingByContractId(MUNICIPALITY_ID, CONTRACT_ID);
-		verify(mockScheduledBillingService).deleteByContractId(MUNICIPALITY_ID, CONTRACT_ID);
+		verify(mockScheduledBillingService).upsert(MUNICIPALITY_ID, CONTRACT_ID, BillingSource.CONTRACT, Set.of(3, 6, 9, 12), Set.of(1), START_DATE);
+		verify(mockScheduledBillingService).getNextScheduledBilling(MUNICIPALITY_ID, CONTRACT_ID, BillingSource.CONTRACT);
+		verify(mockScheduledBillingService).deleteByExternalId(MUNICIPALITY_ID, CONTRACT_ID, BillingSource.CONTRACT);
 		verifyNoMoreInteractions(mockScheduledBillingService);
 	}
 
@@ -285,14 +286,14 @@ class ContractEventServiceTest {
 	void handleEvent_arrears_endDateBeforeNextBilling_shouldSetFinalBillingDate() {
 		var contract = buildContract(Status.ACTIVE, IntervalType.QUARTERLY, InvoicedIn.ARREARS, END_DATE_BEFORE_NEXT, null);
 		when(mockContractIntegration.getContract(MUNICIPALITY_ID, CONTRACT_ID)).thenReturn(Optional.of(contract));
-		when(mockScheduledBillingService.getNextScheduledBillingByContractId(MUNICIPALITY_ID, CONTRACT_ID))
+		when(mockScheduledBillingService.getNextScheduledBilling(MUNICIPALITY_ID, CONTRACT_ID, BillingSource.CONTRACT))
 			.thenReturn(Optional.of(NEXT_BILLING));
 
-		service.handleEvent(MUNICIPALITY_ID, eventRequest(ContractEventType.CONTRACT_CREATED));
+		service.handleEvent(eventRequest(EventType.CREATED));
 
-		verify(mockScheduledBillingService).upsertByContractId(MUNICIPALITY_ID, CONTRACT_ID, Set.of(3, 6, 9, 12), Set.of(1), ARREARS_START_FROM);
-		verify(mockScheduledBillingService).getNextScheduledBillingByContractId(MUNICIPALITY_ID, CONTRACT_ID);
-		verify(mockScheduledBillingService).updateFinalBillingDate(MUNICIPALITY_ID, CONTRACT_ID, END_DATE_BEFORE_NEXT);
+		verify(mockScheduledBillingService).upsert(MUNICIPALITY_ID, CONTRACT_ID, BillingSource.CONTRACT, Set.of(3, 6, 9, 12), Set.of(1), ARREARS_START_FROM);
+		verify(mockScheduledBillingService).getNextScheduledBilling(MUNICIPALITY_ID, CONTRACT_ID, BillingSource.CONTRACT);
+		verify(mockScheduledBillingService).updateFinalBillingDate(MUNICIPALITY_ID, CONTRACT_ID, BillingSource.CONTRACT, END_DATE_BEFORE_NEXT);
 		verifyNoMoreInteractions(mockScheduledBillingService);
 	}
 
@@ -300,14 +301,14 @@ class ContractEventServiceTest {
 	void handleEvent_arrears_endDateAfterNextBilling_shouldDelete() {
 		var contract = buildContract(Status.ACTIVE, IntervalType.QUARTERLY, InvoicedIn.ARREARS, END_DATE_AFTER_NEXT, null);
 		when(mockContractIntegration.getContract(MUNICIPALITY_ID, CONTRACT_ID)).thenReturn(Optional.of(contract));
-		when(mockScheduledBillingService.getNextScheduledBillingByContractId(MUNICIPALITY_ID, CONTRACT_ID))
+		when(mockScheduledBillingService.getNextScheduledBilling(MUNICIPALITY_ID, CONTRACT_ID, BillingSource.CONTRACT))
 			.thenReturn(Optional.of(NEXT_BILLING));
 
-		service.handleEvent(MUNICIPALITY_ID, eventRequest(ContractEventType.CONTRACT_CREATED));
+		service.handleEvent(eventRequest(EventType.CREATED));
 
-		verify(mockScheduledBillingService).upsertByContractId(MUNICIPALITY_ID, CONTRACT_ID, Set.of(3, 6, 9, 12), Set.of(1), ARREARS_START_FROM);
-		verify(mockScheduledBillingService).getNextScheduledBillingByContractId(MUNICIPALITY_ID, CONTRACT_ID);
-		verify(mockScheduledBillingService).deleteByContractId(MUNICIPALITY_ID, CONTRACT_ID);
+		verify(mockScheduledBillingService).upsert(MUNICIPALITY_ID, CONTRACT_ID, BillingSource.CONTRACT, Set.of(3, 6, 9, 12), Set.of(1), ARREARS_START_FROM);
+		verify(mockScheduledBillingService).getNextScheduledBilling(MUNICIPALITY_ID, CONTRACT_ID, BillingSource.CONTRACT);
+		verify(mockScheduledBillingService).deleteByExternalId(MUNICIPALITY_ID, CONTRACT_ID, BillingSource.CONTRACT);
 		verifyNoMoreInteractions(mockScheduledBillingService);
 	}
 
@@ -316,9 +317,9 @@ class ContractEventServiceTest {
 		var contract = buildContract(Status.ACTIVE, IntervalType.QUARTERLY, InvoicedIn.ADVANCE, null, null);
 		when(mockContractIntegration.getContract(MUNICIPALITY_ID, CONTRACT_ID)).thenReturn(Optional.of(contract));
 
-		service.handleEvent(MUNICIPALITY_ID, eventRequest(ContractEventType.CONTRACT_CREATED));
+		service.handleEvent(eventRequest(EventType.CREATED));
 
-		verify(mockScheduledBillingService).upsertByContractId(MUNICIPALITY_ID, CONTRACT_ID, Set.of(3, 6, 9, 12), Set.of(1), START_DATE);
+		verify(mockScheduledBillingService).upsert(MUNICIPALITY_ID, CONTRACT_ID, BillingSource.CONTRACT, Set.of(3, 6, 9, 12), Set.of(1), START_DATE);
 		verifyNoMoreInteractions(mockScheduledBillingService);
 	}
 
@@ -327,9 +328,9 @@ class ContractEventServiceTest {
 		var contract = buildContract(Status.ACTIVE, IntervalType.QUARTERLY, null, END_DATE_AFTER_NEXT, null);
 		when(mockContractIntegration.getContract(MUNICIPALITY_ID, CONTRACT_ID)).thenReturn(Optional.of(contract));
 
-		service.handleEvent(MUNICIPALITY_ID, eventRequest(ContractEventType.CONTRACT_CREATED));
+		service.handleEvent(eventRequest(EventType.CREATED));
 
-		verify(mockScheduledBillingService).upsertByContractId(MUNICIPALITY_ID, CONTRACT_ID, Set.of(3, 6, 9, 12), Set.of(1), START_DATE);
+		verify(mockScheduledBillingService).upsert(MUNICIPALITY_ID, CONTRACT_ID, BillingSource.CONTRACT, Set.of(3, 6, 9, 12), Set.of(1), START_DATE);
 		verifyNoMoreInteractions(mockScheduledBillingService);
 	}
 
@@ -337,19 +338,19 @@ class ContractEventServiceTest {
 	void handleEvent_noScheduledBillingFound_shouldDoNothing() {
 		var contract = buildContract(Status.ACTIVE, IntervalType.QUARTERLY, InvoicedIn.ADVANCE, END_DATE_AFTER_NEXT, null);
 		when(mockContractIntegration.getContract(MUNICIPALITY_ID, CONTRACT_ID)).thenReturn(Optional.of(contract));
-		when(mockScheduledBillingService.getNextScheduledBillingByContractId(MUNICIPALITY_ID, CONTRACT_ID))
+		when(mockScheduledBillingService.getNextScheduledBilling(MUNICIPALITY_ID, CONTRACT_ID, BillingSource.CONTRACT))
 			.thenReturn(Optional.empty());
 
-		service.handleEvent(MUNICIPALITY_ID, eventRequest(ContractEventType.CONTRACT_CREATED));
+		service.handleEvent(eventRequest(EventType.CREATED));
 
-		verify(mockScheduledBillingService).upsertByContractId(MUNICIPALITY_ID, CONTRACT_ID, Set.of(3, 6, 9, 12), Set.of(1), START_DATE);
-		verify(mockScheduledBillingService).getNextScheduledBillingByContractId(MUNICIPALITY_ID, CONTRACT_ID);
+		verify(mockScheduledBillingService).upsert(MUNICIPALITY_ID, CONTRACT_ID, BillingSource.CONTRACT, Set.of(3, 6, 9, 12), Set.of(1), START_DATE);
+		verify(mockScheduledBillingService).getNextScheduledBilling(MUNICIPALITY_ID, CONTRACT_ID, BillingSource.CONTRACT);
 		verifyNoMoreInteractions(mockScheduledBillingService);
 	}
 
 	// ========== helpers ==========
 
-	private EventRequest eventRequest(ContractEventType eventType) {
+	private EventRequest eventRequest(EventType eventType) {
 		return EventRequest.builder()
 			.withId(CONTRACT_ID)
 			.withMunicipalityId(MUNICIPALITY_ID)

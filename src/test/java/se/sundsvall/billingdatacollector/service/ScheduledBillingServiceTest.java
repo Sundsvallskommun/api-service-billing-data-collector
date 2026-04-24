@@ -357,7 +357,7 @@ class ScheduledBillingServiceTest {
 
 		// Act
 		var startFrom = LocalDate.of(2025, 1, 1);
-		service.upsertByContractId(MUNICIPALITY_ID, EXTERNAL_ID, billingMonths, billingDaysOfMonth, startFrom);
+		service.upsert(MUNICIPALITY_ID, EXTERNAL_ID, BillingSource.CONTRACT, billingMonths, billingDaysOfMonth, startFrom);
 
 		// Assert
 		var captor = ArgumentCaptor.forClass(ScheduledBillingEntity.class);
@@ -385,7 +385,7 @@ class ScheduledBillingServiceTest {
 
 		// Act
 		var startFrom = LocalDate.of(2025, 1, 1);
-		service.upsertByContractId(MUNICIPALITY_ID, EXTERNAL_ID, billingMonths, billingDaysOfMonth, startFrom);
+		service.upsert(MUNICIPALITY_ID, EXTERNAL_ID, BillingSource.CONTRACT, billingMonths, billingDaysOfMonth, startFrom);
 
 		// Assert
 		var captor = ArgumentCaptor.forClass(ScheduledBillingEntity.class);
@@ -413,7 +413,7 @@ class ScheduledBillingServiceTest {
 		when(mockRepository.findByMunicipalityIdAndExternalIdAndSource(MUNICIPALITY_ID, EXTERNAL_ID, BillingSource.CONTRACT))
 			.thenReturn(Optional.of(entity));
 
-		var result = service.getNextScheduledBillingByContractId(MUNICIPALITY_ID, EXTERNAL_ID);
+		var result = service.getNextScheduledBilling(MUNICIPALITY_ID, EXTERNAL_ID, BillingSource.CONTRACT);
 
 		assertThat(result).isPresent().contains(entity.getNextScheduledBilling());
 		verify(mockRepository).findByMunicipalityIdAndExternalIdAndSource(MUNICIPALITY_ID, EXTERNAL_ID, BillingSource.CONTRACT);
@@ -425,7 +425,7 @@ class ScheduledBillingServiceTest {
 		when(mockRepository.findByMunicipalityIdAndExternalIdAndSource(MUNICIPALITY_ID, EXTERNAL_ID, BillingSource.CONTRACT))
 			.thenReturn(Optional.empty());
 
-		var result = service.getNextScheduledBillingByContractId(MUNICIPALITY_ID, EXTERNAL_ID);
+		var result = service.getNextScheduledBilling(MUNICIPALITY_ID, EXTERNAL_ID, BillingSource.CONTRACT);
 
 		assertThat(result).isEmpty();
 		verify(mockRepository).findByMunicipalityIdAndExternalIdAndSource(MUNICIPALITY_ID, EXTERNAL_ID, BillingSource.CONTRACT);
@@ -443,7 +443,7 @@ class ScheduledBillingServiceTest {
 			.thenReturn(Optional.of(entity));
 		when(mockRepository.saveAndFlush(any(ScheduledBillingEntity.class))).thenAnswer(invocation -> invocation.getArgument(0));
 
-		service.updateFinalBillingDate(MUNICIPALITY_ID, EXTERNAL_ID, finalDate);
+		service.updateFinalBillingDate(MUNICIPALITY_ID, EXTERNAL_ID, BillingSource.CONTRACT, finalDate);
 
 		var captor = ArgumentCaptor.forClass(ScheduledBillingEntity.class);
 		verify(mockRepository).saveAndFlush(captor.capture());
@@ -462,7 +462,7 @@ class ScheduledBillingServiceTest {
 			.thenReturn(Optional.of(entity));
 		when(mockRepository.saveAndFlush(any(ScheduledBillingEntity.class))).thenAnswer(invocation -> invocation.getArgument(0));
 
-		service.updateFinalBillingDate(MUNICIPALITY_ID, EXTERNAL_ID, null);
+		service.updateFinalBillingDate(MUNICIPALITY_ID, EXTERNAL_ID, BillingSource.CONTRACT, null);
 
 		var captor = ArgumentCaptor.forClass(ScheduledBillingEntity.class);
 		verify(mockRepository).saveAndFlush(captor.capture());
@@ -477,7 +477,7 @@ class ScheduledBillingServiceTest {
 		when(mockRepository.findByMunicipalityIdAndExternalIdAndSource(MUNICIPALITY_ID, EXTERNAL_ID, BillingSource.CONTRACT))
 			.thenReturn(Optional.empty());
 
-		service.updateFinalBillingDate(MUNICIPALITY_ID, EXTERNAL_ID, LocalDate.of(2026, 6, 30));
+		service.updateFinalBillingDate(MUNICIPALITY_ID, EXTERNAL_ID, BillingSource.CONTRACT, LocalDate.of(2026, 6, 30));
 
 		verify(mockRepository).findByMunicipalityIdAndExternalIdAndSource(MUNICIPALITY_ID, EXTERNAL_ID, BillingSource.CONTRACT);
 		verify(mockRepository, never()).saveAndFlush(any());
@@ -507,7 +507,7 @@ class ScheduledBillingServiceTest {
 			.thenReturn(Optional.of(entity));
 
 		// Act
-		service.deleteByContractId(MUNICIPALITY_ID, EXTERNAL_ID);
+		service.deleteByExternalId(MUNICIPALITY_ID, EXTERNAL_ID, BillingSource.CONTRACT);
 
 		// Assert
 		verify(mockRepository).findByMunicipalityIdAndExternalIdAndSource(MUNICIPALITY_ID, EXTERNAL_ID, BillingSource.CONTRACT);
@@ -522,7 +522,7 @@ class ScheduledBillingServiceTest {
 			.thenReturn(Optional.empty());
 
 		// Act
-		service.deleteByContractId(MUNICIPALITY_ID, EXTERNAL_ID);
+		service.deleteByExternalId(MUNICIPALITY_ID, EXTERNAL_ID, BillingSource.CONTRACT);
 
 		// Assert
 		verify(mockRepository).findByMunicipalityIdAndExternalIdAndSource(MUNICIPALITY_ID, EXTERNAL_ID, BillingSource.CONTRACT);

@@ -13,15 +13,12 @@ import lombok.NoArgsConstructor;
 @Builder(setterPrefix = "with")
 public class EventRequest {
 
-	@Schema(description = "Source system", example = "CONTRACT")
-	private BillingSource source;
-
 	@Schema(description = "External id", example = "2026-00001")
 	private String id;
 
 	@Schema(description = "Municipality id", example = "2281")
 	private String municipalityId;
 
-	@Schema(description = "Event type", example = "CONTRACT_CREATED")
-	private ContractEventType eventType;
+	@Schema(description = "Event type", example = "CREATED")
+	private EventType eventType;
 }

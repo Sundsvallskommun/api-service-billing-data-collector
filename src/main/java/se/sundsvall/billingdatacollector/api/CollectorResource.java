@@ -11,6 +11,7 @@ import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.data.domain.Page;
@@ -30,8 +31,8 @@ import org.springframework.web.bind.annotation.RestController;
 import se.sundsvall.billingdatacollector.api.model.BillingSource;
 import se.sundsvall.billingdatacollector.api.model.EventRequest;
 import se.sundsvall.billingdatacollector.api.model.ScheduledBilling;
+import se.sundsvall.billingdatacollector.service.BillingEventHandler;
 import se.sundsvall.billingdatacollector.service.CollectorService;
-import se.sundsvall.billingdatacollector.service.ContractEventService;
 import se.sundsvall.billingdatacollector.service.ScheduledBillingService;
 import se.sundsvall.dept44.common.validators.annotation.ValidMunicipalityId;
 import se.sundsvall.dept44.problem.Problem;
@@ -76,12 +77,12 @@ class CollectorResource {
 
 	private final CollectorService collectorService;
 	private final ScheduledBillingService scheduledBillingService;
-	private final ContractEventService contractEventService;
+	private final Map<String, BillingEventHandler> eventHandlers;
 
-	CollectorResource(CollectorService collectorService, ScheduledBillingService scheduledBillingService, ContractEventService contractEventService) {
+	CollectorResource(CollectorService collectorService, ScheduledBillingService scheduledBillingService, Map<String, BillingEventHandler> eventHandlers) {
 		this.collectorService = collectorService;
 		this.scheduledBillingService = scheduledBillingService;
-		this.contractEventService = contractEventService;
+		this.eventHandlers = eventHandlers;
 	}
 
 	@Operation(
@@ -202,8 +203,16 @@ class CollectorResource {
 		@Parameter(name = "municipalityId", description = "Municipality id", example = "2281") @ValidMunicipalityId @PathVariable final String municipalityId,
 		@Parameter(name = "source", description = "Source system sending the event", example = "CONTRACT") @PathVariable final BillingSource source,
 		@NotNull @RequestBody final EventRequest request) {
-		request.setSource(source);
-		contractEventService.handleEvent(municipalityId, request);
+		var handler = eventHandlers.get(source.name());
+		if (handler == null) {
+			throw Problem.builder()
+				.withStatus(BAD_REQUEST)
+				.withTitle("Unsupported source")
+				.withDetail("No event handler found for source: " + source)
+				.build();
+		}
+		request.setMunicipalityId(municipalityId);
+		handler.handleEvent(request);
 		return noContent().build();
 	}
 

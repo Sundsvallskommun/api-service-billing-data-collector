@@ -10,17 +10,19 @@ import java.util.Set;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
+import se.sundsvall.billingdatacollector.api.model.BillingSource;
 import se.sundsvall.billingdatacollector.api.model.EventRequest;
 import se.sundsvall.billingdatacollector.integration.contract.ContractIntegration;
 import se.sundsvall.billingdatacollector.service.util.ScheduledBillingUtil;
 
 import static se.sundsvall.dept44.util.LogUtils.sanitizeForLogging;
 
-@Service
-public class ContractEventService {
+@Service("CONTRACT")
+public class ContractEventService implements BillingEventHandler {
 
 	private static final Logger LOG = LoggerFactory.getLogger(ContractEventService.class);
 
+	private static final BillingSource SOURCE = BillingSource.CONTRACT;
 	private static final Set<Integer> BILLING_DAYS_OF_MONTH = Set.of(1);
 	private static final Set<Integer> MONTHLY = Set.of(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12);
 	private static final Set<Integer> QUARTERLY = Set.of(3, 6, 9, 12);
@@ -36,15 +38,16 @@ public class ContractEventService {
 		this.contractIntegration = contractIntegration;
 	}
 
-	public void handleEvent(String municipalityId, EventRequest request) {
+	@Override
+	public void handleEvent(EventRequest request) {
 		LOG.info("Handling {} for contractId: {} municipalityId: {}",
-			request.getEventType(), sanitizeForLogging(request.getId()), sanitizeForLogging(municipalityId));
+			request.getEventType(), sanitizeForLogging(request.getId()), sanitizeForLogging(request.getMunicipalityId()));
 
 		switch (request.getEventType()) {
-			case CONTRACT_CREATED -> handleCreated(municipalityId, request.getId());
-			case CONTRACT_UPDATED -> handleUpdated(municipalityId, request.getId());
-			case CONTRACT_DELETED -> handleDeleted(municipalityId, request.getId());
-			case CONTRACT_TERMINATED -> handleTerminated(municipalityId, request.getId());
+			case CREATED -> handleCreated(request.getMunicipalityId(), request.getId());
+			case UPDATED -> handleUpdated(request.getMunicipalityId(), request.getId());
+			case DELETED -> handleDeleted(request.getMunicipalityId(), request.getId());
+			case TERMINATED -> handleTerminated(request.getMunicipalityId(), request.getId());
 		}
 	}
 
@@ -53,7 +56,7 @@ public class ContractEventService {
 			.ifPresent(contract -> {
 				if (isBillable(contract)) {
 					var billingMonths = calculateBillingMonths(contract);
-					scheduledBillingService.upsertByContractId(municipalityId, contractId,
+					scheduledBillingService.upsert(municipalityId, contractId, SOURCE,
 						billingMonths, BILLING_DAYS_OF_MONTH, calculateStartFrom(contract, billingMonths));
 					applyEndDateLogic(municipalityId, contractId, contract);
 				}
@@ -65,25 +68,25 @@ public class ContractEventService {
 			.ifPresentOrElse(
 				contract -> {
 					if (isBillable(contract)) {
-						scheduledBillingService.upsertByContractId(municipalityId, contractId,
+						scheduledBillingService.upsert(municipalityId, contractId, SOURCE,
 							calculateBillingMonths(contract), BILLING_DAYS_OF_MONTH, LocalDate.now());
 						applyEndDateLogic(municipalityId, contractId, contract);
 					} else {
-						scheduledBillingService.deleteByContractId(municipalityId, contractId);
+						scheduledBillingService.deleteByExternalId(municipalityId, contractId, SOURCE);
 					}
 				},
-				() -> scheduledBillingService.deleteByContractId(municipalityId, contractId));
+				() -> scheduledBillingService.deleteByExternalId(municipalityId, contractId, SOURCE));
 	}
 
 	private void handleDeleted(String municipalityId, String contractId) {
-		scheduledBillingService.deleteByContractId(municipalityId, contractId);
+		scheduledBillingService.deleteByExternalId(municipalityId, contractId, SOURCE);
 	}
 
 	private void handleTerminated(String municipalityId, String contractId) {
 		contractIntegration.getContract(municipalityId, contractId)
 			.ifPresentOrElse(
 				contract -> applyEndDateLogic(municipalityId, contractId, contract),
-				() -> scheduledBillingService.deleteByContractId(municipalityId, contractId));
+				() -> scheduledBillingService.deleteByExternalId(municipalityId, contractId, SOURCE));
 	}
 
 	/**
@@ -106,7 +109,7 @@ public class ContractEventService {
 			return;
 		}
 
-		var nextBilling = scheduledBillingService.getNextScheduledBillingByContractId(municipalityId, contractId);
+		var nextBilling = scheduledBillingService.getNextScheduledBilling(municipalityId, contractId, SOURCE);
 		if (nextBilling.isEmpty()) {
 			return;
 		}
@@ -117,9 +120,9 @@ public class ContractEventService {
 			: !endDate.isAfter(nextBilling.get());
 
 		if (keepAsFinal) {
-			scheduledBillingService.updateFinalBillingDate(municipalityId, contractId, endDate);
+			scheduledBillingService.updateFinalBillingDate(municipalityId, contractId, SOURCE, endDate);
 		} else {
-			scheduledBillingService.deleteByContractId(municipalityId, contractId);
+			scheduledBillingService.deleteByExternalId(municipalityId, contractId, SOURCE);
 		}
 	}
 

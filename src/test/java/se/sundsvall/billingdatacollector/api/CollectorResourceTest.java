@@ -25,11 +25,11 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.reactive.server.WebTestClient;
 import se.sundsvall.billingdatacollector.Application;
 import se.sundsvall.billingdatacollector.api.model.BillingSource;
-import se.sundsvall.billingdatacollector.api.model.ContractEventType;
 import se.sundsvall.billingdatacollector.api.model.EventRequest;
+import se.sundsvall.billingdatacollector.api.model.EventType;
 import se.sundsvall.billingdatacollector.api.model.ScheduledBilling;
+import se.sundsvall.billingdatacollector.service.BillingEventHandler;
 import se.sundsvall.billingdatacollector.service.CollectorService;
-import se.sundsvall.billingdatacollector.service.ContractEventService;
 import se.sundsvall.billingdatacollector.service.ScheduledBillingService;
 import se.sundsvall.dept44.problem.Problem;
 import se.sundsvall.dept44.problem.violations.ConstraintViolationProblem;
@@ -67,8 +67,8 @@ class CollectorResourceTest {
 	@MockitoBean
 	private ScheduledBillingService mockScheduledBillingService;
 
-	@MockitoBean
-	private ContractEventService mockContractEventService;
+	@MockitoBean(name = "CONTRACT")
+	private BillingEventHandler mockContractEventHandler;
 
 	private static final LocalDate START_DATE = LocalDate.of(2023, 4, 25);
 	private static final LocalDate END_DATE = LocalDate.of(2024, 4, 25);
@@ -417,7 +417,7 @@ class CollectorResourceTest {
 
 	@Test
 	void testContractEvent_shouldReturnNoContent() {
-		var request = createEventRequest(ContractEventType.CONTRACT_CREATED);
+		var request = createEventRequest(EventType.CREATED);
 
 		webTestClient.post()
 			.uri(uriBuilder -> uriBuilder.path("/{municipalityId}/CONTRACT/events").build(MUNICIPALITY_ID))
@@ -426,8 +426,11 @@ class CollectorResourceTest {
 			.exchange()
 			.expectStatus().isNoContent();
 
-		verify(mockContractEventService).handleEvent(MUNICIPALITY_ID, request);
-		verifyNoMoreInteractions(mockContractEventService);
+		var captor = ArgumentCaptor.forClass(EventRequest.class);
+		verify(mockContractEventHandler).handleEvent(captor.capture());
+		assertThat(captor.getValue().getMunicipalityId()).isEqualTo(MUNICIPALITY_ID);
+		assertThat(captor.getValue().getEventType()).isEqualTo(EventType.CREATED);
+		verifyNoMoreInteractions(mockContractEventHandler);
 	}
 
 	@Test
@@ -435,7 +438,7 @@ class CollectorResourceTest {
 		var responseBody = webTestClient.post()
 			.uri(uriBuilder -> uriBuilder.path("/{municipalityId}/CONTRACT/events").build("invalid"))
 			.contentType(APPLICATION_JSON)
-			.bodyValue(createEventRequest(ContractEventType.CONTRACT_CREATED))
+			.bodyValue(createEventRequest(EventType.CREATED))
 			.exchange()
 			.expectStatus().isBadRequest()
 			.expectHeader().contentType(APPLICATION_PROBLEM_JSON)
@@ -448,7 +451,7 @@ class CollectorResourceTest {
 			.extracting(Violation::field, Violation::message)
 			.containsExactlyInAnyOrder(tuple("handleEvent.municipalityId", "not a valid municipality ID"));
 
-		verifyNoInteractions(mockContractEventService);
+		verifyNoInteractions(mockContractEventHandler);
 	}
 
 	@ParameterizedTest
@@ -503,9 +506,8 @@ class CollectorResourceTest {
 			Arguments.of("GET", "/{municipalityId}/scheduled-billing/external/{source}/{externalId}", false, "getScheduledBillingExternalId.municipalityId", Map.of("source", "CONTRACT", "externalId", "some-external-id")));
 	}
 
-	private EventRequest createEventRequest(ContractEventType eventType) {
+	private EventRequest createEventRequest(EventType eventType) {
 		return EventRequest.builder()
-			.withSource(BillingSource.CONTRACT)
 			.withId("2026-00001")
 			.withMunicipalityId(MUNICIPALITY_ID)
 			.withEventType(eventType)
