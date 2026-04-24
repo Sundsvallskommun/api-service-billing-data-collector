@@ -75,4 +75,7 @@ public class ScheduledBillingEntity {
 	@Builder.Default
 	@Column(nullable = false)
 	private boolean paused = false;
+
+	@Column(name = "final_billing_date")
+	private LocalDate finalBillingDate;
 }

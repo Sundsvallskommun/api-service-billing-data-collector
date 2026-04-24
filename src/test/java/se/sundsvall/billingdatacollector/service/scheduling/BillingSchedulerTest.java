@@ -79,6 +79,29 @@ class BillingSchedulerTest {
 	}
 
 	@Test
+	void createBillingRecords_shouldDeleteEntity_whenFinalBillingDateIsSet() {
+		// Arrange
+		var entity = createScheduledBillingEntity(BillingSource.CONTRACT);
+		entity.setFinalBillingDate(NEXT_SCHEDULED_BILLING);
+
+		when(mockScheduledBillingService.getDueScheduledBillings()).thenReturn(List.of(entity));
+		doNothing().when(mockContractHandler).sendBillingRecords(eq(MUNICIPALITY_ID), eq(EXTERNAL_ID), eq(NEXT_SCHEDULED_BILLING), any());
+		doNothing().when(mockScheduledBillingService).deleteScheduledBillingEntity(entity);
+
+		// Act
+		billingScheduler.createBillingRecords();
+
+		// Assert
+		assertThat(entity.getLastBilled()).isCloseTo(OffsetDateTime.now(), within(2, ChronoUnit.SECONDS));
+		verify(mockScheduledBillingService).getDueScheduledBillings();
+		verify(mockContractHandler).sendBillingRecords(eq(MUNICIPALITY_ID), eq(EXTERNAL_ID), eq(NEXT_SCHEDULED_BILLING), any());
+		verify(mockScheduledBillingService).deleteScheduledBillingEntity(entity);
+		verify(mockScheduledBillingService, never()).updateNextScheduledBilling(any());
+		verifyNoInteractions(mockDept44HealthUtility);
+		verifyNoMoreInteractions(mockScheduledBillingService, mockContractHandler);
+	}
+
+	@Test
 	void createBillingRecords_shouldSetUnhealthy_whenNoHandlerFound() {
 		// Arrange
 		var entity = createScheduledBillingEntity(BillingSource.OPENE);

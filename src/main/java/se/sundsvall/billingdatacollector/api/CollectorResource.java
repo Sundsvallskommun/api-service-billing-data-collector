@@ -11,6 +11,7 @@ import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.data.domain.Page;
@@ -28,7 +29,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import se.sundsvall.billingdatacollector.api.model.BillingSource;
+import se.sundsvall.billingdatacollector.api.model.EventRequest;
 import se.sundsvall.billingdatacollector.api.model.ScheduledBilling;
+import se.sundsvall.billingdatacollector.service.BillingEventHandler;
 import se.sundsvall.billingdatacollector.service.CollectorService;
 import se.sundsvall.billingdatacollector.service.ScheduledBillingService;
 import se.sundsvall.dept44.common.validators.annotation.ValidMunicipalityId;
@@ -74,10 +77,12 @@ class CollectorResource {
 
 	private final CollectorService collectorService;
 	private final ScheduledBillingService scheduledBillingService;
+	private final Map<String, BillingEventHandler> eventHandlers;
 
-	CollectorResource(CollectorService collectorService, ScheduledBillingService scheduledBillingService) {
+	CollectorResource(CollectorService collectorService, ScheduledBillingService scheduledBillingService, Map<String, BillingEventHandler> eventHandlers) {
 		this.collectorService = collectorService;
 		this.scheduledBillingService = scheduledBillingService;
+		this.eventHandlers = eventHandlers;
 	}
 
 	@Operation(
@@ -188,6 +193,27 @@ class CollectorResource {
 		@Parameter(name = "source", description = "Source system where data is collected", example = "CONTRACT") @PathVariable("source") final BillingSource source,
 		@Parameter(name = "externalId", description = "externalId of scheduled billing", example = "b82bd8ac-1507-4d9a-958d-369261eecc14") @PathVariable final String externalId) {
 		return ok(scheduledBillingService.getByExternalId(municipalityId, source, externalId));
+	}
+
+	@PostMapping(path = "/{source}/events", consumes = APPLICATION_JSON_VALUE, produces = ALL_VALUE)
+	@Operation(summary = "Handle events from external services", responses = {
+		@ApiResponse(responseCode = "204", description = "No Content")
+	})
+	ResponseEntity<Void> handleEvent(
+		@Parameter(name = "municipalityId", description = "Municipality id", example = "2281") @ValidMunicipalityId @PathVariable final String municipalityId,
+		@Parameter(name = "source", description = "Source system sending the event", example = "CONTRACT") @PathVariable final BillingSource source,
+		@NotNull @RequestBody final EventRequest request) {
+		var handler = eventHandlers.get(source.name());
+		if (handler == null) {
+			throw Problem.builder()
+				.withStatus(BAD_REQUEST)
+				.withTitle("Unsupported source")
+				.withDetail("No event handler found for source: " + source)
+				.build();
+		}
+		request.setMunicipalityId(municipalityId);
+		handler.handleEvent(request);
+		return noContent().build();
 	}
 
 	// Validate that the end date is after, or equal to, the start date

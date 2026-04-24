@@ -7,35 +7,35 @@ info:
     url: https://opensource.org/licenses/MIT
   version: "1.2"
 servers:
-  - url: http://localhost:52123
-    description: Generated server url
+- url: http://localhost:50028
+  description: Generated server url
 tags:
-  - name: Billing Data Collector
-    description: Billing Data Collector resources
-  - name: Counterpart
-    description: Counterpart resources
+- name: Billing Data Collector
+  description: Billing Data Collector resources
+- name: Counterpart
+  description: Counterpart resources
 paths:
   /{municipalityId}/scheduled-billing/{id}:
     get:
       tags:
-        - Billing Data Collector
+      - Billing Data Collector
       summary: Get scheduled billing by id
       operationId: getScheduledBilling
       parameters:
-        - name: municipalityId
-          in: path
-          description: Municipality id
-          required: true
-          schema:
-            type: string
-          example: 2281
-        - name: id
-          in: path
-          description: id of scheduled billing
-          required: true
-          schema:
-            type: string
-          example: b82bd8ac-1507-4d9a-958d-369261eecc14
+      - name: municipalityId
+        in: path
+        description: Municipality id
+        required: true
+        schema:
+          type: string
+        example: 2281
+      - name: id
+        in: path
+        description: id of scheduled billing
+        required: true
+        schema:
+          type: string
+        example: b82bd8ac-1507-4d9a-958d-369261eecc14
       responses:
         "200":
           description: Successful
@@ -55,8 +55,8 @@ paths:
             application/problem+json:
               schema:
                 oneOf:
-                  - $ref: "#/components/schemas/Problem"
-                  - $ref: "#/components/schemas/ConstraintViolationProblem"
+                - $ref: "#/components/schemas/Problem"
+                - $ref: "#/components/schemas/ConstraintViolationProblem"
         "500":
           description: Internal Server Error
           content:
@@ -71,24 +71,24 @@ paths:
                 $ref: "#/components/schemas/Problem"
     put:
       tags:
-        - Billing Data Collector
+      - Billing Data Collector
       summary: Updates scheduled billing
       operationId: updateScheduledBilling
       parameters:
-        - name: municipalityId
-          in: path
-          description: Municipality id
-          required: true
-          schema:
-            type: string
-          example: 2281
-        - name: id
-          in: path
-          description: id of scheduled billing
-          required: true
-          schema:
-            type: string
-          example: b82bd8ac-1507-4d9a-958d-369261eecc14
+      - name: municipalityId
+        in: path
+        description: Municipality id
+        required: true
+        schema:
+          type: string
+        example: 2281
+      - name: id
+        in: path
+        description: id of scheduled billing
+        required: true
+        schema:
+          type: string
+        example: b82bd8ac-1507-4d9a-958d-369261eecc14
       requestBody:
         content:
           application/json:
@@ -114,8 +114,8 @@ paths:
             application/problem+json:
               schema:
                 oneOf:
-                  - $ref: "#/components/schemas/Problem"
-                  - $ref: "#/components/schemas/ConstraintViolationProblem"
+                - $ref: "#/components/schemas/Problem"
+                - $ref: "#/components/schemas/ConstraintViolationProblem"
         "500":
           description: Internal Server Error
           content:
@@ -130,24 +130,24 @@ paths:
                 $ref: "#/components/schemas/Problem"
     delete:
       tags:
-        - Billing Data Collector
+      - Billing Data Collector
       summary: Delete scheduled billing by id
       operationId: deleteScheduledBilling
       parameters:
-        - name: municipalityId
-          in: path
-          description: Municipality id
-          required: true
-          schema:
-            type: string
-          example: 2281
-        - name: id
-          in: path
-          description: id of scheduled billing
-          required: true
-          schema:
-            type: string
-          example: b82bd8ac-1507-4d9a-958d-369261eecc14
+      - name: municipalityId
+        in: path
+        description: Municipality id
+        required: true
+        schema:
+          type: string
+        example: 2281
+      - name: id
+        in: path
+        description: id of scheduled billing
+        required: true
+        schema:
+          type: string
+        example: b82bd8ac-1507-4d9a-958d-369261eecc14
       responses:
         "204":
           description: Successful deletion
@@ -163,8 +163,61 @@ paths:
             application/problem+json:
               schema:
                 oneOf:
-                  - $ref: "#/components/schemas/Problem"
-                  - $ref: "#/components/schemas/ConstraintViolationProblem"
+                - $ref: "#/components/schemas/Problem"
+                - $ref: "#/components/schemas/ConstraintViolationProblem"
+        "500":
+          description: Internal Server Error
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Problem"
+        "502":
+          description: Bad Gateway
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Problem"
+  /{municipalityId}/{source}/events:
+    post:
+      tags:
+      - Billing Data Collector
+      summary: Handle events from external services
+      operationId: handleEvent
+      parameters:
+      - name: municipalityId
+        in: path
+        description: Municipality id
+        required: true
+        schema:
+          type: string
+        example: 2281
+      - name: source
+        in: path
+        description: Source system sending the event
+        required: true
+        schema:
+          type: string
+          enum:
+          - CONTRACT
+          - OPENE
+        example: CONTRACT
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/EventRequest"
+        required: true
+      responses:
+        "204":
+          description: No Content
+        "400":
+          description: Bad Request
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: "#/components/schemas/Problem"
+                - $ref: "#/components/schemas/ConstraintViolationProblem"
         "500":
           description: Internal Server Error
           content:
@@ -180,45 +233,45 @@ paths:
   /{municipalityId}/trigger:
     post:
       tags:
-        - Billing Data Collector
+      - Billing Data Collector
       summary: Trigger billing for all flowInstanceId:s between two specific dates.
         Will return a list of all triggered flowInstanceId:s
       operationId: triggerBilling
       parameters:
-        - name: municipalityId
-          in: path
-          description: Municipality id
-          required: true
-          schema:
-            type: string
-          example: 2281
-        - name: startDate
-          in: query
-          required: true
-          schema:
-            type: string
-            format: date
-          example: 2024-01-01
-        - name: endDate
-          in: query
-          required: true
-          schema:
-            type: string
-            format: date
-          example: 2024-02-01
-        - name: familyIds
-          in: query
-          description: "FamilyIds to trigger billing for. If not provided, billing will\
+      - name: municipalityId
+        in: path
+        description: Municipality id
+        required: true
+        schema:
+          type: string
+        example: 2281
+      - name: startDate
+        in: query
+        required: true
+        schema:
+          type: string
+          format: date
+        example: 2024-01-01
+      - name: endDate
+        in: query
+        required: true
+        schema:
+          type: string
+          format: date
+        example: 2024-02-01
+      - name: familyIds
+        in: query
+        description: "FamilyIds to trigger billing for. If not provided, billing will\
           \ be triggered for all supported familyIds"
-          required: false
-          schema:
-            type: array
-            items:
-              type: string
-            uniqueItems: true
-          example:
-            - "123"
-            - "456"
+        required: false
+        schema:
+          type: array
+          items:
+            type: string
+          uniqueItems: true
+        example:
+        - "123"
+        - "456"
       responses:
         "202":
           description: Accepted
@@ -234,8 +287,8 @@ paths:
             application/problem+json:
               schema:
                 oneOf:
-                  - $ref: "#/components/schemas/Problem"
-                  - $ref: "#/components/schemas/ConstraintViolationProblem"
+                - $ref: "#/components/schemas/Problem"
+                - $ref: "#/components/schemas/ConstraintViolationProblem"
         "500":
           description: Internal Server Error
           content:
@@ -251,25 +304,25 @@ paths:
   /{municipalityId}/trigger/{flowInstanceId}:
     post:
       tags:
-        - Billing Data Collector
+      - Billing Data Collector
       summary: Trigger billing for a flowInstanceId
       operationId: triggerBilling_1
       parameters:
-        - name: municipalityId
-          in: path
-          description: Municipality id
-          required: true
-          schema:
-            type: string
-          example: 2281
-        - name: flowInstanceId
-          in: path
-          description: flowInstanceId to trigger billing for
-          required: true
-          schema:
-            type: string
-            minLength: 1
-          example: 123
+      - name: municipalityId
+        in: path
+        description: Municipality id
+        required: true
+        schema:
+          type: string
+        example: 2281
+      - name: flowInstanceId
+        in: path
+        description: flowInstanceId to trigger billing for
+        required: true
+        schema:
+          type: string
+          minLength: 1
+        example: 123
       responses:
         "202":
           description: Accepted
@@ -279,8 +332,8 @@ paths:
             application/problem+json:
               schema:
                 oneOf:
-                  - $ref: "#/components/schemas/Problem"
-                  - $ref: "#/components/schemas/ConstraintViolationProblem"
+                - $ref: "#/components/schemas/Problem"
+                - $ref: "#/components/schemas/ConstraintViolationProblem"
         "500":
           description: Internal Server Error
           content:
@@ -296,42 +349,42 @@ paths:
   /{municipalityId}/scheduled-billing:
     get:
       tags:
-        - Billing Data Collector
+      - Billing Data Collector
       summary: Get all scheduled billing for source data
       operationId: getScheduledBillings
       parameters:
-        - name: municipalityId
-          in: path
-          description: Municipality id
-          required: true
-          schema:
-            type: string
-          example: 2281
-        - name: page
-          in: query
-          description: Zero-based page index (0..N)
-          required: false
-          schema:
-            type: integer
-            default: 0
-            minimum: 0
-        - name: size
-          in: query
-          description: The size of the page to be returned
-          required: false
-          schema:
-            type: integer
-            default: 20
-            minimum: 1
-        - name: sort
-          in: query
-          description: "Sorting criteria in the format: property,(asc|desc). Default\
+      - name: municipalityId
+        in: path
+        description: Municipality id
+        required: true
+        schema:
+          type: string
+        example: 2281
+      - name: page
+        in: query
+        description: Zero-based page index (0..N)
+        required: false
+        schema:
+          type: integer
+          default: 0
+          minimum: 0
+      - name: size
+        in: query
+        description: The size of the page to be returned
+        required: false
+        schema:
+          type: integer
+          default: 20
+          minimum: 1
+      - name: sort
+        in: query
+        description: "Sorting criteria in the format: property,(asc|desc). Default\
           \ sort order is ascending. Multiple sort criteria are supported."
-          required: false
-          schema:
-            type: array
-            items:
-              type: string
+        required: false
+        schema:
+          type: array
+          items:
+            type: string
       responses:
         "200":
           description: Successful
@@ -345,8 +398,8 @@ paths:
             application/problem+json:
               schema:
                 oneOf:
-                  - $ref: "#/components/schemas/Problem"
-                  - $ref: "#/components/schemas/ConstraintViolationProblem"
+                - $ref: "#/components/schemas/Problem"
+                - $ref: "#/components/schemas/ConstraintViolationProblem"
         "500":
           description: Internal Server Error
           content:
@@ -361,17 +414,17 @@ paths:
                 $ref: "#/components/schemas/Problem"
     post:
       tags:
-        - Billing Data Collector
+      - Billing Data Collector
       summary: Adds scheduled billing for source data
       operationId: addScheduledBilling
       parameters:
-        - name: municipalityId
-          in: path
-          description: Municipality id
-          required: true
-          schema:
-            type: string
-          example: 2281
+      - name: municipalityId
+        in: path
+        description: Municipality id
+        required: true
+        schema:
+          type: string
+        example: 2281
       requestBody:
         content:
           application/json:
@@ -387,8 +440,8 @@ paths:
             application/problem+json:
               schema:
                 oneOf:
-                  - $ref: "#/components/schemas/Problem"
-                  - $ref: "#/components/schemas/ConstraintViolationProblem"
+                - $ref: "#/components/schemas/Problem"
+                - $ref: "#/components/schemas/ConstraintViolationProblem"
         "500":
           description: Internal Server Error
           content:
@@ -404,34 +457,34 @@ paths:
   /{municipalityId}/scheduled-billing/external/{source}/{externalId}:
     get:
       tags:
-        - Billing Data Collector
+      - Billing Data Collector
       summary: Get scheduled billing by external id
       operationId: getScheduledBillingExternalId
       parameters:
-        - name: municipalityId
-          in: path
-          description: Municipality id
-          required: true
-          schema:
-            type: string
-          example: 2281
-        - name: source
-          in: path
-          description: Source system where data is collected
-          required: true
-          schema:
-            type: string
-            enum:
-              - CONTRACT
-              - OPENE
-          example: CONTRACT
-        - name: externalId
-          in: path
-          description: externalId of scheduled billing
-          required: true
-          schema:
-            type: string
-          example: b82bd8ac-1507-4d9a-958d-369261eecc14
+      - name: municipalityId
+        in: path
+        description: Municipality id
+        required: true
+        schema:
+          type: string
+        example: 2281
+      - name: source
+        in: path
+        description: Source system where data is collected
+        required: true
+        schema:
+          type: string
+          enum:
+          - CONTRACT
+          - OPENE
+        example: CONTRACT
+      - name: externalId
+        in: path
+        description: externalId of scheduled billing
+        required: true
+        schema:
+          type: string
+        example: b82bd8ac-1507-4d9a-958d-369261eecc14
       responses:
         "200":
           description: Successful
@@ -451,8 +504,8 @@ paths:
             application/problem+json:
               schema:
                 oneOf:
-                  - $ref: "#/components/schemas/Problem"
-                  - $ref: "#/components/schemas/ConstraintViolationProblem"
+                - $ref: "#/components/schemas/Problem"
+                - $ref: "#/components/schemas/ConstraintViolationProblem"
         "500":
           description: Internal Server Error
           content:
@@ -468,31 +521,31 @@ paths:
   /{municipalityId}/counterpart:
     get:
       tags:
-        - Counterpart
+      - Counterpart
       summary: Find counterpart by partyId and stakeholderType
       operationId: getCounterpart
       parameters:
-        - name: municipalityId
-          in: path
-          description: Municipality id
-          required: true
-          schema:
-            type: string
-          example: 2281
-        - name: partyId
-          in: query
-          description: Party id
-          required: true
-          schema:
-            type: string
-          example: fb2f0290-3820-11ed-a261-0242ac120002
-        - name: stakeholderType
-          in: query
-          description: Stakeholder type
-          required: false
-          schema:
-            type: string
-          example: PERSON
+      - name: municipalityId
+        in: path
+        description: Municipality id
+        required: true
+        schema:
+          type: string
+        example: 2281
+      - name: partyId
+        in: query
+        description: Party id
+        required: true
+        schema:
+          type: string
+        example: fb2f0290-3820-11ed-a261-0242ac120002
+      - name: stakeholderType
+        in: query
+        description: Stakeholder type
+        required: false
+        schema:
+          type: string
+        example: PERSON
       responses:
         "200":
           description: Successful
@@ -512,8 +565,8 @@ paths:
             application/problem+json:
               schema:
                 oneOf:
-                  - $ref: "#/components/schemas/Problem"
-                  - $ref: "#/components/schemas/ConstraintViolationProblem"
+                - $ref: "#/components/schemas/Problem"
+                - $ref: "#/components/schemas/ConstraintViolationProblem"
         "500":
           description: Internal Server Error
           content:
@@ -529,7 +582,7 @@ paths:
   /api-docs:
     get:
       tags:
-        - API
+      - API
       summary: OpenAPI
       operationId: getApiDocs
       responses:
@@ -547,16 +600,16 @@ components:
     Problem:
       type: object
       properties:
+        title:
+          type: string
+        detail:
+          type: string
         instance:
           type: string
           format: uri
         type:
           type: string
           format: uri
-        title:
-          type: string
-        detail:
-          type: string
         status:
           type: integer
           format: int32
@@ -568,7 +621,7 @@ components:
           type: string
           description: Unique id for scheduled billing
           examples:
-            - f0882f1d-06bc-47fd-b017-1d8307f5ce95
+          - f0882f1d-06bc-47fd-b017-1d8307f5ce95
           readOnly: true
         externalId:
           type: string
@@ -580,8 +633,8 @@ components:
           type: string
           description: Source system where billing data is collected
           enum:
-            - CONTRACT
-            - OPENE
+          - CONTRACT
+          - OPENE
           example: CONTRACT
         billingDaysOfMonth:
           type: array
@@ -624,11 +677,18 @@ components:
           default: false
           description: "If set to true, scheduled billing will not be triggered"
           example: false
+        finalBillingDate:
+          type: string
+          format: date
+          description: "If set, this is the last billing — no further billings will\
+            \ be scheduled after this date"
+          example: 2026-06-30
+          readOnly: true
       required:
-        - billingDaysOfMonth
-        - billingMonths
-        - externalId
-        - source
+      - billingDaysOfMonth
+      - billingMonths
+      - externalId
+      - source
     ConstraintViolationProblem:
       type: object
       properties:
@@ -644,13 +704,13 @@ components:
             $ref: "#/components/schemas/Violation"
         title:
           type: string
+        causeAsProblem:
+          $ref: "#/components/schemas/ThrowableProblem"
+        detail:
+          type: string
         instance:
           type: string
           format: uri
-        detail:
-          type: string
-        causeAsProblem:
-          $ref: "#/components/schemas/ThrowableProblem"
     ThrowableProblem:
       type: object
       properties:
@@ -675,15 +735,47 @@ components:
           type: string
         message:
           type: string
+    EventRequest:
+      type: object
+      description: Billing source event
+      properties:
+        id:
+          type: string
+          description: External id
+          example: 2026-00001
+        municipalityId:
+          type: string
+          description: Municipality id
+          example: "2281"
+        eventType:
+          type: string
+          description: Event type
+          enum:
+          - CREATED
+          - UPDATED
+          - DELETED
+          - TERMINATED
+          example: CREATED
     PageScheduledBilling:
       type: object
       properties:
-        totalElements:
-          type: integer
-          format: int64
         totalPages:
           type: integer
           format: int32
+        totalElements:
+          type: integer
+          format: int64
+        pageable:
+          $ref: "#/components/schemas/PageableObject"
+        numberOfElements:
+          type: integer
+          format: int32
+        sort:
+          $ref: "#/components/schemas/SortObject"
+        first:
+          type: boolean
+        last:
+          type: boolean
         size:
           type: integer
           format: int32
@@ -694,44 +786,33 @@ components:
         number:
           type: integer
           format: int32
-        pageable:
-          $ref: "#/components/schemas/PageableObject"
-        numberOfElements:
-          type: integer
-          format: int32
-        first:
-          type: boolean
-        last:
-          type: boolean
-        sort:
-          $ref: "#/components/schemas/SortObject"
         empty:
           type: boolean
     PageableObject:
       type: object
       properties:
-        offset:
-          type: integer
-          format: int64
-        pageSize:
-          type: integer
-          format: int32
-        pageNumber:
-          type: integer
-          format: int32
         unpaged:
           type: boolean
         paged:
           type: boolean
+        pageNumber:
+          type: integer
+          format: int32
+        pageSize:
+          type: integer
+          format: int32
         sort:
           $ref: "#/components/schemas/SortObject"
+        offset:
+          type: integer
+          format: int64
     SortObject:
       type: object
       properties:
-        empty:
-          type: boolean
         unsorted:
           type: boolean
         sorted:
+          type: boolean
+        empty:
           type: boolean
   securitySchemes: {}

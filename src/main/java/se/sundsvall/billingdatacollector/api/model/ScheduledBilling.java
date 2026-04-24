@@ -61,4 +61,7 @@ public class ScheduledBilling {
 
 	@Schema(description = "If set to true, scheduled billing will not be triggered", example = "false", defaultValue = "false")
 	private Boolean paused;
+
+	@Schema(description = "If set, this is the last billing — no further billings will be scheduled after this date", example = "2026-06-30", accessMode = READ_ONLY)
+	private LocalDate finalBillingDate;
 }
