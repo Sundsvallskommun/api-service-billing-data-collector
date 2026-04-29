@@ -1,7 +1,5 @@
 package se.sundsvall.billingdatacollector.service.source;
 
-import java.time.LocalDate;
-import java.util.function.Consumer;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -11,6 +9,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import se.sundsvall.billingdatacollector.integration.db.model.ScheduledBillingEntity;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
@@ -240,8 +239,9 @@ class AbstractHandlerTest {
 
 	private static class DummyHandler extends AbstractHandler {
 		@Override
-		public void sendBillingRecords(String municipalityId, String externalId, LocalDate scheduledDate, Consumer<String> unhealthyMessageConsumer) {
+		public BillingResult sendBillingRecords(ScheduledBillingEntity entity) {
 			// Not implemented as dummy class is only used by test
+			return new BillingResult.Sent(null);
 		}
 	}
 }

@@ -14,6 +14,7 @@ import se.sundsvall.dept44.problem.Problem;
 
 import static java.util.function.Predicate.not;
 import static org.springframework.http.HttpStatus.NOT_FOUND;
+import static se.sundsvall.dept44.util.LogUtils.sanitizeForLogging;
 
 @Service
 @Transactional(readOnly = true)
@@ -60,7 +61,8 @@ public class CounterpartMappingService {
 			}
 		}
 
-		LOG.warn("No counterpart found for partyId: {}, stakeholderType: {}", partyId, stakeholderType);
+		LOG.warn("No counterpart found for partyId: {}, stakeholderType: {}",
+			sanitizeForLogging(partyId), sanitizeForLogging(stakeholderType));
 		throw Problem.builder()
 			.withStatus(NOT_FOUND)
 			.withDetail("No counterpart found for partyId: " + partyId + " or stakeholderType: " + stakeholderType)

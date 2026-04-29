@@ -16,15 +16,15 @@ import org.springframework.test.util.ReflectionTestUtils;
 import se.sundsvall.billingdatacollector.api.model.BillingSource;
 import se.sundsvall.billingdatacollector.integration.db.model.ScheduledBillingEntity;
 import se.sundsvall.billingdatacollector.service.ScheduledBillingService;
+import se.sundsvall.billingdatacollector.service.source.BillingResult;
 import se.sundsvall.billingdatacollector.service.source.BillingSourceHandler;
 import se.sundsvall.dept44.scheduling.health.Dept44HealthUtility;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.within;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.contains;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.doNothing;
-import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
@@ -37,7 +37,8 @@ class BillingSchedulerTest {
 	private static final String JOB_NAME = "billing-scheduler";
 	private static final String MUNICIPALITY_ID = "2281";
 	private static final String EXTERNAL_ID = "test-external-id";
-	private static final LocalDate NEXT_SCHEDULED_BILLING = LocalDate.of(2025, 1, 31);
+	private static final LocalDate NEXT_SCHEDULED_BILLING = LocalDate.of(2026, 6, 1);
+	private static final LocalDate NEXT_SLOT = LocalDate.of(2026, 9, 1);
 
 	@Mock
 	private Dept44HealthUtility mockDept44HealthUtility;
@@ -58,96 +59,105 @@ class BillingSchedulerTest {
 	}
 
 	@Test
-	void createBillingRecords_shouldProcessDueBillings_whenHandlerExists() {
-		// Arrange
+	void createBillingRecords_whenSentWithNextSlot_advancesEntity() {
 		var entity = createScheduledBillingEntity(BillingSource.CONTRACT);
 
 		when(mockScheduledBillingService.getDueScheduledBillings()).thenReturn(List.of(entity));
-		doNothing().when(mockContractHandler).sendBillingRecords(eq(MUNICIPALITY_ID), eq(EXTERNAL_ID), eq(NEXT_SCHEDULED_BILLING), any());
-		doNothing().when(mockScheduledBillingService).updateNextScheduledBilling(entity);
+		when(mockContractHandler.sendBillingRecords(entity)).thenReturn(new BillingResult.Sent(NEXT_SLOT));
 
-		// Act
 		billingScheduler.createBillingRecords();
 
-		// Assert
 		assertThat(entity.getLastBilled()).isCloseTo(OffsetDateTime.now(), within(2, ChronoUnit.SECONDS));
-		verify(mockScheduledBillingService).getDueScheduledBillings();
-		verify(mockContractHandler).sendBillingRecords(eq(MUNICIPALITY_ID), eq(EXTERNAL_ID), eq(NEXT_SCHEDULED_BILLING), any());
-		verify(mockScheduledBillingService).updateNextScheduledBilling(entity);
+		assertThat(entity.getNextScheduledBilling()).isEqualTo(NEXT_SLOT);
+		verify(mockScheduledBillingService).saveScheduledBillingEntity(entity);
+		verify(mockScheduledBillingService, never()).deleteScheduledBillingEntity(any());
 		verifyNoInteractions(mockDept44HealthUtility);
-		verifyNoMoreInteractions(mockScheduledBillingService, mockContractHandler);
 	}
 
 	@Test
-	void createBillingRecords_shouldDeleteEntity_whenFinalBillingDateIsSet() {
-		// Arrange
+	void createBillingRecords_whenSentWithNullNextSlot_deletesEntity() {
 		var entity = createScheduledBillingEntity(BillingSource.CONTRACT);
-		entity.setFinalBillingDate(NEXT_SCHEDULED_BILLING);
 
 		when(mockScheduledBillingService.getDueScheduledBillings()).thenReturn(List.of(entity));
-		doNothing().when(mockContractHandler).sendBillingRecords(eq(MUNICIPALITY_ID), eq(EXTERNAL_ID), eq(NEXT_SCHEDULED_BILLING), any());
-		doNothing().when(mockScheduledBillingService).deleteScheduledBillingEntity(entity);
+		when(mockContractHandler.sendBillingRecords(entity)).thenReturn(new BillingResult.Sent(null));
 
-		// Act
 		billingScheduler.createBillingRecords();
 
-		// Assert
 		assertThat(entity.getLastBilled()).isCloseTo(OffsetDateTime.now(), within(2, ChronoUnit.SECONDS));
-		verify(mockScheduledBillingService).getDueScheduledBillings();
-		verify(mockContractHandler).sendBillingRecords(eq(MUNICIPALITY_ID), eq(EXTERNAL_ID), eq(NEXT_SCHEDULED_BILLING), any());
 		verify(mockScheduledBillingService).deleteScheduledBillingEntity(entity);
-		verify(mockScheduledBillingService, never()).updateNextScheduledBilling(any());
+		verify(mockScheduledBillingService, never()).saveScheduledBillingEntity(any());
 		verifyNoInteractions(mockDept44HealthUtility);
-		verifyNoMoreInteractions(mockScheduledBillingService, mockContractHandler);
+	}
+
+	@Test
+	void createBillingRecords_whenSkipped_deletesEntityWithoutTouchingLastBilled() {
+		var entity = createScheduledBillingEntity(BillingSource.CONTRACT);
+		var lastBilledBefore = entity.getLastBilled();
+
+		when(mockScheduledBillingService.getDueScheduledBillings()).thenReturn(List.of(entity));
+		when(mockContractHandler.sendBillingRecords(entity))
+			.thenReturn(new BillingResult.Skipped("period extends past contract end date"));
+
+		billingScheduler.createBillingRecords();
+
+		assertThat(entity.getLastBilled()).isEqualTo(lastBilledBefore);
+		verify(mockScheduledBillingService).deleteScheduledBillingEntity(entity);
+		verify(mockScheduledBillingService, never()).saveScheduledBillingEntity(any());
+		verifyNoInteractions(mockDept44HealthUtility);
+	}
+
+	@Test
+	void createBillingRecords_whenFailed_marksUnhealthy_andLeavesEntity() {
+		var entity = createScheduledBillingEntity(BillingSource.CONTRACT);
+
+		when(mockScheduledBillingService.getDueScheduledBillings()).thenReturn(List.of(entity));
+		when(mockContractHandler.sendBillingRecords(entity))
+			.thenReturn(new BillingResult.Failed("billing-preprocessor unavailable"));
+
+		billingScheduler.createBillingRecords();
+
+		verify(mockDept44HealthUtility).setHealthIndicatorUnhealthy(eq(JOB_NAME),
+			contains("billing-preprocessor unavailable"));
+		verify(mockScheduledBillingService, never()).deleteScheduledBillingEntity(any());
+		verify(mockScheduledBillingService, never()).saveScheduledBillingEntity(any());
 	}
 
 	@Test
 	void createBillingRecords_shouldSetUnhealthy_whenNoHandlerFound() {
-		// Arrange
 		var entity = createScheduledBillingEntity(BillingSource.OPENE);
 
 		when(mockScheduledBillingService.getDueScheduledBillings()).thenReturn(List.of(entity));
 
-		// Act
 		billingScheduler.createBillingRecords();
 
-		// Assert
-		verify(mockScheduledBillingService).getDueScheduledBillings();
 		verify(mockDept44HealthUtility).setHealthIndicatorUnhealthy(eq(JOB_NAME), any(String.class));
-		verify(mockScheduledBillingService, never()).updateNextScheduledBilling(any());
+		verify(mockScheduledBillingService, never()).saveScheduledBillingEntity(any());
+		verify(mockScheduledBillingService, never()).deleteScheduledBillingEntity(any());
 		verifyNoInteractions(mockContractHandler);
-		verifyNoMoreInteractions(mockScheduledBillingService, mockDept44HealthUtility);
 	}
 
 	@Test
 	void createBillingRecords_shouldSetUnhealthy_whenHandlerThrowsException() {
-		// Arrange
 		var entity = createScheduledBillingEntity(BillingSource.CONTRACT);
 
 		when(mockScheduledBillingService.getDueScheduledBillings()).thenReturn(List.of(entity));
-		doThrow(new RuntimeException("Test exception")).when(mockContractHandler).sendBillingRecords(eq(MUNICIPALITY_ID), eq(EXTERNAL_ID), eq(NEXT_SCHEDULED_BILLING), any());
+		when(mockContractHandler.sendBillingRecords(entity))
+			.thenThrow(new RuntimeException("Test exception"));
 
-		// Act
 		billingScheduler.createBillingRecords();
 
-		// Assert
 		assertThat(entity.getLastBilled()).isNull();
-		verify(mockScheduledBillingService).getDueScheduledBillings();
-		verify(mockContractHandler).sendBillingRecords(eq(MUNICIPALITY_ID), eq(EXTERNAL_ID), eq(NEXT_SCHEDULED_BILLING), any());
 		verify(mockDept44HealthUtility).setHealthIndicatorUnhealthy(eq(JOB_NAME), any(String.class));
-		verify(mockScheduledBillingService, never()).updateNextScheduledBilling(any());
-		verifyNoMoreInteractions(mockScheduledBillingService, mockContractHandler, mockDept44HealthUtility);
+		verify(mockScheduledBillingService, never()).saveScheduledBillingEntity(any());
+		verify(mockScheduledBillingService, never()).deleteScheduledBillingEntity(any());
 	}
 
 	@Test
 	void createBillingRecords_shouldDoNothing_whenNoDueBillings() {
-		// Arrange
 		when(mockScheduledBillingService.getDueScheduledBillings()).thenReturn(Collections.emptyList());
 
-		// Act
 		billingScheduler.createBillingRecords();
 
-		// Assert
 		verify(mockScheduledBillingService).getDueScheduledBillings();
 		verifyNoInteractions(mockDept44HealthUtility, mockContractHandler);
 		verifyNoMoreInteractions(mockScheduledBillingService);
@@ -160,7 +170,7 @@ class BillingSchedulerTest {
 			.withExternalId(EXTERNAL_ID)
 			.withSource(source)
 			.withBillingDaysOfMonth(Set.of(1))
-			.withBillingMonths(Set.of(1))
+			.withBillingMonths(Set.of(3, 6, 9, 12))
 			.withPaused(false)
 			.withNextScheduledBilling(NEXT_SCHEDULED_BILLING)
 			.build();

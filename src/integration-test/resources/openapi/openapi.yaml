@@ -684,6 +684,15 @@ components:
             \ be scheduled after this date"
           example: 2026-06-30
           readOnly: true
+        invoicedIn:
+          type: string
+          description: Direction of invoicing on the contract — used to detect ADVANCE↔ARREARS
+            switches mid-contract.
+          enum:
+          - ADVANCE
+          - ARREARS
+          example: ADVANCE
+          readOnly: true
       required:
       - billingDaysOfMonth
       - billingMonths
@@ -743,9 +752,11 @@ components:
           type: string
           description: External id
           example: 2026-00001
+          minLength: 1
         municipalityId:
           type: string
-          description: Municipality id
+          description: Municipality id (taken from the path parameter when this event
+            is delivered via the events endpoint)
           example: "2281"
         eventType:
           type: string
@@ -756,6 +767,9 @@ components:
           - DELETED
           - TERMINATED
           example: CREATED
+      required:
+      - eventType
+      - id
     PageScheduledBilling:
       type: object
       properties:

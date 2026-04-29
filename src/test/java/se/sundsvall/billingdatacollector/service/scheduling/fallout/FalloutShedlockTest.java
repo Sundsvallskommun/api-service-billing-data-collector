@@ -38,12 +38,12 @@ class FalloutShedlockTest {
 	public static class ShedlockTestConfiguration {
 		@Bean
 		@Primary
-		public FalloutJobHandler createMock() {
+		FalloutJobHandler createMock() {
 
 			final var mockFalloutJobHandler = Mockito.mock(FalloutJobHandler.class);
 
 			// Let mock hang
-			doAnswer(invocation -> {
+			doAnswer(_ -> {
 				mockCalledTime = LocalDateTime.now();
 				await().forever()
 					.until(() -> false);

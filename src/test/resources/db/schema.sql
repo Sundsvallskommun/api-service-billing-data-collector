@@ -45,6 +45,7 @@
         billing_days_of_month varchar(255) not null,
         billing_months varchar(255) not null,
         id varchar(255) not null,
+        invoiced_in enum ('ADVANCE','ARREARS'),
         source enum ('CONTRACT','OPENE') not null,
         primary key (id)
     ) engine=InnoDB;

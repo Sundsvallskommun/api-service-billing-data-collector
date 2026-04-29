@@ -8,6 +8,7 @@ import java.util.UUID;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import se.sundsvall.billingdatacollector.api.model.BillingSource;
+import se.sundsvall.billingdatacollector.api.model.InvoicedIn;
 
 import static com.google.code.beanmatchers.BeanMatchers.hasValidBeanConstructor;
 import static com.google.code.beanmatchers.BeanMatchers.hasValidBeanEquals;
@@ -48,6 +49,7 @@ class ScheduledBillingEntityTest {
 		final var lastBilled = OffsetDateTime.now();
 		final var nextScheduledBilling = LocalDate.now().plusMonths(1);
 		final var finalBillingDate = LocalDate.now().plusMonths(3);
+		final var invoicedIn = InvoicedIn.ADVANCE;
 		final var paused = true;
 
 		final var entity = ScheduledBillingEntity.builder()
@@ -60,6 +62,7 @@ class ScheduledBillingEntityTest {
 			.withLastBilled(lastBilled)
 			.withNextScheduledBilling(nextScheduledBilling)
 			.withFinalBillingDate(finalBillingDate)
+			.withInvoicedIn(invoicedIn)
 			.withPaused(paused)
 			.build();
 
@@ -73,6 +76,7 @@ class ScheduledBillingEntityTest {
 		assertThat(entity.getLastBilled()).isEqualTo(lastBilled);
 		assertThat(entity.getNextScheduledBilling()).isEqualTo(nextScheduledBilling);
 		assertThat(entity.getFinalBillingDate()).isEqualTo(finalBillingDate);
+		assertThat(entity.getInvoicedIn()).isEqualTo(invoicedIn);
 		assertThat(entity.isPaused()).isEqualTo(paused);
 	}
 

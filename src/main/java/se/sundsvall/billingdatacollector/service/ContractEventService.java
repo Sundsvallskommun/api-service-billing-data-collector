@@ -4,6 +4,7 @@ import generated.se.sundsvall.contract.Contract;
 import generated.se.sundsvall.contract.InvoicedIn;
 import generated.se.sundsvall.contract.LeaseType;
 import generated.se.sundsvall.contract.Status;
+import java.time.Clock;
 import java.time.LocalDate;
 import java.time.Month;
 import java.util.Set;
@@ -13,10 +14,14 @@ import org.springframework.stereotype.Service;
 import se.sundsvall.billingdatacollector.api.model.BillingSource;
 import se.sundsvall.billingdatacollector.api.model.EventRequest;
 import se.sundsvall.billingdatacollector.integration.contract.ContractIntegration;
+import se.sundsvall.billingdatacollector.service.util.BillingPeriodCalculator;
 import se.sundsvall.billingdatacollector.service.util.ScheduledBillingUtil;
 
 import static se.sundsvall.dept44.util.LogUtils.sanitizeForLogging;
 
+// Bean name is intentionally upper-case to match BillingSource.name(), which
+// is the lookup key used by CollectorResource.handleEvent. The convention is
+// documented in CLAUDE.md.
 @Service("CONTRACT")
 public class ContractEventService implements BillingEventHandler {
 
@@ -32,10 +37,13 @@ public class ContractEventService implements BillingEventHandler {
 
 	private final ScheduledBillingService scheduledBillingService;
 	private final ContractIntegration contractIntegration;
+	private final Clock clock;
 
-	public ContractEventService(ScheduledBillingService scheduledBillingService, ContractIntegration contractIntegration) {
+	public ContractEventService(ScheduledBillingService scheduledBillingService,
+		ContractIntegration contractIntegration, Clock clock) {
 		this.scheduledBillingService = scheduledBillingService;
 		this.contractIntegration = contractIntegration;
+		this.clock = clock;
 	}
 
 	@Override
@@ -53,14 +61,8 @@ public class ContractEventService implements BillingEventHandler {
 
 	private void handleCreated(String municipalityId, String contractId) {
 		contractIntegration.getContract(municipalityId, contractId)
-			.ifPresent(contract -> {
-				if (isBillable(contract)) {
-					var billingMonths = calculateBillingMonths(contract);
-					scheduledBillingService.upsert(municipalityId, contractId, SOURCE,
-						billingMonths, BILLING_DAYS_OF_MONTH, calculateStartFrom(contract, billingMonths));
-					applyEndDateLogic(municipalityId, contractId, contract);
-				}
-			});
+			.filter(this::isBillable)
+			.ifPresent(contract -> upsertAndApplyEndDate(municipalityId, contractId, contract));
 	}
 
 	private void handleUpdated(String municipalityId, String contractId) {
@@ -68,14 +70,40 @@ public class ContractEventService implements BillingEventHandler {
 			.ifPresentOrElse(
 				contract -> {
 					if (isBillable(contract)) {
-						scheduledBillingService.upsert(municipalityId, contractId, SOURCE,
-							calculateBillingMonths(contract), BILLING_DAYS_OF_MONTH, LocalDate.now());
-						applyEndDateLogic(municipalityId, contractId, contract);
+						upsertAndApplyEndDate(municipalityId, contractId, contract);
 					} else {
 						scheduledBillingService.deleteByExternalId(municipalityId, contractId, SOURCE);
 					}
 				},
 				() -> scheduledBillingService.deleteByExternalId(municipalityId, contractId, SOURCE));
+	}
+
+	/**
+	 * Shared CREATED/UPDATED path: upsert the schedule (preserving
+	 * {@code nextScheduledBilling} on existing rows unless the cadence or
+	 * invoicing direction actually changed), then re-evaluate the end date.
+	 */
+	private void upsertAndApplyEndDate(String municipalityId, String contractId, Contract contract) {
+		var billingMonths = calculateBillingMonths(contract);
+		var invoicedIn = mapInvoicedIn(contract.getInvoicing().getInvoicedIn());
+		scheduledBillingService.upsert(municipalityId, contractId, SOURCE,
+			billingMonths, BILLING_DAYS_OF_MONTH, invoicedIn,
+			() -> calculateStartFrom(contract, billingMonths));
+		applyEndDateLogic(municipalityId, contractId, contract);
+	}
+
+	/**
+	 * Maps the generated Contract-service {@code InvoicedIn} to the BDC-owned
+	 * persistence enum so the entity layer is independent of the generated
+	 * model. Returns {@code null} if the source value is null (treated as
+	 * "unknown direction" downstream).
+	 */
+	private static se.sundsvall.billingdatacollector.api.model.InvoicedIn mapInvoicedIn(InvoicedIn source) {
+		return switch (source) {
+			case null -> null;
+			case ADVANCE -> se.sundsvall.billingdatacollector.api.model.InvoicedIn.ADVANCE;
+			case ARREARS -> se.sundsvall.billingdatacollector.api.model.InvoicedIn.ARREARS;
+		};
 	}
 
 	private void handleDeleted(String municipalityId, String contractId) {
@@ -85,27 +113,37 @@ public class ContractEventService implements BillingEventHandler {
 	private void handleTerminated(String municipalityId, String contractId) {
 		contractIntegration.getContract(municipalityId, contractId)
 			.ifPresentOrElse(
-				contract -> applyEndDateLogic(municipalityId, contractId, contract),
+				contract -> {
+					if (contract.getEndDate() != null) {
+						applyEndDateLogic(municipalityId, contractId, contract);
+					} else {
+						// Terminated without an end date — no further billings
+						// make sense for this contract.
+						scheduledBillingService.deleteByExternalId(municipalityId, contractId, SOURCE);
+					}
+				},
 				() -> scheduledBillingService.deleteByExternalId(municipalityId, contractId, SOURCE));
 	}
 
 	/**
-	 * Evaluates whether the scheduled billing for a contract should be kept (and marked as final)
-	 * or removed, based on the contract's endDate and invoicing direction.
+	 * Cleans up the scheduled billing when a contract's end date is known and
+	 * the next scheduled slot already lies inside an out-of-contract period.
+	 * The actual decision of "is this billing the last one?" is made on every
+	 * scheduler tick by {@code ContractBillingHandler.sendBillingRecords},
+	 * which compares the live contract against the period being billed; this
+	 * method only handles the early-cleanup case where there is nothing left
+	 * to bill at all.
 	 *
-	 * <ul>
-	 * <li>ADVANCE + endDate after nextScheduledBilling → keep, mark as final</li>
-	 * <li>ADVANCE + endDate on/before nextScheduledBilling → delete</li>
-	 * <li>ARREARS + endDate on/before nextScheduledBilling → keep, mark as final</li>
-	 * <li>ARREARS + endDate after nextScheduledBilling → delete</li>
-	 * <li>endDate null or invoicedIn null → no action (insufficient information)</li>
-	 * </ul>
+	 * <p>
+	 * No-ops when {@code endDate} or {@code invoicedIn} is null
+	 * (insufficient information), or when no scheduled billing exists for
+	 * the contract.
 	 */
 	private void applyEndDateLogic(String municipalityId, String contractId, Contract contract) {
-		LocalDate endDate = contract.getEndDate();
-		InvoicedIn invoicedIn = contract.getInvoicing() != null ? contract.getInvoicing().getInvoicedIn() : null;
-
-		if (endDate == null || invoicedIn == null) {
+		var endDate = contract.getEndDate();
+		var invoicedIn = contract.getInvoicing() != null ? contract.getInvoicing().getInvoicedIn() : null;
+		var interval = contract.getInvoicing() != null ? contract.getInvoicing().getInvoiceInterval() : null;
+		if (endDate == null || invoicedIn == null || interval == null) {
 			return;
 		}
 
@@ -114,37 +152,54 @@ public class ContractEventService implements BillingEventHandler {
 			return;
 		}
 
-		boolean advance = InvoicedIn.ADVANCE.equals(invoicedIn);
-		boolean keepAsFinal = advance
-			? endDate.isAfter(nextBilling.get())
-			: !endDate.isAfter(nextBilling.get());
-
-		if (keepAsFinal) {
-			scheduledBillingService.updateFinalBillingDate(municipalityId, contractId, SOURCE, endDate);
-		} else {
+		// Current slot's period extends past end date — no more billings will
+		// be valid, drop the schedule. When the period still fits, the
+		// scheduler will fire as planned and ContractBillingHandler decides
+		// whether the following slot is still within the contract.
+		var currentPeriod = BillingPeriodCalculator.computePeriod(nextBilling.get(), interval, invoicedIn);
+		if (currentPeriod.endDate().isAfter(endDate)) {
 			scheduledBillingService.deleteByExternalId(municipalityId, contractId, SOURCE);
 		}
 	}
 
 	/**
-	 * Calculates the first nextScheduledBilling date based on startDate and invoicing direction.
+	 * Returns the lower bound to feed into
+	 * {@link ScheduledBillingUtil#calculateNextScheduledBilling} when computing
+	 * the very first {@code nextScheduledBilling} for a contract.
 	 *
 	 * <ul>
-	 * <li>ADVANCE: first slot on or after startDate (billing precedes the period)</li>
-	 * <li>ARREARS: first slot after the first full period, i.e. the slot after the first ADVANCE slot
-	 * (billing follows the period)</li>
-	 * <li>null invoicedIn: falls back to ADVANCE behavior</li>
+	 * <li><b>ADVANCE</b>: the first valid slot is the next billing slot on
+	 * or after the contract's start date — the invoice covers the
+	 * period that follows the slot. If the start date lies in the past
+	 * we clamp to today so we never schedule a billing for a slot that
+	 * has already passed; the gap is handled by a manual invoice.</li>
+	 * <li><b>ARREARS</b>: billing follows the period, so the first valid
+	 * slot is the slot <em>after</em> the first slot found from
+	 * {@code startDate}. We do <em>not</em> clamp to today here — the
+	 * skip-one-slot rule already protects against billing for a period
+	 * that started before the contract, and clamping would over-skip
+	 * when {@code startDate} is in the past.</li>
+	 * <li><b>Null invoicedIn</b>: defaults to ADVANCE behaviour.</li>
 	 * </ul>
 	 */
 	private LocalDate calculateStartFrom(Contract contract, Set<Integer> billingMonths) {
-		var startDate = contract.getStartDate() != null ? contract.getStartDate() : LocalDate.now();
+		var today = LocalDate.now(clock);
+		var contractStart = contract.getStartDate() != null ? contract.getStartDate() : today;
 		var invoicedIn = contract.getInvoicing().getInvoicedIn();
 
 		if (InvoicedIn.ARREARS.equals(invoicedIn)) {
-			var firstAdvanceSlot = ScheduledBillingUtil.calculateNextScheduledBilling(BILLING_DAYS_OF_MONTH, billingMonths, startDate);
-			return ScheduledBillingUtil.calculateNextScheduledBilling(BILLING_DAYS_OF_MONTH, billingMonths, firstAdvanceSlot.plusDays(1));
+			// Skip the first slot whose period starts before the contract.
+			// ARREARS bills at the end of the covered period, so the first
+			// scheduled billing belongs to the second slot. No today-clamp
+			// here — see javadoc.
+			var firstAdvanceSlot = ScheduledBillingUtil.calculateNextScheduledBilling(
+				BILLING_DAYS_OF_MONTH, billingMonths, contractStart);
+			return ScheduledBillingUtil.calculateNextScheduledBilling(
+				BILLING_DAYS_OF_MONTH, billingMonths, firstAdvanceSlot.plusDays(1));
 		}
-		return startDate;
+
+		// ADVANCE — clamp to today so we never schedule a billing in the past.
+		return contractStart.isBefore(today) ? today : contractStart;
 	}
 
 	private boolean isBillable(Contract contract) {

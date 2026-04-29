@@ -38,12 +38,12 @@ class BillingShedlockTest {
 	public static class ShedlockTestConfiguration {
 		@Bean
 		@Primary
-		public BillingJobHandler createMock() {
+		BillingJobHandler createMock() {
 
 			final var mockBillingJobHandler = Mockito.mock(BillingJobHandler.class);
 
 			// Let mock hang
-			doAnswer(invocation -> {
+			doAnswer(_ -> {
 				mockCalledTime = LocalDateTime.now();
 				await().forever()
 					.until(() -> false);

@@ -202,7 +202,7 @@ class CollectorResource {
 	ResponseEntity<Void> handleEvent(
 		@Parameter(name = "municipalityId", description = "Municipality id", example = "2281") @ValidMunicipalityId @PathVariable final String municipalityId,
 		@Parameter(name = "source", description = "Source system sending the event", example = "CONTRACT") @PathVariable final BillingSource source,
-		@NotNull @RequestBody final EventRequest request) {
+		@Valid @NotNull @RequestBody final EventRequest request) {
 		var handler = eventHandlers.get(source.name());
 		if (handler == null) {
 			throw Problem.builder()

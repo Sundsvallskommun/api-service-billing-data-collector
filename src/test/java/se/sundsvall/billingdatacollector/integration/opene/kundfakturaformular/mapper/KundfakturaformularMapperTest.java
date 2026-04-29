@@ -28,34 +28,51 @@ class KundfakturaformularMapperTest {
 	}
 
 	@Test
-	void mapToInternalOrganizationBillingRecord() {
+	void mapToInternalOrganization_setsWrapperFields() {
 		final var wrapper = mapper.mapToBillingRecordWrapper(readBytesFromOpenEFile("flow-instance.internal.organization.xml"));
 
-		// Assert the BillingRecordWrapper fields
 		assertThat(wrapper.getFlowInstanceId()).isEqualTo("6859");
 		assertThat(wrapper.getFamilyId()).isEqualTo("123");
 		assertThat(wrapper.getLegalId()).isEqualTo("2120002411");
+	}
 
-		final var billingRecord = wrapper.getBillingRecord();
+	@Test
+	void mapToInternalOrganization_setsBillingRecordHeader() {
+		final var billingRecord = mapper.mapToBillingRecordWrapper(readBytesFromOpenEFile("flow-instance.internal.organization.xml")).getBillingRecord();
+
 		assertThat(billingRecord).isNotNull();
 		assertThat(billingRecord.getCategory()).isEqualTo("CUSTOMER_INVOICE");
 		assertThat(billingRecord.getType()).isEqualTo(INTERNAL);
 		assertThat(billingRecord.getStatus()).isEqualTo(APPROVED);
 		assertThat(billingRecord.getApprovedBy()).isEqualTo("E_SERVICE");
+	}
 
-		final var recipient = billingRecord.getRecipient();
+	@Test
+	void mapToInternalOrganization_setsRecipient() {
+		final var recipient = mapper.mapToBillingRecordWrapper(readBytesFromOpenEFile("flow-instance.internal.organization.xml"))
+			.getBillingRecord().getRecipient();
+
 		assertThat(recipient).isNotNull();
 		assertThat(recipient.getLegalId()).isEqualTo("2120002411");
 		assertThat(recipient.getOrganizationName()).isEqualTo("Sundsvalls Kommun");
+	}
 
-		final var invoice = billingRecord.getInvoice();
+	@Test
+	void mapToInternalOrganization_setsInvoiceMetadata() {
+		final var invoice = mapper.mapToBillingRecordWrapper(readBytesFromOpenEFile("flow-instance.internal.organization.xml"))
+			.getBillingRecord().getInvoice();
+
 		assertThat(invoice).isNotNull();
 		assertThat(invoice.getCustomerId()).isEqualTo("15");
 		assertThat(invoice.getDescription()).isEqualTo("Kundfaktura");
 		assertThat(invoice.getOurReference()).isEqualTo("Kalle Anka");
 		assertThat(invoice.getCustomerReference()).isEqualTo("1JAN16LAN");
+	}
 
-		final var invoiceRows = invoice.getInvoiceRows();
+	@Test
+	void mapToInternalOrganization_setsInvoiceRows() {
+		final var invoiceRows = mapper.mapToBillingRecordWrapper(readBytesFromOpenEFile("flow-instance.internal.organization.xml"))
+			.getBillingRecord().getInvoice().getInvoiceRows();
 
 		assertThat(invoiceRows).satisfiesExactlyInAnyOrder(
 			row -> {
@@ -123,36 +140,60 @@ class KundfakturaformularMapperTest {
 	}
 
 	@Test
-	void mapToExternalPersonBillingRecord() {
-		final var openEFile = readBytesFromOpenEFile("flow-instance.external.person.xml");
-		final var billingRecordWrapper = mapper.mapToBillingRecordWrapper(openEFile);
+	void mapToExternalPerson_setsWrapperFields() {
+		final var billingRecordWrapper = mapper.mapToBillingRecordWrapper(readBytesFromOpenEFile("flow-instance.external.person.xml"));
 
 		assertThat(billingRecordWrapper.getFamilyId()).isEqualTo("358");
 		assertThat(billingRecordWrapper.getFlowInstanceId()).isEqualTo("225965");
 		assertThat(billingRecordWrapper.getLegalId()).isEqualTo("199001012385");
+	}
 
-		final var billingRecord = billingRecordWrapper.getBillingRecord();
+	@Test
+	void mapToExternalPerson_setsBillingRecordHeader() {
+		final var billingRecord = mapper.mapToBillingRecordWrapper(readBytesFromOpenEFile("flow-instance.external.person.xml"))
+			.getBillingRecord();
+
 		assertThat(billingRecord.getCategory()).isEqualTo("CUSTOMER_INVOICE");
 		assertThat(billingRecord.getType()).isEqualTo(EXTERNAL);
 		assertThat(billingRecord.getStatus()).isEqualTo(APPROVED);
 		assertThat(billingRecord.getApprovedBy()).isEqualTo("E_SERVICE");
+	}
 
-		final var recipient = billingRecord.getRecipient();
+	@Test
+	void mapToExternalPerson_setsRecipient() {
+		final var recipient = mapper.mapToBillingRecordWrapper(readBytesFromOpenEFile("flow-instance.external.person.xml"))
+			.getBillingRecord().getRecipient();
+
 		assertThat(recipient.getFirstName()).isEqualTo("Kajsa");
 		assertThat(recipient.getLastName()).isEqualTo("Anka");
+	}
 
-		final var addressDetails = recipient.getAddressDetails();
+	@Test
+	void mapToExternalPerson_setsAddressDetails() {
+		final var addressDetails = mapper.mapToBillingRecordWrapper(readBytesFromOpenEFile("flow-instance.external.person.xml"))
+			.getBillingRecord().getRecipient().getAddressDetails();
+
 		assertThat(addressDetails.getStreet()).isEqualTo("Sundsvall 222");
 		assertThat(addressDetails.getPostalCode()).isEqualTo("123 45");
 		assertThat(addressDetails.getCity()).isEqualTo("ANKEBORG");
+	}
 
-		final var invoice = billingRecord.getInvoice();
+	@Test
+	void mapToExternalPerson_setsInvoiceMetadata() {
+		final var invoice = mapper.mapToBillingRecordWrapper(readBytesFromOpenEFile("flow-instance.external.person.xml"))
+			.getBillingRecord().getInvoice();
+
 		assertThat(invoice.getCustomerId()).isEqualTo("860");
 		assertThat(invoice.getDescription()).isEqualTo("Kundfaktura");
 		assertThat(invoice.getOurReference()).isEqualTo("Kalle Anka");
 		assertThat(invoice.getCustomerReference()).isEqualTo("Kajsa Anka");
+	}
 
-		final var invoiceRows = invoice.getInvoiceRows();
+	@Test
+	void mapToExternalPerson_setsInvoiceRow() {
+		final var invoiceRows = mapper.mapToBillingRecordWrapper(readBytesFromOpenEFile("flow-instance.external.person.xml"))
+			.getBillingRecord().getInvoice().getInvoiceRows();
+
 		assertThat(invoiceRows).hasSize(1);
 
 		final var invoiceRow = invoiceRows.getFirst();

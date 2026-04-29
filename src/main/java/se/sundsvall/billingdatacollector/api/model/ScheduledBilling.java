@@ -64,4 +64,7 @@ public class ScheduledBilling {
 
 	@Schema(description = "If set, this is the last billing — no further billings will be scheduled after this date", example = "2026-06-30", accessMode = READ_ONLY)
 	private LocalDate finalBillingDate;
+
+	@Schema(description = "Direction of invoicing on the contract — used to detect ADVANCE↔ARREARS switches mid-contract.", example = "ADVANCE", accessMode = READ_ONLY)
+	private InvoicedIn invoicedIn;
 }

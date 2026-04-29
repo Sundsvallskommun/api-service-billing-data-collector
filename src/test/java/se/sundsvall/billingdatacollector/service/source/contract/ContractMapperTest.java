@@ -367,6 +367,32 @@ class ContractMapperTest {
 
 	}
 
+	/**
+	 * MONTHLY contracts have never carried a period description on the invoice
+	 * row — verify that no "Avser ..." string is produced regardless of
+	 * direction.
+	 */
+	@ParameterizedTest
+	@org.junit.jupiter.params.provider.EnumSource(value = InvoicedIn.class)
+	void createBillingRecord_monthly_doesNotAddPeriodDescription(InvoicedIn invoicedIn) {
+
+		when(contractMock.getFees()).thenReturn(feesMock);
+		when(feesMock.getYearly()).thenReturn(BigDecimal.valueOf(1000));
+		when(contractMock.getInvoicing()).thenReturn(invoicingMock);
+		when(invoicingMock.getInvoiceInterval()).thenReturn(IntervalType.MONTHLY);
+		when(contractMock.getContractId()).thenReturn(CONTRACT_ID);
+
+		var result = mapper.createBillingRecord(MUNICIPALITY_ID, contractMock, LocalDate.of(2026, 4, 1));
+
+		var invoiceRow = result.getInvoice().getInvoiceRows().getFirst();
+		assertThat(invoiceRow.getDetailedDescriptions())
+			.as("MONTHLY billings must not add a period description, regardless of " + invoicedIn)
+			.noneMatch(description -> description != null && description.startsWith("Avser"));
+
+		verify(settingsProviderMock).isLeaseTypeSettingsPresent(contractMock);
+		verify(settingsProviderMock).getVatCode(contractMock);
+	}
+
 	private static Stream<Arguments> descriptionArgumentProvider() {
 		return Stream.of(
 			// YEARLY

@@ -20,6 +20,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.TimeZoneStorage;
 import se.sundsvall.billingdatacollector.api.model.BillingSource;
+import se.sundsvall.billingdatacollector.api.model.InvoicedIn;
 import se.sundsvall.billingdatacollector.integration.db.converter.IntegerSetConverter;
 
 import static org.hibernate.annotations.TimeZoneStorageType.NORMALIZE;
@@ -78,4 +79,17 @@ public class ScheduledBillingEntity {
 
 	@Column(name = "final_billing_date")
 	private LocalDate finalBillingDate;
+
+	/**
+	 * Direction of invoicing on the contract this scheduled billing
+	 * represents — used to detect mid-contract switches between ADVANCE
+	 * and ARREARS, which require recomputing {@code nextScheduledBilling}.
+	 *
+	 * <p>
+	 * Nullable for backwards compatibility with rows created before this
+	 * column existed (treated as "unknown — don't react to a change").
+	 */
+	@Enumerated(EnumType.STRING)
+	@Column(name = "invoiced_in", length = 32)
+	private InvoicedIn invoicedIn;
 }

@@ -81,6 +81,7 @@ public final class EntityMapper {
 			.withNextScheduledBilling(entity.getNextScheduledBilling())
 			.withPaused(entity.isPaused())
 			.withFinalBillingDate(entity.getFinalBillingDate())
+			.withInvoicedIn(entity.getInvoicedIn())
 			.build();
 	}
 
