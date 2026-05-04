@@ -74,9 +74,14 @@ public class ContractBillingHandler extends AbstractHandler {
 
 		var contractOpt = contractIntegration.getContract(municipalityId, externalId);
 		if (contractOpt.isEmpty()) {
-			// Contract was deleted between event and scheduler tick — clean up.
-			logWarning("No contract found for id {} in municipality {} — dropping schedule", externalId, municipalityId);
-			return new Skipped("contract not found");
+			// 404 is treated as an inconsistency, not a normal cleanup path:
+			// the legitimate way to stop billing is a TERMINATED event, which
+			// removes the entity before the scheduler runs. A missing contract
+			// here means either a dropped event or a transient failure in the
+			// contract service — keep the schedule and surface via health.
+			logError("No contract found for id {} in municipality {} — expected TERMINATED event, keeping schedule for investigation",
+				externalId, municipalityId);
+			return new Failed("contract %s not found (HTTP 404) — expected TERMINATED event".formatted(externalId));
 		}
 		var contract = contractOpt.get();
 

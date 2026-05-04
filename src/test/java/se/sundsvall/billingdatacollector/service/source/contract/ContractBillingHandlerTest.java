@@ -162,13 +162,17 @@ class ContractBillingHandlerTest {
 	}
 
 	@Test
-	void sendBillingRecords_whenContractNotFound_returnsSkipped() {
+	void sendBillingRecords_whenContractNotFound_returnsFailed() {
 		var entity = quarterlyEntity(LocalDate.of(2026, 6, 1));
 		when(contractIntegrationMock.getContract(MUNICIPALITY_ID, CONTRACT_ID)).thenReturn(Optional.empty());
 
 		var result = handler.sendBillingRecords(entity);
 
-		assertThat(result).isInstanceOf(BillingResult.Skipped.class);
+		assertThat(result).isInstanceOf(BillingResult.Failed.class);
+		assertThat(((BillingResult.Failed) result).reason())
+			.contains(CONTRACT_ID)
+			.contains("404")
+			.contains("TERMINATED");
 		verifyNoInteractions(billingPreprocessorClientMock, historyRepositoryMock);
 	}
 
