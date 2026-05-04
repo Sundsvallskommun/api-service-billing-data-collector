@@ -77,9 +77,6 @@ public class ScheduledBillingEntity {
 	@Column(nullable = false)
 	private boolean paused = false;
 
-	@Column(name = "final_billing_date")
-	private LocalDate finalBillingDate;
-
 	/**
 	 * Direction of invoicing on the contract this scheduled billing
 	 * represents — used to detect mid-contract switches between ADVANCE

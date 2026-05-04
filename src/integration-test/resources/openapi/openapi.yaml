@@ -677,13 +677,6 @@ components:
           default: false
           description: "If set to true, scheduled billing will not be triggered"
           example: false
-        finalBillingDate:
-          type: string
-          format: date
-          description: "If set, this is the last billing — no further billings will\
-            \ be scheduled after this date"
-          example: 2026-06-30
-          readOnly: true
         invoicedIn:
           type: string
           description: Direction of invoicing on the contract — used to detect ADVANCE↔ARREARS

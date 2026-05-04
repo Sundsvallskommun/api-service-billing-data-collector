@@ -36,7 +36,6 @@
     ) engine=InnoDB;
 
     create table scheduled_billing (
-        final_billing_date date,
         municipality_id varchar(4) not null,
         next_scheduled_billing date,
         paused bit not null,
