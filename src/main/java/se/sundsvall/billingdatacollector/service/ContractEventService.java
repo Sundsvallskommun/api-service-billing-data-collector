@@ -85,7 +85,9 @@ public class ContractEventService implements BillingEventHandler {
 	 */
 	private void upsertAndApplyEndDate(String municipalityId, String contractId, Contract contract) {
 		var billingMonths = calculateBillingMonths(contract);
-		var invoicedIn = mapInvoicedIn(contract.getInvoicing().getInvoicedIn());
+		var invoicedIn = contract.getInvoicing() != null
+			? mapInvoicedIn(contract.getInvoicing().getInvoicedIn())
+			: null;
 		scheduledBillingService.upsert(municipalityId, contractId, SOURCE,
 			billingMonths, BILLING_DAYS_OF_MONTH, invoicedIn,
 			() -> calculateStartFrom(contract, billingMonths));
