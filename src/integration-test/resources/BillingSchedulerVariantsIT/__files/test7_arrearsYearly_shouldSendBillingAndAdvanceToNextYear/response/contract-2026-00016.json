@@ -1,0 +1,47 @@
+{
+	"contractId": "2026-00016",
+	"externalReferenceId": "REF-YEARLY-R",
+	"municipalityId": "2281",
+	"status": "ACTIVE",
+	"type": "LEASE_AGREEMENT",
+	"leaseType": "LAND_LEASE_MISC",
+	"startDate": "2017-01-01",
+	"invoicing": {
+		"invoiceInterval": "YEARLY",
+		"invoicedIn": "ARREARS"
+	},
+	"fees": {
+		"additionalInformation": [
+			"Avgift, årshyra"
+		],
+		"currency": "SEK",
+		"yearly": 1000,
+		"total": 1000
+	},
+	"propertyDesignations": [
+		{
+			"district": "Ankeborg",
+			"name": "ANKEBORG SÖDRA 12:1"
+		}
+	],
+	"stakeholders": [
+		{
+			"address": {
+				"country": "SVERIGE",
+				"postalCode": "111 22",
+				"streetAddress": "STORGATAN 1",
+				"town": "ANKEBORG",
+				"type": "POSTAL_ADDRESS"
+			},
+			"firstName": "KALLE",
+			"lastName": "ANKA",
+			"partyId": "fb2f0290-3820-11ed-a261-0242ac122345",
+			"roles": [
+				"LESSEE",
+				"PRIMARY_BILLING_PARTY"
+			],
+			"type": "PERSON"
+		}
+	],
+	"version": 1
+}

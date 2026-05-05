@@ -22,7 +22,8 @@ import se.sundsvall.dept44.test.annotation.wiremock.WireMockAppTestSuite;
 @WireMockAppTestSuite(files = "classpath:/ScheduledBillingIT/", classes = Application.class)
 @Sql({
 	"/db/truncate.sql",
-	"/db/testdata.sql"
+	"/db/testdata.sql",
+	"/db/scheduled-billing-seed.sql"
 })
 class ScheduledBillingIT extends AbstractAppTest {
 

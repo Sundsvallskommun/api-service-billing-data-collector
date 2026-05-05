@@ -1,0 +1,18 @@
+{
+	"request": {
+		"headers": {
+			"Authorization": {
+				"equalTo": "Bearer MTQ0NjJkZmQ5OTM2NDE1ZTZjNGZmZjI3"
+			}
+		},
+		"method": "GET",
+		"url": "/contract/2281/contracts/2026-00023"
+	},
+	"response": {
+		"headers": {
+			"Content-Type": "application/json"
+		},
+		"bodyFileName": "test14_bppError_shouldKeepRowAndNotPersistHistory/response/contract-2026-00023.json",
+		"status": 200
+	}
+}

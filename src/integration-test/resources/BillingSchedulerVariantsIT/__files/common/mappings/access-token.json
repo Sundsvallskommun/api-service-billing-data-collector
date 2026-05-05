@@ -1,0 +1,13 @@
+{
+	"request": {
+		"method": "POST",
+		"url": "/token"
+	},
+	"response": {
+		"headers": {
+			"Content-Type": "application/json"
+		},
+		"body": "{\"access_token\":\"MTQ0NjJkZmQ5OTM2NDE1ZTZjNGZmZjI3\",\"not-before-policy\":0,\"session_state\":\"88bbf486\",\"token_type\": \"bearer\"}",
+		"status": 200
+	}
+}
