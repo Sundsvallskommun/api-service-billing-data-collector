@@ -2,7 +2,6 @@ package se.sundsvall.billingdatacollector.apptest;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.jdbc.Sql;
@@ -21,11 +20,6 @@ class FalloutIT extends AbstractAppTest {
 
 	private static final String FAMILY_ID = "358";
 	private static final String FLOW_INSTANCE_ID = "185376";
-
-	@BeforeEach
-	void setup() {
-		CommonStubs.stubAccessToken();
-	}
 
 	@Autowired
 	private FalloutJobHandler falloutJobHandler;

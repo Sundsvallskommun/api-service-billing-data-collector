@@ -4,6 +4,8 @@ import java.time.Clock;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+import static java.time.Clock.systemDefaultZone;
+
 /**
  * Exposes a {@link Clock} bean so services that depend on "today" can inject
  * it (instead of calling {@code LocalDate.now()} directly). Tests override
@@ -14,6 +16,6 @@ class ClockConfiguration {
 
 	@Bean
 	Clock clock() {
-		return Clock.systemDefaultZone();
+		return systemDefaultZone();
 	}
 }

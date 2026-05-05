@@ -50,9 +50,18 @@ class CertificateValidityCheckHandlerTest {
 		verify(dept44HealthUtilityMock).setHealthIndicatorUnhealthy(eq("certificate-health"), matches("Local certificates are approaching expiration date and should be replaced"));
 	}
 
+	/**
+	 * {@code toCertificate} swallows any exception and returns {@code null}
+	 * (used as part of a {@code .map(...).filter(Objects::nonNull)} pipeline
+	 * that is expected to gracefully drop unreadable resources). Verify that
+	 * a null input — the simplest exception-trigger — yields {@code null}
+	 * rather than propagating the NPE.
+	 */
 	@Test
-	void toCertificateThrowsException() {
-		assertDoesNotThrow(() -> assertThat(handler.toCertificate(null)).isNull());
+	void toCertificate_whenInputIsNull_returnsNullWithoutThrowing() {
+		assertDoesNotThrow(() -> assertThat(handler.toCertificate(null))
+			.as("toCertificate must swallow exceptions and return null")
+			.isNull());
 	}
 
 }

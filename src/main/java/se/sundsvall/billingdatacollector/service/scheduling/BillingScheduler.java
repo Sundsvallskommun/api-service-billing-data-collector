@@ -1,6 +1,5 @@
 package se.sundsvall.billingdatacollector.service.scheduling;
 
-import java.time.OffsetDateTime;
 import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -15,6 +14,9 @@ import se.sundsvall.billingdatacollector.service.source.BillingResult.Skipped;
 import se.sundsvall.billingdatacollector.service.source.BillingSourceHandler;
 import se.sundsvall.dept44.scheduling.Dept44Scheduled;
 import se.sundsvall.dept44.scheduling.health.Dept44HealthUtility;
+
+import static java.time.OffsetDateTime.now;
+import static java.util.Objects.isNull;
 
 /**
  * Cron-driven scheduler that picks up due {@code ScheduledBillingEntity}
@@ -54,7 +56,7 @@ public class BillingScheduler {
 	private void processEntity(ScheduledBillingEntity entity) {
 		var sourceKey = entity.getSource().name().toLowerCase();
 		var handler = billingSourceHandlerMap.get(sourceKey);
-		if (handler == null) {
+		if (isNull(handler)) {
 			LOG.error("Skipping scheduled billing — no handler for source '{}', municipalityId '{}', externalId: '{}'",
 				entity.getSource().name(), entity.getMunicipalityId(), entity.getExternalId());
 			markUnhealthy("Missing billing handler implementation for source '%s'".formatted(entity.getSource().name()));
@@ -79,8 +81,8 @@ public class BillingScheduler {
 	}
 
 	private void handleSent(ScheduledBillingEntity entity, Sent sent) {
-		entity.setLastBilled(OffsetDateTime.now());
-		if (sent.nextSlot() == null) {
+		entity.setLastBilled(now());
+		if (isNull(sent.nextSlot())) {
 			// Last billing for this contract — drop the schedule.
 			scheduledBillingService.deleteScheduledBillingEntity(entity);
 		} else {

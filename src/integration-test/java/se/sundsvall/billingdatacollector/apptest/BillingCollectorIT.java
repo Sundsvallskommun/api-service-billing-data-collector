@@ -9,7 +9,6 @@ import java.time.LocalDate;
 import java.time.OffsetDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.jdbc.Sql;
@@ -29,11 +28,6 @@ class BillingCollectorIT extends AbstractAppTest {
 
 	private static final String FAMILY_ID = "358";
 	private static final List<String> FLOW_INSTANCE_IDS = List.of("185375", "185376");
-
-	@BeforeEach
-	void setup() {
-		CommonStubs.stubAccessToken();
-	}
 
 	@Autowired
 	private BillingJobHandler billingJobHandler;

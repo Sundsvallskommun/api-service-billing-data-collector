@@ -25,5 +25,5 @@ public interface MessagingClient {
 		produces = {
 			APPLICATION_JSON_VALUE, APPLICATION_PROBLEM_JSON_VALUE
 		})
-	MessageBatchResult sendEmailBatch(@PathVariable("municipalityId") String municipalityId, @RequestBody final EmailBatchRequest request);
+	MessageBatchResult sendEmailBatch(@PathVariable String municipalityId, @RequestBody final EmailBatchRequest request);
 }
