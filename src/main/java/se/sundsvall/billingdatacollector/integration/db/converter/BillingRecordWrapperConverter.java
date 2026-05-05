@@ -21,7 +21,7 @@ public class BillingRecordWrapperConverter implements AttributeConverter<Billing
 		return ofNullable(billingRecordWrapper)
 			.map(wrapper -> {
 				try {
-					return OBJECT_MAPPER.writeValueAsString(billingRecordWrapper);
+					return OBJECT_MAPPER.writeValueAsString(wrapper);
 				} catch (Exception e) {
 					throw new PersistenceException("Unable to serialize billing data wrapper", e);
 				}
@@ -35,7 +35,7 @@ public class BillingRecordWrapperConverter implements AttributeConverter<Billing
 			.filter(not(String::isBlank))
 			.map(s -> {
 				try {
-					return OBJECT_MAPPER.readValue(json, BillingRecordWrapper.class);
+					return OBJECT_MAPPER.readValue(s, BillingRecordWrapper.class);
 				} catch (Exception e) {
 					throw new PersistenceException("Unable to deserialize billing data wrapper", e);
 				}

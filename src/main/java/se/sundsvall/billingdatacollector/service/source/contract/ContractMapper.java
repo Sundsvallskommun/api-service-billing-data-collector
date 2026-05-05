@@ -10,7 +10,6 @@ import generated.se.sundsvall.contract.Address;
 import generated.se.sundsvall.contract.Contract;
 import generated.se.sundsvall.contract.Fees;
 import generated.se.sundsvall.contract.IntervalType;
-import generated.se.sundsvall.contract.InvoicedIn;
 import generated.se.sundsvall.contract.Invoicing;
 import generated.se.sundsvall.contract.PropertyDesignation;
 import generated.se.sundsvall.contract.Stakeholder;
@@ -24,15 +23,13 @@ import java.util.function.Function;
 import java.util.function.Predicate;
 import org.springframework.stereotype.Component;
 import se.sundsvall.billingdatacollector.integration.scb.ScbIntegration;
+import se.sundsvall.billingdatacollector.service.util.BillingPeriodCalculator;
+import se.sundsvall.billingdatacollector.service.util.BillingPeriodCalculator.BillingPeriod;
 import se.sundsvall.dept44.problem.Problem;
 
 import static generated.se.sundsvall.billingpreprocessor.Status.APPROVED;
 import static generated.se.sundsvall.billingpreprocessor.Type.EXTERNAL;
-import static generated.se.sundsvall.contract.InvoicedIn.ADVANCE;
-import static java.time.Month.JUNE;
-import static java.time.Month.MARCH;
 import static java.time.Month.OCTOBER;
-import static java.time.Month.SEPTEMBER;
 import static java.util.Collections.emptyList;
 import static java.util.Optional.ofNullable;
 import static org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR;
@@ -54,14 +51,14 @@ public class ContractMapper {
 	private static final String NOT_APPLICABLE = "N/A";
 	private static final int INDEX_MONTH = OCTOBER.getValue(); // Month to use when fetching KPI is always october
 	private static final BigDecimal QUANTITY = BigDecimal.ONE; // Quantity is always one for periodical invoicing
-	private static final String YEARLY_DESCRIPTION = "Avser januari-december %s";
-	private static final String YEARLY_SPLIT_DESCRIPTION = "Avser juli %s-juni %s";
-	private static final String QUARTERLY_DESCRIPTION_Q1 = "Avser januari-mars %s";
-	private static final String QUARTERLY_DESCRIPTION_Q2 = "Avser april-juni %s";
-	private static final String QUARTERLY_DESCRIPTION_Q3 = "Avser juli-september %s";
-	private static final String QUARTERLY_DESCRIPTION_Q4 = "Avser oktober-december %s";
-	private static final String HALF_YEARLY_DESCRIPTION_1 = "Avser januari-juni %s";
-	private static final String HALF_YEARLY_DESCRIPTION_2 = "Avser juli-december %s";
+	private static final String[] SWEDISH_MONTH_NAMES = {
+		"januari", "februari", "mars", "april", "maj", "juni",
+		"juli", "augusti", "september", "oktober", "november", "december"
+	};
+	// Same-year period: "Avser januari-december 2026"
+	private static final String SAME_YEAR_DESCRIPTION_FORMAT = "Avser %s-%s %d";
+	// Cross-year period: "Avser juli 2026-juni 2027"
+	private static final String SPANNING_YEARS_DESCRIPTION_FORMAT = "Avser %s %d-%s %d";
 
 	private final ScbIntegration scbIntegration;
 	private final SettingsProvider settingsProvider;
@@ -224,76 +221,36 @@ public class ContractMapper {
 			.orElse(null);
 	}
 
+	/**
+	 * Builds the human-readable description text shown on the invoice row,
+	 * derived from the period covered by the billing — "Avser
+	 * &lt;startMonth&gt;[ &lt;startYear&gt;]-&lt;endMonth&gt; &lt;endYear&gt;".
+	 *
+	 * <p>
+	 * The period itself is computed by {@link BillingPeriodCalculator}, which
+	 * is also the source of truth used by the scheduler to decide whether a
+	 * billing's period still fits inside the contract.
+	 */
 	private String getInvoiceDescription(Contract contract, LocalDate scheduledDate) {
+		// MONTHLY contracts have never carried a period description on the
+		// invoice row; preserve that behaviour and only describe yearly,
+		// half-yearly and quarterly billings.
 		return ofNullable(contract.getInvoicing())
-			.map(invoicing -> getDescription(invoicing, scheduledDate))
+			.filter(invoicing -> invoicing.getInvoiceInterval() != null
+				&& invoicing.getInvoiceInterval() != IntervalType.MONTHLY)
+			.filter(invoicing -> invoicing.getInvoicedIn() != null)
+			.map(invoicing -> describePeriod(BillingPeriodCalculator.computePeriod(
+				scheduledDate, invoicing.getInvoiceInterval(), invoicing.getInvoicedIn())))
 			.orElse(null);
 	}
 
-	private String getDescription(Invoicing invoicing, LocalDate scheduledDate) {
-
-		return switch (invoicing.getInvoiceInterval()) {
-			case YEARLY -> getYearlyDescription(invoicing.getInvoicedIn(), scheduledDate);
-			case QUARTERLY -> getQuarterlyDescription(invoicing.getInvoicedIn(), scheduledDate);
-			case HALF_YEARLY -> getHalfYearlyDescription(invoicing.getInvoicedIn(), scheduledDate);
-			case null, default -> null;
-		};
-	}
-
-	private String getYearlyDescription(InvoicedIn invoicedIn, LocalDate scheduledDate) {
-		final var scheduledMonth = scheduledDate.getMonthValue();
-
-		if (scheduledMonth == JUNE.getValue()) {
-			if (ADVANCE.equals(invoicedIn)) {
-				return String.format(YEARLY_SPLIT_DESCRIPTION, scheduledDate.getYear(), scheduledDate.plusYears(1).getYear());
-			}
-			return String.format(YEARLY_SPLIT_DESCRIPTION, scheduledDate.minusYears(1).getYear(), scheduledDate.getYear());
-		} else {
-			if (ADVANCE.equals(invoicedIn)) {
-				return String.format(YEARLY_DESCRIPTION, scheduledDate.plusYears(1).getYear());
-			}
-			return String.format(YEARLY_DESCRIPTION, scheduledDate.getYear());
+	private static String describePeriod(BillingPeriod period) {
+		var startMonth = SWEDISH_MONTH_NAMES[period.startDate().getMonthValue() - 1];
+		var endMonth = SWEDISH_MONTH_NAMES[period.endDate().getMonthValue() - 1];
+		if (period.startDate().getYear() == period.endDate().getYear()) {
+			return SAME_YEAR_DESCRIPTION_FORMAT.formatted(startMonth, endMonth, period.endDate().getYear());
 		}
-	}
-
-	private String getQuarterlyDescription(InvoicedIn invoicedIn, LocalDate scheduledDate) {
-		final var scheduledMonth = scheduledDate.getMonthValue();
-
-		if (scheduledMonth <= MARCH.getValue()) {
-			if (ADVANCE.equals(invoicedIn)) {
-				return String.format(QUARTERLY_DESCRIPTION_Q2, scheduledDate.getYear());
-			}
-			return String.format(QUARTERLY_DESCRIPTION_Q1, scheduledDate.getYear());
-		} else if (scheduledMonth <= JUNE.getValue()) {
-			if (ADVANCE.equals(invoicedIn)) {
-				return String.format(QUARTERLY_DESCRIPTION_Q3, scheduledDate.getYear());
-			}
-			return String.format(QUARTERLY_DESCRIPTION_Q2, scheduledDate.getYear());
-		} else if (scheduledMonth <= SEPTEMBER.getValue()) {
-			if (ADVANCE.equals(invoicedIn)) {
-				return String.format(QUARTERLY_DESCRIPTION_Q4, scheduledDate.getYear());
-			}
-			return String.format(QUARTERLY_DESCRIPTION_Q3, scheduledDate.getYear());
-		} else {
-			if (ADVANCE.equals(invoicedIn)) {
-				return String.format(QUARTERLY_DESCRIPTION_Q1, scheduledDate.plusYears(1).getYear());
-			}
-			return String.format(QUARTERLY_DESCRIPTION_Q4, scheduledDate.getYear());
-		}
-	}
-
-	private String getHalfYearlyDescription(InvoicedIn invoicedIn, LocalDate scheduledDate) {
-		final var scheduledMonth = scheduledDate.getMonthValue();
-		if (scheduledMonth <= JUNE.getValue()) {
-			if (ADVANCE.equals(invoicedIn)) {
-				return String.format(HALF_YEARLY_DESCRIPTION_2, scheduledDate.getYear());
-			}
-			return String.format(HALF_YEARLY_DESCRIPTION_1, scheduledDate.getYear());
-		} else {
-			if (ADVANCE.equals(invoicedIn)) {
-				return String.format(HALF_YEARLY_DESCRIPTION_1, scheduledDate.plusYears(1).getYear());
-			}
-			return String.format(HALF_YEARLY_DESCRIPTION_2, scheduledDate.getYear());
-		}
+		return SPANNING_YEARS_DESCRIPTION_FORMAT.formatted(
+			startMonth, period.startDate().getYear(), endMonth, period.endDate().getYear());
 	}
 }

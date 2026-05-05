@@ -4,6 +4,7 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+import java.util.function.Supplier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
@@ -11,6 +12,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import se.sundsvall.billingdatacollector.api.model.BillingSource;
+import se.sundsvall.billingdatacollector.api.model.InvoicedIn;
 import se.sundsvall.billingdatacollector.api.model.ScheduledBilling;
 import se.sundsvall.billingdatacollector.integration.db.ScheduledBillingRepository;
 import se.sundsvall.billingdatacollector.integration.db.model.ScheduledBillingEntity;
@@ -18,7 +20,6 @@ import se.sundsvall.dept44.problem.Problem;
 
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
 import static org.springframework.http.HttpStatus.NOT_FOUND;
-import static org.springframework.transaction.annotation.Propagation.REQUIRES_NEW;
 import static se.sundsvall.billingdatacollector.service.util.ScheduledBillingUtil.calculateNextScheduledBilling;
 import static se.sundsvall.dept44.util.LogUtils.sanitizeForLogging;
 
@@ -67,6 +68,16 @@ public class ScheduledBillingService {
 		return EntityMapper.toScheduledBilling(saved);
 	}
 
+	/**
+	 * Updates the cadence ({@code billingDaysOfMonth}, {@code billingMonths})
+	 * and the {@code paused} flag on an existing scheduled billing.
+	 *
+	 * <p>
+	 * {@code nextScheduledBilling} is <em>preserved</em> — admin updates
+	 * to cadence are rare and we don't want them to silently reset billing
+	 * progression. If the cadence change makes the parked slot invalid,
+	 * delete and re-create the schedule instead.
+	 */
 	public ScheduledBilling update(String municipalityId, String id, ScheduledBilling scheduledBilling) {
 		LOG.info("Updating scheduled billing with id: {} for municipalityId: {}",
 			sanitizeForLogging(id), sanitizeForLogging(municipalityId));
@@ -78,13 +89,8 @@ public class ScheduledBillingService {
 				.withDetail(DETAIL_SCHEDULED_BILLING_NOT_FOUND_BY_ID + id)
 				.build());
 
-		LocalDate nextBilling = calculateNextScheduledBilling(
-			scheduledBilling.getBillingDaysOfMonth(),
-			scheduledBilling.getBillingMonths());
-
 		existing.setBillingDaysOfMonth(scheduledBilling.getBillingDaysOfMonth());
 		existing.setBillingMonths(scheduledBilling.getBillingMonths());
-		existing.setNextScheduledBilling(nextBilling);
 		existing.setPaused(Optional.ofNullable(scheduledBilling.getPaused()).orElse(false));
 
 		ScheduledBillingEntity saved = repository.saveAndFlush(existing);
@@ -143,18 +149,68 @@ public class ScheduledBillingService {
 				.build());
 	}
 
-	public void upsert(String municipalityId, String externalId, BillingSource source, Set<Integer> billingMonths, Set<Integer> billingDaysOfMonth, LocalDate startFrom) {
+	/**
+	 * Creates the scheduled-billing row if it doesn't exist, otherwise updates
+	 * its cadence ({@code billingMonths}, {@code billingDaysOfMonth}) and
+	 * direction ({@code invoicedIn}).
+	 *
+	 * <p>
+	 * {@code nextScheduledBilling} is set in two cases:
+	 * <ol>
+	 * <li>when the row is created (using the supplier), or</li>
+	 * <li>when an existing row's {@code billingMonths} or {@code invoicedIn}
+	 * actually changed — the previously stored progression is then on
+	 * a slot that no longer matches the contract and must be recomputed.
+	 * A {@code WARN} is logged so operators can manually issue any
+	 * credit/additional invoices needed to cover the overlap or gap.</li>
+	 * </ol>
+	 *
+	 * <p>
+	 * Otherwise the existing {@code nextScheduledBilling} is preserved so
+	 * an unrelated contract update does not reset billing progression.
+	 *
+	 * <p>
+	 * The supplier is lazy so callers can compute an expensive initial
+	 * date (e.g. ARREARS skip-one-slot logic) without paying for it on every
+	 * UPDATED event.
+	 *
+	 * @param invoicedIn                  contract's current direction
+	 *                                    (ADVANCE / ARREARS); persisted on
+	 *                                    the entity to detect future switches
+	 * @param initialNextScheduledBilling supplier evaluated when a new row is
+	 *                                    created, or when {@code billingMonths}
+	 *                                    or {@code invoicedIn} changed for an
+	 *                                    existing row
+	 */
+	public void upsert(String municipalityId, String externalId, BillingSource source,
+		Set<Integer> billingMonths, Set<Integer> billingDaysOfMonth, InvoicedIn invoicedIn,
+		Supplier<LocalDate> initialNextScheduledBilling) {
 		LOG.info("Upserting scheduled billing for municipalityId: {} externalId: {}",
 			sanitizeForLogging(municipalityId), sanitizeForLogging(externalId));
-
-		var nextBilling = calculateNextScheduledBilling(billingDaysOfMonth, billingMonths, startFrom);
 
 		repository.findByMunicipalityIdAndExternalIdAndSource(municipalityId, externalId, source)
 			.ifPresentOrElse(
 				existing -> {
+					var cadenceChanged = !billingMonths.equals(existing.getBillingMonths());
+					// existing.invoicedIn == null on rows created before V1_5
+					// — treat as "unknown", do not react to a perceived change.
+					var directionChanged = existing.getInvoicedIn() != null
+						&& !existing.getInvoicedIn().equals(invoicedIn);
+
 					existing.setBillingMonths(billingMonths);
 					existing.setBillingDaysOfMonth(billingDaysOfMonth);
-					existing.setNextScheduledBilling(nextBilling);
+					existing.setInvoicedIn(invoicedIn);
+
+					if (cadenceChanged || directionChanged) {
+						// Slot the entity is parked on no longer matches the
+						// contract — recompute. Operator is responsible for
+						// any double or missed billing around the switch
+						// (manual credit / manual invoice).
+						LOG.warn("Recomputing nextScheduledBilling for externalId {} due to {}",
+							sanitizeForLogging(externalId),
+							cadenceChanged ? "cadence change" : "invoicedIn switch");
+						existing.setNextScheduledBilling(initialNextScheduledBilling.get());
+					}
 					repository.saveAndFlush(existing);
 				},
 				() -> repository.saveAndFlush(ScheduledBillingEntity.builder()
@@ -163,7 +219,8 @@ public class ScheduledBillingService {
 					.withSource(source)
 					.withBillingMonths(billingMonths)
 					.withBillingDaysOfMonth(billingDaysOfMonth)
-					.withNextScheduledBilling(nextBilling)
+					.withInvoicedIn(invoicedIn)
+					.withNextScheduledBilling(initialNextScheduledBilling.get())
 					.build()));
 	}
 
@@ -172,21 +229,19 @@ public class ScheduledBillingService {
 			.map(ScheduledBillingEntity::getNextScheduledBilling);
 	}
 
-	public void updateFinalBillingDate(String municipalityId, String externalId, BillingSource source, LocalDate finalBillingDate) {
-		LOG.info("Updating finalBillingDate to {} for municipalityId: {} externalId: {}",
-			finalBillingDate, sanitizeForLogging(municipalityId), sanitizeForLogging(externalId));
-
-		repository.findByMunicipalityIdAndExternalIdAndSource(municipalityId, externalId, source)
-			.ifPresent(entity -> {
-				entity.setFinalBillingDate(finalBillingDate);
-				repository.saveAndFlush(entity);
-			});
-	}
-
 	public void deleteScheduledBillingEntity(ScheduledBillingEntity entity) {
 		LOG.info("Deleting final scheduled billing for municipalityId: {} externalId: {}",
 			sanitizeForLogging(entity.getMunicipalityId()), sanitizeForLogging(entity.getExternalId()));
 		repository.delete(entity);
+	}
+
+	/**
+	 * Persists changes the caller made to {@code entity} (e.g. the scheduler
+	 * setting {@code nextScheduledBilling} and {@code lastBilled} after a
+	 * successful billing).
+	 */
+	public void saveScheduledBillingEntity(ScheduledBillingEntity entity) {
+		repository.saveAndFlush(entity);
 	}
 
 	public void deleteByExternalId(String municipalityId, String externalId, BillingSource source) {
@@ -199,12 +254,5 @@ public class ScheduledBillingService {
 
 	public List<ScheduledBillingEntity> getDueScheduledBillings() {
 		return repository.findAllByPausedFalseAndNextScheduledBillingLessThanEqual(LocalDate.now());
-	}
-
-	@Transactional(propagation = REQUIRES_NEW)
-	public void updateNextScheduledBilling(ScheduledBillingEntity scheduledBillingEntity) {
-		var startFrom = scheduledBillingEntity.getNextScheduledBilling().plusDays(1);
-		scheduledBillingEntity.setNextScheduledBilling(calculateNextScheduledBilling(scheduledBillingEntity.getBillingDaysOfMonth(), scheduledBillingEntity.getBillingMonths(), startFrom));
-		repository.saveAndFlush(scheduledBillingEntity);
 	}
 }

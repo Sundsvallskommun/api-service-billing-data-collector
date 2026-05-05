@@ -80,7 +80,7 @@ public final class EntityMapper {
 			.withLastBilled(entity.getLastBilled())
 			.withNextScheduledBilling(entity.getNextScheduledBilling())
 			.withPaused(entity.isPaused())
-			.withFinalBillingDate(entity.getFinalBillingDate())
+			.withInvoicedIn(entity.getInvoicedIn())
 			.build();
 	}
 

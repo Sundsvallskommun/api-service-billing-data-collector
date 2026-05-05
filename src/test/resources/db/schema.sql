@@ -36,7 +36,6 @@
     ) engine=InnoDB;
 
     create table scheduled_billing (
-        final_billing_date date,
         municipality_id varchar(4) not null,
         next_scheduled_billing date,
         paused bit not null,
@@ -45,6 +44,7 @@
         billing_days_of_month varchar(255) not null,
         billing_months varchar(255) not null,
         id varchar(255) not null,
+        invoiced_in enum ('ADVANCE','ARREARS'),
         source enum ('CONTRACT','OPENE') not null,
         primary key (id)
     ) engine=InnoDB;

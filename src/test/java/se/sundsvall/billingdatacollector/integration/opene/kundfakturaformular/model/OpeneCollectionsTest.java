@@ -54,8 +54,9 @@ class OpeneCollectionsTest {
 	@Test
 	void testAddUnknownObject_shouldThrowException() {
 		OpeneCollections openeCollections = new OpeneCollections();
+		Object unsupportedObject = new Object();
 		assertThatExceptionOfType(IllegalArgumentException.class)
-			.isThrownBy(() -> openeCollections.add(1, new Object()))
+			.isThrownBy(() -> openeCollections.add(1, unsupportedObject))
 			.satisfies(exception -> assertThat(exception).hasMessage("Unsupported object type: java.lang.Object"));
 	}
 

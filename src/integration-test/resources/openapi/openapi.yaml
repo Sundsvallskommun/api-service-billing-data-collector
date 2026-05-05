@@ -5,7 +5,7 @@ info:
   license:
     name: MIT License
     url: https://opensource.org/licenses/MIT
-  version: "1.2"
+  version: "2.0"
 servers:
 - url: http://localhost:50028
   description: Generated server url
@@ -677,12 +677,14 @@ components:
           default: false
           description: "If set to true, scheduled billing will not be triggered"
           example: false
-        finalBillingDate:
+        invoicedIn:
           type: string
-          format: date
-          description: "If set, this is the last billing — no further billings will\
-            \ be scheduled after this date"
-          example: 2026-06-30
+          description: Direction of invoicing on the contract — used to detect ADVANCE↔ARREARS
+            switches mid-contract.
+          enum:
+          - ADVANCE
+          - ARREARS
+          example: ADVANCE
           readOnly: true
       required:
       - billingDaysOfMonth
@@ -743,9 +745,11 @@ components:
           type: string
           description: External id
           example: 2026-00001
+          minLength: 1
         municipalityId:
           type: string
-          description: Municipality id
+          description: Municipality id (taken from the path parameter when this event
+            is delivered via the events endpoint)
           example: "2281"
         eventType:
           type: string
@@ -756,6 +760,9 @@ components:
           - DELETED
           - TERMINATED
           example: CREATED
+      required:
+      - eventType
+      - id
     PageScheduledBilling:
       type: object
       properties:
