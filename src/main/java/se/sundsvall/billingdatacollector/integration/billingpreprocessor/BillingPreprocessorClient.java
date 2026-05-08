@@ -23,5 +23,5 @@ public interface BillingPreprocessorClient {
 		path = "/{municipalityId}/billingrecords",
 		consumes = APPLICATION_JSON_VALUE,
 		produces = ALL_VALUE)
-	ResponseEntity<Void> createBillingRecord(@PathVariable("municipalityId") String municipalityId, @RequestBody BillingRecord billingRecord);
+	ResponseEntity<Void> createBillingRecord(@PathVariable String municipalityId, @RequestBody BillingRecord billingRecord);
 }

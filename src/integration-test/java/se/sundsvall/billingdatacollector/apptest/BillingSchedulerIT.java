@@ -5,7 +5,6 @@ import static org.assertj.core.api.Assertions.within;
 
 import java.time.OffsetDateTime;
 import java.time.temporal.ChronoUnit;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.jdbc.Sql;
@@ -18,14 +17,10 @@ import se.sundsvall.dept44.test.annotation.wiremock.WireMockAppTestSuite;
 @WireMockAppTestSuite(files = "classpath:/BillingSchedulerIT/", classes = Application.class)
 @Sql({
 	"/db/truncate.sql",
-	"/db/testdata.sql"
+	"/db/testdata.sql",
+	"/db/billing-scheduler-seed.sql"
 })
 class BillingSchedulerIT extends AbstractAppTest {
-
-	@BeforeEach
-	void setup() {
-		CommonStubs.stubAccessToken();
-	}
 
 	@Autowired
 	private BillingScheduler billingScheduler;

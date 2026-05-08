@@ -1,0 +1,31 @@
+{
+	"request": {
+		"method": "POST",
+		"urlPathPattern": "/relation/2281/relations",
+		"bodyPatterns": [
+			{
+				"equalToJson": {
+					"source": {
+						"resourceId": "2026-00017",
+						"service": "contract",
+						"type": "contract"
+					},
+					"target": {
+						"resourceId": "aaaaaaaa-8888-8888-8888-aaaaaaaaaaaa",
+						"service": "billingpreprocessor",
+						"type": "billing-record"
+					},
+					"type": "LINK"
+				},
+				"ignoreArrayOrder": true
+			}
+		]
+	},
+	"response": {
+		"headers": {
+			"Location": "/2281/relations/abc12345-8888-8888-8888-aaaaaaaaaaaa",
+			"Content-Type": "*/*"
+		},
+		"status": 201
+	}
+}

@@ -6,12 +6,13 @@
 			}
 		},
 		"method": "GET",
-		"url": "/contract/2281/contracts/external-id-for-get-test"
+		"url": "/party/2281/PRIVATE/fb2f0290-3820-11ed-a261-0242ac122345/legalId"
 	},
 	"response": {
 		"headers": {
-			"Content-Type": "application/problem+json"
+			"Content-Type": "text/plain"
 		},
-		"status": 404
+		"body": "199001012385",
+		"status": 200
 	}
 }

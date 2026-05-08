@@ -1,0 +1,74 @@
+{
+	"request": {
+		"headers": {
+			"Authorization": {
+				"equalTo": "Bearer MTQ0NjJkZmQ5OTM2NDE1ZTZjNGZmZjI3"
+			}
+		},
+		"method": "POST",
+		"bodyPatterns": [
+			{
+				"equalToJson": {
+					"approvedBy": "CONTRACT-SERVICE",
+					"category": "MEX_INVOICE",
+					"extraParameters": {
+						"contractId": "2026-00012 (REF-QUARTERLY-R)"
+					},
+					"invoice": {
+						"customerId": "N/A",
+						"customerReference": "REF-QUARTERLY-R",
+						"description": "QUARTERLY",
+						"dueDate": "${json-unit.any-string}",
+						"invoiceRows": [
+							{
+								"accountInformation": [
+									{
+										"activity": "3091",
+										"amount": 1000.00,
+										"costCenter": "36000000",
+										"counterpart": "123",
+										"department": "810100",
+										"subaccount": "342000"
+									}
+								],
+								"costPerUnit": 1000.00,
+								"descriptions": [
+									"Avgift, kvartalshyra"
+								],
+								"detailedDescriptions": [
+									"ANKEBORG SÖDRA 12:1",
+									"Avser januari-mars 2020"
+								],
+								"quantity": 1,
+								"vatCode": "00"
+							}
+						],
+						"ourReference": "2026-00012 (REF-QUARTERLY-R)"
+					},
+					"recipient": {
+						"addressDetails": {
+							"city": "ANKEBORG",
+							"postalCode": "111 22",
+							"street": "STORGATAN 1"
+						},
+						"firstName": "KALLE",
+						"lastName": "ANKA",
+						"partyId": "fb2f0290-3820-11ed-a261-0242ac122345"
+					},
+					"status": "APPROVED",
+					"transferDate": "${json-unit.any-string}",
+					"type": "EXTERNAL"
+				},
+				"ignoreArrayOrder": true
+			}
+		],
+		"urlPathPattern": "/bpp/2281/billingrecords"
+	},
+	"response": {
+		"headers": {
+			"Location": "/billingrecords/aaaaaaaa-3333-3333-3333-aaaaaaaaaaaa",
+			"Content-Type": "*/*"
+		},
+		"status": 201
+	}
+}

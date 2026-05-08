@@ -26,7 +26,8 @@ import static org.springframework.boot.jdbc.test.autoconfigure.AutoConfigureTest
 @ActiveProfiles("junit")
 @Sql(scripts = {
 	"/db/truncate.sql",
-	"/db/testdata.sql"
+	"/db/testdata.sql",
+	"/db/scheduled-billing-seed.sql"
 })
 class ScheduledBillingRepositoryTest {
 

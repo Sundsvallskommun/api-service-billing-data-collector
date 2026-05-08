@@ -1,0 +1,18 @@
+{
+	"request": {
+		"headers": {
+			"Authorization": {
+				"equalTo": "Bearer MTQ0NjJkZmQ5OTM2NDE1ZTZjNGZmZjI3"
+			}
+		},
+		"method": "POST",
+		"urlPathPattern": "/bpp/2281/billingrecords"
+	},
+	"response": {
+		"headers": {
+			"Content-Type": "application/problem+json"
+		},
+		"status": 500,
+		"body": "{\"status\":500,\"title\":\"Internal Server Error\",\"detail\":\"Simulated BPP failure\"}"
+	}
+}

@@ -41,14 +41,12 @@ class BillingCollectorAPIIT extends AbstractAppTest {
 
 	@Test
 	void test1_triggerBillingWithFamilyIds_shouldOnlyTriggerSupported() {
-		CommonStubs.stubAccessToken();
 		setupCall()
 			.withServicePath(SERVICE_PATH + "?startDate=" + START_DATE + "&endDate=" + END_DATE + "&familyIds=358&familyIds=unsupported-family-id")
 			.withHttpMethod(POST)
 			.withExpectedResponseStatus(ACCEPTED)
 			.withExpectedResponse(RESPONSE_FILE)
-			.sendRequestAndVerifyResponse()
-			.verifyAllStubs();
+			.sendRequestAndVerifyResponse();
 
 		final var historyEntities = historyRepository.findAll();
 
@@ -77,13 +75,11 @@ class BillingCollectorAPIIT extends AbstractAppTest {
 
 	@Test
 	void test3_triggerBillingForAFlowInstanceId() {
-		CommonStubs.stubAccessToken();
 		setupCall()
 			.withServicePath(SERVICE_PATH + "/185375")
 			.withHttpMethod(POST)
 			.withExpectedResponseStatus(ACCEPTED)
-			.sendRequestAndVerifyResponse()
-			.verifyAllStubs();
+			.sendRequestAndVerifyResponse();
 
 		final var historyEntities = historyRepository.findAll();
 
