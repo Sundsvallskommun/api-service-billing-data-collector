@@ -5,11 +5,13 @@ info:
   license:
     name: MIT License
     url: https://opensource.org/licenses/MIT
-  version: "2.0"
+  version: "2.1"
 servers:
-- url: http://localhost:50028
+- url: http://localhost:39771
   description: Generated server url
 tags:
+- name: SCB KPI
+  description: Statistics Sweden KPI lookup
 - name: Billing Data Collector
   description: Billing Data Collector resources
 - name: Counterpart
@@ -518,6 +520,70 @@ paths:
             application/problem+json:
               schema:
                 $ref: "#/components/schemas/Problem"
+  /{municipalityId}/scb/kpi:
+    get:
+      tags:
+      - SCB KPI
+      summary: Look up an SCB KPI value for a given base year and period
+      operationId: getKpi
+      parameters:
+      - name: municipalityId
+        in: path
+        description: Municipality id
+        required: true
+        schema:
+          type: string
+        example: 2281
+      - name: baseYear
+        in: query
+        description: KPI base year
+        required: true
+        schema:
+          type: string
+          enum:
+          - KPI_80
+          - KPI_2020
+        example: KPI_80
+      - name: period
+        in: query
+        description: Period (year-month) to look up
+        required: true
+        schema:
+          type: string
+        example: 2024-10
+      responses:
+        "200":
+          description: Successful
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ScbKpiResponse"
+        "404":
+          description: Not Found
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Problem"
+        "400":
+          description: Bad Request
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: "#/components/schemas/Problem"
+                - $ref: "#/components/schemas/ConstraintViolationProblem"
+        "500":
+          description: Internal Server Error
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Problem"
+        "502":
+          description: Bad Gateway
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Problem"
   /{municipalityId}/counterpart:
     get:
       tags:
@@ -600,16 +666,16 @@ components:
     Problem:
       type: object
       properties:
-        title:
-          type: string
-        detail:
-          type: string
         instance:
           type: string
           format: uri
         type:
           type: string
           format: uri
+        title:
+          type: string
+        detail:
+          type: string
         status:
           type: integer
           format: int32
@@ -706,13 +772,13 @@ components:
             $ref: "#/components/schemas/Violation"
         title:
           type: string
-        causeAsProblem:
-          $ref: "#/components/schemas/ThrowableProblem"
-        detail:
-          type: string
         instance:
           type: string
           format: uri
+        detail:
+          type: string
+        causeAsProblem:
+          $ref: "#/components/schemas/ThrowableProblem"
     ThrowableProblem:
       type: object
       properties:
@@ -772,17 +838,6 @@ components:
         totalElements:
           type: integer
           format: int64
-        pageable:
-          $ref: "#/components/schemas/PageableObject"
-        numberOfElements:
-          type: integer
-          format: int32
-        sort:
-          $ref: "#/components/schemas/SortObject"
-        first:
-          type: boolean
-        last:
-          type: boolean
         size:
           type: integer
           format: int32
@@ -793,13 +848,25 @@ components:
         number:
           type: integer
           format: int32
+        pageable:
+          $ref: "#/components/schemas/PageableObject"
+        sort:
+          $ref: "#/components/schemas/SortObject"
+        first:
+          type: boolean
+        last:
+          type: boolean
+        numberOfElements:
+          type: integer
+          format: int32
         empty:
           type: boolean
     PageableObject:
       type: object
       properties:
-        unpaged:
-          type: boolean
+        offset:
+          type: integer
+          format: int64
         paged:
           type: boolean
         pageNumber:
@@ -810,16 +877,38 @@ components:
           format: int32
         sort:
           $ref: "#/components/schemas/SortObject"
-        offset:
-          type: integer
-          format: int64
+        unpaged:
+          type: boolean
     SortObject:
       type: object
       properties:
-        unsorted:
+        empty:
           type: boolean
         sorted:
           type: boolean
-        empty:
+        unsorted:
           type: boolean
+    ScbKpiResponse:
+      type: object
+      description: SCB KPI lookup response
+      properties:
+        baseYear:
+          type: string
+          description: KPI base year
+          enum:
+          - KPI_80
+          - KPI_2020
+          example: KPI_80
+        period:
+          type: string
+          description: Period (year-month) the KPI value applies to
+          example: 2024-10
+        value:
+          type: number
+          description: "KPI value, rounded to two decimals"
+          example: "355.91"
+      required:
+      - baseYear
+      - period
+      - value
   securitySchemes: {}
