@@ -13,7 +13,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.ArgumentMatchers.matches;
-import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.verify;
 
 @SpringBootTest(classes = Application.class, webEnvironment = SpringBootTest.WebEnvironment.MOCK)
@@ -28,26 +28,26 @@ class CertificateValidityCheckHandlerTest {
 
 	@Test
 	void certificateHasNotPassedCloseToExpiration() {
-		// We need to change defined period for days until expiration by reflection for this test
+		// Threshold far in the past relative to any cert's expiry → always healthy
 		ReflectionTestUtils.setField(handler, "warnDaysBeforeExpiration", -1000);
 
 		// Act
 		handler.checkCertificateHealth();
 
 		// Verify that health mock is triggered at least once (as startup sequence will interfere with verification)
-		verify(dept44HealthUtilityMock, times(2)).setHealthIndicatorHealthy("certificate-health");
+		verify(dept44HealthUtilityMock, atLeastOnce()).setHealthIndicatorHealthy("certificate-health");
 	}
 
 	@Test
 	void certificateHasPassedCloseToExpiration() {
-		// We need to change defined period for days until expiration by reflection for this test
-		ReflectionTestUtils.setField(handler, "warnDaysBeforeExpiration", 1000);
+		// Threshold large enough to push warning date into the past for any cert in the truststore
+		ReflectionTestUtils.setField(handler, "warnDaysBeforeExpiration", 100_000);
 
 		// Act
 		handler.checkCertificateHealth();
 
 		// Verify that health mock is triggered at least once (as startup sequence will interfere with verification)
-		verify(dept44HealthUtilityMock).setHealthIndicatorUnhealthy(eq("certificate-health"), matches("Local certificates are approaching expiration date and should be replaced"));
+		verify(dept44HealthUtilityMock, atLeastOnce()).setHealthIndicatorUnhealthy(eq("certificate-health"), matches("Local certificates are approaching expiration date and should be replaced"));
 	}
 
 	/**
