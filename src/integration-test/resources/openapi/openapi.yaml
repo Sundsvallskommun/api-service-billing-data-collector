@@ -7,7 +7,7 @@ info:
     url: https://opensource.org/licenses/MIT
   version: "2.1"
 servers:
-- url: http://localhost:39771
+- url: http://localhost:64633
   description: Generated server url
 tags:
 - name: SCB KPI
@@ -666,16 +666,16 @@ components:
     Problem:
       type: object
       properties:
+        title:
+          type: string
+        detail:
+          type: string
         instance:
           type: string
           format: uri
         type:
           type: string
           format: uri
-        title:
-          type: string
-        detail:
-          type: string
         status:
           type: integer
           format: int32
@@ -772,13 +772,13 @@ components:
             $ref: "#/components/schemas/Violation"
         title:
           type: string
+        causeAsProblem:
+          $ref: "#/components/schemas/ThrowableProblem"
+        detail:
+          type: string
         instance:
           type: string
           format: uri
-        detail:
-          type: string
-        causeAsProblem:
-          $ref: "#/components/schemas/ThrowableProblem"
     ThrowableProblem:
       type: object
       properties:
@@ -838,6 +838,17 @@ components:
         totalElements:
           type: integer
           format: int64
+        first:
+          type: boolean
+        last:
+          type: boolean
+        numberOfElements:
+          type: integer
+          format: int32
+        pageable:
+          $ref: "#/components/schemas/PageableObject"
+        sort:
+          $ref: "#/components/schemas/SortObject"
         size:
           type: integer
           format: int32
@@ -848,25 +859,13 @@ components:
         number:
           type: integer
           format: int32
-        pageable:
-          $ref: "#/components/schemas/PageableObject"
-        sort:
-          $ref: "#/components/schemas/SortObject"
-        first:
-          type: boolean
-        last:
-          type: boolean
-        numberOfElements:
-          type: integer
-          format: int32
         empty:
           type: boolean
     PageableObject:
       type: object
       properties:
-        offset:
-          type: integer
-          format: int64
+        unpaged:
+          type: boolean
         paged:
           type: boolean
         pageNumber:
@@ -877,16 +876,17 @@ components:
           format: int32
         sort:
           $ref: "#/components/schemas/SortObject"
-        unpaged:
-          type: boolean
+        offset:
+          type: integer
+          format: int64
     SortObject:
       type: object
       properties:
-        empty:
+        unsorted:
           type: boolean
         sorted:
           type: boolean
-        unsorted:
+        empty:
           type: boolean
     ScbKpiResponse:
       type: object
@@ -906,7 +906,7 @@ components:
         value:
           type: number
           description: "KPI value, rounded to two decimals"
-          example: "355.91"
+          example: 355.91
       required:
       - baseYear
       - period
