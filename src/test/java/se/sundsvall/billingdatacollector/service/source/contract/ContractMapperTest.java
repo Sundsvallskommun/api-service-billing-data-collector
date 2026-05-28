@@ -127,13 +127,14 @@ class ContractMapperTest {
 		// Assert & verify
 		assertThat(result.getApprovedBy()).isEqualTo("CONTRACT-SERVICE");
 		assertThat(result.getCategory()).isEqualTo("MEX_INVOICE");
-		assertThat(result.getInvoice()).isNotNull().hasAllNullFieldsOrPropertiesExcept("dueDate", "customerReference", "customerId", "ourReference", "invoiceRows").satisfies(invoice -> {
+		assertThat(result.getInvoice()).isNotNull().hasAllNullFieldsOrPropertiesExcept("date", "dueDate", "customerReference", "customerId", "ourReference", "invoiceRows").satisfies(invoice -> {
 			assertThat(invoice.getOurReference()).isEqualTo(CONTRACT_ID);
 			assertThat(invoice.getCustomerReference()).isEqualTo(CONTRACT_ID); // blank externalReferenceId falls through to contractId
 			assertThat(invoice.getCustomerId()).isEqualTo("N/A");
 			assertThat(invoice.getDescription()).isNull();
 			assertThat(invoice.getInvoiceRows()).hasSize(1);
 			assertThat(invoice.getDueDate()).isEqualTo(YearMonth.now().atEndOfMonth());
+			assertThat(invoice.getDate()).isEqualTo(result.getTransferDate());
 
 			final var invoiceRow = invoice.getInvoiceRows().getFirst();
 			assertThat(invoiceRow.getDescriptions()).isEmpty();
@@ -300,11 +301,12 @@ class ContractMapperTest {
 		assertThat(result.getApprovedBy()).isEqualTo("CONTRACT-SERVICE");
 		assertThat(result.getCategory()).isEqualTo("MEX_INVOICE");
 		assertThat(result.getInvoice()).isNotNull()
-			.hasAllNullFieldsOrPropertiesExcept("dueDate", "customerReference", "customerId", "ourReference", "invoiceRows")
+			.hasAllNullFieldsOrPropertiesExcept("date", "dueDate", "customerReference", "customerId", "ourReference", "invoiceRows")
 			.satisfies(invoice -> {
 				assertThat(invoice.getOurReference()).isEqualTo(CONTRACT_ID);
 				assertThat(invoice.getInvoiceRows()).hasSize(1);
 				assertThat(invoice.getDueDate()).isEqualTo(YearMonth.now().atEndOfMonth());
+				assertThat(invoice.getDate()).isEqualTo(result.getTransferDate());
 				assertThat(invoice.getDescription()).isNull();
 
 				final var invoiceRow = invoice.getInvoiceRows().getFirst();

@@ -17,6 +17,7 @@
 					"invoice": {
 						"customerId": "N/A",
 						"customerReference": "REF-HALFYEARLY-R",
+						"date": "${json-unit.any-string}",
 						"dueDate": "${json-unit.any-string}",
 						"invoiceRows": [
 							{

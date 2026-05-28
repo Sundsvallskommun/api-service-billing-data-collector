@@ -83,14 +83,15 @@ public class ContractMapper {
 	}
 
 	private BillingRecord toBillingRecord(String municipalityId, Contract contract, LocalDate scheduledDate) {
+		final var transferDate = LocalDate.now();
 		final var billingRecord = new BillingRecord()
 			.approvedBy(APPROVED_BY)
 			.category(CATEGORY)
-			.invoice(toInvoice(municipalityId, contract, scheduledDate))
+			.invoice(toInvoice(municipalityId, contract, scheduledDate, transferDate))
 			.recipient(toRecipient(contract))
 			.status(APPROVED)
 			.type(EXTERNAL)
-			.transferDate(LocalDate.now())
+			.transferDate(transferDate)
 			.putExtraParametersItem(PARAMETER_KEY_CONTRACT_ID, getContractId(contract));
 
 		if (isIndexed(contract)) {
@@ -106,12 +107,13 @@ public class ContractMapper {
 		return YearMonth.from(scheduledDate.minusYears(1).withMonth(INDEX_MONTH));
 	}
 
-	private Invoice toInvoice(String municipalityId, Contract contract, LocalDate scheduledDate) {
+	private Invoice toInvoice(String municipalityId, Contract contract, LocalDate scheduledDate, LocalDate transferDate) {
 		return new Invoice()
 			.ourReference(getContractId(contract))
 			.customerReference(getCustomerReference(contract))
 			.customerId(NOT_APPLICABLE)
 			.addInvoiceRowsItem(mapInvoiceRow(municipalityId, contract, scheduledDate))
+			.date(transferDate)
 			.dueDate(YearMonth.now().atEndOfMonth());
 	}
 
