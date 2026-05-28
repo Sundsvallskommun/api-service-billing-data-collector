@@ -17,7 +17,6 @@
 					"invoice": {
 						"customerId": "N/A",
 						"customerReference": "REF-YEARLY-R",
-						"description": "YEARLY",
 						"dueDate": "${json-unit.any-string}",
 						"invoiceRows": [
 							{

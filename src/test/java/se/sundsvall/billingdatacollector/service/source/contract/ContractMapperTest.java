@@ -2,6 +2,7 @@ package se.sundsvall.billingdatacollector.service.source.contract;
 
 import generated.se.sundsvall.contract.Address;
 import generated.se.sundsvall.contract.Contract;
+import generated.se.sundsvall.contract.ExtraParameterGroup;
 import generated.se.sundsvall.contract.Fees;
 import generated.se.sundsvall.contract.IntervalType;
 import generated.se.sundsvall.contract.InvoicedIn;
@@ -126,8 +127,11 @@ class ContractMapperTest {
 		// Assert & verify
 		assertThat(result.getApprovedBy()).isEqualTo("CONTRACT-SERVICE");
 		assertThat(result.getCategory()).isEqualTo("MEX_INVOICE");
-		assertThat(result.getInvoice()).isNotNull().hasAllNullFieldsOrPropertiesExcept("dueDate", "customerReference", "customerId", "ourReference", "invoiceRows", "description").satisfies(invoice -> {
+		assertThat(result.getInvoice()).isNotNull().hasAllNullFieldsOrPropertiesExcept("dueDate", "customerReference", "customerId", "ourReference", "invoiceRows").satisfies(invoice -> {
 			assertThat(invoice.getOurReference()).isEqualTo(CONTRACT_ID);
+			assertThat(invoice.getCustomerReference()).isEqualTo(CONTRACT_ID); // blank externalReferenceId falls through to contractId
+			assertThat(invoice.getCustomerId()).isEqualTo("N/A");
+			assertThat(invoice.getDescription()).isNull();
 			assertThat(invoice.getInvoiceRows()).hasSize(1);
 			assertThat(invoice.getDueDate()).isEqualTo(YearMonth.now().atEndOfMonth());
 
@@ -296,12 +300,12 @@ class ContractMapperTest {
 		assertThat(result.getApprovedBy()).isEqualTo("CONTRACT-SERVICE");
 		assertThat(result.getCategory()).isEqualTo("MEX_INVOICE");
 		assertThat(result.getInvoice()).isNotNull()
-			.hasAllNullFieldsOrPropertiesExcept("dueDate", "description", "customerReference", "customerId", "ourReference", "invoiceRows")
+			.hasAllNullFieldsOrPropertiesExcept("dueDate", "customerReference", "customerId", "ourReference", "invoiceRows")
 			.satisfies(invoice -> {
 				assertThat(invoice.getOurReference()).isEqualTo(CONTRACT_ID);
 				assertThat(invoice.getInvoiceRows()).hasSize(1);
 				assertThat(invoice.getDueDate()).isEqualTo(YearMonth.now().atEndOfMonth());
-				assertThat(invoice.getDescription()).isEqualTo(intervalType.getValue());
+				assertThat(invoice.getDescription()).isNull();
 
 				final var invoiceRow = invoice.getInvoiceRows().getFirst();
 				assertThat(invoiceRow.getDescriptions()).isEmpty();
@@ -414,6 +418,90 @@ class ContractMapperTest {
 			Arguments.of(LocalDate.of(2026, 7, 1), IntervalType.HALF_YEARLY, ADVANCE, "Avser januari-juni 2027"),
 			Arguments.of(LocalDate.of(2026, 3, 1), IntervalType.HALF_YEARLY, ARREARS, "Avser januari-juni 2026"),
 			Arguments.of(LocalDate.of(2026, 7, 1), IntervalType.HALF_YEARLY, ARREARS, "Avser juli-december 2026"));
+	}
+
+	@Test
+	void customerReference_markupTakesPrecedenceOverExternalReferenceId() {
+		when(contractMock.getFees()).thenReturn(feesMock);
+		when(feesMock.getYearly()).thenReturn(BigDecimal.valueOf(1000));
+		when(contractMock.getInvoicing()).thenReturn(invoicingMock);
+		when(invoicingMock.getInvoiceInterval()).thenReturn(IntervalType.QUARTERLY);
+		when(contractMock.getContractId()).thenReturn(CONTRACT_ID);
+		when(contractMock.getExternalReferenceId()).thenReturn("EXTERNAL-REF");
+		when(contractMock.getExtraParameters()).thenReturn(List.of(
+			new ExtraParameterGroup().name("InvoiceInfo").parameters(Map.of("markup", "MARKUP-WINS"))));
+
+		final var result = mapper.createBillingRecord(MUNICIPALITY_ID, contractMock, SCHEDULED_DATE);
+
+		assertThat(result.getInvoice().getCustomerReference()).isEqualTo("MARKUP-WINS");
+		verify(settingsProviderMock).isLeaseTypeSettingsPresent(contractMock);
+		verify(settingsProviderMock).getVatCode(contractMock);
+	}
+
+	@ParameterizedTest
+	@ValueSource(strings = {
+		"", " "
+	})
+	void customerReference_blankMarkupFallsThroughToExternalReferenceId(String blankMarkup) {
+		when(contractMock.getFees()).thenReturn(feesMock);
+		when(feesMock.getYearly()).thenReturn(BigDecimal.valueOf(1000));
+		when(contractMock.getInvoicing()).thenReturn(invoicingMock);
+		when(invoicingMock.getInvoiceInterval()).thenReturn(IntervalType.QUARTERLY);
+		when(contractMock.getContractId()).thenReturn(CONTRACT_ID);
+		when(contractMock.getExternalReferenceId()).thenReturn("EXTERNAL-REF");
+		when(contractMock.getExtraParameters()).thenReturn(List.of(
+			new ExtraParameterGroup().name("InvoiceInfo").parameters(java.util.Collections.singletonMap("markup", blankMarkup))));
+
+		final var result = mapper.createBillingRecord(MUNICIPALITY_ID, contractMock, SCHEDULED_DATE);
+
+		assertThat(result.getInvoice().getCustomerReference()).isEqualTo("EXTERNAL-REF");
+		verify(settingsProviderMock).isLeaseTypeSettingsPresent(contractMock);
+		verify(settingsProviderMock).getVatCode(contractMock);
+	}
+
+	@ParameterizedTest
+	@ValueSource(strings = {
+		"", " "
+	})
+	void customerReference_blankExternalReferenceIdFallsThroughToContractId(String blankExternalRef) {
+		when(contractMock.getFees()).thenReturn(feesMock);
+		when(feesMock.getYearly()).thenReturn(BigDecimal.valueOf(1000));
+		when(contractMock.getInvoicing()).thenReturn(invoicingMock);
+		when(invoicingMock.getInvoiceInterval()).thenReturn(IntervalType.QUARTERLY);
+		when(contractMock.getContractId()).thenReturn(CONTRACT_ID);
+		when(contractMock.getExternalReferenceId()).thenReturn(blankExternalRef);
+
+		final var result = mapper.createBillingRecord(MUNICIPALITY_ID, contractMock, SCHEDULED_DATE);
+
+		assertThat(result.getInvoice().getCustomerReference())
+			.as("Blank externalReferenceId must not leak through as empty customerReference (minLength: 1)")
+			.isEqualTo(CONTRACT_ID);
+		verify(settingsProviderMock).isLeaseTypeSettingsPresent(contractMock);
+		verify(settingsProviderMock).getVatCode(contractMock);
+	}
+
+	@Test
+	void descriptions_areTruncatedAndBlanksFiltered() {
+		// Mix of: a fine string, a blank, a string at exactly 30 chars, an over-length
+		// string, and an empty string. Order must be preserved for the survivors.
+		final var thirty = "123456789012345678901234567890"; // 30
+		final var overLength = "abcdefghijklmnopqrstuvwxyz0123456789"; // 36 → expect first 30
+		final var additionalInformation = java.util.Arrays.asList(
+			"OK row", "   ", thirty, overLength, "");
+
+		when(contractMock.getFees()).thenReturn(feesMock);
+		when(feesMock.getYearly()).thenReturn(BigDecimal.valueOf(1000));
+		when(feesMock.getAdditionalInformation()).thenReturn(additionalInformation);
+		when(contractMock.getInvoicing()).thenReturn(invoicingMock);
+		when(invoicingMock.getInvoiceInterval()).thenReturn(IntervalType.QUARTERLY);
+		when(contractMock.getContractId()).thenReturn(CONTRACT_ID);
+
+		final var result = mapper.createBillingRecord(MUNICIPALITY_ID, contractMock, SCHEDULED_DATE);
+
+		assertThat(result.getInvoice().getInvoiceRows().getFirst().getDescriptions())
+			.containsExactly("OK row", thirty, overLength.substring(0, 30));
+		verify(settingsProviderMock).isLeaseTypeSettingsPresent(contractMock);
+		verify(settingsProviderMock).getVatCode(contractMock);
 	}
 
 	private static Stakeholder generateStakeholder() {
