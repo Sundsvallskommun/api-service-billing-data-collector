@@ -5,40 +5,40 @@ info:
   license:
     name: MIT License
     url: https://opensource.org/licenses/MIT
-  version: "4.4"
+  version: "4.5"
 servers:
-  - url: https://billing-preprocessor-af-billingpreprocessor.apps.ocp201.sundsvall.se
-    description: Generated server url
+- url: https://billing-preprocessor-af-billingpreprocessor.apps.ocp201.sundsvall.se
+  description: Generated server url
 tags:
-  - name: Status Resource
-    description: Check status operations
-  - name: BillingRecord
-    description: Billing record operations
-  - name: Jobs
-    description: Jobs resources
+- name: Status Resource
+  description: Check status operations
+- name: BillingRecord
+  description: Billing record operations
+- name: Jobs
+  description: Jobs resources
 paths:
   /{municipalityId}/billingrecords/{id}:
     get:
       tags:
-        - BillingRecord
+      - BillingRecord
       summary: Read billing record
       description: Fetches the billing record that matches the provided id
       operationId: readBillingRecord
       parameters:
-        - name: municipalityId
-          in: path
-          description: Municipality ID
-          required: true
-          schema:
-            type: string
-          example: 2281
-        - name: id
-          in: path
-          description: BillingRecord id
-          required: true
-          schema:
-            type: string
-          example: b82bd8ac-1507-4d9a-958d-369261eecc15
+      - name: municipalityId
+        in: path
+        description: Municipality ID
+        required: true
+        schema:
+          type: string
+        example: 2281
+      - name: id
+        in: path
+        description: BillingRecord id
+        required: true
+        schema:
+          type: string
+        example: b82bd8ac-1507-4d9a-958d-369261eecc15
       responses:
         "200":
           description: Successful Operation
@@ -52,8 +52,8 @@ paths:
             application/problem+json:
               schema:
                 oneOf:
-                  - $ref: "#/components/schemas/Problem"
-                  - $ref: "#/components/schemas/ConstraintViolationProblem"
+                - $ref: "#/components/schemas/Problem"
+                - $ref: "#/components/schemas/ConstraintViolationProblem"
         "404":
           description: Not Found
           content:
@@ -68,26 +68,26 @@ paths:
                 $ref: "#/components/schemas/Problem"
     put:
       tags:
-        - BillingRecord
+      - BillingRecord
       summary: Update billing record
       description: Updates the billing record matching provided id with the supplied
         attributes
       operationId: updateBillingRecord
       parameters:
-        - name: municipalityId
-          in: path
-          description: Municipality ID
-          required: true
-          schema:
-            type: string
-          example: 2281
-        - name: id
-          in: path
-          description: BillingRecord id
-          required: true
-          schema:
-            type: string
-          example: b82bd8ac-1507-4d9a-958d-369261eecc15
+      - name: municipalityId
+        in: path
+        description: Municipality ID
+        required: true
+        schema:
+          type: string
+        example: 2281
+      - name: id
+        in: path
+        description: BillingRecord id
+        required: true
+        schema:
+          type: string
+        example: b82bd8ac-1507-4d9a-958d-369261eecc15
       requestBody:
         content:
           application/json:
@@ -107,8 +107,8 @@ paths:
             application/problem+json:
               schema:
                 oneOf:
-                  - $ref: "#/components/schemas/Problem"
-                  - $ref: "#/components/schemas/ConstraintViolationProblem"
+                - $ref: "#/components/schemas/Problem"
+                - $ref: "#/components/schemas/ConstraintViolationProblem"
         "404":
           description: Not found
           content:
@@ -123,26 +123,26 @@ paths:
                 $ref: "#/components/schemas/Problem"
     delete:
       tags:
-        - BillingRecord
+      - BillingRecord
       summary: Delete billing record
       description: "Deletes the billing record that matches the provided id, but only\
         \ if status of record is 'NEW'. Otherwise a client error is returned."
       operationId: deleteBillingRecord
       parameters:
-        - name: municipalityId
-          in: path
-          description: Municipality ID
-          required: true
-          schema:
-            type: string
-          example: 2281
-        - name: id
-          in: path
-          description: BillingRecord id
-          required: true
-          schema:
-            type: string
-          example: b82bd8ac-1507-4d9a-958d-369261eecc15
+      - name: municipalityId
+        in: path
+        description: Municipality ID
+        required: true
+        schema:
+          type: string
+        example: 2281
+      - name: id
+        in: path
+        description: BillingRecord id
+        required: true
+        schema:
+          type: string
+        example: b82bd8ac-1507-4d9a-958d-369261eecc15
       responses:
         "204":
           description: Successful operation
@@ -152,8 +152,8 @@ paths:
             application/problem+json:
               schema:
                 oneOf:
-                  - $ref: "#/components/schemas/Problem"
-                  - $ref: "#/components/schemas/ConstraintViolationProblem"
+                - $ref: "#/components/schemas/Problem"
+                - $ref: "#/components/schemas/ConstraintViolationProblem"
         "404":
           description: Not Found
           content:
@@ -175,18 +175,18 @@ paths:
   /{municipalityId}/jobs/filetransferrer:
     post:
       tags:
-        - Jobs
+      - Jobs
       summary: Triggers job for transferring files with status CREATED or SEND_FAILED
         to final destination
       operationId: transferFiles
       parameters:
-        - name: municipalityId
-          in: path
-          description: Municipality ID
-          required: true
-          schema:
-            type: string
-          example: 2281
+      - name: municipalityId
+        in: path
+        description: Municipality ID
+        required: true
+        schema:
+          type: string
+        example: 2281
       responses:
         "202":
           description: Successful Operation
@@ -205,17 +205,17 @@ paths:
   /{municipalityId}/jobs/filecreator:
     post:
       tags:
-        - Jobs
+      - Jobs
       summary: Triggers job for creating files from billing records with status APPROVED
       operationId: createFileEntities
       parameters:
-        - name: municipalityId
-          in: path
-          description: Municipality ID
-          required: true
-          schema:
-            type: string
-          example: 2281
+      - name: municipalityId
+        in: path
+        description: Municipality ID
+        required: true
+        schema:
+          type: string
+        example: 2281
       responses:
         "202":
           description: Successful Operation
@@ -234,51 +234,51 @@ paths:
   /{municipalityId}/billingrecords:
     get:
       tags:
-        - BillingRecord
+      - BillingRecord
       summary: Read matching billing records
       description: Query for billing records with or without filters. The resource
         allows the client a wide range of variations on how to filter the result.
       operationId: findBillingRecords
       parameters:
-        - name: municipalityId
-          in: path
-          description: Municipality ID
-          required: true
-          schema:
-            type: string
-          example: 2281
-        - name: filter
-          in: query
-          description: "Syntax description: [spring-filter](https://github.com/turkraft/spring-filter/blob/85730f950a5f8623159cc0eb4d737555f9382bb7/README.md#syntax)"
-          required: false
-          schema:
-            type: string
-          example: "category : 'ACCESS_CARD' and status : 'NEW'"
-        - name: page
-          in: query
-          description: Zero-based page index (0..N)
-          required: false
-          schema:
-            type: integer
-            default: 0
-            minimum: 0
-        - name: size
-          in: query
-          description: The size of the page to be returned
-          required: false
-          schema:
-            type: integer
-            default: 20
-            minimum: 1
-        - name: sort
-          in: query
-          description: "Sorting criteria in the format: property,(asc|desc). Default\
+      - name: municipalityId
+        in: path
+        description: Municipality ID
+        required: true
+        schema:
+          type: string
+        example: 2281
+      - name: filter
+        in: query
+        description: "Syntax description: [spring-filter](https://github.com/turkraft/spring-filter/blob/85730f950a5f8623159cc0eb4d737555f9382bb7/README.md#syntax)"
+        required: false
+        schema:
+          type: string
+        example: "category : 'ACCESS_CARD' and status : 'NEW'"
+      - name: page
+        in: query
+        description: Zero-based page index (0..N)
+        required: false
+        schema:
+          type: integer
+          default: 0
+          minimum: 0
+      - name: size
+        in: query
+        description: The size of the page to be returned
+        required: false
+        schema:
+          type: integer
+          default: 20
+          minimum: 1
+      - name: sort
+        in: query
+        description: "Sorting criteria in the format: property,(asc|desc). Default\
           \ sort order is ascending. Multiple sort criteria are supported."
-          required: false
-          schema:
-            type: array
-            items:
-              type: string
+        required: false
+        schema:
+          type: array
+          items:
+            type: string
       responses:
         "200":
           description: Successful Operation
@@ -292,8 +292,8 @@ paths:
             application/problem+json:
               schema:
                 oneOf:
-                  - $ref: "#/components/schemas/Problem"
-                  - $ref: "#/components/schemas/ConstraintViolationProblem"
+                - $ref: "#/components/schemas/Problem"
+                - $ref: "#/components/schemas/ConstraintViolationProblem"
         "500":
           description: Internal Server Error
           content:
@@ -302,18 +302,18 @@ paths:
                 $ref: "#/components/schemas/Problem"
     post:
       tags:
-        - BillingRecord
+      - BillingRecord
       summary: Create billing record
       description: Creates a new billing record defined by the supplied attributes
       operationId: createBillingRecord
       parameters:
-        - name: municipalityId
-          in: path
-          description: Municipality ID
-          required: true
-          schema:
-            type: string
-          example: 2281
+      - name: municipalityId
+        in: path
+        description: Municipality ID
+        required: true
+        schema:
+          type: string
+        example: 2281
       requestBody:
         content:
           application/json:
@@ -334,8 +334,8 @@ paths:
             application/problem+json:
               schema:
                 oneOf:
-                  - $ref: "#/components/schemas/Problem"
-                  - $ref: "#/components/schemas/ConstraintViolationProblem"
+                - $ref: "#/components/schemas/Problem"
+                - $ref: "#/components/schemas/ConstraintViolationProblem"
         "500":
           description: Internal Server error
           content:
@@ -345,18 +345,18 @@ paths:
   /{municipalityId}/billingrecords/batch:
     post:
       tags:
-        - BillingRecord
+      - BillingRecord
       summary: Create billing records
       description: Creates new billing records defined by the supplied attributes
       operationId: createBillingRecords
       parameters:
-        - name: municipalityId
-          in: path
-          description: Municipality ID
-          required: true
-          schema:
-            type: string
-          example: 2281
+      - name: municipalityId
+        in: path
+        description: Municipality ID
+        required: true
+        schema:
+          type: string
+        example: 2281
       requestBody:
         content:
           application/json:
@@ -385,8 +385,8 @@ paths:
             application/problem+json:
               schema:
                 oneOf:
-                  - $ref: "#/components/schemas/Problem"
-                  - $ref: "#/components/schemas/ConstraintViolationProblem"
+                - $ref: "#/components/schemas/Problem"
+                - $ref: "#/components/schemas/ConstraintViolationProblem"
         "500":
           description: Internal Server error
           content:
@@ -396,42 +396,42 @@ paths:
   /{municipalityId}/status:
     get:
       tags:
-        - Status Resource
+      - Status Resource
       summary: "Get the status for invoice files, indicating if they have been sent\
         \ successfully or not"
       description: Checks the status of a invoice file matching the given year and
         month
       operationId: getFileStatusesForMonth
       parameters:
-        - name: municipalityId
-          in: path
-          required: true
-          schema:
-            type: string
-        - name: year
-          in: query
-          required: true
-          schema:
-            type: integer
-            format: int32
-        - name: month
-          in: query
-          required: true
-          schema:
-            type: string
-            enum:
-              - JANUARY
-              - FEBRUARY
-              - MARCH
-              - APRIL
-              - MAY
-              - JUNE
-              - JULY
-              - AUGUST
-              - SEPTEMBER
-              - OCTOBER
-              - NOVEMBER
-              - DECEMBER
+      - name: municipalityId
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: year
+        in: query
+        required: true
+        schema:
+          type: integer
+          format: int32
+      - name: month
+        in: query
+        required: true
+        schema:
+          type: string
+          enum:
+          - JANUARY
+          - FEBRUARY
+          - MARCH
+          - APRIL
+          - MAY
+          - JUNE
+          - JULY
+          - AUGUST
+          - SEPTEMBER
+          - OCTOBER
+          - NOVEMBER
+          - DECEMBER
       responses:
         "400":
           description: Bad request
@@ -439,8 +439,8 @@ paths:
             application/problem+json:
               schema:
                 oneOf:
-                  - $ref: "#/components/schemas/Problem"
-                  - $ref: "#/components/schemas/ConstraintViolationProblem"
+                - $ref: "#/components/schemas/Problem"
+                - $ref: "#/components/schemas/ConstraintViolationProblem"
         "500":
           description: Internal Server error
           content:
@@ -458,7 +458,7 @@ paths:
   /api-docs:
     get:
       tags:
-        - API
+      - API
       summary: OpenAPI
       operationId: getApiDocs
       responses:
@@ -543,47 +543,47 @@ components:
           type: string
           description: Cost center
           examples:
-            - "15800100"
+          - "15800100"
         subaccount:
           type: string
           description: Subaccount
           examples:
-            - "936300"
+          - "936300"
         department:
           type: string
           description: Department
           examples:
-            - "920360"
+          - "920360"
         accuralKey:
           type: string
           description: Accural key
           examples:
-            - "5647"
+          - "5647"
         activity:
           type: string
           description: Activity
           examples:
-            - "5756"
+          - "5756"
         article:
           type: string
           description: Article
           examples:
-            - Electric bicycle
+          - Electric bicycle
         project:
           type: string
           description: Project
           examples:
-            - "11041"
+          - "11041"
         counterpart:
           type: string
           description: Counterpart
           examples:
-            - "11830000"
+          - "11830000"
         amount:
           type: number
           description: Amount
           examples:
-            - "1399.95"
+          - 1399.95
     AddressDetails:
       type: object
       description: Address details model
@@ -592,22 +592,22 @@ components:
           type: string
           description: Street name and number. Mandatory for EXTERNAL billing record.
           examples:
-            - Sesame Street 7
+          - Sesame Street 7
         careOf:
           type: string
           description: Care of name
           examples:
-            - Abby Cadabby
+          - Abby Cadabby
         postalCode:
           type: string
           description: Postal code. Mandatory for EXTERNAL billing record.
           examples:
-            - "12345"
+          - "12345"
         city:
           type: string
           description: City. Mandatory for EXTERNAL billing record.
           examples:
-            - Grouchytown
+          - Grouchytown
     BillingRecord:
       type: object
       description: Billing record model
@@ -616,7 +616,7 @@ components:
           type: string
           description: Unique id for the billing record
           examples:
-            - 71258e7d-5285-46ce-b9b2-877f8cad8edd
+          - 71258e7d-5285-46ce-b9b2-877f8cad8edd
           readOnly: true
         category:
           type: string
@@ -631,13 +631,13 @@ components:
           description: Information regarding the person that has approved the billing
             record
           examples:
-            - Big Bird
+          - Big Bird
         approved:
           type: string
           format: date-time
           description: Timestamp when the billing record got approved status
           examples:
-            - 2022-11-21T16:57:13.988+02:00
+          - 2022-11-21T16:57:13.988+02:00
           readOnly: true
         recipient:
           $ref: "#/components/schemas/Recipient"
@@ -648,14 +648,14 @@ components:
           format: date-time
           description: Timestamp when the billing record was created
           examples:
-            - 2022-10-31T14:30:00.001+02:00
+          - 2022-10-31T14:30:00.001+02:00
           readOnly: true
         modified:
           type: string
           format: date-time
           description: Timestamp when the billing record was last modified
           examples:
-            - 2022-11-14T08:57:42.358+02:00
+          - 2022-11-14T08:57:42.358+02:00
           readOnly: true
         extraParameters:
           type: object
@@ -664,20 +664,20 @@ components:
           description: A map of extra parameters for custom values on the billing
             record
           examples:
-            - "{\"caseId\":\"abc123\",\"uuid\":\"82a400cf-eb02-4a18-962d-fde55440868f\"\
-            }"
+          - caseId: abc123
+            uuid: 82a400cf-eb02-4a18-962d-fde55440868f
         transferDate:
           type: string
           format: date
           description: "The date when the billing record should be transferred to\
             \ Raindance. If not specified, defaults to the next 15th of the month."
           examples:
-            - 2023-12-15
+          - 2023-12-15
       required:
-        - category
-        - invoice
-        - status
-        - type
+      - category
+      - invoice
+      - status
+      - type
     Invoice:
       type: object
       description: Invoice model
@@ -686,39 +686,42 @@ components:
           type: string
           description: Customer number in Raindance
           examples:
-            - "16"
+          - "16"
+          minLength: 1
         description:
           type: string
-          description: Description of the invoice
+          description: Description of the invoice. Maximum length is configurable
+            and depends on the billing record type (INTERNAL or EXTERNAL).
           examples:
-            - "Errand number: 2113-01784"
+          - "Errand number: 2113-01784"
         ourReference:
           type: string
           description: Our reference
           examples:
-            - Harvey Kneeslapper
+          - Harvey Kneeslapper
         customerReference:
           type: string
           description: Customer reference
           examples:
-            - Alice Snuffleupagus
+          - Alice Snuffleupagus
+          minLength: 1
         date:
           type: string
           format: date
           description: Date for the invoice
           examples:
-            - 2022-12-24
+          - 2022-12-24
         dueDate:
           type: string
           format: date
           description: Due date for the invoice
           examples:
-            - 2022-12-24
+          - 2022-12-24
         totalAmount:
           type: number
           description: Total sum of all invoice rows
           examples:
-            - "1399.95"
+          - 1399.95
           readOnly: true
         invoiceRows:
           type: array
@@ -726,10 +729,9 @@ components:
             $ref: "#/components/schemas/InvoiceRow"
           minItems: 1
       required:
-        - customerId
-        - customerReference
-        - description
-        - invoiceRows
+      - customerId
+      - customerReference
+      - invoiceRows
     InvoiceRow:
       type: object
       description: Invoice row model
@@ -740,7 +742,7 @@ components:
             type: string
             description: Description of row
             examples:
-              - Row with description
+            - Row with description
             maxLength: 30
             minLength: 1
         detailedDescriptions:
@@ -749,30 +751,30 @@ components:
             type: string
             description: Detailed description of row
             examples:
-              - Row with detailed description
+            - Row with detailed description
             minLength: 1
         totalAmount:
           type: number
           description: Total sum of invoice row
           examples:
-            - "1399.95"
+          - 1399.95
           readOnly: true
         vatCode:
           type: string
           description: VAT code for invoice row
           examples:
-            - "25"
+          - "25"
           pattern: 00|06|12|25
         costPerUnit:
           type: number
           description: Cost per unit
           examples:
-            - "155.55"
+          - 155.55
         quantity:
           type: number
           description: Total amount of units
           examples:
-            - "9.0"
+          - 9.0
         accountInformation:
           type: array
           description: Account information
@@ -787,54 +789,54 @@ components:
           description: Unique id for the person issuing the billing record. Mandatory
             for EXTERNAL billing record if legalId is null.
           examples:
-            - f0882f1d-06bc-47fd-b017-1d8307f5ce95
+          - f0882f1d-06bc-47fd-b017-1d8307f5ce95
         legalId:
           type: string
           description: LegalId for the organization issuing the billing record. Mandatory
             for EXTERNAL billing record if partyId is null.
           examples:
-            - "3456789123"
+          - "3456789123"
         organizationName:
           type: string
           description: Name of issuing organization of the billing record if the recipient
             is an organization
           examples:
-            - Sesame Merc AB
+          - Sesame Merc AB
         firstName:
           type: string
           description: First name of the billing record recipient
           examples:
-            - Alice
+          - Alice
         lastName:
           type: string
           description: Last name of the billing record recipient
           examples:
-            - Snuffleupagus
+          - Snuffleupagus
         userId:
           type: string
           description: User id of the billing record recipient
           examples:
-            - ALI22SNU
+          - ALI22SNU
         addressDetails:
           $ref: "#/components/schemas/AddressDetails"
       required:
-        - addressDetails
+      - addressDetails
     Status:
       type: string
       description: Billing status model
       enum:
-        - NEW
-        - APPROVED
-        - INVOICED
-        - REJECTED
+      - NEW
+      - APPROVED
+      - INVOICED
+      - REJECTED
       examples:
-        - APPROVED
+      - APPROVED
     Type:
       type: string
       description: Billing type model
       enum:
-        - EXTERNAL
-        - INTERNAL
+      - EXTERNAL
+      - INTERNAL
     InvoiceFileStatus:
       type: object
       description: InvoiceFile status model
@@ -878,13 +880,13 @@ components:
           type: boolean
         last:
           type: boolean
-        pageable:
-          $ref: "#/components/schemas/PageableObject"
         numberOfElements:
           type: integer
           format: int32
         sort:
           $ref: "#/components/schemas/SortObject"
+        pageable:
+          $ref: "#/components/schemas/PageableObject"
         empty:
           type: boolean
     PageableObject:
@@ -893,6 +895,8 @@ components:
         offset:
           type: integer
           format: int64
+        sort:
+          $ref: "#/components/schemas/SortObject"
         paged:
           type: boolean
         pageNumber:
@@ -903,15 +907,13 @@ components:
           format: int32
         unpaged:
           type: boolean
-        sort:
-          $ref: "#/components/schemas/SortObject"
     SortObject:
       type: object
       properties:
         empty:
           type: boolean
-        sorted:
-          type: boolean
         unsorted:
+          type: boolean
+        sorted:
           type: boolean
   securitySchemes: {}

@@ -18,7 +18,7 @@
 					"invoice": {
 						"customerId": "N/A",
 						"customerReference": "111 222 333-1",
-						"description": "QUARTERLY",
+						"date": "${json-unit.any-string}",
 						"dueDate": "${json-unit.any-string}",
 						"invoiceRows": [
 							{

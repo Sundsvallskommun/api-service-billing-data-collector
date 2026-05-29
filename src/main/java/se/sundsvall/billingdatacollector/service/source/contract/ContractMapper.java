@@ -10,7 +10,6 @@ import generated.se.sundsvall.contract.Address;
 import generated.se.sundsvall.contract.Contract;
 import generated.se.sundsvall.contract.Fees;
 import generated.se.sundsvall.contract.IntervalType;
-import generated.se.sundsvall.contract.Invoicing;
 import generated.se.sundsvall.contract.PropertyDesignation;
 import generated.se.sundsvall.contract.Stakeholder;
 import generated.se.sundsvall.contract.StakeholderRole;
@@ -21,6 +20,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.function.Function;
 import java.util.function.Predicate;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
 import se.sundsvall.billingdatacollector.integration.scb.ScbIntegration;
 import se.sundsvall.billingdatacollector.service.util.BillingPeriodCalculator;
@@ -32,6 +32,7 @@ import static generated.se.sundsvall.billingpreprocessor.Type.EXTERNAL;
 import static java.time.Month.OCTOBER;
 import static java.util.Collections.emptyList;
 import static java.util.Optional.ofNullable;
+import static org.apache.commons.lang3.StringUtils.trimToNull;
 import static org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR;
 import static se.sundsvall.billingdatacollector.service.source.contract.util.CalculationUtil.calculateIndexedCost;
 import static se.sundsvall.billingdatacollector.service.source.contract.util.CalculationUtil.calculateNonIndexedCost;
@@ -59,6 +60,9 @@ public class ContractMapper {
 	private static final String SAME_YEAR_DESCRIPTION_FORMAT = "Avser %s-%s %d";
 	// Cross-year period: "Avser juli 2026-juni 2027"
 	private static final String SPANNING_YEARS_DESCRIPTION_FORMAT = "Avser %s %d-%s %d";
+	// BillingPreprocessor enforces maxLength: 30 on each entry in
+	// InvoiceRow.descriptions; longer strings would be rejected as BAD_REQUEST.
+	private static final int DESCRIPTION_MAX_LENGTH = 30;
 
 	private final ScbIntegration scbIntegration;
 	private final SettingsProvider settingsProvider;
@@ -79,14 +83,15 @@ public class ContractMapper {
 	}
 
 	private BillingRecord toBillingRecord(String municipalityId, Contract contract, LocalDate scheduledDate) {
+		final var transferDate = LocalDate.now();
 		final var billingRecord = new BillingRecord()
 			.approvedBy(APPROVED_BY)
 			.category(CATEGORY)
-			.invoice(toInvoice(municipalityId, contract, scheduledDate))
+			.invoice(toInvoice(municipalityId, contract, scheduledDate, transferDate))
 			.recipient(toRecipient(contract))
 			.status(APPROVED)
 			.type(EXTERNAL)
-			.transferDate(LocalDate.now())
+			.transferDate(transferDate)
 			.putExtraParametersItem(PARAMETER_KEY_CONTRACT_ID, getContractId(contract));
 
 		if (isIndexed(contract)) {
@@ -102,23 +107,23 @@ public class ContractMapper {
 		return YearMonth.from(scheduledDate.minusYears(1).withMonth(INDEX_MONTH));
 	}
 
-	private Invoice toInvoice(String municipalityId, Contract contract, LocalDate scheduledDate) {
+	private Invoice toInvoice(String municipalityId, Contract contract, LocalDate scheduledDate, LocalDate transferDate) {
 		return new Invoice()
 			.ourReference(getContractId(contract))
 			.customerReference(getCustomerReference(contract))
 			.customerId(NOT_APPLICABLE)
 			.addInvoiceRowsItem(mapInvoiceRow(municipalityId, contract, scheduledDate))
-			.dueDate(YearMonth.now().atEndOfMonth())
-			.description(ofNullable(contract.getInvoicing())
-				.map(Invoicing::getInvoiceInterval)
-				.map(IntervalType::getValue)
-				.orElse(null));
+			.date(transferDate)
+			.dueDate(YearMonth.now().atEndOfMonth());
 	}
 
 	private String getCustomerReference(Contract contract) {
-		return ofNullable(getExtraParameter(contract, "InvoiceInfo", "markup"))
-			.orElseGet(() -> ofNullable(contract.getExternalReferenceId())
-				.orElse(contract.getContractId()));
+		// BillingPreprocessor requires customerReference to be non-blank (minLength: 1),
+		// so blank candidates must fall through to the next fallback rather than be
+		// emitted as empty strings.
+		return ofNullable(trimToNull(getExtraParameter(contract, "InvoiceInfo", "markup")))
+			.or(() -> ofNullable(trimToNull(contract.getExternalReferenceId())))
+			.orElse(contract.getContractId());
 	}
 
 	private InvoiceRow mapInvoiceRow(String municipalityId, Contract contract, LocalDate scheduledDate) {
@@ -129,7 +134,8 @@ public class ContractMapper {
 			.accountInformation(mapAccountInformation(municipalityId, contract, costPerUnit.multiply(QUANTITY)))
 			.vatCode(settingsProvider.getVatCode(contract))
 			.quantity(QUANTITY)
-			.descriptions(ofNullable(contract.getFees()).map(Fees::getAdditionalInformation).orElse(null));
+			.descriptions(sanitizeDescriptions(
+				ofNullable(contract.getFees()).map(Fees::getAdditionalInformation).orElse(null)));
 
 		ofNullable(getPropertyDesignation(contract)).ifPresent(invoiceRow::addDetailedDescriptionsItem);
 		ofNullable(getInvoiceDescription(contract, scheduledDate)).ifPresent(invoiceRow::addDetailedDescriptionsItem);
@@ -219,6 +225,23 @@ public class ContractMapper {
 			.filter(Objects::nonNull)
 			.findFirst()
 			.orElse(null);
+	}
+
+	/**
+	 * Filters out null/blank entries and truncates each remaining string to
+	 * {@value #DESCRIPTION_MAX_LENGTH} characters so the payload satisfies the
+	 * minLength/maxLength constraints on {@code InvoiceRow.descriptions} in the
+	 * billing-preprocessor schema. Returns {@code null} for null input so the
+	 * field is simply omitted from the request when no data is available.
+	 */
+	private static List<String> sanitizeDescriptions(List<String> descriptions) {
+		if (descriptions == null) {
+			return null;
+		}
+		return descriptions.stream()
+			.filter(StringUtils::isNotBlank)
+			.map(d -> d.length() > DESCRIPTION_MAX_LENGTH ? d.substring(0, DESCRIPTION_MAX_LENGTH) : d)
+			.toList();
 	}
 
 	/**
