@@ -5,9 +5,9 @@ info:
   license:
     name: MIT License
     url: https://opensource.org/licenses/MIT
-  version: "8.0"
+  version: "9.0"
 servers:
-- url: http://localhost:64382
+- url: http://localhost:60349
   description: Generated server url
 tags:
 - name: Contract attachments
@@ -692,16 +692,28 @@ components:
           - POSTAL_ADDRESS
         streetAddress:
           type: string
+          examples:
+          - Testvägen 18
         careOf:
           type: string
+          examples:
+          - c/o Test Testorsson
         postalCode:
           type: string
+          examples:
+          - 123 45
         town:
           type: string
+          examples:
+          - Sundsvall
         country:
           type: string
+          examples:
+          - Sverige
         attention:
           type: string
+          examples:
+          - Test Testorsson
     AddressType:
       type: string
       description: Address type
@@ -724,7 +736,7 @@ components:
           format: int64
           description: The attachment id
           examples:
-          - "1234"
+          - 1234
           readOnly: true
         category:
           $ref: "#/components/schemas/AttachmentCategory"
@@ -764,7 +776,7 @@ components:
           format: int32
           description: Version for contract
           examples:
-          - "1"
+          - 1
           readOnly: true
         contractId:
           type: string
@@ -862,7 +874,7 @@ components:
           format: int32
           description: Leased area (m2)
           examples:
-          - "150"
+          - 150
         signedByWitness:
           type: boolean
           description: Whether the contract is signed by a witness
@@ -871,20 +883,27 @@ components:
           description: Part(s) of property covered by the lease. Described by GeoJSON
             using polygon(s)
           examples:
-          - "{\n\t\"features\": [\n\t\t{\n\t\t\t\"geometry\": {\n\t\t\t\t\"coordinates\"\
-            : [\n\t\t\t\t\t[\n\t\t\t\t\t\t[\n\t\t\t\t\t\t\t1730072021484375,\n\t\t\
-            \t\t\t\t\t6238137830626575\n\t\t\t\t\t\t],\n\t\t\t\t\t\t[\n\t\t\t\t\t\t\
-            \t17297286987304688,\n\t\t\t\t\t\t\t6238050291927199\n\t\t\t\t\t\t],\n\
-            \t\t\t\t\t\t[\n\t\t\t\t\t\t\t17297801971435547,\n\t\t\t\t\t\t\t6237922958346664\n\
-            \t\t\t\t\t\t],\n\t\t\t\t\t\t[\n\t\t\t\t\t\t\t17301406860351562,\n\t\t\t\
-            \t\t\t\t62378194958300895\n\t\t\t\t\t\t],\n\t\t\t\t\t\t[\n\t\t\t\t\t\t\
-            \t17303810119628906,\n\t\t\t\t\t\t\t62379149998183046\n\t\t\t\t\t\t],\n\
-            \t\t\t\t\t\t[\n\t\t\t\t\t\t\t17303638458251953,\n\t\t\t\t\t\t\t6238066208244492\n\
-            \t\t\t\t\t\t],\n\t\t\t\t\t\t[\n\t\t\t\t\t\t\t1730072021484375,\n\t\t\t\
-            \t\t\t\t6238137830626575\n\t\t\t\t\t\t]\n\t\t\t\t\t]\n\t\t\t\t],\n\t\t\
-            \t\t\"type\": \"Polygon\"\n\t\t\t},\n\t\t\t\"properties\": {},\n\t\t\t\
-            \"type\": \"Feature\"\n\t\t}\n\t],\n\t\"type\": \"FeatureCollection\"\n\
-            }\n"
+          - features:
+            - geometry:
+                coordinates:
+                - - - 1730072021484375
+                    - 6238137830626575
+                  - - 17297286987304688
+                    - 6238050291927199
+                  - - 17297801971435547
+                    - 6237922958346664
+                  - - 17301406860351562
+                    - 62378194958300895
+                  - - 17303810119628906
+                    - 62379149998183046
+                  - - 17303638458251953
+                    - 6238066208244492
+                  - - 1730072021484375
+                    - 6238137830626575
+                type: Polygon
+              properties: {}
+              type: Feature
+            type: FeatureCollection
       required:
       - status
       - type
@@ -926,7 +945,7 @@ components:
           format: int32
           description: The lease extension value
           examples:
-          - "2"
+          - 2
           minimum: 0
         unit:
           $ref: "#/components/schemas/TimeUnit"
@@ -948,7 +967,8 @@ components:
             type: string
           description: Parameters
           examples:
-          - "{\"key1\": \"value1\",\"key2\": \"value2\"}"
+          - key1: value1
+            key2: value2
     Feature:
       type: object
       properties:
@@ -1002,17 +1022,17 @@ components:
           type: number
           description: Yearly fee
           examples:
-          - "1000.5"
+          - 1000.5
         monthly:
           type: number
           description: Monthly fee
           examples:
-          - "100.5"
+          - 100.5
         total:
           type: number
           description: Total fee
           examples:
-          - "1200.5"
+          - 1200.5
         totalAsText:
           type: string
           description: Total fee as text
@@ -1027,25 +1047,28 @@ components:
           format: int32
           description: Index year
           examples:
-          - "2021"
+          - 2021
         indexNumber:
           type: number
           description: Index number
           examples:
-          - "1.00"
+          - 1.0
         indexationRate:
           type: number
           description: Specifies what proportion of the consumer price index should
             be used for invoicing.
           examples:
-          - "0.5"
+          - 0.5
           maximum: 1.0
           minimum: 0.0
         additionalInformation:
           type: array
-          description: Additional information
+          description: Additional information. Each entry must be non-blank and between
+            1 and 30 characters (used as invoice row descriptions).
           items:
             type: string
+            maxLength: 30
+            minLength: 1
     GeoJsonObject:
       type: object
       discriminator:
@@ -1105,6 +1128,9 @@ components:
           - QUARTERLY
         invoicedIn:
           $ref: "#/components/schemas/InvoicedIn"
+      required:
+      - invoiceInterval
+      - invoicedIn
     LeaseType:
       type: string
       description: Lease type
@@ -1250,7 +1276,7 @@ components:
           format: int32
           description: The period of notice
           examples:
-          - "3"
+          - 3
           minimum: 0
         unit:
           $ref: "#/components/schemas/TimeUnit"
@@ -1348,26 +1374,36 @@ components:
           type: array
           items:
             $ref: "#/components/schemas/StakeholderRole"
+            examples:
+            - BUYER
         organizationName:
           type: string
           description: Name of the organization
           examples:
           - Sundsvalls kommun
+          maxLength: 255
+          minLength: 0
         organizationNumber:
           type: string
           description: Swedish organization number
           examples:
           - 212000-2411
+          maxLength: 255
+          minLength: 0
         firstName:
           type: string
           description: Stakeholders first name
           examples:
           - Test
+          maxLength: 255
+          minLength: 0
         lastName:
           type: string
           description: Stakeholders last name
           examples:
           - Testorsson
+          maxLength: 255
+          minLength: 0
         partyId:
           type: string
           description: PartyId
@@ -1378,11 +1414,15 @@ components:
           description: Phone number for stakeholder
           examples:
           - "0701231212"
+          maxLength: 255
+          minLength: 0
         emailAddress:
           type: string
           description: Email adress for stakeholder
           examples:
           - test.testorsson@test.se
+          maxLength: 255
+          minLength: 0
         address:
           $ref: "#/components/schemas/Address"
           description: Address for stakeholder
@@ -1577,13 +1617,26 @@ components:
           type: boolean
         container:
           type: boolean
+        string:
+          type: boolean
+        pojo:
+          type: boolean
+        int:
+          type: boolean
+        double:
+          type: boolean
+        long:
+          type: boolean
+        short:
+          type: boolean
+        textual:
+          type: boolean
+          deprecated: true
+        boolean:
+          type: boolean
+        binary:
+          type: boolean
         number:
-          type: boolean
-        bigDecimal:
-          type: boolean
-        valueNode:
-          type: boolean
-        floatingPointNumber:
           type: boolean
         nodeType:
           type: string
@@ -1597,30 +1650,17 @@ components:
           - OBJECT
           - POJO
           - STRING
+        bigDecimal:
+          type: boolean
         missingNode:
+          type: boolean
+        floatingPointNumber:
+          type: boolean
+        valueNode:
           type: boolean
         integralNumber:
           type: boolean
         bigInteger:
-          type: boolean
-        string:
-          type: boolean
-        double:
-          type: boolean
-        binary:
-          type: boolean
-        textual:
-          type: boolean
-          deprecated: true
-        boolean:
-          type: boolean
-        short:
-          type: boolean
-        int:
-          type: boolean
-        long:
-          type: boolean
-        pojo:
           type: boolean
         embeddedValue:
           type: boolean
@@ -1713,7 +1753,7 @@ components:
           format: int32
           description: Leased area (m2)
           examples:
-          - "150"
+          - 150
         signedByWitness:
           type: boolean
           description: Whether the contract is signed by a witness
@@ -1725,12 +1765,12 @@ components:
     PageContract:
       type: object
       properties:
-        totalPages:
-          type: integer
-          format: int32
         totalElements:
           type: integer
           format: int64
+        totalPages:
+          type: integer
+          format: int32
         size:
           type: integer
           format: int32
@@ -1743,13 +1783,13 @@ components:
           format: int32
         sort:
           $ref: "#/components/schemas/SortObject"
+        numberOfElements:
+          type: integer
+          format: int32
         first:
           type: boolean
         last:
           type: boolean
-        numberOfElements:
-          type: integer
-          format: int32
         pageable:
           $ref: "#/components/schemas/PageableObject"
         empty:
@@ -1762,14 +1802,14 @@ components:
           format: int64
         sort:
           $ref: "#/components/schemas/SortObject"
-        pageSize:
-          type: integer
-          format: int32
+        paged:
+          type: boolean
         pageNumber:
           type: integer
           format: int32
-        paged:
-          type: boolean
+        pageSize:
+          type: integer
+          format: int32
         unpaged:
           type: boolean
     SortObject:
