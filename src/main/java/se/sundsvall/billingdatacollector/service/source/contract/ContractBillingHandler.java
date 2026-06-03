@@ -103,7 +103,7 @@ public class ContractBillingHandler extends AbstractHandler {
 		// end date.
 		var currentPeriod = BillingPeriodCalculator.computePeriod(scheduledDate, interval, invoicedIn);
 		if (endDate != null && currentPeriod.endDate().isAfter(endDate)) {
-			logInfo("Skipping billing for contract {} — period {} extends past contract end {}",
+			logWarning("Skipping billing for contract {} — period {} extends past contract end {}",
 				externalId, currentPeriod, endDate);
 			return new Skipped("period extends past contract end date");
 		}

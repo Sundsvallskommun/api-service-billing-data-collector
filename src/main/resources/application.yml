@@ -56,23 +56,23 @@ scheduler:
   opene:
     cron:
       expression: '0 0 3 * * *'
-    name: opene
+    name: 'opene'
     lock-at-most-for: PT5M
     maximum-execution-time: PT5M
   fallout:
     cron:
       expression: '0 0 4 * * *'
-    name: fallout
+    name: 'fallout'
     lock-at-most-for: PT5M
     maximum-execution-time: PT5M
   billing:
     cron: '0 0 */2 * * *'
-    name: scheduled-billing
+    name: 'scheduled-billing'
     shedlock-lock-at-most-for: PT30M
     maximum-execution-time: PT30M
   certificate-health:
     cron: '0 0 6 * * *'
-    name: certificate-health
+    name: 'certificate-health'
     warn-days-before-expiration: 15
     lock-at-most-for: PT5M
     maximum-execution-time: PT5M

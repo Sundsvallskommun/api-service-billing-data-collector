@@ -21,6 +21,7 @@ import se.sundsvall.billingdatacollector.service.source.BillingSourceHandler;
 import se.sundsvall.dept44.scheduling.health.Dept44HealthUtility;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.assertj.core.api.Assertions.within;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.contains;
@@ -148,6 +149,25 @@ class BillingSchedulerTest {
 
 		assertThat(entity.getLastBilled()).isNull();
 		verify(mockDept44HealthUtility).setHealthIndicatorUnhealthy(eq(JOB_NAME), any(String.class));
+		verify(mockScheduledBillingService, never()).saveScheduledBillingEntity(any());
+		verify(mockScheduledBillingService, never()).deleteScheduledBillingEntity(any());
+	}
+
+	@Test
+	void createBillingRecords_whenHandlerThrowsError_marksUnhealthy_andRethrows() {
+		// An Error (not an Exception) escapes processEntity's catch and would, via
+		// the dept44 aspect (which only catches Exception after resetErrors()),
+		// otherwise leave the indicator FALSELY healthy. The scheduler must mark
+		// it unhealthy and rethrow the Error.
+		var entity = createScheduledBillingEntity(BillingSource.CONTRACT);
+		var fatal = new Error("simulated fatal error");
+
+		when(mockScheduledBillingService.getDueScheduledBillings()).thenReturn(List.of(entity));
+		when(mockContractHandler.sendBillingRecords(entity)).thenThrow(fatal);
+
+		assertThatThrownBy(() -> billingScheduler.createBillingRecords()).isSameAs(fatal);
+
+		verify(mockDept44HealthUtility).setHealthIndicatorUnhealthy(eq(JOB_NAME), contains("Fatal error"));
 		verify(mockScheduledBillingService, never()).saveScheduledBillingEntity(any());
 		verify(mockScheduledBillingService, never()).deleteScheduledBillingEntity(any());
 	}

@@ -55,33 +55,44 @@ public class CertificateValidityCheckHandler {
 		LOGGER.info("Checking validity of local certificates");
 
 		try {
-			// Read local certificates and validate if it is approaching its expiration date
-			final var certificates = getLocalCertificates();
-
-			if (certificates.isEmpty()) {
-				certificateHealthConsumer.accept(Health.create().withHealthy(false).withMessage(MESSAGE_COULD_NOT_READ_CERTIFICATES));
-				return;
-			}
-
-			certificates.forEach(certificate -> {
-				final var warningDate = toLocalDateTime(certificate.getNotAfter())
-					.minusDays(warnDaysBeforeExpiration)
-					.toLocalDate(); // Subtract days from exipiration date to get some wiggle room before the certificate expires
-
-				if (LocalDate.now().isAfter(warningDate)) {
-					certificateHealthConsumer.accept(Health.create()
-						.withHealthy(false)
-						.withMessage(MESSAGE_UNHEALTHY_CERTIFICATES));
-				} else {
-					certificateHealthConsumer.accept(Health.create()
-						.withHealthy(true));
-				}
-			});
-
+			// Aggregate the verdict over ALL certificates, then signal the health
+			// indicator exactly once (see evaluateCertificates for why a per-cert
+			// loop would be unsafe).
+			certificateHealthConsumer.accept(evaluateCertificates(getLocalCertificates()));
 		} catch (final Exception e) {
 			LOGGER.error("Unknown exception occurred when checking certificate health", e);
 			certificateHealthConsumer.accept(Health.create().withHealthy(false).withMessage(MESSAGE_UNKNOWN_EXCEPTION.formatted(e.getClass().getSimpleName(), e.getMessage())));
 		}
+	}
+
+	/**
+	 * Derives a single health verdict for the whole truststore.
+	 *
+	 * <p>
+	 * Unhealthy if the certificates could not be read at all, or if <em>any</em>
+	 * certificate is approaching expiration. Computing the verdict once (rather
+	 * than calling the health consumer per certificate) is deliberate: the
+	 * underlying {@code setHealthIndicatorHealthy()/Unhealthy()} calls are
+	 * last-write-wins, so a healthy certificate evaluated after an expiring one
+	 * would otherwise mask the problem.
+	 */
+	Health evaluateCertificates(final List<X509Certificate> certificates) {
+		if (certificates.isEmpty()) {
+			return Health.create().withHealthy(false).withMessage(MESSAGE_COULD_NOT_READ_CERTIFICATES);
+		}
+		if (certificates.stream().anyMatch(this::isApproachingExpiration)) {
+			return Health.create().withHealthy(false).withMessage(MESSAGE_UNHEALTHY_CERTIFICATES);
+		}
+		return Health.create().withHealthy(true);
+	}
+
+	private boolean isApproachingExpiration(final X509Certificate certificate) {
+		// Subtract the warning window from the expiration date to get some wiggle
+		// room before the certificate actually expires.
+		final var warningDate = toLocalDateTime(certificate.getNotAfter())
+			.minusDays(warnDaysBeforeExpiration)
+			.toLocalDate();
+		return LocalDate.now().isAfter(warningDate);
 	}
 
 	private List<X509Certificate> getLocalCertificates() throws IOException {
