@@ -3,9 +3,6 @@
 	"area": 20,
 	"attachmentMetaData": [],
 	"contractId": "2026-00001",
-	"duration": {
-		"unit": "DAYS"
-	},
 	"extension": {
 		"autoExtend": false,
 		"unit": "MONTHS"
@@ -112,6 +109,5 @@
 	],
 	"startDate": "2017-01-01",
 	"status": "ACTIVE",
-	"type": "LEASE_AGREEMENT",
-	"version": 1
+	"type": "LEASE_AGREEMENT"
 }
