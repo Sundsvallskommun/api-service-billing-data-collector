@@ -7,6 +7,7 @@ import generated.se.sundsvall.contract.Fees;
 import generated.se.sundsvall.contract.IntervalType;
 import generated.se.sundsvall.contract.InvoicedIn;
 import generated.se.sundsvall.contract.Invoicing;
+import generated.se.sundsvall.contract.Period;
 import generated.se.sundsvall.contract.PropertyDesignation;
 import generated.se.sundsvall.contract.Stakeholder;
 import java.math.BigDecimal;
@@ -350,7 +351,8 @@ class ContractMapperTest {
 
 	@ParameterizedTest
 	@MethodSource("descriptionArgumentProvider")
-	void createBillingRecord_invoiceDescription(LocalDate scheduledDate, IntervalType intervalType, InvoicedIn invoicedIn, String expectedDescription) {
+	void createBillingRecord_invoiceDescription(LocalDate scheduledDate, IntervalType intervalType, InvoicedIn invoicedIn,
+		LocalDate currentPeriodEndDate, String expectedDescription) {
 
 		// Arrange
 		when(contractMock.getFees()).thenReturn(feesMock);
@@ -359,6 +361,11 @@ class ContractMapperTest {
 		when(invoicingMock.getInvoiceInterval()).thenReturn(intervalType);
 		when(invoicingMock.getInvoicedIn()).thenReturn(invoicedIn);
 		when(contractMock.getContractId()).thenReturn(CONTRACT_ID);
+		if (currentPeriodEndDate != null) {
+			var period = new Period();
+			period.setEndDate(currentPeriodEndDate);
+			when(contractMock.getCurrentPeriod()).thenReturn(period);
+		}
 
 		// Act
 		var result = mapper.createBillingRecord(MUNICIPALITY_ID, contractMock, scheduledDate);
@@ -400,26 +407,31 @@ class ContractMapperTest {
 	}
 
 	private static Stream<Arguments> descriptionArgumentProvider() {
+		final var juneEnd = LocalDate.of(2026, 6, 30);
 		return Stream.of(
-			// YEARLY
-			Arguments.of(LocalDate.of(2026, 3, 1), IntervalType.YEARLY, ADVANCE, "Avser januari-december 2027"),
-			Arguments.of(LocalDate.of(2026, 6, 1), IntervalType.YEARLY, ADVANCE, "Avser juli 2026-juni 2027"),
-			Arguments.of(LocalDate.of(2026, 3, 1), IntervalType.YEARLY, ARREARS, "Avser januari-december 2026"),
-			Arguments.of(LocalDate.of(2026, 6, 1), IntervalType.YEARLY, ARREARS, "Avser juli 2025-juni 2026"),
+			// YEARLY — December slot (no June period end): January–December period
+			Arguments.of(LocalDate.of(2026, 3, 1), IntervalType.YEARLY, ADVANCE, null, "Avser januari-december 2027"),
+			Arguments.of(LocalDate.of(2026, 3, 1), IntervalType.YEARLY, ARREARS, null, "Avser januari-december 2026"),
+			// YEARLY — June slot (currentPeriod ends 30 June): July–June period
+			Arguments.of(LocalDate.of(2026, 6, 1), IntervalType.YEARLY, ADVANCE, juneEnd, "Avser juli 2026-juni 2027"),
+			Arguments.of(LocalDate.of(2026, 6, 1), IntervalType.YEARLY, ARREARS, juneEnd, "Avser juli 2025-juni 2026"),
+			// YEARLY — scheduledDate in wrong month but period end governs description
+			Arguments.of(LocalDate.of(2026, 7, 1), IntervalType.YEARLY, ADVANCE, juneEnd, "Avser juli 2026-juni 2027"),
+			Arguments.of(LocalDate.of(2026, 7, 1), IntervalType.YEARLY, ARREARS, juneEnd, "Avser juli 2025-juni 2026"),
 			// QUARTERLY
-			Arguments.of(LocalDate.of(2026, 1, 1), IntervalType.QUARTERLY, ADVANCE, "Avser april-juni 2026"),
-			Arguments.of(LocalDate.of(2026, 4, 1), IntervalType.QUARTERLY, ADVANCE, "Avser juli-september 2026"),
-			Arguments.of(LocalDate.of(2026, 7, 1), IntervalType.QUARTERLY, ADVANCE, "Avser oktober-december 2026"),
-			Arguments.of(LocalDate.of(2026, 10, 1), IntervalType.QUARTERLY, ADVANCE, "Avser januari-mars 2027"),
-			Arguments.of(LocalDate.of(2026, 1, 1), IntervalType.QUARTERLY, ARREARS, "Avser januari-mars 2026"),
-			Arguments.of(LocalDate.of(2026, 4, 1), IntervalType.QUARTERLY, ARREARS, "Avser april-juni 2026"),
-			Arguments.of(LocalDate.of(2026, 7, 1), IntervalType.QUARTERLY, ARREARS, "Avser juli-september 2026"),
-			Arguments.of(LocalDate.of(2026, 10, 1), IntervalType.QUARTERLY, ARREARS, "Avser oktober-december 2026"),
+			Arguments.of(LocalDate.of(2026, 1, 1), IntervalType.QUARTERLY, ADVANCE, null, "Avser april-juni 2026"),
+			Arguments.of(LocalDate.of(2026, 4, 1), IntervalType.QUARTERLY, ADVANCE, null, "Avser juli-september 2026"),
+			Arguments.of(LocalDate.of(2026, 7, 1), IntervalType.QUARTERLY, ADVANCE, null, "Avser oktober-december 2026"),
+			Arguments.of(LocalDate.of(2026, 10, 1), IntervalType.QUARTERLY, ADVANCE, null, "Avser januari-mars 2027"),
+			Arguments.of(LocalDate.of(2026, 1, 1), IntervalType.QUARTERLY, ARREARS, null, "Avser januari-mars 2026"),
+			Arguments.of(LocalDate.of(2026, 4, 1), IntervalType.QUARTERLY, ARREARS, null, "Avser april-juni 2026"),
+			Arguments.of(LocalDate.of(2026, 7, 1), IntervalType.QUARTERLY, ARREARS, null, "Avser juli-september 2026"),
+			Arguments.of(LocalDate.of(2026, 10, 1), IntervalType.QUARTERLY, ARREARS, null, "Avser oktober-december 2026"),
 			// HALF_YEARLY
-			Arguments.of(LocalDate.of(2026, 3, 1), IntervalType.HALF_YEARLY, ADVANCE, "Avser juli-december 2026"),
-			Arguments.of(LocalDate.of(2026, 7, 1), IntervalType.HALF_YEARLY, ADVANCE, "Avser januari-juni 2027"),
-			Arguments.of(LocalDate.of(2026, 3, 1), IntervalType.HALF_YEARLY, ARREARS, "Avser januari-juni 2026"),
-			Arguments.of(LocalDate.of(2026, 7, 1), IntervalType.HALF_YEARLY, ARREARS, "Avser juli-december 2026"));
+			Arguments.of(LocalDate.of(2026, 3, 1), IntervalType.HALF_YEARLY, ADVANCE, null, "Avser juli-december 2026"),
+			Arguments.of(LocalDate.of(2026, 7, 1), IntervalType.HALF_YEARLY, ADVANCE, null, "Avser januari-juni 2027"),
+			Arguments.of(LocalDate.of(2026, 3, 1), IntervalType.HALF_YEARLY, ARREARS, null, "Avser januari-juni 2026"),
+			Arguments.of(LocalDate.of(2026, 7, 1), IntervalType.HALF_YEARLY, ARREARS, null, "Avser juli-december 2026"));
 	}
 
 	@Test

@@ -19,8 +19,8 @@ import java.time.Month;
  * Period semantics (inclusive boundaries):
  * <ul>
  * <li><b>YEARLY ADVANCE</b> on a December slot covers Jan&ndash;Dec of the
- * following calendar year. On a June slot (the LAND_LEASE_RESIDENTIAL
- * sub-case where the contract's current period ends 30 June) it covers
+ * following calendar year. On a June slot (contracts whose current period
+ * ends 30 June) it covers
  * July of the same year through June of the following year.</li>
  * <li><b>YEARLY ARREARS</b> on a December slot covers Jan&ndash;Dec of the
  * same year. On a June slot it covers July of the previous year through
@@ -59,8 +59,8 @@ public final class BillingPeriodCalculator {
 	}
 
 	private static BillingPeriod yearly(LocalDate scheduledDate, InvoicedIn invoicedIn) {
-		// LAND_LEASE_RESIDENTIAL with current period ending 30 June uses a
-		// June slot; everything else uses a December slot.
+		// Contracts whose current period ends 30 June use a June slot;
+		// everything else uses a December slot.
 		if (scheduledDate.getMonth() == Month.JUNE) {
 			int year = scheduledDate.getYear();
 			return InvoicedIn.ADVANCE.equals(invoicedIn)
