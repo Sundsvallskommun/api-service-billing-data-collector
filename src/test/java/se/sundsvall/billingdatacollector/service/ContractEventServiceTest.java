@@ -9,6 +9,7 @@ import generated.se.sundsvall.contract.Status;
 import java.time.Clock;
 import java.time.Instant;
 import java.time.LocalDate;
+import java.time.Month;
 import java.time.ZoneOffset;
 import java.util.Optional;
 import java.util.Set;
@@ -295,7 +296,7 @@ class ContractEventServiceTest {
 	@Test
 	void handleEvent_yearly_nonJunePeriod_usesDecemberSlot() {
 		var contract = buildContract(Status.ACTIVE, IntervalType.YEARLY, InvoicedIn.ADVANCE,
-			LocalDate.of(2026, 1, 1), null, LocalDate.of(2026, 12, 31));
+			LocalDate.of(2026, Month.JANUARY, 1), null, LocalDate.of(2026, Month.DECEMBER, 31));
 		when(mockContractIntegration.getContract(MUNICIPALITY_ID, CONTRACT_ID)).thenReturn(Optional.of(contract));
 
 		service.handleEvent(eventRequest(EventType.CREATED));

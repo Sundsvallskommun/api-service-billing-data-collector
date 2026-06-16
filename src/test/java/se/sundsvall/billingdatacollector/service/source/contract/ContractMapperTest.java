@@ -419,19 +419,19 @@ class ContractMapperTest {
 			Arguments.of(LocalDate.of(2026, 7, 1), IntervalType.YEARLY, ADVANCE, juneEnd, "Avser juli 2026-juni 2027"),
 			Arguments.of(LocalDate.of(2026, 7, 1), IntervalType.YEARLY, ARREARS, juneEnd, "Avser juli 2025-juni 2026"),
 			// QUARTERLY
-			Arguments.of(LocalDate.of(2026, 1, 1), IntervalType.QUARTERLY, ADVANCE, null, "Avser april-juni 2026"),
-			Arguments.of(LocalDate.of(2026, 4, 1), IntervalType.QUARTERLY, ADVANCE, null, "Avser juli-september 2026"),
-			Arguments.of(LocalDate.of(2026, 7, 1), IntervalType.QUARTERLY, ADVANCE, null, "Avser oktober-december 2026"),
-			Arguments.of(LocalDate.of(2026, 10, 1), IntervalType.QUARTERLY, ADVANCE, null, "Avser januari-mars 2027"),
-			Arguments.of(LocalDate.of(2026, 1, 1), IntervalType.QUARTERLY, ARREARS, null, "Avser januari-mars 2026"),
-			Arguments.of(LocalDate.of(2026, 4, 1), IntervalType.QUARTERLY, ARREARS, null, "Avser april-juni 2026"),
-			Arguments.of(LocalDate.of(2026, 7, 1), IntervalType.QUARTERLY, ARREARS, null, "Avser juli-september 2026"),
-			Arguments.of(LocalDate.of(2026, 10, 1), IntervalType.QUARTERLY, ARREARS, null, "Avser oktober-december 2026"),
+			Arguments.of(LocalDate.of(2026, Month.JANUARY, 1), IntervalType.QUARTERLY, ADVANCE, null, "Avser april-juni 2026"),
+			Arguments.of(LocalDate.of(2026, Month.APRIL, 1), IntervalType.QUARTERLY, ADVANCE, null, "Avser juli-september 2026"),
+			Arguments.of(LocalDate.of(2026, Month.JULY, 1), IntervalType.QUARTERLY, ADVANCE, null, "Avser oktober-december 2026"),
+			Arguments.of(LocalDate.of(2026, Month.OCTOBER, 1), IntervalType.QUARTERLY, ADVANCE, null, "Avser januari-mars 2027"),
+			Arguments.of(LocalDate.of(2026, Month.JANUARY, 1), IntervalType.QUARTERLY, ARREARS, null, "Avser januari-mars 2026"),
+			Arguments.of(LocalDate.of(2026, Month.APRIL, 1), IntervalType.QUARTERLY, ARREARS, null, "Avser april-juni 2026"),
+			Arguments.of(LocalDate.of(2026, Month.JULY, 1), IntervalType.QUARTERLY, ARREARS, null, "Avser juli-september 2026"),
+			Arguments.of(LocalDate.of(2026, Month.OCTOBER, 1), IntervalType.QUARTERLY, ARREARS, null, "Avser oktober-december 2026"),
 			// HALF_YEARLY
-			Arguments.of(LocalDate.of(2026, 3, 1), IntervalType.HALF_YEARLY, ADVANCE, null, "Avser juli-december 2026"),
-			Arguments.of(LocalDate.of(2026, 7, 1), IntervalType.HALF_YEARLY, ADVANCE, null, "Avser januari-juni 2027"),
-			Arguments.of(LocalDate.of(2026, 3, 1), IntervalType.HALF_YEARLY, ARREARS, null, "Avser januari-juni 2026"),
-			Arguments.of(LocalDate.of(2026, 7, 1), IntervalType.HALF_YEARLY, ARREARS, null, "Avser juli-december 2026"));
+			Arguments.of(LocalDate.of(2026, Month.MARCH, 1), IntervalType.HALF_YEARLY, ADVANCE, null, "Avser juli-december 2026"),
+			Arguments.of(LocalDate.of(2026, Month.JULY, 1), IntervalType.HALF_YEARLY, ADVANCE, null, "Avser januari-juni 2027"),
+			Arguments.of(LocalDate.of(2026, Month.MARCH, 1), IntervalType.HALF_YEARLY, ARREARS, null, "Avser januari-juni 2026"),
+			Arguments.of(LocalDate.of(2026, Month.JULY, 1), IntervalType.HALF_YEARLY, ARREARS, null, "Avser juli-december 2026"));
 	}
 
 	@Test

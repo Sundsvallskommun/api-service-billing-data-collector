@@ -59,8 +59,6 @@ public final class BillingPeriodCalculator {
 	}
 
 	private static BillingPeriod yearly(LocalDate scheduledDate, InvoicedIn invoicedIn) {
-		// Contracts whose current period ends 30 June use a June slot;
-		// everything else uses a December slot.
 		if (scheduledDate.getMonth() == Month.JUNE) {
 			int year = scheduledDate.getYear();
 			return InvoicedIn.ADVANCE.equals(invoicedIn)
