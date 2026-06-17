@@ -2,7 +2,6 @@ package se.sundsvall.billingdatacollector.service;
 
 import generated.se.sundsvall.contract.Contract;
 import generated.se.sundsvall.contract.InvoicedIn;
-import generated.se.sundsvall.contract.LeaseType;
 import generated.se.sundsvall.contract.Status;
 import java.time.Clock;
 import java.time.LocalDate;
@@ -215,15 +214,14 @@ public class ContractEventService implements BillingEventHandler {
 			case MONTHLY -> MONTHLY;
 			case QUARTERLY -> QUARTERLY;
 			case HALF_YEARLY -> HALF_YEARLY;
-			case YEARLY -> isLandLeaseResidentialEndOfJune(contract) ? YEARLY_JUNE : YEARLY;
+			case YEARLY -> isEndOfJunePeriod(contract) ? YEARLY_JUNE : YEARLY;
 		};
 	}
 
-	private boolean isLandLeaseResidentialEndOfJune(Contract contract) {
+	private boolean isEndOfJunePeriod(Contract contract) {
 		var periodEndDate = contract.getCurrentPeriod() != null ? contract.getCurrentPeriod().getEndDate() : null;
 		return periodEndDate != null
 			&& periodEndDate.getMonth().equals(Month.JUNE)
-			&& periodEndDate.getDayOfMonth() == 30
-			&& LeaseType.LAND_LEASE_RESIDENTIAL.equals(contract.getLeaseType());
+			&& periodEndDate.getDayOfMonth() == 30;
 	}
 }

@@ -15,6 +15,7 @@ import generated.se.sundsvall.contract.Stakeholder;
 import generated.se.sundsvall.contract.StakeholderRole;
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.time.Month;
 import java.time.YearMonth;
 import java.util.List;
 import java.util.Objects;
@@ -263,8 +264,26 @@ public class ContractMapper {
 				&& invoicing.getInvoiceInterval() != IntervalType.MONTHLY)
 			.filter(invoicing -> invoicing.getInvoicedIn() != null)
 			.map(invoicing -> describePeriod(BillingPeriodCalculator.computePeriod(
-				scheduledDate, invoicing.getInvoiceInterval(), invoicing.getInvoicedIn())))
+				effectiveDateForDescription(contract, scheduledDate, invoicing.getInvoiceInterval()),
+				invoicing.getInvoiceInterval(), invoicing.getInvoicedIn())))
 			.orElse(null);
+	}
+
+	/**
+	 * For YEARLY billing the period type (July–June vs January–December) must be
+	 * determined by {@code currentPeriod.endDate}, not by the scheduled billing
+	 * date. This guards against the case where {@code scheduledDate} is set to an
+	 * unexpected month while the contract's period boundary is still 30 June.
+	 */
+	private static LocalDate effectiveDateForDescription(Contract contract, LocalDate scheduledDate, IntervalType interval) {
+		if (interval != IntervalType.YEARLY) {
+			return scheduledDate;
+		}
+		var periodEndDate = contract.getCurrentPeriod() != null ? contract.getCurrentPeriod().getEndDate() : null;
+		if (periodEndDate != null && periodEndDate.getMonth() == Month.JUNE && periodEndDate.getDayOfMonth() == 30) {
+			return scheduledDate.withMonth(Month.JUNE.getValue());
+		}
+		return scheduledDate.withMonth(Month.DECEMBER.getValue());
 	}
 
 	private static String describePeriod(BillingPeriod period) {

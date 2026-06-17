@@ -4,12 +4,12 @@ import generated.se.sundsvall.contract.Contract;
 import generated.se.sundsvall.contract.IntervalType;
 import generated.se.sundsvall.contract.InvoicedIn;
 import generated.se.sundsvall.contract.Invoicing;
-import generated.se.sundsvall.contract.LeaseType;
 import generated.se.sundsvall.contract.Period;
 import generated.se.sundsvall.contract.Status;
 import java.time.Clock;
 import java.time.Instant;
 import java.time.LocalDate;
+import java.time.Month;
 import java.time.ZoneOffset;
 import java.util.Optional;
 import java.util.Set;
@@ -282,10 +282,9 @@ class ContractEventServiceTest {
 	// ========== calculateBillingMonths ==========
 
 	@Test
-	void handleEvent_yearly_landLeaseResidentialEndOfJune_usesJuneSlot() {
+	void handleEvent_yearly_endOfJunePeriod_usesJuneSlot() {
 		var contract = buildContract(Status.ACTIVE, IntervalType.YEARLY, InvoicedIn.ADVANCE,
 			LocalDate.of(2026, 1, 1), null, LocalDate.of(2026, 6, 30));
-		contract.setLeaseType(LeaseType.LAND_LEASE_RESIDENTIAL);
 		when(mockContractIntegration.getContract(MUNICIPALITY_ID, CONTRACT_ID)).thenReturn(Optional.of(contract));
 
 		service.handleEvent(eventRequest(EventType.CREATED));
@@ -295,10 +294,9 @@ class ContractEventServiceTest {
 	}
 
 	@Test
-	void handleEvent_yearly_landLeaseMisc_usesDecemberSlot() {
+	void handleEvent_yearly_nonJunePeriod_usesDecemberSlot() {
 		var contract = buildContract(Status.ACTIVE, IntervalType.YEARLY, InvoicedIn.ADVANCE,
-			LocalDate.of(2026, 1, 1), null, LocalDate.of(2026, 6, 30));
-		contract.setLeaseType(LeaseType.LAND_LEASE_MISC);
+			LocalDate.of(2026, Month.JANUARY, 1), null, LocalDate.of(2026, Month.DECEMBER, 31));
 		when(mockContractIntegration.getContract(MUNICIPALITY_ID, CONTRACT_ID)).thenReturn(Optional.of(contract));
 
 		service.handleEvent(eventRequest(EventType.CREATED));
