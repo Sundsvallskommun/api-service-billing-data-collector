@@ -72,7 +72,8 @@ class BillingSchedulerTest {
 		assertThat(entity.getNextScheduledBilling()).isEqualTo(NEXT_SLOT);
 		verify(mockScheduledBillingService).saveScheduledBillingEntity(entity);
 		verify(mockScheduledBillingService, never()).deleteScheduledBillingEntity(any());
-		verifyNoInteractions(mockDept44HealthUtility);
+		verify(mockDept44HealthUtility).setHealthIndicatorHealthy(JOB_NAME);
+		verify(mockDept44HealthUtility, never()).setHealthIndicatorUnhealthy(any(), any());
 	}
 
 	@Test
@@ -87,7 +88,8 @@ class BillingSchedulerTest {
 		assertThat(entity.getLastBilled()).isCloseTo(OffsetDateTime.now(), within(2, ChronoUnit.SECONDS));
 		verify(mockScheduledBillingService).deleteScheduledBillingEntity(entity);
 		verify(mockScheduledBillingService, never()).saveScheduledBillingEntity(any());
-		verifyNoInteractions(mockDept44HealthUtility);
+		verify(mockDept44HealthUtility).setHealthIndicatorHealthy(JOB_NAME);
+		verify(mockDept44HealthUtility, never()).setHealthIndicatorUnhealthy(any(), any());
 	}
 
 	@Test
@@ -104,7 +106,10 @@ class BillingSchedulerTest {
 		assertThat(entity.getLastBilled()).isEqualTo(lastBilledBefore);
 		verify(mockScheduledBillingService).deleteScheduledBillingEntity(entity);
 		verify(mockScheduledBillingService, never()).saveScheduledBillingEntity(any());
-		verifyNoInteractions(mockDept44HealthUtility);
+		// A skipped row is normal cleanup, not a failure — the tick is still
+		// failure-free, so the indicator must be healed.
+		verify(mockDept44HealthUtility).setHealthIndicatorHealthy(JOB_NAME);
+		verify(mockDept44HealthUtility, never()).setHealthIndicatorUnhealthy(any(), any());
 	}
 
 	@Test
@@ -119,6 +124,8 @@ class BillingSchedulerTest {
 
 		verify(mockDept44HealthUtility).setHealthIndicatorUnhealthy(eq(JOB_NAME),
 			contains("billing-preprocessor unavailable"));
+		// A tick with a failure must never heal the indicator.
+		verify(mockDept44HealthUtility, never()).setHealthIndicatorHealthy(any());
 		verify(mockScheduledBillingService, never()).deleteScheduledBillingEntity(any());
 		verify(mockScheduledBillingService, never()).saveScheduledBillingEntity(any());
 	}
@@ -173,14 +180,36 @@ class BillingSchedulerTest {
 	}
 
 	@Test
-	void createBillingRecords_shouldDoNothing_whenNoDueBillings() {
+	void createBillingRecords_shouldHealAndDoNoEntityWork_whenNoDueBillings() {
 		when(mockScheduledBillingService.getDueScheduledBillings()).thenReturn(Collections.emptyList());
 
 		billingScheduler.createBillingRecords();
 
 		verify(mockScheduledBillingService).getDueScheduledBillings();
-		verifyNoInteractions(mockDept44HealthUtility, mockContractHandler);
+		// An empty tick is failure-free and must still heal a previously
+		// unhealthy indicator (e.g. after the data behind a failure was fixed).
+		verify(mockDept44HealthUtility).setHealthIndicatorHealthy(JOB_NAME);
+		verify(mockDept44HealthUtility, never()).setHealthIndicatorUnhealthy(any(), any());
+		verifyNoInteractions(mockContractHandler);
 		verifyNoMoreInteractions(mockScheduledBillingService);
+	}
+
+	@Test
+	void createBillingRecords_whenFailureFree_healsIndicatorWithoutTheAspect() {
+		// Regression for the "indicator never returns to UP" incident: the
+		// scheduler itself must heal the indicator on a failure-free tick rather
+		// than depend on the dept44 scheduling aspect's finally-block. This unit
+		// test invokes the scheduler DIRECTLY (no Spring proxy, hence no aspect),
+		// so the reset to healthy can only come from the scheduler.
+		var entity = createScheduledBillingEntity(BillingSource.CONTRACT);
+
+		when(mockScheduledBillingService.getDueScheduledBillings()).thenReturn(List.of(entity));
+		when(mockContractHandler.sendBillingRecords(entity)).thenReturn(new BillingResult.Sent(NEXT_SLOT));
+
+		billingScheduler.createBillingRecords();
+
+		verify(mockDept44HealthUtility).setHealthIndicatorHealthy(JOB_NAME);
+		verify(mockDept44HealthUtility, never()).setHealthIndicatorUnhealthy(any(), any());
 	}
 
 	private ScheduledBillingEntity createScheduledBillingEntity(BillingSource source) {

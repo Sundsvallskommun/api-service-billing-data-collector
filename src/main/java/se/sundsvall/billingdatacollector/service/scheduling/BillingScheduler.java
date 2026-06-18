@@ -88,8 +88,17 @@ public class BillingScheduler {
 
 		final var durationMs = Duration.between(startedAt, now()).toMillis();
 		if (failed == 0) {
+			// Heal the indicator explicitly instead of relying solely on the
+			// dept44 scheduling aspect's finally-block. The aspect only resets
+			// the indicator when this method runs through the Spring proxy; an
+			// out-of-band or otherwise un-proxied invocation would execute the
+			// body (and log this line) without ever reaching the aspect, leaving
+			// an earlier unhealthy state latched until a restart. This call is
+			// idempotent, and when the aspect IS in the path its finally still
+			// runs after us, so the maximum-execution-time guard is preserved.
+			markHealthy();
 			LOG.info("Billing tick completed in {} ms — processed {} (sent: {}, skipped: {}, failed: 0); "
-				+ "no failures this tick, so health indicator '{}' should be reset to healthy by the scheduling aspect",
+				+ "no failures this tick, so health indicator '{}' was reset to healthy",
 				durationMs, processed, sent, skipped, jobName);
 		} else {
 			LOG.warn("Billing tick completed in {} ms — processed {} (sent: {}, skipped: {}, failed: {}); "
@@ -168,6 +177,10 @@ public class BillingScheduler {
 	private void markUnhealthy(String reason) {
 		LOG.warn("Marking health indicator '{}' UNHEALTHY: {}", jobName, reason);
 		dept44HealthUtility.setHealthIndicatorUnhealthy(jobName, "Billing error: " + reason);
+	}
+
+	private void markHealthy() {
+		dept44HealthUtility.setHealthIndicatorHealthy(jobName);
 	}
 
 	/**
