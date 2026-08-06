@@ -199,8 +199,9 @@ public class ContractEventService implements BillingEventHandler {
 				BILLING_DAYS_OF_MONTH, billingMonths, firstAdvanceSlot.plusDays(1));
 		}
 
-		// ADVANCE — clamp to today so we never schedule a billing in the past.
-		return contractStart.isBefore(today) ? today : contractStart;
+		// ADVANCE — clamp to today, then find the next valid billing slot.
+		var clampedStart = contractStart.isBefore(today) ? today : contractStart;
+		return ScheduledBillingUtil.calculateNextScheduledBilling(BILLING_DAYS_OF_MONTH, billingMonths, clampedStart);
 	}
 
 	private boolean isBillable(Contract contract) {

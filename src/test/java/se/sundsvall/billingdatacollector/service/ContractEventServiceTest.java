@@ -85,15 +85,19 @@ class ContractEventServiceTest {
 
 	static Stream<Arguments> initialNextScheduledBillingCases() {
 		return Stream.of(
-			// A1 — ADVANCE Yearly + 2026-05-13 → 2026-12-01 (covers Jan-Dec 2027)
+			// A1 — ADVANCE Yearly + future startDate 2026-05-13 → next December slot
 			Arguments.of("A1", IntervalType.YEARLY, InvoicedIn.ADVANCE,
-				LocalDate.of(2026, 5, 13), Set.of(12), LocalDate.of(2026, 5, 13)),
-			// A2 — ADVANCE Quarterly + 2026-05-13 → first slot from startDate
+				LocalDate.of(2026, 5, 13), Set.of(12), LocalDate.of(2026, 12, 1)),
+			// A2 — ADVANCE Quarterly + future startDate 2026-05-13 → next quarterly slot from startDate
 			Arguments.of("A2", IntervalType.QUARTERLY, InvoicedIn.ADVANCE,
-				LocalDate.of(2026, 5, 13), Set.of(3, 6, 9, 12), LocalDate.of(2026, 5, 13)),
-			// A3 — ADVANCE Quarterly + startDate in past → clamped to today (2026-04-29)
+				LocalDate.of(2026, 5, 13), Set.of(3, 6, 9, 12), LocalDate.of(2026, 6, 1)),
+			// A3 — ADVANCE Quarterly + startDate in past → clamped to today, then next quarterly slot
 			Arguments.of("A3", IntervalType.QUARTERLY, InvoicedIn.ADVANCE,
-				LocalDate.of(2026, 1, 1), Set.of(3, 6, 9, 12), TODAY),
+				LocalDate.of(2026, 1, 1), Set.of(3, 6, 9, 12), LocalDate.of(2026, 6, 1)),
+			// A4 — ADVANCE Yearly + startDate = today → must return 2026-12-01, NOT today
+			// Regression: before the fix, today's date was stored raw and triggered an immediate spurious billing.
+			Arguments.of("A4 regression startDate=today", IntervalType.YEARLY, InvoicedIn.ADVANCE,
+				TODAY, Set.of(12), LocalDate.of(2026, 12, 1)),
 			// R1 — ARREARS Yearly + 2026-05-13 → skip the first slot from startDate
 			Arguments.of("R1", IntervalType.YEARLY, InvoicedIn.ARREARS,
 				LocalDate.of(2026, 5, 13), Set.of(12), LocalDate.of(2027, 12, 1)),
