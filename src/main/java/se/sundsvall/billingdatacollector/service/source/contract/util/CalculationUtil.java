@@ -63,6 +63,10 @@ public final class CalculationUtil {
 			.map(Optional::get)
 			// Step 3: Round fee to two decimals
 			.map(indexAdjustedFee -> indexAdjustedFee.setScale(2, HALF_EVEN))
+			// Step 4: For yearly billing, ensure the calculated amount never falls below the yearly base fee
+			.map(result -> splitFactor.compareTo(BigDecimal.ONE) == 0 && result.compareTo(contract.getFees().getYearly()) < 0
+				? contract.getFees().getYearly().setScale(2, HALF_EVEN)
+				: result)
 			// Fail fast if any required information is missing
 			.orElseThrow(() -> Problem.valueOf(NOT_FOUND, "Contract %s is missing crucial information for calculating indexed cost".formatted(contract.getContractId())));
 	}

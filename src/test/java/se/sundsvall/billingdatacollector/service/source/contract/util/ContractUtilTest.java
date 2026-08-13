@@ -174,6 +174,41 @@ class ContractUtilTest {
 	}
 
 	@Test
+	void getDetailedDescriptionsFromNull() {
+		final var e = assertThrows(ThrowableProblem.class, () -> ContractUtil.getDetailedDescriptions(null));
+		assertThat(e.getStatus()).isEqualTo(NOT_FOUND);
+		assertThat(e.getDetail()).isEqualTo("Parameter 'contract' can not be null");
+	}
+
+	@ParameterizedTest(name = "{0}")
+	@MethodSource("getDetailedDescriptionsArgumentProvider")
+	void getDetailedDescriptions(String description, List<ExtraParameterGroup> extraParameters, List<String> expectedValues) {
+		when(contractMock.getExtraParameters()).thenReturn(extraParameters);
+
+		assertThat(ContractUtil.getDetailedDescriptions(contractMock)).isEqualTo(expectedValues);
+	}
+
+	private static Stream<Arguments> getDetailedDescriptionsArgumentProvider() {
+		return Stream.of(
+			Arguments.of("ExtraParameters is null", null, emptyList()),
+			Arguments.of("ExtraParameters is empty", emptyList(), emptyList()),
+			Arguments.of("No InvoiceInfo group present", List.of(new ExtraParameterGroup().name("OtherGroup").parameters(Map.of("detailedDescription01", "value"))), emptyList()),
+			Arguments.of("InvoiceInfo group present but no detailedDescriptionNN keys", List.of(new ExtraParameterGroup().name("InvoiceInfo").parameters(Map.of("markup", "ref"))), emptyList()),
+			Arguments.of("InvoiceInfo group with one detailedDescriptionNN key", List.of(new ExtraParameterGroup().name("InvoiceInfo").parameters(Map.of("detailedDescription01", "First line"))), List.of("First line")),
+			Arguments.of("InvoiceInfo group with multiple detailedDescriptionNN keys returned in order", List.of(new ExtraParameterGroup().name("InvoiceInfo").parameters(Map.of(
+				"detailedDescription02", "Second line",
+				"detailedDescription01", "First line"))), List.of("First line", "Second line")),
+			Arguments.of("Blank detailedDescriptionNN values are excluded", List.of(new ExtraParameterGroup().name("InvoiceInfo").parameters(Map.of(
+				"detailedDescription01", "First line",
+				"detailedDescription02", "   "))), List.of("First line")),
+			Arguments.of("Keys not matching detailedDescriptionNN pattern are excluded", List.of(new ExtraParameterGroup().name("InvoiceInfo").parameters(Map.of(
+				"detailedDescription01", "First line",
+				"detailedDescriptionAB", "Not included",
+				"markup", "Also not included"))), List.of("First line")),
+			Arguments.of("InvoiceInfo name matching is case-insensitive", List.of(new ExtraParameterGroup().name("invoiceinfo").parameters(Map.of("detailedDescription01", "First line"))), List.of("First line")));
+	}
+
+	@Test
 	void getAccrualKeyFromNull() {
 		final var e = assertThrows(ThrowableProblem.class, () -> ContractUtil.getAccrualKey(null));
 		assertThat(e.getStatus()).isEqualTo(NOT_FOUND);

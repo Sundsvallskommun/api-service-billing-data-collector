@@ -39,6 +39,7 @@ import static se.sundsvall.billingdatacollector.service.source.contract.util.Cal
 import static se.sundsvall.billingdatacollector.service.source.contract.util.CalculationUtil.calculateNonIndexedCost;
 import static se.sundsvall.billingdatacollector.service.source.contract.util.ContractUtil.getAccrualKey;
 import static se.sundsvall.billingdatacollector.service.source.contract.util.ContractUtil.getContractId;
+import static se.sundsvall.billingdatacollector.service.source.contract.util.ContractUtil.getDetailedDescriptions;
 import static se.sundsvall.billingdatacollector.service.source.contract.util.ContractUtil.getExtraParameter;
 import static se.sundsvall.billingdatacollector.service.source.contract.util.ContractUtil.getKPIBaseYear;
 import static se.sundsvall.billingdatacollector.service.source.contract.util.ContractUtil.isIndexed;
@@ -64,6 +65,7 @@ public class ContractMapper {
 	// BillingPreprocessor enforces maxLength: 30 on each entry in
 	// InvoiceRow.descriptions; longer strings would be rejected as BAD_REQUEST.
 	private static final int DESCRIPTION_MAX_LENGTH = 30;
+	private static final int DETAILED_DESCRIPTION_MAX_LENGTH = 51;
 
 	private final ScbIntegration scbIntegration;
 	private final SettingsProvider settingsProvider;
@@ -138,6 +140,9 @@ public class ContractMapper {
 			.descriptions(sanitizeDescriptions(
 				ofNullable(contract.getFees()).map(Fees::getAdditionalInformation).orElse(null)));
 
+		getDetailedDescriptions(contract).stream()
+			.map(v -> v.length() > DETAILED_DESCRIPTION_MAX_LENGTH ? v.substring(0, DETAILED_DESCRIPTION_MAX_LENGTH) : v)
+			.forEach(invoiceRow::addDetailedDescriptionsItem);
 		ofNullable(getPropertyDesignation(contract)).ifPresent(invoiceRow::addDetailedDescriptionsItem);
 		ofNullable(getInvoiceDescription(contract, scheduledDate)).ifPresent(invoiceRow::addDetailedDescriptionsItem);
 
