@@ -74,7 +74,7 @@ public final class ContractUtil {
 			.filter(Objects::nonNull)
 			.findFirst()
 			.map(params -> params.entrySet().stream()
-				.filter(entry -> entry.getKey().matches("detailedDescription\\d{2}"))
+				.filter(entry -> entry.getKey().matches("detailedDescription\\d{1,3}"))
 				.sorted(Map.Entry.comparingByKey())
 				.map(Map.Entry::getValue)
 				.filter(StringUtils::isNotBlank)

@@ -205,6 +205,9 @@ class ContractUtilTest {
 				"detailedDescription01", "First line",
 				"detailedDescriptionAB", "Not included",
 				"markup", "Also not included"))), List.of("First line")),
+			Arguments.of("Single-digit and three-digit suffixes are also matched", List.of(new ExtraParameterGroup().name("InvoiceInfo").parameters(Map.of(
+				"detailedDescription1", "One digit",
+				"detailedDescription100", "Three digits"))), List.of("One digit", "Three digits")),
 			Arguments.of("InvoiceInfo name matching is case-insensitive", List.of(new ExtraParameterGroup().name("invoiceinfo").parameters(Map.of("detailedDescription01", "First line"))), List.of("First line")));
 	}
 

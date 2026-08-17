@@ -32,12 +32,14 @@ public final class CalculationUtil {
 	 * </pre>
 	 *
 	 * <p>
-	 * The calculation is performed in three logical steps:
+	 * The calculation is performed in four logical steps:
 	 * </p>
 	 * <ol>
 	 * <li>Derive the periodic (split) fee from the yearly fee based on the invoicing interval of the contract</li>
 	 * <li>Apply index adjustment based on KPI development</li>
 	 * <li>Result is rounded to two decimals</li>
+	 * <li>For yearly billing (split factor 1), the result is floored at {@code fees.yearly} to ensure the invoice
+	 * amount never falls below the contract base fee due to a declining index</li>
 	 * </ol>
 	 *
 	 * <p>
