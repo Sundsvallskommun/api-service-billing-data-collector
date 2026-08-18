@@ -1,6 +1,7 @@
 package se.sundsvall.billingdatacollector.service.scheduling;
 
 import java.time.Duration;
+import java.time.ZoneId;
 import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -58,7 +59,7 @@ public class BillingScheduler {
 		// the scheduler thread) — that is the prime suspect when the health
 		// indicator gets stuck unhealthy until a restart, since the scheduling
 		// aspect can only reset the indicator on a tick that actually returns.
-		final var startedAt = now();
+		final var startedAt = now(ZoneId.systemDefault());
 		var sent = 0;
 		var skipped = 0;
 		var failed = 0;
@@ -86,7 +87,7 @@ public class BillingScheduler {
 			throw e;
 		}
 
-		final var durationMs = Duration.between(startedAt, now()).toMillis();
+		final var durationMs = Duration.between(startedAt, now(ZoneId.systemDefault())).toMillis();
 		if (failed == 0) {
 			// Heal the indicator explicitly instead of relying solely on the
 			// dept44 scheduling aspect's finally-block. The aspect only resets
@@ -124,17 +125,17 @@ public class BillingScheduler {
 			return Outcome.FAILED;
 		}
 
-		final var handlerStartedAt = now();
+		final var handlerStartedAt = now(ZoneId.systemDefault());
 		BillingResult result;
 		try {
 			result = handler.sendBillingRecords(entity);
 		} catch (final Exception e) {
 			LOG.error("Exception when sending billing records after {} ms! municipalityId '{}', source: '{}', externalId: '{}'",
-				Duration.between(handlerStartedAt, now()).toMillis(), sanitizedMunicipalityId, source, sanitizedExternalId, e);
+				Duration.between(handlerStartedAt, now(ZoneId.systemDefault())).toMillis(), sanitizedMunicipalityId, source, sanitizedExternalId, e);
 			markUnhealthy("Failed to create billing record(s) for source '%s'".formatted(source));
 			return Outcome.FAILED;
 		}
-		final var handlerMs = Duration.between(handlerStartedAt, now()).toMillis();
+		final var handlerMs = Duration.between(handlerStartedAt, now(ZoneId.systemDefault())).toMillis();
 
 		return switch (result) {
 			case Sent sent -> {
@@ -158,7 +159,7 @@ public class BillingScheduler {
 	}
 
 	private void handleSent(ScheduledBillingEntity entity, Sent sent) {
-		entity.setLastBilled(now());
+		entity.setLastBilled(now(ZoneId.systemDefault()));
 		if (isNull(sent.nextSlot())) {
 			// Last billing for this contract — drop the schedule.
 			scheduledBillingService.deleteScheduledBillingEntity(entity);

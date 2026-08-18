@@ -17,6 +17,7 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.Month;
 import java.time.YearMonth;
+import java.time.ZoneId;
 import java.util.List;
 import java.util.Objects;
 import java.util.function.Function;
@@ -86,7 +87,7 @@ public class ContractMapper {
 	}
 
 	private BillingRecord toBillingRecord(String municipalityId, Contract contract, LocalDate scheduledDate) {
-		final var transferDate = LocalDate.now();
+		final var transferDate = LocalDate.now(ZoneId.systemDefault());
 		final var billingRecord = new BillingRecord()
 			.approvedBy(APPROVED_BY)
 			.category(CATEGORY)
@@ -117,7 +118,7 @@ public class ContractMapper {
 			.customerId(NOT_APPLICABLE)
 			.addInvoiceRowsItem(mapInvoiceRow(municipalityId, contract, scheduledDate))
 			.date(transferDate)
-			.dueDate(YearMonth.now().atEndOfMonth());
+			.dueDate(YearMonth.now(ZoneId.systemDefault()).atEndOfMonth());
 	}
 
 	private String getCustomerReference(Contract contract) {
@@ -285,7 +286,7 @@ public class ContractMapper {
 			return scheduledDate;
 		}
 		var periodEndDate = contract.getCurrentPeriod() != null ? contract.getCurrentPeriod().getEndDate() : null;
-		if (periodEndDate != null && periodEndDate.getMonth() == Month.JUNE && periodEndDate.getDayOfMonth() == 30) {
+		if (periodEndDate != null && periodEndDate.getMonth().equals(Month.JUNE) && periodEndDate.getDayOfMonth() == 30) {
 			return scheduledDate.withMonth(Month.JUNE.getValue());
 		}
 		return scheduledDate.withMonth(Month.DECEMBER.getValue());

@@ -1,6 +1,7 @@
 package se.sundsvall.billingdatacollector.service.scheduling.billing;
 
 import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.Optional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -28,7 +29,7 @@ public class BillingJobHandler {
 		LOG.info("Starting billing job");
 		var latestJob = dbService.getLatestJob();
 		var startDate = calculateStartDate(latestJob);
-		var endDate = LocalDate.now().minusDays(1);	// Always set enddate to yesterday
+		var endDate = LocalDate.now(ZoneId.systemDefault()).minusDays(1);	// Always set enddate to yesterday
 
 		dbService.saveScheduledJob(startDate, endDate);	// Save that the job has been triggered
 
@@ -45,6 +46,6 @@ public class BillingJobHandler {
 	 */
 	private LocalDate calculateStartDate(Optional<ScheduledJobEntity> lastJob) {
 		return lastJob.map(ScheduledJobEntity::getFetchedEndDate)
-			.orElse(LocalDate.now().minusDays(1));
+			.orElse(LocalDate.now(ZoneId.systemDefault()).minusDays(1));
 	}
 }

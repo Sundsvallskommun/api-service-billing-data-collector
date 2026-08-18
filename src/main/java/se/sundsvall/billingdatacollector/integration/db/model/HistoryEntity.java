@@ -8,6 +8,7 @@ import jakarta.persistence.Index;
 import jakarta.persistence.PrePersist;
 import jakarta.persistence.Table;
 import java.time.OffsetDateTime;
+import java.time.ZoneId;
 import java.util.Objects;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -67,7 +68,7 @@ public class HistoryEntity {
 
 	@PrePersist
 	public void prePersist() {
-		created = OffsetDateTime.now();
+		created = OffsetDateTime.now(ZoneId.systemDefault());
 	}
 
 	@Override

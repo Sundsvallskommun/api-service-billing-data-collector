@@ -59,7 +59,7 @@ public final class BillingPeriodCalculator {
 	}
 
 	private static BillingPeriod yearly(LocalDate scheduledDate, InvoicedIn invoicedIn) {
-		if (scheduledDate.getMonth() == Month.JUNE) {
+		if (scheduledDate.getMonth().equals(Month.JUNE)) {
 			int year = scheduledDate.getYear();
 			return InvoicedIn.ADVANCE.equals(invoicedIn)
 				? period(year, Month.JULY, 1, year + 1, Month.JUNE, 30)
