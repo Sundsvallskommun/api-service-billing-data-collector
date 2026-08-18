@@ -1,36 +1,21 @@
 {
 	"billingRecord": {
-		"approved": null,
-		"created": null,
-		"approvedBy": null,
 		"extraParameters": {
 			"contractId": "111 222 33-44"
 		},
-		"transferDate": null,
 		"recipient": {
 			"firstName": "Kalle",
 			"lastName": "Anka",
-			"organizationName": null,
-			"legalId": null,
 			"addressDetails": {
-				"careOf": null,
 				"city": "ANKEBORG",
 				"street": "Ankeborgsv 150",
 				"postalCode": "862 96"
 			},
-			"partyId": "fb2f0290-3820-11ed-a261-0242ac120002",
-			"userId": null
+			"partyId": "fb2f0290-3820-11ed-a261-0242ac120002"
 		},
-		"modified": null,
-		"id": null,
 		"invoice": {
-			"date": null,
-			"ourReference": null,
-			"totalAmount": null,
 			"customerReference": null,
-			"dueDate": null,
 			"customerId": "870",
-			"description": null,
 			"invoiceRows": [
 				{
 					"totalAmount": 2100,
@@ -38,14 +23,11 @@
 					"accountInformation": [
 						{
 							"activity": "4165",
-							"amount": null,
 							"costCenter": "43200000",
 							"subaccount": "345000",
 							"counterpart": "86000000",
-							"project": null,
 							"department": "315310",
-							"article": "3452000 - ANKEBORG",
-							"accuralKey": null
+							"article": "3452000 - ANKEBORG"
 						}
 					],
 					"detailedDescriptions": [],
