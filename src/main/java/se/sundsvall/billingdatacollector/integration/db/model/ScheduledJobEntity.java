@@ -8,6 +8,7 @@ import jakarta.persistence.PrePersist;
 import jakarta.persistence.Table;
 import java.time.LocalDate;
 import java.time.OffsetDateTime;
+import java.time.ZoneId;
 import java.util.Objects;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -62,7 +63,7 @@ public class ScheduledJobEntity {
 	@PrePersist
 	public void prePersist() {
 		if (processed == null) {
-			processed = OffsetDateTime.now();
+			processed = OffsetDateTime.now(ZoneId.systemDefault());
 		}
 	}
 

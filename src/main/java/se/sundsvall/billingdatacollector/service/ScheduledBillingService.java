@@ -1,6 +1,7 @@
 package se.sundsvall.billingdatacollector.service;
 
 import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -253,6 +254,6 @@ public class ScheduledBillingService {
 	}
 
 	public List<ScheduledBillingEntity> getDueScheduledBillings() {
-		return repository.findAllByPausedFalseAndNextScheduledBillingLessThanEqual(LocalDate.now());
+		return repository.findAllByPausedFalseAndNextScheduledBillingLessThanEqual(LocalDate.now(ZoneId.systemDefault()));
 	}
 }

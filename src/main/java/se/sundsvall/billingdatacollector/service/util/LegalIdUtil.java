@@ -1,6 +1,7 @@
 package se.sundsvall.billingdatacollector.service.util;
 
 import java.time.LocalDate;
+import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import org.apache.commons.validator.routines.checkdigit.CheckDigitException;
@@ -23,7 +24,7 @@ public final class LegalIdUtil {
 		}
 
 		// Naively validate
-		var thisYear = LocalDate.now().getYear() % 2000;
+		var thisYear = LocalDate.now(ZoneId.systemDefault()).getYear() % 2000;
 		var legalIdYear = Integer.parseInt(legalIdWithDigitsOnly.substring(0, 2));
 
 		return (legalIdYear <= thisYear ? "20" : "19") + legalIdWithDigitsOnly;
