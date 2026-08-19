@@ -32,12 +32,14 @@ public final class CalculationUtil {
 	 * </pre>
 	 *
 	 * <p>
-	 * The calculation is performed in three logical steps:
+	 * The calculation is performed in four logical steps:
 	 * </p>
 	 * <ol>
 	 * <li>Derive the periodic (split) fee from the yearly fee based on the invoicing interval of the contract</li>
 	 * <li>Apply index adjustment based on KPI development</li>
 	 * <li>Result is rounded to two decimals</li>
+	 * <li>For yearly billing (split factor 1), the result is floored at {@code fees.yearly} to ensure the invoice
+	 * amount never falls below the contract base fee due to a declining index</li>
 	 * </ol>
 	 *
 	 * <p>
@@ -63,6 +65,10 @@ public final class CalculationUtil {
 			.map(Optional::get)
 			// Step 3: Round fee to two decimals
 			.map(indexAdjustedFee -> indexAdjustedFee.setScale(2, HALF_EVEN))
+			// Step 4: For yearly billing, ensure the calculated amount never falls below the yearly base fee
+			.map(result -> splitFactor.compareTo(BigDecimal.ONE) == 0 && result.compareTo(contract.getFees().getYearly()) < 0
+				? contract.getFees().getYearly().setScale(2, HALF_EVEN)
+				: result)
 			// Fail fast if any required information is missing
 			.orElseThrow(() -> Problem.valueOf(NOT_FOUND, "Contract %s is missing crucial information for calculating indexed cost".formatted(contract.getContractId())));
 	}

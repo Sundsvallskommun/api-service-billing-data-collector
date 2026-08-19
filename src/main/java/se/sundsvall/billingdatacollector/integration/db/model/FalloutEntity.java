@@ -9,6 +9,7 @@ import jakarta.persistence.PrePersist;
 import jakarta.persistence.PreUpdate;
 import jakarta.persistence.Table;
 import java.time.OffsetDateTime;
+import java.time.ZoneId;
 import java.util.Objects;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -80,9 +81,9 @@ public class FalloutEntity {
 	@PrePersist
 	public void prePersist() {
 		if (created == null) {
-			created = OffsetDateTime.now();
+			created = OffsetDateTime.now(ZoneId.systemDefault());
 		}
-		modified = OffsetDateTime.now();
+		modified = OffsetDateTime.now(ZoneId.systemDefault());
 	}
 
 	@Override

@@ -6,6 +6,7 @@ import java.security.cert.CertificateException;
 import java.security.cert.CertificateFactory;
 import java.security.cert.X509Certificate;
 import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.List;
 import java.util.Objects;
 import java.util.function.Consumer;
@@ -92,7 +93,7 @@ public class CertificateValidityCheckHandler {
 		final var warningDate = toLocalDateTime(certificate.getNotAfter())
 			.minusDays(warnDaysBeforeExpiration)
 			.toLocalDate();
-		return LocalDate.now().isAfter(warningDate);
+		return LocalDate.now(ZoneId.systemDefault()).isAfter(warningDate);
 	}
 
 	private List<X509Certificate> getLocalCertificates() throws IOException {

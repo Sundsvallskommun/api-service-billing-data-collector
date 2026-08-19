@@ -4,6 +4,8 @@ import generated.se.sundsvall.contract.Contract;
 import generated.se.sundsvall.contract.ExtraParameterGroup;
 import generated.se.sundsvall.contract.Fees;
 import generated.se.sundsvall.contract.Invoicing;
+import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.Strings;
@@ -58,6 +60,26 @@ public final class ContractUtil {
 			case "KPI 2020" -> KPIBaseYear.KPI_2020;
 			default -> KPIBaseYear.KPI_80;
 		};
+	}
+
+	public static List<String> getDetailedDescriptions(Contract contract) {
+		if (isNull(contract)) {
+			throw Problem.valueOf(NOT_FOUND, MESSAGE_CONTRACT_CAN_NOT_BE_NULL);
+		}
+
+		return ofNullable(contract.getExtraParameters()).orElse(emptyList()).stream()
+			.filter(group -> Objects.nonNull(group.getName()))
+			.filter(group -> Strings.CI.equals("InvoiceInfo", group.getName()))
+			.map(ExtraParameterGroup::getParameters)
+			.filter(Objects::nonNull)
+			.findFirst()
+			.map(params -> params.entrySet().stream()
+				.filter(entry -> entry.getKey().matches("detailedDescription\\d{1,3}"))
+				.sorted(Map.Entry.comparingByKey())
+				.map(Map.Entry::getValue)
+				.filter(StringUtils::isNotBlank)
+				.toList())
+			.orElse(emptyList());
 	}
 
 	public static String getExtraParameter(Contract contract, String parameterGroup, String parameterKey) {

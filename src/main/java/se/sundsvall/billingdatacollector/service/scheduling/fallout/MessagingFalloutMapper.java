@@ -5,6 +5,7 @@ import generated.se.sundsvall.messaging.EmailSender;
 import generated.se.sundsvall.messaging.Party;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
+import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.Base64;
 import java.util.Comparator;
@@ -40,7 +41,7 @@ public class MessagingFalloutMapper {
 		final var bodyBuilder = new StringBuilder(template.htmlPrefix());
 
 		// Set the body heading with the date
-		bodyBuilder.append(template.bodyPrefix().formatted(LocalDate.now().format(DateTimeFormatter.ISO_LOCAL_DATE)));
+		bodyBuilder.append(template.bodyPrefix().formatted(LocalDate.now(ZoneId.systemDefault()).format(DateTimeFormatter.ISO_LOCAL_DATE)));
 
 		// Set number of errors and "start" the list.
 		bodyBuilder.append(template.listPrefix().formatted(fallouts.size()));

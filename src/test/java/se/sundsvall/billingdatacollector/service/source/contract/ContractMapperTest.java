@@ -495,6 +495,53 @@ class ContractMapperTest {
 	}
 
 	@Test
+	void createBillingRecord_detailedDescriptionsFromInvoiceInfoAreAddedFirst() {
+		when(contractMock.getFees()).thenReturn(feesMock);
+		when(feesMock.getYearly()).thenReturn(BigDecimal.valueOf(1000));
+		when(contractMock.getInvoicing()).thenReturn(invoicingMock);
+		when(invoicingMock.getInvoiceInterval()).thenReturn(IntervalType.QUARTERLY);
+		when(invoicingMock.getInvoicedIn()).thenReturn(generated.se.sundsvall.contract.InvoicedIn.ARREARS);
+		when(contractMock.getContractId()).thenReturn(CONTRACT_ID);
+		when(contractMock.getPropertyDesignations()).thenReturn(List.of(new generated.se.sundsvall.contract.PropertyDesignation().name("SUNDSVALL GRANLO 3:187")));
+		when(contractMock.getExtraParameters()).thenReturn(List.of(
+			new ExtraParameterGroup().name("InvoiceInfo").parameters(Map.of(
+				"detailedDescription02", "Andra kompletterande raden",
+				"detailedDescription01", "Första kompletterande raden"))));
+
+		final var result = mapper.createBillingRecord(MUNICIPALITY_ID, contractMock, SCHEDULED_DATE);
+
+		assertThat(result.getInvoice().getInvoiceRows().getFirst().getDetailedDescriptions())
+			.as("InvoiceInfo detailedDescriptions must appear before property designation and period description")
+			.startsWith("Första kompletterande raden", "Andra kompletterande raden")
+			.contains("SUNDSVALL GRANLO 3:187");
+
+		verify(settingsProviderMock).isLeaseTypeSettingsPresent(contractMock);
+		verify(settingsProviderMock).getVatCode(contractMock);
+	}
+
+	@Test
+	void createBillingRecord_detailedDescriptionsExceeding51CharsAreTruncated() {
+		final var longValue = "A".repeat(60); // 60 chars, expect truncation to 51
+		when(contractMock.getFees()).thenReturn(feesMock);
+		when(feesMock.getYearly()).thenReturn(BigDecimal.valueOf(1000));
+		when(contractMock.getInvoicing()).thenReturn(invoicingMock);
+		when(invoicingMock.getInvoiceInterval()).thenReturn(IntervalType.QUARTERLY);
+		when(contractMock.getContractId()).thenReturn(CONTRACT_ID);
+		when(contractMock.getExtraParameters()).thenReturn(List.of(
+			new ExtraParameterGroup().name("InvoiceInfo").parameters(Map.of("detailedDescription01", longValue))));
+
+		final var result = mapper.createBillingRecord(MUNICIPALITY_ID, contractMock, SCHEDULED_DATE);
+
+		assertThat(result.getInvoice().getInvoiceRows().getFirst().getDetailedDescriptions())
+			.first().asString()
+			.hasSize(51)
+			.isEqualTo("A".repeat(51));
+
+		verify(settingsProviderMock).isLeaseTypeSettingsPresent(contractMock);
+		verify(settingsProviderMock).getVatCode(contractMock);
+	}
+
+	@Test
 	void descriptions_areTruncatedAndBlanksFiltered() {
 		// Mix of: a fine string, a blank, a string at exactly 30 chars, an over-length
 		// string, and an empty string. Order must be preserved for the survivors.

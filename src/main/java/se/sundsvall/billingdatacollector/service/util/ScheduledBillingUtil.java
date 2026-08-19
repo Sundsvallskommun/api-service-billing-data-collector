@@ -1,6 +1,7 @@
 package se.sundsvall.billingdatacollector.service.util;
 
 import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.Set;
 
 public final class ScheduledBillingUtil {
@@ -8,7 +9,7 @@ public final class ScheduledBillingUtil {
 	private ScheduledBillingUtil() {}
 
 	public static LocalDate calculateNextScheduledBilling(Set<Integer> billingDaysOfMonth, Set<Integer> billingMonths) {
-		return calculateNextScheduledBilling(billingDaysOfMonth, billingMonths, LocalDate.now());
+		return calculateNextScheduledBilling(billingDaysOfMonth, billingMonths, LocalDate.now(ZoneId.systemDefault()));
 	}
 
 	public static LocalDate calculateNextScheduledBilling(Set<Integer> billingDaysOfMonth, Set<Integer> billingMonths, LocalDate startFrom) {

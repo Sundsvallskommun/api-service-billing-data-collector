@@ -17,6 +17,7 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.Month;
 import java.time.YearMonth;
+import java.time.ZoneId;
 import java.util.List;
 import java.util.Objects;
 import java.util.function.Function;
@@ -39,6 +40,7 @@ import static se.sundsvall.billingdatacollector.service.source.contract.util.Cal
 import static se.sundsvall.billingdatacollector.service.source.contract.util.CalculationUtil.calculateNonIndexedCost;
 import static se.sundsvall.billingdatacollector.service.source.contract.util.ContractUtil.getAccrualKey;
 import static se.sundsvall.billingdatacollector.service.source.contract.util.ContractUtil.getContractId;
+import static se.sundsvall.billingdatacollector.service.source.contract.util.ContractUtil.getDetailedDescriptions;
 import static se.sundsvall.billingdatacollector.service.source.contract.util.ContractUtil.getExtraParameter;
 import static se.sundsvall.billingdatacollector.service.source.contract.util.ContractUtil.getKPIBaseYear;
 import static se.sundsvall.billingdatacollector.service.source.contract.util.ContractUtil.isIndexed;
@@ -64,6 +66,7 @@ public class ContractMapper {
 	// BillingPreprocessor enforces maxLength: 30 on each entry in
 	// InvoiceRow.descriptions; longer strings would be rejected as BAD_REQUEST.
 	private static final int DESCRIPTION_MAX_LENGTH = 30;
+	private static final int DETAILED_DESCRIPTION_MAX_LENGTH = 51;
 
 	private final ScbIntegration scbIntegration;
 	private final SettingsProvider settingsProvider;
@@ -84,7 +87,7 @@ public class ContractMapper {
 	}
 
 	private BillingRecord toBillingRecord(String municipalityId, Contract contract, LocalDate scheduledDate) {
-		final var transferDate = LocalDate.now();
+		final var transferDate = LocalDate.now(ZoneId.systemDefault());
 		final var billingRecord = new BillingRecord()
 			.approvedBy(APPROVED_BY)
 			.category(CATEGORY)
@@ -115,7 +118,7 @@ public class ContractMapper {
 			.customerId(NOT_APPLICABLE)
 			.addInvoiceRowsItem(mapInvoiceRow(municipalityId, contract, scheduledDate))
 			.date(transferDate)
-			.dueDate(YearMonth.now().atEndOfMonth());
+			.dueDate(YearMonth.now(ZoneId.systemDefault()).atEndOfMonth());
 	}
 
 	private String getCustomerReference(Contract contract) {
@@ -138,6 +141,9 @@ public class ContractMapper {
 			.descriptions(sanitizeDescriptions(
 				ofNullable(contract.getFees()).map(Fees::getAdditionalInformation).orElse(null)));
 
+		getDetailedDescriptions(contract).stream()
+			.map(v -> v.length() > DETAILED_DESCRIPTION_MAX_LENGTH ? v.substring(0, DETAILED_DESCRIPTION_MAX_LENGTH) : v)
+			.forEach(invoiceRow::addDetailedDescriptionsItem);
 		ofNullable(getPropertyDesignation(contract)).ifPresent(invoiceRow::addDetailedDescriptionsItem);
 		ofNullable(getInvoiceDescription(contract, scheduledDate)).ifPresent(invoiceRow::addDetailedDescriptionsItem);
 
@@ -280,7 +286,7 @@ public class ContractMapper {
 			return scheduledDate;
 		}
 		var periodEndDate = contract.getCurrentPeriod() != null ? contract.getCurrentPeriod().getEndDate() : null;
-		if (periodEndDate != null && periodEndDate.getMonth() == Month.JUNE && periodEndDate.getDayOfMonth() == 30) {
+		if (periodEndDate != null && periodEndDate.getMonth().equals(Month.JUNE) && periodEndDate.getDayOfMonth() == 30) {
 			return scheduledDate.withMonth(Month.JUNE.getValue());
 		}
 		return scheduledDate.withMonth(Month.DECEMBER.getValue());
