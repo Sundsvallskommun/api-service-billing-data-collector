@@ -65,15 +65,15 @@ class CalculationUtilTest {
 
 			Arguments.of("Half yearly interval with current index twice of begin index and indexationRate 1", HALF_YEARLY, yearlyFee, originalKPI, indexationRate1, currentYearKPIDouble, BigDecimal.valueOf(12000)),
 			Arguments.of("Half yearly interval with same current index as begin index and indexationRate 1", HALF_YEARLY, yearlyFee, originalKPI, indexationRate1, currentYearKPIEqual, BigDecimal.valueOf(6000)),
-			Arguments.of("Half yearly interval with current index half of begin index and indexationRate 1", HALF_YEARLY, yearlyFee, originalKPI, indexationRate1, currentYearKPIHalf, BigDecimal.valueOf(3000)),
+			Arguments.of("Half yearly interval with current index half of begin index and indexationRate 1", HALF_YEARLY, yearlyFee, originalKPI, indexationRate1, currentYearKPIHalf, BigDecimal.valueOf(6000)),
 
 			Arguments.of("Quarterly interval with current index twice of begin index and indexationRate 1", QUARTERLY, yearlyFee, originalKPI, indexationRate1, currentYearKPIDouble, BigDecimal.valueOf(6000)),
 			Arguments.of("Quarterly interval with same current index as begin index and indexationRate 1", QUARTERLY, yearlyFee, originalKPI, indexationRate1, currentYearKPIEqual, BigDecimal.valueOf(3000)),
-			Arguments.of("Quarterly interval with current index half of begin index and indexationRate 1", QUARTERLY, yearlyFee, originalKPI, indexationRate1, currentYearKPIHalf, BigDecimal.valueOf(1500)),
+			Arguments.of("Quarterly interval with current index half of begin index and indexationRate 1", QUARTERLY, yearlyFee, originalKPI, indexationRate1, currentYearKPIHalf, BigDecimal.valueOf(3000)),
 
 			Arguments.of("Monthly interval with current index twice of begin index and indexationRate 1", MONTHLY, yearlyFee, originalKPI, indexationRate1, currentYearKPIDouble, BigDecimal.valueOf(2000)),
 			Arguments.of("Monthly interval with same current index as begin index and indexationRate 1", MONTHLY, yearlyFee, originalKPI, indexationRate1, currentYearKPIEqual, BigDecimal.valueOf(1000)),
-			Arguments.of("Monthly interval with current index half of begin index and indexationRate 1", MONTHLY, yearlyFee, originalKPI, indexationRate1, currentYearKPIHalf, BigDecimal.valueOf(500)),
+			Arguments.of("Monthly interval with current index half of begin index and indexationRate 1", MONTHLY, yearlyFee, originalKPI, indexationRate1, currentYearKPIHalf, BigDecimal.valueOf(1000)),
 
 			Arguments.of("Yearly interval with current index twice of begin index and indexationRate 0.5", YEARLY, yearlyFee, originalKPI, indexationRate05, currentYearKPIDouble, BigDecimal.valueOf(18000)),
 			Arguments.of("Yearly interval with same current index as begin index and indexationRate 0.5", YEARLY, yearlyFee, originalKPI, indexationRate05, currentYearKPIEqual, BigDecimal.valueOf(12000)),
@@ -81,15 +81,15 @@ class CalculationUtilTest {
 
 			Arguments.of("Half yearly interval with current index twice of begin index and indexationRate 0.5", HALF_YEARLY, yearlyFee, originalKPI, indexationRate05, currentYearKPIDouble, BigDecimal.valueOf(9000)),
 			Arguments.of("Half yearly interval with same current index as begin index and indexationRate 0.5", HALF_YEARLY, yearlyFee, originalKPI, indexationRate05, currentYearKPIEqual, BigDecimal.valueOf(6000)),
-			Arguments.of("Half yearly interval with current index half of begin index and indexationRate 0.5", HALF_YEARLY, yearlyFee, originalKPI, indexationRate05, currentYearKPIHalf, BigDecimal.valueOf(4500)),
+			Arguments.of("Half yearly interval with current index half of begin index and indexationRate 0.5", HALF_YEARLY, yearlyFee, originalKPI, indexationRate05, currentYearKPIHalf, BigDecimal.valueOf(6000)),
 
 			Arguments.of("Quarterly interval with current index twice of begin index and indexationRate 0.5", QUARTERLY, yearlyFee, originalKPI, indexationRate05, currentYearKPIDouble, BigDecimal.valueOf(4500)),
 			Arguments.of("Quarterly interval with same current index as begin index and indexationRate 0.5", QUARTERLY, yearlyFee, originalKPI, indexationRate05, currentYearKPIEqual, BigDecimal.valueOf(3000)),
-			Arguments.of("Quarterly interval with current index half of begin index and indexationRate 0.5", QUARTERLY, yearlyFee, originalKPI, indexationRate05, currentYearKPIHalf, BigDecimal.valueOf(2250)),
+			Arguments.of("Quarterly interval with current index half of begin index and indexationRate 0.5", QUARTERLY, yearlyFee, originalKPI, indexationRate05, currentYearKPIHalf, BigDecimal.valueOf(3000)),
 
 			Arguments.of("Monthly interval with current index twice of begin index and indexationRate 0.5", MONTHLY, yearlyFee, originalKPI, indexationRate05, currentYearKPIDouble, BigDecimal.valueOf(1500)),
 			Arguments.of("Monthly interval with same current index as begin index and indexationRate 0.5", MONTHLY, yearlyFee, originalKPI, indexationRate05, currentYearKPIEqual, BigDecimal.valueOf(1000)),
-			Arguments.of("Monthly interval with current index half of begin index and indexationRate 0.5", MONTHLY, yearlyFee, originalKPI, indexationRate05, currentYearKPIHalf, BigDecimal.valueOf(750)));
+			Arguments.of("Monthly interval with current index half of begin index and indexationRate 0.5", MONTHLY, yearlyFee, originalKPI, indexationRate05, currentYearKPIHalf, BigDecimal.valueOf(1000)));
 	}
 
 	@Test
@@ -101,13 +101,13 @@ class CalculationUtilTest {
 		when(feesMock.getIndexationRate()).thenReturn(BigDecimal.ONE);
 		when(invoicingMock.getInvoiceInterval()).thenReturn(YEARLY);
 
-		// currentYearKPI = 50 → formula gives 6000, but floor at fees.yearly (12000) applies for YEARLY
+		// currentYearKPI = 50 → formula gives 6000, but floor at fees.yearly (12000) applies
 		assertThat(CalculationUtil.calculateIndexedCost(contractMock, BigDecimal.valueOf(50)))
 			.isEqualByComparingTo(BigDecimal.valueOf(12000));
 	}
 
 	@Test
-	void calculateIndexedCost_nonYearlyInterval_noFloorApplied() {
+	void calculateIndexedCost_nonYearlyInterval_flooredAtPeriodicBaseFee() {
 		when(contractMock.getInvoicing()).thenReturn(invoicingMock);
 		when(contractMock.getFees()).thenReturn(feesMock);
 		when(feesMock.getYearly()).thenReturn(BigDecimal.valueOf(12000));
@@ -115,9 +115,9 @@ class CalculationUtilTest {
 		when(feesMock.getIndexationRate()).thenReturn(BigDecimal.ONE);
 		when(invoicingMock.getInvoiceInterval()).thenReturn(QUARTERLY);
 
-		// currentYearKPI = 50 → formula gives 1500; no floor for non-yearly intervals
+		// currentYearKPI = 50 → formula gives 1500, but floor at fees.yearly/4 (3000) applies
 		assertThat(CalculationUtil.calculateIndexedCost(contractMock, BigDecimal.valueOf(50)))
-			.isEqualByComparingTo(BigDecimal.valueOf(1500));
+			.isEqualByComparingTo(BigDecimal.valueOf(3000));
 	}
 
 	@Test

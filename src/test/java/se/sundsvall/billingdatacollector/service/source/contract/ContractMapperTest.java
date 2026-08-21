@@ -500,9 +500,9 @@ class ContractMapperTest {
 		when(feesMock.getYearly()).thenReturn(BigDecimal.valueOf(1000));
 		when(contractMock.getInvoicing()).thenReturn(invoicingMock);
 		when(invoicingMock.getInvoiceInterval()).thenReturn(IntervalType.QUARTERLY);
-		when(invoicingMock.getInvoicedIn()).thenReturn(generated.se.sundsvall.contract.InvoicedIn.ARREARS);
+		when(invoicingMock.getInvoicedIn()).thenReturn(InvoicedIn.ARREARS);
 		when(contractMock.getContractId()).thenReturn(CONTRACT_ID);
-		when(contractMock.getPropertyDesignations()).thenReturn(List.of(new generated.se.sundsvall.contract.PropertyDesignation().name("SUNDSVALL GRANLO 3:187")));
+		when(contractMock.getPropertyDesignations()).thenReturn(List.of(new PropertyDesignation().name("SUNDSVALL GRANLO 3:187")));
 		when(contractMock.getExtraParameters()).thenReturn(List.of(
 			new ExtraParameterGroup().name("InvoiceInfo").parameters(Map.of(
 				"detailedDescription02", "Andra kompletterande raden",
@@ -521,7 +521,7 @@ class ContractMapperTest {
 
 	@Test
 	void createBillingRecord_detailedDescriptionsExceeding51CharsAreTruncated() {
-		final var longValue = "A".repeat(60); // 60 chars, expect truncation to 51
+		final var longValue = "A".repeat(60);
 		when(contractMock.getFees()).thenReturn(feesMock);
 		when(feesMock.getYearly()).thenReturn(BigDecimal.valueOf(1000));
 		when(contractMock.getInvoicing()).thenReturn(invoicingMock);
