@@ -1,8 +1,5 @@
 package se.sundsvall.billingdatacollector.apptest;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.within;
-
 import java.time.OffsetDateTime;
 import java.time.temporal.ChronoUnit;
 import org.junit.jupiter.api.Test;
@@ -13,6 +10,9 @@ import se.sundsvall.billingdatacollector.integration.db.HistoryRepository;
 import se.sundsvall.billingdatacollector.service.scheduling.BillingScheduler;
 import se.sundsvall.dept44.test.AbstractAppTest;
 import se.sundsvall.dept44.test.annotation.wiremock.WireMockAppTestSuite;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.within;
 
 @WireMockAppTestSuite(files = "classpath:/BillingSchedulerIT/", classes = Application.class)
 @Sql({
@@ -38,7 +38,7 @@ class BillingSchedulerIT extends AbstractAppTest {
 
 		var historyEntities = historyRepository.findAll();
 
-		//Two existing rows in test-db
+		// Two existing rows in test-db
 		assertThat(historyEntities).hasSize(3);
 
 		var newHistoryEntity = historyEntities.stream()

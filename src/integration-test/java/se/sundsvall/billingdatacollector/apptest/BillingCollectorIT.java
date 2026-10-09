@@ -1,10 +1,5 @@
 package se.sundsvall.billingdatacollector.apptest;
 
-import static java.util.concurrent.TimeUnit.SECONDS;
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.within;
-import static org.awaitility.Awaitility.await;
-
 import java.time.LocalDate;
 import java.time.OffsetDateTime;
 import java.time.temporal.ChronoUnit;
@@ -19,6 +14,11 @@ import se.sundsvall.billingdatacollector.integration.db.ScheduledJobRepository;
 import se.sundsvall.billingdatacollector.service.scheduling.billing.BillingJobHandler;
 import se.sundsvall.dept44.test.AbstractAppTest;
 import se.sundsvall.dept44.test.annotation.wiremock.WireMockAppTestSuite;
+
+import static java.util.concurrent.TimeUnit.SECONDS;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.within;
+import static org.awaitility.Awaitility.await;
 
 @WireMockAppTestSuite(files = "classpath:/BillingCollectorIT/", classes = Application.class)
 @Sql({

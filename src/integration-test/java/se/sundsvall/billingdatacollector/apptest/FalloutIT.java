@@ -1,7 +1,5 @@
 package se.sundsvall.billingdatacollector.apptest;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.jdbc.Sql;
@@ -10,6 +8,8 @@ import se.sundsvall.billingdatacollector.integration.db.FalloutRepository;
 import se.sundsvall.billingdatacollector.service.scheduling.fallout.FalloutJobHandler;
 import se.sundsvall.dept44.test.AbstractAppTest;
 import se.sundsvall.dept44.test.annotation.wiremock.WireMockAppTestSuite;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 @WireMockAppTestSuite(files = "classpath:/FalloutIT/", classes = Application.class)
 @Sql({
