@@ -1,22 +1,20 @@
 package se.sundsvall.billingdatacollector.apptest;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.springframework.http.HttpMethod.POST;
-import static org.springframework.http.HttpStatus.ACCEPTED;
-import static org.springframework.http.HttpStatus.BAD_REQUEST;
-
 import java.time.LocalDate;
 import java.util.List;
-
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.jdbc.Sql;
-
 import se.sundsvall.billingdatacollector.Application;
 import se.sundsvall.billingdatacollector.integration.db.FalloutRepository;
 import se.sundsvall.billingdatacollector.integration.db.HistoryRepository;
 import se.sundsvall.dept44.test.AbstractAppTest;
 import se.sundsvall.dept44.test.annotation.wiremock.WireMockAppTestSuite;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.springframework.http.HttpMethod.POST;
+import static org.springframework.http.HttpStatus.ACCEPTED;
+import static org.springframework.http.HttpStatus.BAD_REQUEST;
 
 @WireMockAppTestSuite(files = "classpath:/BillingCollectorAPIIT/", classes = Application.class)
 @Sql({
