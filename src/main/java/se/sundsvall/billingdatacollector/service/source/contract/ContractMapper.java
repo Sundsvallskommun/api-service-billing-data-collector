@@ -277,16 +277,16 @@ public class ContractMapper {
 
 	/**
 	 * For YEARLY billing the period type (July–June vs January–December) must be
-	 * determined by {@code currentPeriod.endDate}, not by the scheduled billing
-	 * date. This guards against the case where {@code scheduledDate} is set to an
-	 * unexpected month while the contract's period boundary is still 30 June.
+	 * determined by {@code invoicing.yearlyBillingMonth}, not by the scheduled
+	 * billing date. This guards against the case where {@code scheduledDate} is
+	 * set to an unexpected month while the contract's yearly billing month is 6.
 	 */
 	private static LocalDate effectiveDateForDescription(Contract contract, LocalDate scheduledDate, IntervalType interval) {
 		if (interval != IntervalType.YEARLY) {
 			return scheduledDate;
 		}
-		var periodEndDate = contract.getCurrentPeriod() != null ? contract.getCurrentPeriod().getEndDate() : null;
-		if (periodEndDate != null && periodEndDate.getMonth().equals(Month.JUNE) && periodEndDate.getDayOfMonth() == 30) {
+		var yearlyBillingMonth = contract.getInvoicing() != null ? contract.getInvoicing().getYearlyBillingMonth() : null;
+		if (Integer.valueOf(Month.JUNE.getValue()).equals(yearlyBillingMonth)) {
 			return scheduledDate.withMonth(Month.JUNE.getValue());
 		}
 		return scheduledDate.withMonth(Month.DECEMBER.getValue());

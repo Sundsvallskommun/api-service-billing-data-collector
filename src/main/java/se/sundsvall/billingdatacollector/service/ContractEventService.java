@@ -5,7 +5,6 @@ import generated.se.sundsvall.contract.InvoicedIn;
 import generated.se.sundsvall.contract.Status;
 import java.time.Clock;
 import java.time.LocalDate;
-import java.time.Month;
 import java.util.Set;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -204,9 +203,15 @@ public class ContractEventService implements BillingEventHandler {
 		return ScheduledBillingUtil.calculateNextScheduledBilling(BILLING_DAYS_OF_MONTH, billingMonths, clampedStart);
 	}
 
+	/**
+	 * {@code invoicing.billingEnabled = false} overrides every other billing
+	 * rule — such a contract never has a scheduled billing, regardless of
+	 * status or invoicing interval.
+	 */
 	private boolean isBillable(Contract contract) {
 		return Status.ACTIVE.equals(contract.getStatus())
 			&& contract.getInvoicing() != null
+			&& Boolean.TRUE.equals(contract.getInvoicing().getBillingEnabled())
 			&& contract.getInvoicing().getInvoiceInterval() != null;
 	}
 
@@ -215,14 +220,7 @@ public class ContractEventService implements BillingEventHandler {
 			case MONTHLY -> MONTHLY;
 			case QUARTERLY -> QUARTERLY;
 			case HALF_YEARLY -> HALF_YEARLY;
-			case YEARLY -> isEndOfJunePeriod(contract) ? YEARLY_JUNE : YEARLY;
+			case YEARLY -> Integer.valueOf(6).equals(contract.getInvoicing().getYearlyBillingMonth()) ? YEARLY_JUNE : YEARLY;
 		};
-	}
-
-	private boolean isEndOfJunePeriod(Contract contract) {
-		var periodEndDate = contract.getCurrentPeriod() != null ? contract.getCurrentPeriod().getEndDate() : null;
-		return periodEndDate != null
-			&& periodEndDate.getMonth().equals(Month.JUNE)
-			&& periodEndDate.getDayOfMonth() == 30;
 	}
 }

@@ -8,6 +8,7 @@
 	"startDate": "2017-01-01",
 	"endDate": "2020-08-15",
 	"invoicing": {
+		"billingEnabled": true,
 		"invoiceInterval": "QUARTERLY",
 		"invoicedIn": "ARREARS"
 	},

@@ -1119,14 +1119,23 @@ components:
       type: object
       description: Invoicing details
       properties:
+        billingEnabled:
+          type: boolean
+          description: Whether the contract should be billed
         invoiceInterval:
           $ref: "#/components/schemas/IntervalType"
           description: How often the lease is invoiced
           examples:
           - QUARTERLY
+        yearlyBillingMonth:
+          type: integer
+          description: The month (6 or 12) when yearly billing should occur. Only applicable when invoiceInterval is YEARLY
+          examples:
+          - 12
         invoicedIn:
           $ref: "#/components/schemas/InvoicedIn"
       required:
+      - billingEnabled
       - invoiceInterval
       - invoicedIn
     LeaseType:

@@ -87,10 +87,12 @@ public class ContractBillingHandler extends AbstractHandler {
 
 		if (contract.getInvoicing() == null
 			|| contract.getInvoicing().getInvoiceInterval() == null
-			|| contract.getInvoicing().getInvoicedIn() == null) {
+			|| contract.getInvoicing().getInvoicedIn() == null
+			|| !Boolean.TRUE.equals(contract.getInvoicing().getBillingEnabled())) {
 			// Contract no longer carries the invoicing fields needed to
-			// produce a billing — clean up.
-			logWarning("Contract {} no longer has complete invoicing data — dropping schedule", externalId);
+			// produce a billing, or billing has been disabled — clean up.
+			// billingEnabled = false overrides every other rule.
+			logWarning("Contract {} no longer has complete invoicing data or billing is disabled — dropping schedule", externalId);
 			return new Skipped("contract no longer billable");
 		}
 
