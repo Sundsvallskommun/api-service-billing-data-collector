@@ -39,6 +39,7 @@
 	},
 	"indexTerms": [],
 	"invoicing": {
+		"billingEnabled": true,
 		"invoiceInterval": "QUARTERLY",
 		"invoicedIn": "ADVANCE"
 	},

@@ -4,6 +4,7 @@ import generated.se.sundsvall.contract.Contract;
 import generated.se.sundsvall.contract.ExtraParameterGroup;
 import generated.se.sundsvall.contract.Fees;
 import generated.se.sundsvall.contract.Invoicing;
+import java.time.Month;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -108,6 +109,46 @@ public final class ContractUtil {
 			.map(Interval::getByIntervalType)
 			.map(Interval::getAccrualKey)
 			.orElse(null);
+	}
+
+	/**
+	 * Single source of truth for whether a contract should have a scheduled
+	 * billing at all: it needs an invoicing interval, and billing must not be
+	 * explicitly disabled. A missing {@code billingEnabled} value is treated
+	 * as enabled (not disabled) so that a contract whose source data has not
+	 * yet been backfilled with the field keeps its existing behaviour, while
+	 * an explicit {@code false} overrides every other rule.
+	 */
+	public static boolean isBillable(Contract contract) {
+		return ofNullable(contract.getInvoicing())
+			.filter(invoicing -> invoicing.getInvoiceInterval() != null)
+			.isPresent()
+			&& !isBillingDisabled(contract);
+	}
+
+	/**
+	 * {@code true} only when {@code invoicing.billingEnabled} is explicitly
+	 * {@code false}. {@code null} (field absent) is deliberately not treated
+	 * as disabled.
+	 */
+	public static boolean isBillingDisabled(Contract contract) {
+		return ofNullable(contract.getInvoicing())
+			.map(Invoicing::getBillingEnabled)
+			.filter(Boolean.FALSE::equals)
+			.isPresent();
+	}
+
+	/**
+	 * {@code true} when a YEARLY-billed contract's
+	 * {@code invoicing.yearlyBillingMonth} is 6 (June). Any other value,
+	 * including {@code null}, means the yearly billing slot and invoice
+	 * period default to December.
+	 */
+	public static boolean isJuneYearlyBilling(Contract contract) {
+		return ofNullable(contract.getInvoicing())
+			.map(Invoicing::getYearlyBillingMonth)
+			.filter(month -> month == Month.JUNE.getValue())
+			.isPresent();
 	}
 
 	public static int getSplitFactor(Contract contract) {

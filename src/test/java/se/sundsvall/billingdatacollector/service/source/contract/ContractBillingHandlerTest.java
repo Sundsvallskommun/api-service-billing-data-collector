@@ -188,6 +188,45 @@ class ContractBillingHandlerTest {
 		verifyNoInteractions(billingPreprocessorClientMock, historyRepositoryMock);
 	}
 
+	/**
+	 * billingEnabled = false overrides every other rule — even a contract
+	 * that otherwise looks fully billable must have its schedule dropped.
+	 */
+	@Test
+	void sendBillingRecords_whenBillingDisabled_returnsSkipped() {
+		var entity = quarterlyEntity(LocalDate.of(2026, 6, 1));
+		var contract = contract(IntervalType.QUARTERLY, InvoicedIn.ADVANCE, null);
+		contract.getInvoicing().setBillingEnabled(false);
+		when(contractIntegrationMock.getContract(MUNICIPALITY_ID, CONTRACT_ID)).thenReturn(Optional.of(contract));
+
+		var result = handler.sendBillingRecords(entity);
+
+		assertThat(result).isInstanceOf(BillingResult.Skipped.class);
+		verifyNoInteractions(billingPreprocessorClientMock, historyRepositoryMock);
+		verify(contractMapperMock, never()).createBillingRecord(any(), any(), any());
+	}
+
+	/**
+	 * Regression: a missing billingEnabled (e.g. source data not yet
+	 * backfilled with the field) must NOT be treated as disabled — only an
+	 * explicit {@code false} drops the schedule.
+	 */
+	@Test
+	void sendBillingRecords_whenBillingEnabledMissing_stillSends() {
+		var entity = quarterlyEntity(LocalDate.of(2026, 6, 1));
+		var contract = contract(IntervalType.QUARTERLY, InvoicedIn.ADVANCE, null);
+		contract.getInvoicing().setBillingEnabled(null);
+
+		stubSuccessfulPipeline(entity, contract);
+
+		var result = handler.sendBillingRecords(entity);
+
+		assertThat(result).isInstanceOf(BillingResult.Sent.class);
+		verify(billingPreprocessorClientMock).createBillingRecord(MUNICIPALITY_ID, billingRecordMock);
+		verify(historyRepositoryMock).saveAndFlush(any());
+		verify(relationClientMock).createRelation(eq(MUNICIPALITY_ID), any());
+	}
+
 	@Test
 	void sendBillingRecords_whenContractHasNoEndDate_alwaysAdvances() {
 		var entity = quarterlyEntity(LocalDate.of(2026, 6, 1));
@@ -245,6 +284,7 @@ class ContractBillingHandlerTest {
 	private static Contract contract(IntervalType interval, InvoicedIn invoicedIn, LocalDate endDate) {
 		var contract = new Contract();
 		var invoicing = new Invoicing();
+		invoicing.setBillingEnabled(true);
 		invoicing.setInvoiceInterval(interval);
 		invoicing.setInvoicedIn(invoicedIn);
 		contract.setInvoicing(invoicing);

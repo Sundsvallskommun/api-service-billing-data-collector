@@ -162,9 +162,10 @@ class BillingSchedulerVariantsIT extends AbstractAppTest {
 	}
 
 	/**
-	 * LAND_LEASE_RESIDENTIAL with a current-period end date of 30 June uses
-	 * the June yearly slot (instead of December). YEARLY ADVANCE on a June
-	 * slot covers July of the same year through June of the following year.
+	 * {@code invoicing.yearlyBillingMonth == 6} uses the June yearly slot
+	 * (instead of December), regardless of {@code leaseType} or
+	 * {@code currentPeriod}. YEARLY ADVANCE on a June slot covers July of
+	 * the same year through June of the following year.
 	 */
 	@Test
 	@Sql("/db/billing-scheduler/test8_advanceYearlyJuneLandLeaseResidential.sql")
@@ -314,6 +315,27 @@ class BillingSchedulerVariantsIT extends AbstractAppTest {
 				assertThat(entity.getNextScheduledBilling()).isEqualTo(LocalDate.of(2020, 2, 1));
 				assertThat(entity.getLastBilled()).isNull();
 			});
+		assertHistoryUnchanged();
+		verifyStubs();
+	}
+
+	/**
+	 * billingEnabled = false overrides every other rule, even though the
+	 * contract otherwise looks fully billable (ACTIVE, complete invoicing).
+	 * Handler returns Skipped → scheduler deletes the row, BPP must NOT be
+	 * called.
+	 */
+	@Test
+	@Sql("/db/billing-scheduler/test15_billingDisabled.sql")
+	void test15_billingDisabled_shouldSkipWithoutSendingAndDeleteRow() {
+		setupCall();
+
+		billingScheduler.createBillingRecords();
+
+		assertThat(scheduledBillingRepository.findByMunicipalityIdAndExternalIdAndSource(
+			MUNICIPALITY_ID, "2026-00024", BillingSource.CONTRACT))
+			.as("row deleted because billing is disabled on the contract")
+			.isEmpty();
 		assertHistoryUnchanged();
 		verifyStubs();
 	}

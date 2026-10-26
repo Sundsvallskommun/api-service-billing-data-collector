@@ -44,6 +44,7 @@ import static se.sundsvall.billingdatacollector.service.source.contract.util.Con
 import static se.sundsvall.billingdatacollector.service.source.contract.util.ContractUtil.getExtraParameter;
 import static se.sundsvall.billingdatacollector.service.source.contract.util.ContractUtil.getKPIBaseYear;
 import static se.sundsvall.billingdatacollector.service.source.contract.util.ContractUtil.isIndexed;
+import static se.sundsvall.billingdatacollector.service.source.contract.util.ContractUtil.isJuneYearlyBilling;
 
 @Component
 public class ContractMapper {
@@ -277,19 +278,15 @@ public class ContractMapper {
 
 	/**
 	 * For YEARLY billing the period type (July–June vs January–December) must be
-	 * determined by {@code currentPeriod.endDate}, not by the scheduled billing
-	 * date. This guards against the case where {@code scheduledDate} is set to an
-	 * unexpected month while the contract's period boundary is still 30 June.
+	 * determined by {@code invoicing.yearlyBillingMonth}, not by the scheduled
+	 * billing date. This guards against the case where {@code scheduledDate} is
+	 * set to an unexpected month while the contract's yearly billing month is 6.
 	 */
 	private static LocalDate effectiveDateForDescription(Contract contract, LocalDate scheduledDate, IntervalType interval) {
 		if (interval != IntervalType.YEARLY) {
 			return scheduledDate;
 		}
-		var periodEndDate = contract.getCurrentPeriod() != null ? contract.getCurrentPeriod().getEndDate() : null;
-		if (periodEndDate != null && periodEndDate.getMonth().equals(Month.JUNE) && periodEndDate.getDayOfMonth() == 30) {
-			return scheduledDate.withMonth(Month.JUNE.getValue());
-		}
-		return scheduledDate.withMonth(Month.DECEMBER.getValue());
+		return scheduledDate.withMonth(isJuneYearlyBilling(contract) ? Month.JUNE.getValue() : Month.DECEMBER.getValue());
 	}
 
 	private static String describePeriod(BillingPeriod period) {

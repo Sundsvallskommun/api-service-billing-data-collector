@@ -11,7 +11,9 @@
 		"endDate": "2020-06-30"
 	},
 	"invoicing": {
+		"billingEnabled": true,
 		"invoiceInterval": "YEARLY",
+		"yearlyBillingMonth": 6,
 		"invoicedIn": "ADVANCE"
 	},
 	"fees": {

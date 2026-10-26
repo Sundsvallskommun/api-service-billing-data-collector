@@ -4,12 +4,10 @@ import generated.se.sundsvall.contract.Contract;
 import generated.se.sundsvall.contract.IntervalType;
 import generated.se.sundsvall.contract.InvoicedIn;
 import generated.se.sundsvall.contract.Invoicing;
-import generated.se.sundsvall.contract.Period;
 import generated.se.sundsvall.contract.Status;
 import java.time.Clock;
 import java.time.Instant;
 import java.time.LocalDate;
-import java.time.Month;
 import java.time.ZoneOffset;
 import java.util.Optional;
 import java.util.Set;
@@ -283,30 +281,95 @@ class ContractEventServiceTest {
 			.deleteByExternalId(MUNICIPALITY_ID, CONTRACT_ID, BillingSource.CONTRACT);
 	}
 
-	// ========== calculateBillingMonths ==========
+	// ========== calculateBillingMonths — yearlyBillingMonth picks the slot ==========
 
-	@Test
-	void handleEvent_yearly_endOfJunePeriod_usesJuneSlot() {
+	@ParameterizedTest(name = "{0}")
+	@MethodSource("yearlyBillingMonthCases")
+	void handleEvent_yearly_yearlyBillingMonth_picksSlot(String name, Integer yearlyBillingMonth, Set<Integer> expectedMonths) {
 		var contract = buildContract(Status.ACTIVE, IntervalType.YEARLY, InvoicedIn.ADVANCE,
-			LocalDate.of(2026, 1, 1), null, LocalDate.of(2026, 6, 30));
+			LocalDate.of(2026, 1, 1), null, yearlyBillingMonth);
 		when(mockContractIntegration.getContract(MUNICIPALITY_ID, CONTRACT_ID)).thenReturn(Optional.of(contract));
 
 		service.handleEvent(eventRequest(EventType.CREATED));
 
 		verify(mockScheduledBillingService).upsert(eq(MUNICIPALITY_ID), eq(CONTRACT_ID), eq(BillingSource.CONTRACT),
-			eq(Set.of(6)), eq(Set.of(1)), eq(se.sundsvall.billingdatacollector.api.model.InvoicedIn.ADVANCE), any());
+			eq(expectedMonths), eq(Set.of(1)), eq(se.sundsvall.billingdatacollector.api.model.InvoicedIn.ADVANCE), any());
+	}
+
+	static Stream<Arguments> yearlyBillingMonthCases() {
+		return Stream.of(
+			Arguments.of("yearlyBillingMonth=6 uses the June slot", 6, Set.of(6)),
+			Arguments.of("yearlyBillingMonth=12 uses the December slot", 12, Set.of(12)),
+			Arguments.of("yearlyBillingMonth=null defaults to the December slot", null, Set.of(12)),
+			Arguments.of("yearlyBillingMonth=3 (unexpected) defaults to the December slot", 3, Set.of(12)));
+	}
+
+	// ========== billingEnabled overrides every other rule ==========
+
+	@Test
+	void handleEvent_created_whenBillingDisabled_shouldDoNothing() {
+		var contract = buildContract(Status.ACTIVE, Boolean.FALSE, IntervalType.YEARLY, InvoicedIn.ADVANCE,
+			LocalDate.of(2026, 5, 13), null, 12);
+		when(mockContractIntegration.getContract(MUNICIPALITY_ID, CONTRACT_ID)).thenReturn(Optional.of(contract));
+
+		service.handleEvent(eventRequest(EventType.CREATED));
+
+		verifyNoInteractions(mockScheduledBillingService);
 	}
 
 	@Test
-	void handleEvent_yearly_nonJunePeriod_usesDecemberSlot() {
-		var contract = buildContract(Status.ACTIVE, IntervalType.YEARLY, InvoicedIn.ADVANCE,
-			LocalDate.of(2026, Month.JANUARY, 1), null, LocalDate.of(2026, Month.DECEMBER, 31));
+	void handleEvent_updated_whenBillingDisabled_shouldDelete() {
+		var contract = buildContract(Status.ACTIVE, Boolean.FALSE, IntervalType.YEARLY, InvoicedIn.ADVANCE,
+			LocalDate.of(2026, 5, 13), null, 12);
+		when(mockContractIntegration.getContract(MUNICIPALITY_ID, CONTRACT_ID)).thenReturn(Optional.of(contract));
+
+		service.handleEvent(eventRequest(EventType.UPDATED));
+
+		verify(mockScheduledBillingService).deleteByExternalId(MUNICIPALITY_ID, CONTRACT_ID, BillingSource.CONTRACT);
+		verify(mockScheduledBillingService, never()).upsert(any(), any(), any(), any(), any(), any(), any());
+	}
+
+	@Test
+	void handleEvent_created_whenBillingEnabledMissing_shouldStillUpsert() {
+		// Regression: a null billingEnabled (e.g. source data not yet backfilled)
+		// must NOT be treated as disabled — it defaults to enabled.
+		var contract = buildContract(Status.ACTIVE, null, IntervalType.YEARLY, InvoicedIn.ADVANCE,
+			LocalDate.of(2026, 5, 13), null, 12);
 		when(mockContractIntegration.getContract(MUNICIPALITY_ID, CONTRACT_ID)).thenReturn(Optional.of(contract));
 
 		service.handleEvent(eventRequest(EventType.CREATED));
 
 		verify(mockScheduledBillingService).upsert(eq(MUNICIPALITY_ID), eq(CONTRACT_ID), eq(BillingSource.CONTRACT),
 			eq(Set.of(12)), eq(Set.of(1)), eq(se.sundsvall.billingdatacollector.api.model.InvoicedIn.ADVANCE), any());
+	}
+
+	@Test
+	void handleEvent_updated_whenBillingEnabledMissing_shouldNotDelete() {
+		// Regression: previously, a missing billingEnabled was treated as "not
+		// billable" and the existing schedule got deleted with nothing to
+		// recreate it until a new CREATED/UPDATED event arrived.
+		var contract = buildContract(Status.ACTIVE, null, IntervalType.YEARLY, InvoicedIn.ADVANCE,
+			LocalDate.of(2026, 5, 13), null, 12);
+		when(mockContractIntegration.getContract(MUNICIPALITY_ID, CONTRACT_ID)).thenReturn(Optional.of(contract));
+
+		service.handleEvent(eventRequest(EventType.UPDATED));
+
+		verify(mockScheduledBillingService, never()).deleteByExternalId(any(), any(), any());
+		verify(mockScheduledBillingService).upsert(any(), any(), any(), any(), any(), any(), any());
+	}
+
+	@Test
+	void handleEvent_terminated_whenBillingDisabled_shouldDeleteWithoutCheckingEndDate() {
+		// billingEnabled = false overrides every other rule, including an
+		// end date that would otherwise still require a final billing.
+		var contract = buildContract(Status.TERMINATED, Boolean.FALSE, IntervalType.YEARLY, InvoicedIn.ADVANCE,
+			LocalDate.of(2026, 1, 1), LocalDate.of(2030, 12, 31), 12);
+		when(mockContractIntegration.getContract(MUNICIPALITY_ID, CONTRACT_ID)).thenReturn(Optional.of(contract));
+
+		service.handleEvent(eventRequest(EventType.TERMINATED));
+
+		verify(mockScheduledBillingService).deleteByExternalId(MUNICIPALITY_ID, CONTRACT_ID, BillingSource.CONTRACT);
+		verify(mockScheduledBillingService, never()).getNextScheduledBilling(any(), any(), any());
 	}
 
 	// ========== helpers ==========
@@ -320,7 +383,12 @@ class ContractEventServiceTest {
 	}
 
 	private Contract buildContract(Status status, IntervalType intervalType, InvoicedIn invoicedIn,
-		LocalDate startDate, LocalDate endDate, LocalDate currentPeriodEndDate) {
+		LocalDate startDate, LocalDate endDate, Integer yearlyBillingMonth) {
+		return buildContract(status, Boolean.TRUE, intervalType, invoicedIn, startDate, endDate, yearlyBillingMonth);
+	}
+
+	private Contract buildContract(Status status, Boolean billingEnabled, IntervalType intervalType, InvoicedIn invoicedIn,
+		LocalDate startDate, LocalDate endDate, Integer yearlyBillingMonth) {
 		var contract = new Contract();
 		contract.setStatus(status);
 		contract.setStartDate(startDate);
@@ -328,15 +396,11 @@ class ContractEventServiceTest {
 
 		if (intervalType != null || invoicedIn != null) {
 			var invoicing = new Invoicing();
+			invoicing.setBillingEnabled(billingEnabled);
 			invoicing.setInvoiceInterval(intervalType);
 			invoicing.setInvoicedIn(invoicedIn);
+			invoicing.setYearlyBillingMonth(yearlyBillingMonth);
 			contract.setInvoicing(invoicing);
-		}
-
-		if (currentPeriodEndDate != null) {
-			var period = new Period();
-			period.setEndDate(currentPeriodEndDate);
-			contract.setCurrentPeriod(period);
 		}
 
 		return contract;

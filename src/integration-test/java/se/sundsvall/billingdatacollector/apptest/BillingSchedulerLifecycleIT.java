@@ -279,6 +279,7 @@ class BillingSchedulerLifecycleIT extends AbstractAppTest {
 				"leaseType": "LAND_LEASE_MISC",
 				"startDate": "2017-01-01",
 				"invoicing": {
+					"billingEnabled": true,
 					"invoiceInterval": "%s",
 					"invoicedIn": "%s"
 				},
