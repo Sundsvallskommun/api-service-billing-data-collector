@@ -20,6 +20,7 @@ import se.sundsvall.billingdatacollector.service.source.BillingResult;
 import se.sundsvall.billingdatacollector.service.source.BillingResult.Failed;
 import se.sundsvall.billingdatacollector.service.source.BillingResult.Sent;
 import se.sundsvall.billingdatacollector.service.source.BillingResult.Skipped;
+import se.sundsvall.billingdatacollector.service.source.contract.util.ContractUtil;
 import se.sundsvall.billingdatacollector.service.util.BillingPeriodCalculator;
 import se.sundsvall.billingdatacollector.service.util.ScheduledBillingUtil;
 
@@ -85,13 +86,12 @@ public class ContractBillingHandler extends AbstractHandler {
 		}
 		var contract = contractOpt.get();
 
-		if (contract.getInvoicing() == null
-			|| contract.getInvoicing().getInvoiceInterval() == null
-			|| contract.getInvoicing().getInvoicedIn() == null
-			|| !Boolean.TRUE.equals(contract.getInvoicing().getBillingEnabled())) {
+		if (!ContractUtil.isBillable(contract)
+			|| contract.getInvoicing().getInvoicedIn() == null) {
 			// Contract no longer carries the invoicing fields needed to
 			// produce a billing, or billing has been disabled — clean up.
-			// billingEnabled = false overrides every other rule.
+			// billingEnabled = false overrides every other rule; see
+			// ContractUtil.isBillable for the shared definition.
 			logWarning("Contract {} no longer has complete invoicing data or billing is disabled — dropping schedule", externalId);
 			return new Skipped("contract no longer billable");
 		}

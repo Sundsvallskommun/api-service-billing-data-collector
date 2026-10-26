@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 import se.sundsvall.billingdatacollector.api.model.BillingSource;
 import se.sundsvall.billingdatacollector.api.model.EventRequest;
 import se.sundsvall.billingdatacollector.integration.contract.ContractIntegration;
+import se.sundsvall.billingdatacollector.service.source.contract.util.ContractUtil;
 import se.sundsvall.billingdatacollector.service.util.BillingPeriodCalculator;
 import se.sundsvall.billingdatacollector.service.util.ScheduledBillingUtil;
 
@@ -114,7 +115,11 @@ public class ContractEventService implements BillingEventHandler {
 		contractIntegration.getContract(municipalityId, contractId)
 			.ifPresentOrElse(
 				contract -> {
-					if (contract.getEndDate() != null) {
+					if (ContractUtil.isBillingDisabled(contract)) {
+						// billingEnabled = false overrides every other rule — drop the
+						// schedule now instead of waiting for the next scheduler tick.
+						scheduledBillingService.deleteByExternalId(municipalityId, contractId, SOURCE);
+					} else if (contract.getEndDate() != null) {
 						applyEndDateLogic(municipalityId, contractId, contract);
 					} else {
 						// Terminated without an end date — no further billings
@@ -206,13 +211,11 @@ public class ContractEventService implements BillingEventHandler {
 	/**
 	 * {@code invoicing.billingEnabled = false} overrides every other billing
 	 * rule — such a contract never has a scheduled billing, regardless of
-	 * status or invoicing interval.
+	 * status or invoicing interval. See {@link ContractUtil#isBillable} for
+	 * the shared definition also used when actually sending a billing.
 	 */
 	private boolean isBillable(Contract contract) {
-		return Status.ACTIVE.equals(contract.getStatus())
-			&& contract.getInvoicing() != null
-			&& Boolean.TRUE.equals(contract.getInvoicing().getBillingEnabled())
-			&& contract.getInvoicing().getInvoiceInterval() != null;
+		return Status.ACTIVE.equals(contract.getStatus()) && ContractUtil.isBillable(contract);
 	}
 
 	private Set<Integer> calculateBillingMonths(Contract contract) {
@@ -220,7 +223,18 @@ public class ContractEventService implements BillingEventHandler {
 			case MONTHLY -> MONTHLY;
 			case QUARTERLY -> QUARTERLY;
 			case HALF_YEARLY -> HALF_YEARLY;
-			case YEARLY -> Integer.valueOf(6).equals(contract.getInvoicing().getYearlyBillingMonth()) ? YEARLY_JUNE : YEARLY;
+			case YEARLY -> {
+				warnIfYearlyBillingMonthUnexpected(contract);
+				yield ContractUtil.isJuneYearlyBilling(contract) ? YEARLY_JUNE : YEARLY;
+			}
 		};
+	}
+
+	private void warnIfYearlyBillingMonthUnexpected(Contract contract) {
+		var yearlyBillingMonth = contract.getInvoicing().getYearlyBillingMonth();
+		if (yearlyBillingMonth != null && yearlyBillingMonth != 6 && yearlyBillingMonth != 12) {
+			LOG.warn("Contract {} has YEARLY invoicing with an unexpected yearlyBillingMonth {} (expected 6 or 12) — defaulting to the December billing slot",
+				sanitizeForLogging(contract.getContractId()), yearlyBillingMonth);
+		}
 	}
 }

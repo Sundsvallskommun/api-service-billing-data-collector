@@ -113,17 +113,41 @@ sequenceDiagram
 The contract is re-fetched on every scheduler tick so that any change made
 in the Contract service since the last event takes immediate effect.
 
+### billingEnabled overrides every other rule
+
+`invoicing.billingEnabled = false` means the contract never has a scheduled
+billing, regardless of `status` or `invoiceInterval`:
+
+- **CREATED/UPDATED**: no schedule is created (or the existing one is
+  deleted) — see `ContractEventService.isBillable`.
+- **TERMINATED**: the schedule is dropped immediately instead of waiting
+  for the next scheduler tick.
+- **Scheduler tick**: if billing was disabled after the schedule was
+  created, `ContractBillingHandler` skips sending the invoice and the
+  scheduler deletes the row.
+
+A missing (`null`) `billingEnabled` is **not** treated as disabled — it is
+treated as enabled, so that source data that hasn't been backfilled with
+the field yet keeps its existing behaviour. See
+`ContractUtil.isBillable`/`isBillingDisabled` for the shared definition.
+
 ### Slots, periods and the ADVANCE/ARREARS shift
 
 A *slot* is a calendar moment derived from the contract's invoicing
 interval:
 
-|  Interval   |                           Slots (always day 1)                            |
-|-------------|---------------------------------------------------------------------------|
-| MONTHLY     | 1 of every month                                                          |
-| QUARTERLY   | 1 Mar, 1 Jun, 1 Sep, 1 Dec                                                |
-| HALF_YEARLY | 1 Jun, 1 Dec                                                              |
-| YEARLY      | 1 Dec (1 Jun for LAND_LEASE_RESIDENTIAL whose current period ends 30 Jun) |
+|  Interval   |                   Slots (always day 1)                   |
+|-------------|----------------------------------------------------------|
+| MONTHLY     | 1 of every month                                         |
+| QUARTERLY   | 1 Mar, 1 Jun, 1 Sep, 1 Dec                               |
+| HALF_YEARLY | 1 Jun, 1 Dec                                             |
+| YEARLY      | 1 Dec, or 1 Jun when `invoicing.yearlyBillingMonth == 6` |
+
+For YEARLY, `invoicing.yearlyBillingMonth` (an integer, expected to be `6`
+or `12`) picks the slot/period — not the contract's `currentPeriod` or
+`leaseType`. Any other value, including a missing one, defaults to the
+December slot; `ContractEventService` logs a `WARN` if the value is
+present but neither `6` nor `12`.
 
 A *period* is the span of time the invoice on a slot covers. ADVANCE bills
 for the *next* period; ARREARS bills for the period *around* the slot:

@@ -206,6 +206,27 @@ class ContractBillingHandlerTest {
 		verify(contractMapperMock, never()).createBillingRecord(any(), any(), any());
 	}
 
+	/**
+	 * Regression: a missing billingEnabled (e.g. source data not yet
+	 * backfilled with the field) must NOT be treated as disabled — only an
+	 * explicit {@code false} drops the schedule.
+	 */
+	@Test
+	void sendBillingRecords_whenBillingEnabledMissing_stillSends() {
+		var entity = quarterlyEntity(LocalDate.of(2026, 6, 1));
+		var contract = contract(IntervalType.QUARTERLY, InvoicedIn.ADVANCE, null);
+		contract.getInvoicing().setBillingEnabled(null);
+
+		stubSuccessfulPipeline(entity, contract);
+
+		var result = handler.sendBillingRecords(entity);
+
+		assertThat(result).isInstanceOf(BillingResult.Sent.class);
+		verify(billingPreprocessorClientMock).createBillingRecord(MUNICIPALITY_ID, billingRecordMock);
+		verify(historyRepositoryMock).saveAndFlush(any());
+		verify(relationClientMock).createRelation(eq(MUNICIPALITY_ID), any());
+	}
+
 	@Test
 	void sendBillingRecords_whenContractHasNoEndDate_alwaysAdvances() {
 		var entity = quarterlyEntity(LocalDate.of(2026, 6, 1));

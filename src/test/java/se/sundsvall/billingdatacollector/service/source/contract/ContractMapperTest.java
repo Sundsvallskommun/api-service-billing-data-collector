@@ -414,6 +414,8 @@ class ContractMapperTest {
 			// YEARLY — scheduledDate in wrong month but yearlyBillingMonth governs description
 			Arguments.of(LocalDate.of(2026, 7, 1), IntervalType.YEARLY, ADVANCE, 6, "Avser juli 2026-juni 2027"),
 			Arguments.of(LocalDate.of(2026, 7, 1), IntervalType.YEARLY, ARREARS, 6, "Avser juli 2025-juni 2026"),
+			// YEARLY — unexpected yearlyBillingMonth (not 6/12) defaults to the December slot
+			Arguments.of(LocalDate.of(2026, 3, 1), IntervalType.YEARLY, ADVANCE, 3, "Avser januari-december 2027"),
 			// QUARTERLY
 			Arguments.of(LocalDate.of(2026, Month.JANUARY, 1), IntervalType.QUARTERLY, ADVANCE, null, "Avser april-juni 2026"),
 			Arguments.of(LocalDate.of(2026, Month.APRIL, 1), IntervalType.QUARTERLY, ADVANCE, null, "Avser juli-september 2026"),

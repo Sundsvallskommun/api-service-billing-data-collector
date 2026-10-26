@@ -44,6 +44,7 @@ import static se.sundsvall.billingdatacollector.service.source.contract.util.Con
 import static se.sundsvall.billingdatacollector.service.source.contract.util.ContractUtil.getExtraParameter;
 import static se.sundsvall.billingdatacollector.service.source.contract.util.ContractUtil.getKPIBaseYear;
 import static se.sundsvall.billingdatacollector.service.source.contract.util.ContractUtil.isIndexed;
+import static se.sundsvall.billingdatacollector.service.source.contract.util.ContractUtil.isJuneYearlyBilling;
 
 @Component
 public class ContractMapper {
@@ -285,11 +286,9 @@ public class ContractMapper {
 		if (interval != IntervalType.YEARLY) {
 			return scheduledDate;
 		}
-		var yearlyBillingMonth = contract.getInvoicing() != null ? contract.getInvoicing().getYearlyBillingMonth() : null;
-		if (Integer.valueOf(Month.JUNE.getValue()).equals(yearlyBillingMonth)) {
-			return scheduledDate.withMonth(Month.JUNE.getValue());
-		}
-		return scheduledDate.withMonth(Month.DECEMBER.getValue());
+		return isJuneYearlyBilling(contract)
+			? scheduledDate.withMonth(Month.JUNE.getValue())
+			: scheduledDate.withMonth(Month.DECEMBER.getValue());
 	}
 
 	private static String describePeriod(BillingPeriod period) {
