@@ -286,9 +286,7 @@ public class ContractMapper {
 		if (interval != IntervalType.YEARLY) {
 			return scheduledDate;
 		}
-		return isJuneYearlyBilling(contract)
-			? scheduledDate.withMonth(Month.JUNE.getValue())
-			: scheduledDate.withMonth(Month.DECEMBER.getValue());
+		return scheduledDate.withMonth(isJuneYearlyBilling(contract) ? Month.JUNE.getValue() : Month.DECEMBER.getValue());
 	}
 
 	private static String describePeriod(BillingPeriod period) {

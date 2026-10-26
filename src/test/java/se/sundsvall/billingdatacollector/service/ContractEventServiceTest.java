@@ -281,30 +281,27 @@ class ContractEventServiceTest {
 			.deleteByExternalId(MUNICIPALITY_ID, CONTRACT_ID, BillingSource.CONTRACT);
 	}
 
-	// ========== calculateBillingMonths ==========
+	// ========== calculateBillingMonths — yearlyBillingMonth picks the slot ==========
 
-	@Test
-	void handleEvent_yearly_yearlyBillingMonthJune_usesJuneSlot() {
+	@ParameterizedTest(name = "{0}")
+	@MethodSource("yearlyBillingMonthCases")
+	void handleEvent_yearly_yearlyBillingMonth_picksSlot(String name, Integer yearlyBillingMonth, Set<Integer> expectedMonths) {
 		var contract = buildContract(Status.ACTIVE, IntervalType.YEARLY, InvoicedIn.ADVANCE,
-			LocalDate.of(2026, 1, 1), null, 6);
+			LocalDate.of(2026, 1, 1), null, yearlyBillingMonth);
 		when(mockContractIntegration.getContract(MUNICIPALITY_ID, CONTRACT_ID)).thenReturn(Optional.of(contract));
 
 		service.handleEvent(eventRequest(EventType.CREATED));
 
 		verify(mockScheduledBillingService).upsert(eq(MUNICIPALITY_ID), eq(CONTRACT_ID), eq(BillingSource.CONTRACT),
-			eq(Set.of(6)), eq(Set.of(1)), eq(se.sundsvall.billingdatacollector.api.model.InvoicedIn.ADVANCE), any());
+			eq(expectedMonths), eq(Set.of(1)), eq(se.sundsvall.billingdatacollector.api.model.InvoicedIn.ADVANCE), any());
 	}
 
-	@Test
-	void handleEvent_yearly_yearlyBillingMonthDecember_usesDecemberSlot() {
-		var contract = buildContract(Status.ACTIVE, IntervalType.YEARLY, InvoicedIn.ADVANCE,
-			LocalDate.of(2026, 1, 1), null, 12);
-		when(mockContractIntegration.getContract(MUNICIPALITY_ID, CONTRACT_ID)).thenReturn(Optional.of(contract));
-
-		service.handleEvent(eventRequest(EventType.CREATED));
-
-		verify(mockScheduledBillingService).upsert(eq(MUNICIPALITY_ID), eq(CONTRACT_ID), eq(BillingSource.CONTRACT),
-			eq(Set.of(12)), eq(Set.of(1)), eq(se.sundsvall.billingdatacollector.api.model.InvoicedIn.ADVANCE), any());
+	static Stream<Arguments> yearlyBillingMonthCases() {
+		return Stream.of(
+			Arguments.of("yearlyBillingMonth=6 uses the June slot", 6, Set.of(6)),
+			Arguments.of("yearlyBillingMonth=12 uses the December slot", 12, Set.of(12)),
+			Arguments.of("yearlyBillingMonth=null defaults to the December slot", null, Set.of(12)),
+			Arguments.of("yearlyBillingMonth=3 (unexpected) defaults to the December slot", 3, Set.of(12)));
 	}
 
 	// ========== billingEnabled overrides every other rule ==========
@@ -373,32 +370,6 @@ class ContractEventServiceTest {
 
 		verify(mockScheduledBillingService).deleteByExternalId(MUNICIPALITY_ID, CONTRACT_ID, BillingSource.CONTRACT);
 		verify(mockScheduledBillingService, never()).getNextScheduledBilling(any(), any(), any());
-	}
-
-	// ========== calculateBillingMonths — yearlyBillingMonth edge cases ==========
-
-	@Test
-	void handleEvent_yearly_yearlyBillingMonthMissing_defaultsToDecemberSlot() {
-		var contract = buildContract(Status.ACTIVE, IntervalType.YEARLY, InvoicedIn.ADVANCE,
-			LocalDate.of(2026, 1, 1), null, null);
-		when(mockContractIntegration.getContract(MUNICIPALITY_ID, CONTRACT_ID)).thenReturn(Optional.of(contract));
-
-		service.handleEvent(eventRequest(EventType.CREATED));
-
-		verify(mockScheduledBillingService).upsert(eq(MUNICIPALITY_ID), eq(CONTRACT_ID), eq(BillingSource.CONTRACT),
-			eq(Set.of(12)), eq(Set.of(1)), eq(se.sundsvall.billingdatacollector.api.model.InvoicedIn.ADVANCE), any());
-	}
-
-	@Test
-	void handleEvent_yearly_yearlyBillingMonthUnexpectedValue_defaultsToDecemberSlot() {
-		var contract = buildContract(Status.ACTIVE, IntervalType.YEARLY, InvoicedIn.ADVANCE,
-			LocalDate.of(2026, 1, 1), null, 3);
-		when(mockContractIntegration.getContract(MUNICIPALITY_ID, CONTRACT_ID)).thenReturn(Optional.of(contract));
-
-		service.handleEvent(eventRequest(EventType.CREATED));
-
-		verify(mockScheduledBillingService).upsert(eq(MUNICIPALITY_ID), eq(CONTRACT_ID), eq(BillingSource.CONTRACT),
-			eq(Set.of(12)), eq(Set.of(1)), eq(se.sundsvall.billingdatacollector.api.model.InvoicedIn.ADVANCE), any());
 	}
 
 	// ========== helpers ==========

@@ -5,7 +5,7 @@ info:
   license:
     name: MIT License
     url: https://opensource.org/licenses/MIT
-  version: "11.0"
+  version: "11.1"
 servers:
 - url: http://localhost:53417
   description: Generated server url
@@ -431,6 +431,9 @@ paths:
               required:
               - attachment
               - file
+            encoding:
+              attachment:
+                contentType: application/json
         required: true
       responses:
         "201":
@@ -1119,21 +1122,25 @@ components:
       type: object
       description: Invoicing details
       properties:
-        billingEnabled:
-          type: boolean
-          description: Whether the contract should be billed
         invoiceInterval:
           $ref: "#/components/schemas/IntervalType"
           description: How often the lease is invoiced
           examples:
           - QUARTERLY
-        yearlyBillingMonth:
-          type: integer
-          description: The month (6 or 12) when yearly billing should occur. Only applicable when invoiceInterval is YEARLY
-          examples:
-          - 12
         invoicedIn:
           $ref: "#/components/schemas/InvoicedIn"
+        billingEnabled:
+          type: boolean
+          description: Whether the contract is to be billed or not
+          examples:
+          - true
+        yearlyBillingMonth:
+          type: integer
+          format: int32
+          description: "The month in which yearly billing takes place, June (6)\
+            \ or December (12). Mandatory when invoiceInterval is YEARLY"
+          examples:
+          - 12
       required:
       - billingEnabled
       - invoiceInterval
@@ -1525,27 +1532,8 @@ components:
         instance:
           type: string
           format: uri
-        causeAsProblem:
-          $ref: "#/components/schemas/ThrowableProblem"
         detail:
           type: string
-    ThrowableProblem:
-      type: object
-      properties:
-        type:
-          type: string
-          format: uri
-        title:
-          type: string
-        status:
-          type: integer
-          format: int32
-        detail:
-          type: string
-        instance:
-          type: string
-          format: uri
-        causeAsProblem: {}
     Violation:
       type: object
       properties:
