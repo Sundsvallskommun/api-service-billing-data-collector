@@ -172,7 +172,8 @@ public class ScheduledBillingService {
 	 *
 	 * <p>
 	 * The supplier is lazy so callers can compute an expensive initial
-	 * date (e.g. ARREARS skip-one-slot logic) without paying for it on every
+	 * date (e.g. the first slot whose billed period starts on or after the
+	 * contract start) without paying for it on every
 	 * UPDATED event.
 	 *
 	 * @param invoicedIn                  contract's current direction
