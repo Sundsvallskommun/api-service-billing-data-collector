@@ -1,10 +1,12 @@
 package se.sundsvall.billingdatacollector.service;
 
 import generated.se.sundsvall.contract.Contract;
+import generated.se.sundsvall.contract.IntervalType;
 import generated.se.sundsvall.contract.InvoicedIn;
 import generated.se.sundsvall.contract.Status;
 import java.time.Clock;
 import java.time.LocalDate;
+import java.util.Optional;
 import java.util.Set;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -168,44 +170,64 @@ public class ContractEventService implements BillingEventHandler {
 	}
 
 	/**
-	 * Returns the lower bound to feed into
-	 * {@link ScheduledBillingUtil#calculateNextScheduledBilling} when computing
-	 * the very first {@code nextScheduledBilling} for a contract.
+	 * Returns the very first {@code nextScheduledBilling} for a contract: the
+	 * first billing slot on or after today whose billed period (as defined by
+	 * {@link BillingPeriodCalculator}) starts on or after the contract's start
+	 * date. The same rule applies to both directions; only the period a slot
+	 * bills differs.
 	 *
 	 * <ul>
-	 * <li><b>ADVANCE</b>: the first valid slot is the next billing slot on
-	 * or after the contract's start date — the invoice covers the
-	 * period that follows the slot. If the start date lies in the past
-	 * we clamp to today so we never schedule a billing for a slot that
-	 * has already passed; the gap is handled by a manual invoice.</li>
-	 * <li><b>ARREARS</b>: billing follows the period, so the first valid
-	 * slot is the slot <em>after</em> the first slot found from
-	 * {@code startDate}. We do <em>not</em> clamp to today here — the
-	 * skip-one-slot rule already protects against billing for a period
-	 * that started before the contract, and clamping would over-skip
-	 * when {@code startDate} is in the past.</li>
-	 * <li><b>Null invoicedIn</b>: defaults to ADVANCE behaviour.</li>
+	 * <li><b>ADVANCE</b>: a slot bills the period that follows it, so a
+	 * contract starting 2027-01-01 with yearly billing gets 2026-12-01.</li>
+	 * <li><b>ARREARS</b>: a slot bills the period it closes, so the same
+	 * contract gets 2027-12-01.</li>
+	 * <li><b>Partial periods</b>: a period that starts before the contract is
+	 * not billed automatically (a contract starting 2027-03-15 with yearly
+	 * billing gets 2027-12-01 for ADVANCE and 2028-12-01 for ARREARS).</li>
+	 * <li><b>Passed slots</b>: never scheduled — a period whose slot has
+	 * already passed is handled by a manual invoice.</li>
+	 * <li><b>Null invoicedIn</b>: defaults to ARREARS behaviour.</li>
 	 * </ul>
 	 */
 	private LocalDate calculateStartFrom(Contract contract, Set<Integer> billingMonths) {
 		var today = LocalDate.now(clock);
 		var contractStart = contract.getStartDate() != null ? contract.getStartDate() : today;
-		var invoicedIn = contract.getInvoicing().getInvoicedIn();
+		var interval = contract.getInvoicing().getInvoiceInterval();
+		// Null invoicedIn defaults to ARREARS — made explicit here rather than
+		// relying on BillingPeriodCalculator's implicit handling of null.
+		var invoicedIn = Optional.ofNullable(contract.getInvoicing().getInvoicedIn())
+			.orElse(InvoicedIn.ARREARS);
 
-		if (InvoicedIn.ARREARS.equals(invoicedIn)) {
-			// Skip the first slot whose period starts before the contract.
-			// ARREARS bills at the end of the covered period, so the first
-			// scheduled billing belongs to the second slot. No today-clamp
-			// here — see javadoc.
-			var firstAdvanceSlot = ScheduledBillingUtil.calculateNextScheduledBilling(
-				BILLING_DAYS_OF_MONTH, billingMonths, contractStart);
-			return ScheduledBillingUtil.calculateNextScheduledBilling(
-				BILLING_DAYS_OF_MONTH, billingMonths, firstAdvanceSlot.plusDays(1));
+		// Start from today so a slot that has already passed is never
+		// scheduled. The advance/arrears difference (which period a slot
+		// bills) lives in BillingPeriodCalculator.
+		var slot = firstSlotBillingFrom(today, contractStart, billingMonths, interval, invoicedIn);
+
+		// Without the today-clamp the first slot could lie up to one interval
+		// (at most a year) before the contract start. If that slot is earlier
+		// than the one scheduled, the periods in between have a passed slot
+		// and must be invoiced manually — make that visible.
+		var unclampedSlot = firstSlotBillingFrom(contractStart.minusYears(1), contractStart, billingMonths, interval, invoicedIn);
+		if (unclampedSlot.isBefore(slot)) {
+			LOG.warn("Contract {}: period {} - {} is not billed automatically since its billing slot has passed — issue a manual invoice",
+				sanitizeForLogging(contract.getContractId()),
+				BillingPeriodCalculator.computePeriod(unclampedSlot, interval, invoicedIn).startDate(),
+				BillingPeriodCalculator.computePeriod(slot, interval, invoicedIn).startDate().minusDays(1));
 		}
+		return slot;
+	}
 
-		// ADVANCE — clamp to today, then find the next valid billing slot.
-		var clampedStart = contractStart.isBefore(today) ? today : contractStart;
-		return ScheduledBillingUtil.calculateNextScheduledBilling(BILLING_DAYS_OF_MONTH, billingMonths, clampedStart);
+	/**
+	 * First billing slot on or after {@code searchFrom} whose billed period
+	 * starts on or after {@code contractStart}.
+	 */
+	private static LocalDate firstSlotBillingFrom(LocalDate searchFrom, LocalDate contractStart,
+		Set<Integer> billingMonths, IntervalType interval, InvoicedIn invoicedIn) {
+		var slot = ScheduledBillingUtil.calculateNextScheduledBilling(BILLING_DAYS_OF_MONTH, billingMonths, searchFrom);
+		while (BillingPeriodCalculator.computePeriod(slot, interval, invoicedIn).startDate().isBefore(contractStart)) {
+			slot = ScheduledBillingUtil.calculateNextScheduledBilling(BILLING_DAYS_OF_MONTH, billingMonths, slot.plusDays(1));
+		}
+		return slot;
 	}
 
 	/**

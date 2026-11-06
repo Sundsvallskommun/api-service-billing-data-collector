@@ -1,5 +1,9 @@
 package se.sundsvall.billingdatacollector.service;
 
+import ch.qos.logback.classic.Level;
+import ch.qos.logback.classic.Logger;
+import ch.qos.logback.classic.spi.ILoggingEvent;
+import ch.qos.logback.core.read.ListAppender;
 import generated.se.sundsvall.contract.Contract;
 import generated.se.sundsvall.contract.IntervalType;
 import generated.se.sundsvall.contract.InvoicedIn;
@@ -21,6 +25,7 @@ import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.slf4j.LoggerFactory;
 import se.sundsvall.billingdatacollector.api.model.BillingSource;
 import se.sundsvall.billingdatacollector.api.model.EventRequest;
 import se.sundsvall.billingdatacollector.api.model.EventType;
@@ -63,9 +68,9 @@ class ContractEventServiceTest {
 	@ParameterizedTest(name = "{0}")
 	@MethodSource("initialNextScheduledBillingCases")
 	void handleEvent_created_initialNextScheduledBilling(String name, IntervalType interval, InvoicedIn invoicedIn,
-		LocalDate startDate, Set<Integer> expectedMonths, LocalDate expectedNext) {
+		Integer yearlyBillingMonth, LocalDate startDate, Set<Integer> expectedMonths, LocalDate expectedNext) {
 
-		var contract = buildContract(Status.ACTIVE, interval, invoicedIn, startDate, null, null);
+		var contract = buildContract(Status.ACTIVE, interval, invoicedIn, startDate, null, yearlyBillingMonth);
 		when(mockContractIntegration.getContract(MUNICIPALITY_ID, CONTRACT_ID)).thenReturn(Optional.of(contract));
 
 		service.handleEvent(eventRequest(EventType.CREATED));
@@ -84,27 +89,179 @@ class ContractEventServiceTest {
 	static Stream<Arguments> initialNextScheduledBillingCases() {
 		return Stream.of(
 			// A1 — ADVANCE Yearly + future startDate 2026-05-13 → next December slot
-			Arguments.of("A1", IntervalType.YEARLY, InvoicedIn.ADVANCE,
+			Arguments.of("A1", IntervalType.YEARLY, InvoicedIn.ADVANCE, 12,
 				LocalDate.of(2026, 5, 13), Set.of(12), LocalDate.of(2026, 12, 1)),
 			// A2 — ADVANCE Quarterly + future startDate 2026-05-13 → next quarterly slot from startDate
-			Arguments.of("A2", IntervalType.QUARTERLY, InvoicedIn.ADVANCE,
+			Arguments.of("A2", IntervalType.QUARTERLY, InvoicedIn.ADVANCE, null,
 				LocalDate.of(2026, 5, 13), Set.of(3, 6, 9, 12), LocalDate.of(2026, 6, 1)),
 			// A3 — ADVANCE Quarterly + startDate in past → clamped to today, then next quarterly slot
-			Arguments.of("A3", IntervalType.QUARTERLY, InvoicedIn.ADVANCE,
+			Arguments.of("A3", IntervalType.QUARTERLY, InvoicedIn.ADVANCE, null,
 				LocalDate.of(2026, 1, 1), Set.of(3, 6, 9, 12), LocalDate.of(2026, 6, 1)),
 			// A4 — ADVANCE Yearly + startDate = today → must return 2026-12-01, NOT today
 			// Regression: before the fix, today's date was stored raw and triggered an immediate spurious billing.
-			Arguments.of("A4 regression startDate=today", IntervalType.YEARLY, InvoicedIn.ADVANCE,
+			Arguments.of("A4 regression startDate=today", IntervalType.YEARLY, InvoicedIn.ADVANCE, 12,
 				TODAY, Set.of(12), LocalDate.of(2026, 12, 1)),
-			// R1 — ARREARS Yearly + 2026-05-13 → skip the first slot from startDate
-			Arguments.of("R1", IntervalType.YEARLY, InvoicedIn.ARREARS,
+			// A5 — ADVANCE Yearly + startDate on period start 2027-01-01 → 2026-12-01 (bills Jan–Dec 2027), NOT 2027-12-01
+			Arguments.of("A5 ADVANCE Yearly startDate on period start", IntervalType.YEARLY, InvoicedIn.ADVANCE, 12,
+				LocalDate.of(2027, 1, 1), Set.of(12), LocalDate.of(2026, 12, 1)),
+			// A6 — ADVANCE Quarterly + startDate on quarter start 2026-07-01 → 2026-06-01 (bills Q3 2026)
+			Arguments.of("A6 ADVANCE Quarterly startDate on period start", IntervalType.QUARTERLY, InvoicedIn.ADVANCE, null,
+				LocalDate.of(2026, 7, 1), Set.of(3, 6, 9, 12), LocalDate.of(2026, 6, 1)),
+			// A7 — ADVANCE Monthly + startDate on month start 2026-06-01 → 2026-05-01 (bills June 2026)
+			Arguments.of("A7 ADVANCE Monthly startDate on period start", IntervalType.MONTHLY, InvoicedIn.ADVANCE, null,
+				LocalDate.of(2026, 6, 1), Set.of(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12), LocalDate.of(2026, 5, 1)),
+			// A8 — ADVANCE Yearly + startDate mid-period 2027-03-15 → partial 2027 is not billed, first slot 2027-12-01
+			Arguments.of("A8 ADVANCE Yearly startDate mid-period", IntervalType.YEARLY, InvoicedIn.ADVANCE, 12,
+				LocalDate.of(2027, 3, 15), Set.of(12), LocalDate.of(2027, 12, 1)),
+			// A9 — ADVANCE Monthly + startDate next month start 2026-05-01 → slot 2026-04-01 already passed, clamped to today →
+			// 2026-05-01
+			Arguments.of("A9 ADVANCE Monthly first slot passed", IntervalType.MONTHLY, InvoicedIn.ADVANCE, null,
+				LocalDate.of(2026, 5, 1), Set.of(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12), LocalDate.of(2026, 5, 1)),
+			// AJ1 — ADVANCE Yearly June + startDate on period start 2026-07-01 → 2026-06-01 (bills Jul 2026–Jun 2027)
+			Arguments.of("AJ1 ADVANCE Yearly June startDate on period start", IntervalType.YEARLY, InvoicedIn.ADVANCE, 6,
+				LocalDate.of(2026, 7, 1), Set.of(6), LocalDate.of(2026, 6, 1)),
+			// AJ2 — ADVANCE Yearly June + startDate 2027-01-01 mid-period → partial Jan–Jun 2027 is not billed, first slot
+			// 2027-06-01
+			Arguments.of("AJ2 ADVANCE Yearly June startDate mid-period", IntervalType.YEARLY, InvoicedIn.ADVANCE, 6,
+				LocalDate.of(2027, 1, 1), Set.of(6), LocalDate.of(2027, 6, 1)),
+			// AJ3 — ADVANCE Yearly June + startDate 2026-05-13 → partial May–Jun 2026 is not billed, first slot 2026-06-01
+			Arguments.of("AJ3 ADVANCE Yearly June startDate just before slot", IntervalType.YEARLY, InvoicedIn.ADVANCE, 6,
+				LocalDate.of(2026, 5, 13), Set.of(6), LocalDate.of(2026, 6, 1)),
+			// R1 — ARREARS Yearly + 2026-05-13 → partial 2026 is not billed, first slot 2027-12-01
+			Arguments.of("R1", IntervalType.YEARLY, InvoicedIn.ARREARS, 12,
 				LocalDate.of(2026, 5, 13), Set.of(12), LocalDate.of(2027, 12, 1)),
-			// R2 — ARREARS Quarterly + 2026-05-13 → skip-one-from-startDate
-			Arguments.of("R2", IntervalType.QUARTERLY, InvoicedIn.ARREARS,
+			// R2 — ARREARS Quarterly + 2026-05-13 → partial Q2 is not billed, first slot 2026-09-01
+			Arguments.of("R2", IntervalType.QUARTERLY, InvoicedIn.ARREARS, null,
 				LocalDate.of(2026, 5, 13), Set.of(3, 6, 9, 12), LocalDate.of(2026, 9, 1)),
-			// R3 — ARREARS Quarterly + startDate in past → still skip-one-from-startDate (not from today)
-			Arguments.of("R3", IntervalType.QUARTERLY, InvoicedIn.ARREARS,
-				LocalDate.of(2026, 1, 1), Set.of(3, 6, 9, 12), LocalDate.of(2026, 6, 1)));
+			// R3 — ARREARS Quarterly + startDate 2026-01-01 in past → slot 2026-03-01 already passed, first slot from today
+			// 2026-06-01
+			Arguments.of("R3", IntervalType.QUARTERLY, InvoicedIn.ARREARS, null,
+				LocalDate.of(2026, 1, 1), Set.of(3, 6, 9, 12), LocalDate.of(2026, 6, 1)),
+			// R4 — ARREARS Yearly + startDate on period start 2027-01-01 → 2027-12-01 (bills Jan–Dec 2027), NOT 2028-12-01
+			Arguments.of("R4 ARREARS Yearly startDate on period start", IntervalType.YEARLY, InvoicedIn.ARREARS, 12,
+				LocalDate.of(2027, 1, 1), Set.of(12), LocalDate.of(2027, 12, 1)),
+			// R5 — ARREARS Quarterly + startDate on quarter start 2026-07-01 → 2026-09-01 (bills Q3 2026)
+			Arguments.of("R5 ARREARS Quarterly startDate on period start", IntervalType.QUARTERLY, InvoicedIn.ARREARS, null,
+				LocalDate.of(2026, 7, 1), Set.of(3, 6, 9, 12), LocalDate.of(2026, 9, 1)),
+			// R6 — ARREARS Monthly + startDate on month start 2026-06-01 → 2026-06-01 (bills June 2026)
+			Arguments.of("R6 ARREARS Monthly startDate on period start", IntervalType.MONTHLY, InvoicedIn.ARREARS, null,
+				LocalDate.of(2026, 6, 1), Set.of(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12), LocalDate.of(2026, 6, 1)),
+			// R7 — ARREARS Monthly + startDate mid-month 2026-06-15 → partial June is not billed, first slot 2026-07-01
+			Arguments.of("R7 ARREARS Monthly startDate mid-period", IntervalType.MONTHLY, InvoicedIn.ARREARS, null,
+				LocalDate.of(2026, 6, 15), Set.of(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12), LocalDate.of(2026, 7, 1)),
+			// R8 — ARREARS Quarterly + startDate long in the past 2025-05-13 → never a passed slot, first slot from today
+			// 2026-06-01
+			Arguments.of("R8 ARREARS Quarterly startDate long in past", IntervalType.QUARTERLY, InvoicedIn.ARREARS, null,
+				LocalDate.of(2025, 5, 13), Set.of(3, 6, 9, 12), LocalDate.of(2026, 6, 1)),
+			// RJ1 — ARREARS Yearly June + startDate on period start 2026-07-01 → 2027-06-01 (bills Jul 2026–Jun 2027)
+			Arguments.of("RJ1 ARREARS Yearly June startDate on period start", IntervalType.YEARLY, InvoicedIn.ARREARS, 6,
+				LocalDate.of(2026, 7, 1), Set.of(6), LocalDate.of(2027, 6, 1)),
+			// RJ2 — ARREARS Yearly June + startDate 2027-01-01 mid-period → partial Jan–Jun 2027 is not billed, first slot
+			// 2028-06-01
+			Arguments.of("RJ2 ARREARS Yearly June startDate mid-period", IntervalType.YEARLY, InvoicedIn.ARREARS, 6,
+				LocalDate.of(2027, 1, 1), Set.of(6), LocalDate.of(2028, 6, 1)),
+			// RJ3 — ARREARS Yearly June + startDate 2025-07-01 in past → first slot from today 2026-06-01 (bills Jul 2025–Jun 2026)
+			Arguments.of("RJ3 ARREARS Yearly June startDate in past", IntervalType.YEARLY, InvoicedIn.ARREARS, 6,
+				LocalDate.of(2025, 7, 1), Set.of(6), LocalDate.of(2026, 6, 1)));
+	}
+
+	// ========== Passed slots — warning & recompute on UPDATED ==========
+
+	@SuppressWarnings("unchecked")
+	@Test
+	void handleEvent_created_whenFirstSlotHasPassed_shouldLogMissedPeriod() {
+		// ADVANCE Quarterly from 2026-01-01: Q1 and Q2 slots (2025-12-01, 2026-03-01) have passed on 2026-04-29
+		var contract = buildContract(Status.ACTIVE, IntervalType.QUARTERLY, InvoicedIn.ADVANCE, LocalDate.of(2026, 1, 1), null, null);
+		when(mockContractIntegration.getContract(MUNICIPALITY_ID, CONTRACT_ID)).thenReturn(Optional.of(contract));
+
+		var appender = attachLogAppender();
+		try {
+			service.handleEvent(eventRequest(EventType.CREATED));
+
+			var supplierCaptor = ArgumentCaptor.forClass(java.util.function.Supplier.class);
+			verify(mockScheduledBillingService).upsert(eq(MUNICIPALITY_ID), eq(CONTRACT_ID), eq(BillingSource.CONTRACT),
+				any(), any(), any(), supplierCaptor.capture());
+
+			assertThat(supplierCaptor.getValue().get()).isEqualTo(LocalDate.of(2026, 6, 1));
+			assertThat(appender.list)
+				.filteredOn(event -> event.getLevel() == Level.WARN)
+				.extracting(ILoggingEvent::getFormattedMessage)
+				.singleElement()
+				.asString()
+				.contains("period 2026-01-01 - 2026-06-30 is not billed automatically");
+		} finally {
+			detachLogAppender(appender);
+		}
+	}
+
+	@SuppressWarnings("unchecked")
+	@Test
+	void handleEvent_created_whenFirstSlotIsInFuture_shouldNotLogMissedPeriod() {
+		var contract = buildContract(Status.ACTIVE, IntervalType.YEARLY, InvoicedIn.ADVANCE, LocalDate.of(2027, 1, 1), null, 12);
+		when(mockContractIntegration.getContract(MUNICIPALITY_ID, CONTRACT_ID)).thenReturn(Optional.of(contract));
+
+		var appender = attachLogAppender();
+		try {
+			service.handleEvent(eventRequest(EventType.CREATED));
+
+			var supplierCaptor = ArgumentCaptor.forClass(java.util.function.Supplier.class);
+			verify(mockScheduledBillingService).upsert(eq(MUNICIPALITY_ID), eq(CONTRACT_ID), eq(BillingSource.CONTRACT),
+				any(), any(), any(), supplierCaptor.capture());
+
+			assertThat(supplierCaptor.getValue().get()).isEqualTo(LocalDate.of(2026, 12, 1));
+			assertThat(appender.list).noneMatch(event -> event.getLevel() == Level.WARN);
+		} finally {
+			detachLogAppender(appender);
+		}
+	}
+
+	@SuppressWarnings("unchecked")
+	@Test
+	void handleEvent_updated_recomputeForOldContract_shouldNeverScheduleAPassedSlot() {
+		// The supplier is what ScheduledBillingService.upsert evaluates when the
+		// cadence or direction of an existing row changes. For a contract that
+		// started long ago it must start from today, or the scheduler would
+		// back-bill every period since the start one tick at a time.
+		var contract = buildContract(Status.ACTIVE, IntervalType.QUARTERLY, InvoicedIn.ARREARS, LocalDate.of(2020, 1, 15), null, null);
+		when(mockContractIntegration.getContract(MUNICIPALITY_ID, CONTRACT_ID)).thenReturn(Optional.of(contract));
+
+		service.handleEvent(eventRequest(EventType.UPDATED));
+
+		var supplierCaptor = ArgumentCaptor.forClass(java.util.function.Supplier.class);
+		verify(mockScheduledBillingService).upsert(eq(MUNICIPALITY_ID), eq(CONTRACT_ID), eq(BillingSource.CONTRACT),
+			eq(Set.of(3, 6, 9, 12)), eq(Set.of(1)), eq(se.sundsvall.billingdatacollector.api.model.InvoicedIn.ARREARS),
+			supplierCaptor.capture());
+
+		// First slot on or after 2026-04-29 is 2026-06-01, billing Q2 2026
+		assertThat(supplierCaptor.getValue().get()).isEqualTo(LocalDate.of(2026, 6, 1));
+	}
+
+	@SuppressWarnings("unchecked")
+	@Test
+	void handleEvent_created_whenInvoicedInIsNull_shouldDefaultToArrears() {
+		// Yearly from 2027-01-01: ARREARS gives 2027-12-01, ADVANCE would give 2026-12-01
+		var contract = buildContract(Status.ACTIVE, IntervalType.YEARLY, null, LocalDate.of(2027, 1, 1), null, 12);
+		when(mockContractIntegration.getContract(MUNICIPALITY_ID, CONTRACT_ID)).thenReturn(Optional.of(contract));
+
+		service.handleEvent(eventRequest(EventType.CREATED));
+
+		var supplierCaptor = ArgumentCaptor.forClass(java.util.function.Supplier.class);
+		verify(mockScheduledBillingService).upsert(eq(MUNICIPALITY_ID), eq(CONTRACT_ID), eq(BillingSource.CONTRACT),
+			eq(Set.of(12)), eq(Set.of(1)), eq(null), supplierCaptor.capture());
+
+		assertThat(supplierCaptor.getValue().get()).isEqualTo(LocalDate.of(2027, 12, 1));
+	}
+
+	private static ListAppender<ILoggingEvent> attachLogAppender() {
+		var appender = new ListAppender<ILoggingEvent>();
+		appender.start();
+		((Logger) LoggerFactory.getLogger(ContractEventService.class)).addAppender(appender);
+		return appender;
+	}
+
+	private static void detachLogAppender(ListAppender<ILoggingEvent> appender) {
+		((Logger) LoggerFactory.getLogger(ContractEventService.class)).detachAppender(appender);
+		appender.stop();
 	}
 
 	// ========== CREATED — basic flow & non-billable ==========
